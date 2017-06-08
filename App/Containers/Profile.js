@@ -1,11 +1,14 @@
 import React from 'react'
-import { ScrollView, Text } from 'react-native'
+import { ScrollView, Text, View, Image } from 'react-native'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/ProfileStyle'
+
+// Images
+import { Images } from '../Themes'
 
 class Profile extends React.Component {
 
@@ -17,7 +20,19 @@ class Profile extends React.Component {
   render () {
     return (
       <ScrollView style={styles.container}>
-        <Text>Profile Container</Text>
+        <Image source={Images.phone} style={styles.imagestyle} />
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>
+            Masuk ke Akun Anda untuk { '\n' }mempermudah proses pembelian
+          </Text>
+        </View>
+        <View style={styles.welcome2Container}>
+          <Text style={styles.welcome2Text}>
+            Terima Kasih, Anda telah berhasil melakukan { '\n' }
+            pembelian Token Listrik. Untuk melihat Token { '\n' }
+            silahkan menuju bagian Transaksi
+          </Text>
+        </View>
       </ScrollView>
     )
   }

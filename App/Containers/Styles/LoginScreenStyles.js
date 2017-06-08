@@ -1,33 +1,53 @@
 import { StyleSheet } from 'react-native'
-import { Colors, Metrics } from '../../Themes'
+import { Colors, Metrics, Fonts } from '../../Themes'
 
 export default StyleSheet.create({
   container: {
-    paddingTop: 70,
+    paddingTop: 50,
     backgroundColor: Colors.background
   },
   form: {
     backgroundColor: Colors.snow,
-    margin: Metrics.baseMargin,
     borderRadius: 4
   },
+  form_header: {
+    height: 58,
+    backgroundColor: Colors.doubleLightGrey,
+    padding: 20
+  },
+
+  form_header_image: {
+    flex: 0
+  },
+  form_header_text: {
+    flex: 0.5,
+    fontSize: 13,
+    fontFamily: Fonts.type.base,
+    color: Colors.bright_grey
+  },
   row: {
-    paddingVertical: Metrics.doubleBaseMargin,
-    paddingHorizontal: Metrics.doubleBaseMargin
+    borderBottomWidth: 0.5,
+    borderColor: Colors.grey,
+    margin: 20
   },
   rowLabel: {
-    color: Colors.charcoal
+    paddingBottom: Metrics.baseMargin,
+    fontSize: 12.6,
+    color: Colors.grey
   },
   textInput: {
     height: 40,
-    color: Colors.coal
+    fontFamily: Fonts.type.base,
+    color: Colors.thin_grey
   },
   textInputReadonly: {
     height: 40,
-    color: Colors.steel
+    fontFamily: Fonts.type.base,
+    color: Colors.thin_grey
   },
   loginRow: {
-    paddingBottom: Metrics.doubleBaseMargin,
+    paddingTop: Metrics.doubleBaseMargin,
+    paddingBottom: Metrics.baseMargin,
     paddingHorizontal: Metrics.doubleBaseMargin,
     flexDirection: 'row'
   },
@@ -36,17 +56,62 @@ export default StyleSheet.create({
   },
   loginButton: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: Colors.charcoal,
-    backgroundColor: Colors.panther,
-    padding: 6
+    borderRadius: 5,
+    backgroundColor: Colors.bluesky,
+    padding: 16,
+    height: 50,
+    paddingBottom: Metrics.baseMargin
   },
   loginText: {
     textAlign: 'center',
-    color: Colors.silver
+    color: Colors.snow,
+    fontFamily: Fonts.type.bold,
+    fontSize: 14
   },
   topLogo: {
     alignSelf: 'center',
     resizeMode: 'contain'
+  },
+  line: {
+    paddingTop: Metrics.doubleBaseMargin,
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    paddingBottom: Metrics.baseMargin
+  },
+  text_sign_up: {
+    textAlign: 'center',
+    fontSize: 13,
+    fontFamily: Fonts.type.bold,
+    color: Colors.bluesky
+  },
+  inputContainer: {
+    borderBottomWidth: 1,
+    marginTop: 10,
+    borderBottomColor: Colors.silver
+  },
+  inputText: {
+    height: 40,
+    flex: 1,
+    color: Colors.grey,
+    fontSize: 13.5
+  },
+  contentContainerStyle: {
+    justifyContent: 'center'
+  },
+  containerBanner: {
+    height: 50,
+    paddingLeft: 20,
+    backgroundColor: Colors.doubleLightGrey,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  textBanner: {
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.regular,
+    color: Colors.lightblack
+  },
+  textLogin: {
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.bold,
+    color: Colors.bluesky
   }
 })

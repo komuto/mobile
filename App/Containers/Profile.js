@@ -1,5 +1,6 @@
 import React from 'react'
-import { ScrollView, Text, View, Image } from 'react-native'
+import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -17,6 +18,10 @@ class Profile extends React.Component {
   //   this.state = {}
   // }
 
+  login () {
+    NavigationActions.login({ type: ActionConst.PUSH })
+  }
+
   render () {
     return (
       <ScrollView style={styles.container}>
@@ -32,6 +37,18 @@ class Profile extends React.Component {
             pembelian Token Listrik. Untuk melihat Token { '\n' }
             silahkan menuju bagian Transaksi
           </Text>
+        </View>
+        <View style={styles.containerButton}>
+          <TouchableOpacity style={styles.buttonRegister}>
+            <Text style={styles.textButtonRegister}>
+              Register
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonLogin} onPress={() => this.login()}>
+            <Text style={styles.textButtonLogin}>
+              Login
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     )

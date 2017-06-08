@@ -4,7 +4,7 @@ const colors = {
   clear: 'rgba(0,0,0,0)',
   facebook: '#3b5998',
   transparent: 'rgba(0,0,0,0)',
-  silver: '#F7F7F7',
+  silver: '#dedede',
   steel: '#CCCCCC',
   error: 'rgba(200, 0, 0, 0.8)',
   ricePaper: 'rgba(255,255,255, 0.75)',
@@ -24,8 +24,13 @@ const colors = {
   banner: '#5F3E63',
   text: '#E0D7E5',
   red: '#ef5656',
-  grey: '#6d6d6d'
-
+  grey: '#6d6d6d',
+  darkgrey: '#404852',
+  lightgrey: '#666666',
+  bluesky: '#56aaef',
+  lightblue: '#ebf2fc',
+  doubleLightGrey: '#ebf2fc',
+  lightblack: '#41475e'
 }
 
 export default colors

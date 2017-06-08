@@ -6,35 +6,49 @@ export default {
     top: 0,
     left: 0,
     right: 0,
-    height: Metrics.navBarHeight,
     backgroundColor: Colors.tabbackground,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    height: Metrics.navBarHeight
+  },
+  middleContainer: {
+    justifyContent: 'center',
+    flex: 6
   },
   title: {
-    flex: 1,
-    textAlign: 'left',
     color: Colors.snow,
-    marginTop: Metrics.doubleBaseMargin - 3,
-    marginLeft: 20,
     backgroundColor: Colors.transparent,
     fontFamily: Fonts.style.bold,
     fontSize: 16,
     fontWeight: 'bold'
   },
-  logo: {
+  leftContainer: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  rightContainer: {
+    flex: 0.6
+  },
+  buttonContainer: {
+    height: Metrics.navBarHeight,
+    justifyContent: 'center',
+    marginRight: 5
+  },
+  buttonIcon: {
+    height: 15,
+    width: 15,
+    resizeMode: 'contain'
+  },
+  leftLogo: {
+    justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: Metrics.baseMargin,
-    height: Metrics.icons.large,
-    width: Metrics.icons.large
+    marginLeft: Metrics.marginHorizontal,
+    marginRight: Metrics.marginHorizontal,
+    height: Metrics.icons.large
   },
-  rightButtons: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    flexDirection: 'row'
-  },
-  leftButtons: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    flexDirection: 'row'
+  logoImage: {
+    marginLeft: Metrics.marginHorizontal,
+    width: Metrics.images.logoMedium,
+    resizeMode: 'contain'
   }
 }

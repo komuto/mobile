@@ -10,7 +10,7 @@ class Splash extends React.Component {
   componentWillMount () {
     setTimeout(() => {
       SplashScreen.hide()
-      NavigationActions.loggedIn({ type: ActionConst.REPLACE })
+      NavigationActions.tabbar({ type: ActionConst.REPLACE })
     }, 2000)
     SplashScreen.show()
   }

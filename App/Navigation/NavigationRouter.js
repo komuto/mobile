@@ -5,6 +5,10 @@ import { View, Text, Image } from 'react-native'
 // screens identified by the router
 import Profile from '../Containers/Profile'
 import Splash from '../Containers/Splash'
+import ForgetPassword from '../Containers/ForgetPassword'
+import Notifikasi from '../Containers/Notifikasi'
+import Register from '../Containers/Register'
+import Login from '../Containers/LoginScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -32,72 +36,96 @@ class NavigationRouter extends Component {
       <Router>
         <Scene key='root'>
           <Scene key='splash' component={Splash} hideNavBar />
-          <Scene key='loggedIn'>
+          <Scene
+            key='tabbar'
+            tabs
+            type={ActionConst.REPLACE}
+            tabBarStyle={styles.tabbar}>
             <Scene
-              key='tabbar'
-              tabs
-              type={ActionConst.REPLACE}
-              tabBarStyle={styles.tabbar}>
+              key='home'
+              title='Home'
+              icon={TabIcon}
+              iconDefault={Images.home}
+              iconActive={Images.home}>
               <Scene
-                key='home'
+                key='homeScreen'
+                component={Profile}
                 title='Home'
-                icon={TabIcon}
-                iconDefault={Images.home}
-                iconActive={Images.home}>
-                <Scene
-                  key='homeScreen'
-                  component={Profile}
-                  title='Home'
-                  navBar={CustomNavBar}
-                  hideNavBar={false}
-                  hideBackImage />
-              </Scene>
+                navBar={CustomNavBar}
+                hideNavBar={false}
+                hideBackImage />
+            </Scene>
+            <Scene
+              key='transaction'
+              title='Transaksi'
+              icon={TabIcon}
+              iconDefault={Images.transaksi}
+              iconActive={Images.transaksi}>
               <Scene
-                key='transaction'
+                key='transactionScreen'
+                component={Profile}
                 title='Transaksi'
-                icon={TabIcon}
-                iconDefault={Images.transaksi}
-                iconActive={Images.transaksi}>
-                <Scene
-                  key='transactionScreen'
-                  component={Profile}
-                  title='Transaksi'
-                  navBar={CustomNavBar}
-                  hideNavBar={false}
-                  hideBackImage />
-              </Scene>
+                navBar={CustomNavBar}
+                hideNavBar={false}
+                hideBackImage />
+            </Scene>
+            <Scene
+              key='notification'
+              title='Notifikasi'
+              icon={TabIcon}
+              iconDefault={Images.notifikasi}
+              iconActive={Images.notifikasi}>
               <Scene
-                key='notification'
+                key='notificationScreen'
+                component={Profile}
                 title='Notifikasi'
-                icon={TabIcon}
-                iconDefault={Images.notifikasi}
-                iconActive={Images.notifikasi}>
-                <Scene
-                  key='notificationScreen'
-                  component={Profile}
-                  title='Notifikasi'
-                  navBar={CustomNavBar}
-                  hideNavBar={false}
-                  hideBackImage />
-              </Scene>
+                navBar={CustomNavBar}
+                hideNavBar={false}
+                hideBackImage />
+            </Scene>
+            <Scene
+              key='acccount'
+              initial
+              title='Profile'
+              icon={TabIcon}
+              iconDefault={Images.profile}
+              iconActive={Images.profile}>
               <Scene
-                key='acccount'
-                initial
+                key='acccountScreen'
+                component={Profile}
                 title='Profile'
-                icon={TabIcon}
-                iconDefault={Images.profile}
-                iconActive={Images.profile}>
-                <Scene
-                  key='acccountScreen'
-                  component={Profile}
-                  title='Profile'
-                  navBar={CustomNavBar}
-                  hideNavBar={false}
-                  hideBackImage />
-              </Scene>
+                navBar={CustomNavBar}
+                hideNavBar={false}
+                hideBackImage />
             </Scene>
           </Scene>
         </Scene>
+        <Scene
+          key='forgetpassword'
+          component={ForgetPassword}
+          title='Lupa Password'
+          navBar={CustomNavBar}
+          hideNavBar={false}
+          hideBackImage={false} />
+        <Scene
+          key='notifikasi'
+          component={Notifikasi}
+          navBar={CustomNavBar}
+          hideNavBar />
+        <Scene
+          key='register'
+          component={Register}
+          title='Register'
+          navBar={CustomNavBar}
+          hideNavBar={false}
+          hideBackImage={false} />
+        <Scene
+          key='login'
+          component={Login}
+          title='Login'
+          navBar={CustomNavBar}
+          hideNavBar={false}
+          hideBackImage={false} />
       </Router>
     )
   }

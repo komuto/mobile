@@ -7,20 +7,19 @@ export default {
     left: 0,
     right: 0,
     height: Metrics.navBarHeight,
-    paddingTop: Metrics.smallMargin,
-    paddingHorizontal: 5,
     backgroundColor: Colors.background,
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+    flexDirection: 'row'
   },
   title: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     color: Colors.snow,
-    marginTop: Metrics.doubleBaseMargin,
+    marginTop: Metrics.doubleBaseMargin - 3,
+    marginLeft: 20,
     backgroundColor: Colors.transparent,
-    fontWeight: 'bold',
-    fontSize: Fonts.size.input
+    fontFamily: Fonts.style.bold,
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   logo: {
     alignSelf: 'center',

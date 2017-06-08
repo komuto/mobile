@@ -1,7 +1,10 @@
 const type = {
-  base: 'Avenir-Book',
-  bold: 'Avenir-Black',
-  emphasis: 'HelveticaNeue-Italic'
+  base: 'NunitoSans-Regular',
+  bold: 'NunitoSans-Bold',
+  semiBolds: 'NunitoSans-Semibold',
+  light: 'NunitoSans-Light',
+  regular: 'NunitoSans-Regular',
+  emphasis: 'NunitoSans-Regular'
 }
 
 const size = {
@@ -15,7 +18,7 @@ const size = {
   regular: 17,
   medium: 14,
   small: 12,
-  tiny: 8.5
+  tiny: 10
 }
 
 const style = {
@@ -50,6 +53,10 @@ const style = {
   description: {
     fontFamily: type.base,
     fontSize: size.medium
+  },
+  semiBold: {
+    fontFamily: type.semiBolds,
+    fontSize: size.tiny
   }
 }
 

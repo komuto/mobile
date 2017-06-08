@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { View, Image, LayoutAnimation } from 'react-native'
+import { Text, View, Image, TouchableOpacity, LayoutAnimation } from 'react-native'
 import NavItems from './NavItems'
 import styles from './Styles/CustomNavBarStyles'
 import SearchBar from '../Components/SearchBar'
@@ -31,15 +31,25 @@ class CustomNavBar extends React.Component {
   renderMiddle () {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
     if (this.state.showSearchBar) {
-      return <SearchBar onSearch={this.props.performSearch} searchTerm={this.props.searchTerm} onCancel={this.cancelSearch} />
+      return <SearchBar onSearch={(text) => this.onSearch(text)} searchTerm={this.state.searchTerm} onCancel={this.cancelSearch} onSubmitEditing={() => this.onSearchHandle()} />
     } else {
+      let content = null
+      if (!this.props.showLogo) {
+        content = <Text style={styles.title}> {this.props.title} </Text>
+      }
+
       return (
-        <Image resizeMode='cover' style={styles.logo} source={Images.clearLogo} />
+        <View style={styles.middleContainer}>
+          {content}
+        </View>
       )
     }
   }
 
   renderRightButtons () {
+    if (!this.props.showSearchIcon) {
+      return <View style={styles.rightContainer} />
+    }
     if (this.state.showSearchBar) {
       return <View style={{width: Metrics.icons.medium}} />
     } else {
@@ -55,31 +65,31 @@ class CustomNavBar extends React.Component {
     if (this.state.showSearchBar) {
       return null
     } else {
-      return (
-        <View style={styles.leftButtons}>
-          {NavItems.backButton()}
-        </View>
-      )
+      if (this.props.showLogo) {
+        return (
+          <View style={styles.leftLogo}>
+            <Image source={Images.logo} style={styles.logoImage} />
+          </View>
+        )
+      } else if (this.props.hideBackImage) {
+        return (
+          <View style={styles.leftLogo} />
+        )
+      } else {
+        return (
+          <View style={styles.leftContainer}>
+            <TouchableOpacity onPress={this.handleBackPress} style={styles.buttonContainer}>
+              <Image source={Images.iconBack} style={styles.buttonIcon} />
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
   }
 
   render () {
-    let state = this.props.navigationState
-    let selected = state.children[state.index]
-    while (selected.hasOwnProperty('children')) {
-      state = selected
-      selected = selected.children[selected.index]
-    }
-
-    const containerStyle = [
-      styles.container,
-      this.props.navigationBarStyle,
-      state.navigationBarStyle,
-      selected.navigationBarStyle
-    ]
-
     return (
-      <View style={containerStyle}>
+      <View style={styles.container}>
         {this.renderLeftButtons()}
         {this.renderMiddle()}
         {this.renderRightButtons()}

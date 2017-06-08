@@ -95,5 +95,8 @@
     "ghooks": {
       "pre-commit": "if [ -d 'ignite-base' ]; then cd ignite-base; fi; npm run lint"
     }
-  }
+  },
+  "rnpm": {
+   "assets": ["./assets/fonts"]
+ }
 }

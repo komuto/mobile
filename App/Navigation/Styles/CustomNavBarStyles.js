@@ -7,7 +7,7 @@ export default {
     left: 0,
     right: 0,
     height: Metrics.navBarHeight,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.tabbackground,
     flexDirection: 'row'
   },
   title: {

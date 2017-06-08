@@ -3,7 +3,8 @@ import { Scene, Router, ActionConst } from 'react-native-router-flux'
 import { View, Text, Image } from 'react-native'
 
 // screens identified by the router
-import ProfileNotLogin from '../Containers/ProfileNotLogin'
+import Profile from '../Containers/Profile'
+import Splash from '../Containers/Splash'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -30,6 +31,7 @@ class NavigationRouter extends Component {
     return (
       <Router>
         <Scene key='root'>
+          <Scene key='splash' component={Splash} hideNavBar />
           <Scene key='loggedIn'>
             <Scene
               key='tabbar'
@@ -44,7 +46,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.home}>
                 <Scene
                   key='homeScreen'
-                  component={ProfileNotLogin}
+                  component={Profile}
                   title='Home'
                   navBar={CustomNavBar}
                   hideNavBar={false}
@@ -58,7 +60,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.transaksi}>
                 <Scene
                   key='transactionScreen'
-                  component={ProfileNotLogin}
+                  component={Profile}
                   title='Transaksi'
                   navBar={CustomNavBar}
                   hideNavBar={false}
@@ -72,7 +74,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.notifikasi}>
                 <Scene
                   key='notificationScreen'
-                  component={ProfileNotLogin}
+                  component={Profile}
                   title='Notifikasi'
                   navBar={CustomNavBar}
                   hideNavBar={false}
@@ -80,13 +82,14 @@ class NavigationRouter extends Component {
               </Scene>
               <Scene
                 key='acccount'
+                initial
                 title='Profile'
                 icon={TabIcon}
                 iconDefault={Images.profile}
                 iconActive={Images.profile}>
                 <Scene
                   key='acccountScreen'
-                  component={ProfileNotLogin}
+                  component={Profile}
                   title='Profile'
                   navBar={CustomNavBar}
                   hideNavBar={false}

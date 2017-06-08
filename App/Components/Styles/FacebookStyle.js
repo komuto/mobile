@@ -9,7 +9,7 @@ export default StyleSheet.create({
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'center',
-    flex: 1,
+    flex: 1
   },
   loginIconThirdParty: {
     width: 9.3,

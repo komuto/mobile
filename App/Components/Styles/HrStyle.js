@@ -3,7 +3,7 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   line: {
     alignSelf: 'center',

@@ -4,12 +4,10 @@ import {
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
-  Image
+  TouchableOpacity
 } from 'react-native'
 import { connect } from 'react-redux'
 import styles from './Styles/LoginScreenStyles'
-import { Images } from '../Themes'
 import LoginActions from '../Redux/LoginRedux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'

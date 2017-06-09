@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Scene, Router, ActionConst } from 'react-native-router-flux'
+import { Scene, Router } from 'react-native-router-flux'
 import { View, Text, Image } from 'react-native'
 
 // screens identified by the router
@@ -37,103 +37,104 @@ class NavigationRouter extends Component {
       <Router>
         <Scene key='root'>
           <Scene key='splash' component={Splash} hideNavBar />
-          <Scene
-            key='tabbar'
-            tabs
-            type={ActionConst.REPLACE}
-            tabBarStyle={styles.tabbar}>
+          <Scene key='backtab'>
             <Scene
-              key='home'
-              title='Home'
-              icon={TabIcon}
-              iconDefault={Images.home}
-              iconActive={Images.homeActive}>
+              key='tabbar'
+              tabs
+              tabBarStyle={styles.tabbar}>
               <Scene
-                key='homeScreen'
-                component={Profile}
+                key='home'
                 title='Home'
-                navBar={CustomNavBar}
-                hideNavBar={false}
-                hideBackImage />
-            </Scene>
-            <Scene
-              key='transaction'
-              title='Transaksi'
-              icon={TabIcon}
-              iconDefault={Images.transaksi}
-              iconActive={Images.transaksiActive}>
+                icon={TabIcon}
+                iconDefault={Images.home}
+                iconActive={Images.homeActive}>
+                <Scene
+                  key='homeScreen'
+                  component={Profile}
+                  title='Home'
+                  navBar={CustomNavBar}
+                  hideNavBar={false}
+                  hideBackImage />
+              </Scene>
               <Scene
-                key='transactionScreen'
-                component={Profile}
+                key='transaction'
                 title='Transaksi'
-                navBar={CustomNavBar}
-                hideNavBar={false}
-                hideBackImage />
-            </Scene>
-            <Scene
-              key='notification'
-              title='Notifikasi'
-              icon={TabIcon}
-              iconDefault={Images.notifikasi}
-              iconActive={Images.notifikasiActive}>
+                icon={TabIcon}
+                iconDefault={Images.transaksi}
+                iconActive={Images.transaksiActive}>
+                <Scene
+                  key='transactionScreen'
+                  component={Profile}
+                  title='Transaksi'
+                  navBar={CustomNavBar}
+                  hideNavBar={false}
+                  hideBackImage />
+              </Scene>
               <Scene
-                key='notificationScreen'
-                component={Profile}
+                key='notification'
                 title='Notifikasi'
-                navBar={CustomNavBar}
-                hideNavBar={false}
-                hideBackImage />
-            </Scene>
-            <Scene
-              key='acccount'
-              initial
-              title='Profile'
-              icon={TabIcon}
-              iconDefault={Images.profile}
-              iconActive={Images.profileActive}>
+                icon={TabIcon}
+                iconDefault={Images.notifikasi}
+                iconActive={Images.notifikasiActive}>
+                <Scene
+                  key='notificationScreen'
+                  component={Profile}
+                  title='Notifikasi'
+                  navBar={CustomNavBar}
+                  hideNavBar={false}
+                  hideBackImage />
+              </Scene>
               <Scene
-                key='acccountScreen'
-                component={Profile}
+                key='acccount'
+                initial
                 title='Profile'
-                navBar={CustomNavBar}
-                hideNavBar={false}
-                hideBackImage />
+                icon={TabIcon}
+                iconDefault={Images.profile}
+                iconActive={Images.profileActive}>
+                <Scene
+                  key='acccountScreen'
+                  component={Profile}
+                  title='Profile'
+                  navBar={CustomNavBar}
+                  hideNavBar={false}
+                  hideBackImage />
+              </Scene>
             </Scene>
           </Scene>
+          <Scene
+            key='forgetpassword'
+            component={ForgetPassword}
+            title='Lupa Password'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='notifikasi'
+            component={Notifikasi}
+            navBar={CustomNavBar}
+            hideNavBar />
+          <Scene
+            key='register'
+            component={Register}
+            title='Register'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='login'
+            component={Login}
+            title='Login'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='passwordbaru'
+            component={PasswordBaru}
+            title='Password Baru'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
         </Scene>
-        <Scene
-          key='forgetpassword'
-          component={ForgetPassword}
-          title='Lupa Password'
-          navBar={CustomNavBar}
-          hideNavBar={false}
-          hideBackImage={false} />
-        <Scene
-          key='notifikasi'
-          component={Notifikasi}
-          navBar={CustomNavBar}
-          hideNavBar />
-        <Scene
-          key='register'
-          component={Register}
-          title='Register'
-          navBar={CustomNavBar}
-          hideNavBar={false}
-          hideBackImage={false} />
-        <Scene
-          key='login'
-          component={Login}
-          title='Login'
-          navBar={CustomNavBar}
-          hideNavBar={false}
-          hideBackImage={false} />
-        <Scene
-          key='passwordbaru'
-          component={PasswordBaru}
-          title='Password Baru'
-          navBar={CustomNavBar}
-          hideNavBar={false}
-          hideBackImage={false} />
       </Router>
     )
   }

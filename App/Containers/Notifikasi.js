@@ -24,6 +24,12 @@ class Notifikasi extends React.Component {
     })
   }
 
+  backToProfile () {
+    NavigationActions.backtab({
+      type: ActionConst.RESET
+    })
+  }
+
   renderNotifikasi () {
     if (this.state.type === 'resetpassword') {
       return (
@@ -128,10 +134,10 @@ class Notifikasi extends React.Component {
           <View style={styles.containerButton}>
             <TouchableOpacity
               style={styles.buttonLogin}
-              onPress={() => this.backToLogin()}
+              onPress={() => this.backToProfile()}
             >
               <Text style={styles.textButtonLogin}>
-                Kembali ke Halaman Login
+                Kembali ke Halaman Profil
               </Text>
             </TouchableOpacity>
           </View>

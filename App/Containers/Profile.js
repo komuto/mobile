@@ -22,6 +22,10 @@ class Profile extends React.Component {
     NavigationActions.login({ type: ActionConst.PUSH })
   }
 
+  register () {
+    NavigationActions.register({ type: ActionConst.PUSH })
+  }
+
   render () {
     return (
       <ScrollView style={styles.container}>
@@ -39,7 +43,7 @@ class Profile extends React.Component {
           </Text>
         </View>
         <View style={styles.containerButton}>
-          <TouchableOpacity style={styles.buttonRegister}>
+          <TouchableOpacity style={styles.buttonRegister} onPress={() => this.register()}>
             <Text style={styles.textButtonRegister}>
               Register
             </Text>

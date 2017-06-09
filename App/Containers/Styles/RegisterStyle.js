@@ -37,5 +37,40 @@ export default StyleSheet.create({
     flex: 1,
     color: Colors.grey,
     fontSize: Fonts.size.medium
+  },
+  buttonLogin: {
+    flex: 1,
+    margin: 20,
+    height: 50,
+    backgroundColor: Colors.bluesky,
+    borderRadius: 5,
+    borderColor: Colors.bluesky,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textButtonLogin: {
+    color: Colors.snow,
+    fontSize: Fonts.size.regular,
+    fontFamily: Fonts.type.bold
+  },
+  line: {
+    paddingTop: Metrics.doubleBaseMargin,
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    paddingBottom: Metrics.baseMargin
+  },
+  loginRow: {
+    paddingTop: Metrics.doubleBaseMargin,
+    paddingBottom: Metrics.baseMargin,
+    paddingHorizontal: Metrics.doubleBaseMargin,
+    flexDirection: 'row'
+  },
+  containerText: {
+    width: Metrics.screenWidth - 40,
+    marginTop: 10
+  },
+  containerText2: {
+    flexDirection: 'row',
+    width: Metrics.screenWidth - 40
   }
 })

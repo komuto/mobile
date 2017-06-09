@@ -1,5 +1,7 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import Facebook from '../Components/Facebook'
+import Hr from '../Components/Hr'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -123,6 +125,26 @@ class Register extends React.Component {
               underlineColorAndroid='transparent'
               placeholder='Konfirmasi Password'
             />
+          </View>
+          <View style={styles.containerText}>
+            <Text style={styles.textBanner}>Dengan mendaftar Anda telah menyetujui</Text>
+            <View style={styles.containerText2}>
+              <TouchableOpacity>
+                <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
+              </TouchableOpacity>
+              <Text style={styles.textBanner}>dari Komuto</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.buttonLogin}>
+            <Text style={styles.textButtonLogin}>
+              Register
+            </Text>
+          </TouchableOpacity>
+          <View style={[styles.line]}>
+            <Hr text='Atau' />
+          </View>
+          <View style={[styles.loginRow]}>
+            <Facebook />
           </View>
         </View>
       </ScrollView>

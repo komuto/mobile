@@ -12,8 +12,7 @@ const images = {
   phone: require('../Images/phone.png'),
   gembok: require('../Images/gembok.png'),
   welcome: require('../Images/welcome.png'),
-  facebook: require('../Images/Icons/icon-facebook.png'),
-  face_book: require('../Images/Icons/icon-facebook.png')
+  facebook: require('../Images/Icons/icon-facebook.png')
 }
 
 export default images

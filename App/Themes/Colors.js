@@ -30,7 +30,8 @@ const colors = {
   bluesky: '#56aaef',
   lightblue: '#ebf2fc',
   doubleLightGrey: '#ebf2fc',
-  lightblack: '#41475e'
+  lightblack: '#41475e',
+  labelgrey: '#a0a3ae'
 }
 
 export default colors

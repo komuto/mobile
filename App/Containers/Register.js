@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import { connect } from 'react-redux'
@@ -8,6 +9,8 @@ import { connect } from 'react-redux'
 
 // Styles
 import styles from './Styles/RegisterStyle'
+
+import CustomRadio from '../Components/CustomRadio'
 
 class Register extends React.Component {
 
@@ -19,7 +22,10 @@ class Register extends React.Component {
       email: '',
       password: '',
       konfirmasiPassword: '',
-      gender: ''
+      gender: '',
+      index: 0,
+      label: 'Pria',
+      data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}]
     }
   }
 
@@ -43,6 +49,29 @@ class Register extends React.Component {
     this.setState({ konfirmasiPassword: text })
   }
 
+  handlingRadio () {
+    console.log(this.state.index, this.state.label)
+  }
+
+  register () {
+    NavigationActions.notifikasi({
+      type: ActionConst.PUSH,
+      tipeNotikasi: 'register'
+    })
+  }
+
+  login () {
+    NavigationActions.login({
+      type: ActionConst.PUSH
+    })
+  }
+
+  loginfb () {
+    NavigationActions.passwordbaru({
+      type: ActionConst.PUSH
+    })
+  }
+
   render () {
     return (
       <ScrollView style={styles.container}>
@@ -50,7 +79,7 @@ class Register extends React.Component {
           <Text style={styles.textBanner}>
             Sudah punya akun?
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => this.login()}>
             <Text style={styles.textLogin}> Login Disini</Text>
           </TouchableOpacity>
         </View>
@@ -126,25 +155,42 @@ class Register extends React.Component {
               placeholder='Konfirmasi Password'
             />
           </View>
+          <View style={styles.radio}>
+            <Text style={styles.radioLabel}>Gender</Text>
+            <CustomRadio
+              data={this.state.data}
+              handlingRadio={(index1, value1) =>
+                this.setState({
+                  index: index1,
+                  label: value1
+                })}
+              horizontal
+            />
+          </View>
           <View style={styles.containerText}>
             <Text style={styles.textBanner}>Dengan mendaftar Anda telah menyetujui</Text>
             <View style={styles.containerText2}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => this.handlingRadio()}>
                 <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
               </TouchableOpacity>
               <Text style={styles.textBanner}>dari Komuto</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.buttonLogin}>
+          <TouchableOpacity
+            style={styles.buttonLogin}
+            onPress={() => this.register()}
+          >
             <Text style={styles.textButtonLogin}>
               Register
             </Text>
           </TouchableOpacity>
-          <View style={[styles.line]}>
+          <View style={styles.line}>
             <Hr text='Atau' />
           </View>
-          <View style={[styles.loginRow]}>
-            <Facebook />
+          <View style={styles.loginRow}>
+            <Facebook
+              onPress={() => this.loginfb()}
+            />
           </View>
         </View>
       </ScrollView>

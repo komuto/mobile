@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { Images } from '../Themes'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -13,8 +14,14 @@ class Notifikasi extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      type: 'welcome'
+      type: this.props.tipeNotikasi
     }
+  }
+
+  backToLogin () {
+    NavigationActions.login({
+      type: ActionConst.RESET
+    })
   }
 
   renderNotifikasi () {
@@ -35,7 +42,10 @@ class Notifikasi extends React.Component {
             </Text>
           </View>
           <View style={styles.containerButton}>
-            <TouchableOpacity style={styles.buttonLogin}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.backToLogin()}
+            >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Login
               </Text>
@@ -60,7 +70,10 @@ class Notifikasi extends React.Component {
             </Text>
           </View>
           <View style={styles.containerButton}>
-            <TouchableOpacity style={styles.buttonLogin}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.backToLogin()}
+            >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Login
               </Text>
@@ -85,7 +98,10 @@ class Notifikasi extends React.Component {
             </Text>
           </View>
           <View style={styles.containerButton}>
-            <TouchableOpacity style={styles.buttonLogin}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.backToLogin()}
+            >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Login
               </Text>
@@ -110,7 +126,10 @@ class Notifikasi extends React.Component {
             </Text>
           </View>
           <View style={styles.containerButton}>
-            <TouchableOpacity style={styles.buttonLogin}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.backToLogin()}
+            >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Login
               </Text>

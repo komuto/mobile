@@ -7,7 +7,7 @@ export default class ForgotPassword extends React.Component {
   render () {
     return (
       <View style={Styles.container}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.props.onPress()}>
           <Text style={Styles.text}>{this.props.text}</Text>
         </TouchableOpacity>
       </View>

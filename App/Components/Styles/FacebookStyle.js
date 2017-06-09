@@ -2,6 +2,10 @@ import { StyleSheet } from 'react-native'
 import { Metrics, Fonts, Colors } from '../../Themes/'
 
 export default StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Metrics.titlePadding
+  },
   loginButtonThirdParty: {
     height: 50,
     borderRadius: 5,
@@ -17,7 +21,7 @@ export default StyleSheet.create({
     marginRight: 5
   },
   loginTextThirdParty: {
-    fontSize: 14,
+    fontSize: Fonts.size.medium,
     color: Colors.snow,
     alignSelf: 'center',
     marginLeft: Metrics.baseMargin,

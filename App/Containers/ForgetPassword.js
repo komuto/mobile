@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -18,6 +19,13 @@ class ForgetPassword extends React.Component {
 
   handleChangeEmail = (text) => {
     this.setState({ email: text })
+  }
+
+  sukses () {
+    NavigationActions.notifikasi({
+      type: ActionConst.PUSH,
+      tipeNotikasi: 'resetpassword'
+    })
   }
 
   render () {
@@ -43,7 +51,10 @@ class ForgetPassword extends React.Component {
             placeholder='Alamat Email'
           />
         </View>
-        <TouchableOpacity style={styles.buttonLogin}>
+        <TouchableOpacity
+          style={styles.buttonLogin}
+          onPress={() => this.sukses()}
+        >
           <Text style={styles.textButtonLogin}>
             Reset Password
           </Text>

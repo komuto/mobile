@@ -8,14 +8,14 @@ export default StyleSheet.create({
   line: {
     alignSelf: 'center',
     flex: 1,
-    backgroundColor: Colors.grey,
+    backgroundColor: Colors.silver,
     height: 1
   },
   text: {
     marginLeft: Metrics.baseMargin,
     marginRight: Metrics.baseMargin,
     textAlign: 'center',
-    fontSize: 13,
+    fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.base,
     color: Colors.double_grey
   }

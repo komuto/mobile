@@ -7,6 +7,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 import { connect } from 'react-redux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import styles from './Styles/LoginScreenStyles'
 import LoginActions from '../Redux/LoginRedux'
 import Facebook from '../Components/Facebook'
@@ -30,6 +31,20 @@ class LoginScreen extends React.Component {
     this.setState({ password: text })
   }
 
+  lupaPassword () {
+    NavigationActions.forgetpassword({ type: ActionConst.PUSH })
+  }
+
+  daftar () {
+    NavigationActions.register({ type: ActionConst.PUSH })
+  }
+
+  loginfb () {
+    NavigationActions.passwordbaru({
+      type: ActionConst.PUSH
+    })
+  }
+
   render () {
     return (
       <ScrollView contentContainerStyle={styles.contentContainerStyle} style={styles.container}>
@@ -37,8 +52,8 @@ class LoginScreen extends React.Component {
           <Text style={styles.textBanner}>
             Sudah punya akun?
           </Text>
-          <TouchableOpacity>
-            <Text style={styles.textLogin}> Login Disini</Text>
+          <TouchableOpacity onPress={() => this.daftar()}>
+            <Text style={styles.textLogin}> Daftar Disini</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.form}>
@@ -76,21 +91,26 @@ class LoginScreen extends React.Component {
               />
             </View>
           </View>
-          <View style={[styles.loginRow]}>
+          <View style={styles.loginRow}>
             <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handlePressLogin}>
               <View style={styles.loginButton}>
                 <Text style={styles.loginText}>Login</Text>
               </View>
             </TouchableOpacity>
           </View>
-          <View style={[styles.line]}>
-            <ForgotPassword text='Lupa Password?' />
+          <View style={styles.line}>
+            <ForgotPassword
+              text='Lupa Password?'
+              onPress={() => this.lupaPassword()}
+            />
           </View>
-          <View style={[styles.line]}>
+          <View style={styles.line}>
             <Hr text='Atau' />
           </View>
-          <View style={[styles.loginRow]}>
-            <Facebook />
+          <View style={styles.loginRow}>
+            <Facebook
+              onPress={() => this.loginfb()}
+            />
           </View>
         </View>
       </ScrollView>

@@ -6,6 +6,7 @@ import SearchBar from '../Components/SearchBar'
 import { connect } from 'react-redux'
 import { Metrics, Images } from '../Themes'
 import SearchActions from '../Redux/SearchRedux'
+import { Actions } from 'react-native-router-flux'
 
 class CustomNavBar extends React.Component {
   constructor (props) {
@@ -26,6 +27,10 @@ class CustomNavBar extends React.Component {
 
   onSearch = (searchTerm) => {
     this.props.performSearch(searchTerm)
+  }
+
+  handleBackPress () {
+    Actions.pop()
   }
 
   renderMiddle () {

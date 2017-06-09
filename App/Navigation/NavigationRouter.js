@@ -9,6 +9,7 @@ import ForgetPassword from '../Containers/ForgetPassword'
 import Notifikasi from '../Containers/Notifikasi'
 import Register from '../Containers/Register'
 import Login from '../Containers/LoginScreen'
+import PasswordBaru from '../Containers/PasswordBaru'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -46,7 +47,7 @@ class NavigationRouter extends Component {
               title='Home'
               icon={TabIcon}
               iconDefault={Images.home}
-              iconActive={Images.home}>
+              iconActive={Images.homeActive}>
               <Scene
                 key='homeScreen'
                 component={Profile}
@@ -60,7 +61,7 @@ class NavigationRouter extends Component {
               title='Transaksi'
               icon={TabIcon}
               iconDefault={Images.transaksi}
-              iconActive={Images.transaksi}>
+              iconActive={Images.transaksiActive}>
               <Scene
                 key='transactionScreen'
                 component={Profile}
@@ -74,7 +75,7 @@ class NavigationRouter extends Component {
               title='Notifikasi'
               icon={TabIcon}
               iconDefault={Images.notifikasi}
-              iconActive={Images.notifikasi}>
+              iconActive={Images.notifikasiActive}>
               <Scene
                 key='notificationScreen'
                 component={Profile}
@@ -89,7 +90,7 @@ class NavigationRouter extends Component {
               title='Profile'
               icon={TabIcon}
               iconDefault={Images.profile}
-              iconActive={Images.profile}>
+              iconActive={Images.profileActive}>
               <Scene
                 key='acccountScreen'
                 component={Profile}
@@ -123,6 +124,13 @@ class NavigationRouter extends Component {
           key='login'
           component={Login}
           title='Login'
+          navBar={CustomNavBar}
+          hideNavBar={false}
+          hideBackImage={false} />
+        <Scene
+          key='passwordbaru'
+          component={PasswordBaru}
+          title='Password Baru'
           navBar={CustomNavBar}
           hideNavBar={false}
           hideBackImage={false} />

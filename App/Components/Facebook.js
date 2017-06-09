@@ -7,7 +7,10 @@ export default class Facebook extends React.Component {
 
   render () {
     return (
-      <TouchableOpacity style={Styles.loginButtonThirdParty}>
+      <TouchableOpacity
+        style={Styles.loginButtonThirdParty}
+        onPress={() => this.props.onPress()}
+      >
         <Image source={Images.facebook} style={Styles.loginIconThirdParty} />
         <Text style={Styles.loginTextThirdParty}>Login dengan Facebook</Text>
       </TouchableOpacity>

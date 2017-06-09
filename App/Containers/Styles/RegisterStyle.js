@@ -40,7 +40,7 @@ export default StyleSheet.create({
   },
   buttonLogin: {
     flex: 1,
-    margin: 20,
+    marginTop: 20,
     height: 50,
     backgroundColor: Colors.bluesky,
     borderRadius: 5,
@@ -56,13 +56,11 @@ export default StyleSheet.create({
   },
   line: {
     paddingTop: Metrics.doubleBaseMargin,
-    paddingHorizontal: Metrics.doubleBaseMargin,
     paddingBottom: Metrics.baseMargin
   },
   loginRow: {
     paddingTop: Metrics.doubleBaseMargin,
     paddingBottom: Metrics.baseMargin,
-    paddingHorizontal: Metrics.doubleBaseMargin,
     flexDirection: 'row'
   },
   containerText: {
@@ -72,5 +70,14 @@ export default StyleSheet.create({
   containerText2: {
     flexDirection: 'row',
     width: Metrics.screenWidth - 40
+  },
+  radioLabel: {
+    marginTop: 40,
+    marginLeft: 4,
+    color: Colors.labelgrey,
+    marginBottom: 4
+  },
+  radio: {
+
   }
 })

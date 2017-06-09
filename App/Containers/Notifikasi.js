@@ -20,7 +20,7 @@ class Notifikasi extends React.Component {
 
   backToLogin () {
     NavigationActions.login({
-      type: ActionConst.RESET
+      type: ActionConst.POP_AND_REPLACE
     })
   }
 

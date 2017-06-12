@@ -26,7 +26,10 @@ class LoginScreen extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.datalogin.status === 200) {
-      Alert.alert('Login berhasil', 'Nama anda ' + nextProps.datalogin.user.name)
+      NavigationActions.backtab({ type: ActionConst.RESET })
+      NavigationActions.home()
+    } else if (nextProps.datalogin.status > 200) {
+      Alert.alert('Login gagal', 'Email atau password salah')
     }
   }
   handleChangeEmail = (text) => {

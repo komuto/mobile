@@ -10,6 +10,7 @@ import Notifikasi from '../Containers/Notifikasi'
 import Register from '../Containers/Register'
 import Login from '../Containers/LoginScreen'
 import PasswordBaru from '../Containers/PasswordBaru'
+import Home from '../Containers/Home'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -50,7 +51,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.homeActive}>
                 <Scene
                   key='homeScreen'
-                  component={Profile}
+                  component={Home}
                   title='Home'
                   navBar={CustomNavBar}
                   hideNavBar={false}

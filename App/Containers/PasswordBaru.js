@@ -1,7 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -77,14 +76,4 @@ class PasswordBaru extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PasswordBaru)
+export default PasswordBaru

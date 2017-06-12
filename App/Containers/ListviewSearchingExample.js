@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, ListView } from 'react-native'
-import { connect } from 'react-redux'
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
 // Styles
@@ -79,11 +78,4 @@ class ListviewExample extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    searchTerm: state.search.searchTerm,
-    results: state.search.results
-  }
-}
-
-export default connect(mapStateToProps)(ListviewExample)
+export default ListviewExample

@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, ListView, Text } from 'react-native'
-import { connect } from 'react-redux'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -131,15 +130,4 @@ class ListviewSectionsExample extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    // ...redux state to props here
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ListviewSectionsExample)
+export default ListviewSectionsExample

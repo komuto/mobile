@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import SplashScreen from 'react-native-splash-screen'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -20,14 +19,4 @@ class Splash extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Splash)
+export default Splash

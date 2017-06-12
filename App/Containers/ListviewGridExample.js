@@ -1,6 +1,5 @@
 import React from 'react'
 import { View, Text, ListView } from 'react-native'
-import { connect } from 'react-redux'
 
 // For empty lists
 import AlertMessage from '../Components/AlertMessage'
@@ -113,10 +112,4 @@ class ListviewGridExample extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    // ...redux state to props here
-  }
-}
-
-export default connect(mapStateToProps)(ListviewGridExample)
+export default ListviewGridExample

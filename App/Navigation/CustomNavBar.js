@@ -3,7 +3,6 @@ import { Text, View, Image, TouchableOpacity, LayoutAnimation } from 'react-nati
 import NavItems from './NavItems'
 import styles from './Styles/CustomNavBarStyles'
 import SearchBar from '../Components/SearchBar'
-import { connect } from 'react-redux'
 import { Metrics, Images } from '../Themes'
 import SearchActions from '../Redux/SearchRedux'
 import { Actions } from 'react-native-router-flux'
@@ -108,17 +107,4 @@ CustomNavBar.propTypes = {
   navigationBarStyle: View.propTypes.style
 }
 
-const mapStateToProps = (state) => {
-  return {
-    searchTerm: state.search.searchTerm
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    performSearch: (searchTerm) => dispatch(SearchActions.search(searchTerm)),
-    cancelSearch: () => dispatch(SearchActions.cancelSearch())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CustomNavBar)
+export default CustomNavBar

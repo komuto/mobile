@@ -4,15 +4,16 @@ import {
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import styles from './Styles/LoginScreenStyles'
-import LoginActions from '../Redux/LoginRedux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import ForgotPassword from '../Components/ForgotPassword'
+import * as loginAction from '../actions/user'
 
 class LoginScreen extends React.Component {
   constructor (props) {
@@ -23,6 +24,11 @@ class LoginScreen extends React.Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.datalogin.status === 200) {
+      Alert.alert('Login berhasil', 'Nama anda ' + nextProps.datalogin.user.name)
+    }
+  }
   handleChangeEmail = (text) => {
     this.setState({ email: text })
   }
@@ -43,6 +49,13 @@ class LoginScreen extends React.Component {
     NavigationActions.passwordbaru({
       type: ActionConst.PUSH
     })
+  }
+
+  handlePressLogin () {
+    this.props.dispatch(loginAction.login({
+      email: this.state.email,
+      password: this.state.password
+    }))
   }
 
   render () {
@@ -92,7 +105,10 @@ class LoginScreen extends React.Component {
             </View>
           </View>
           <View style={styles.loginRow}>
-            <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handlePressLogin}>
+            <TouchableOpacity
+              style={styles.loginButtonWrapper}
+              onPress={() => this.handlePressLogin()}
+            >
               <View style={styles.loginButton}>
                 <Text style={styles.loginText}>Login</Text>
               </View>
@@ -120,14 +136,8 @@ class LoginScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    fetching: state.login.fetching
+    datalogin: state.user
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password))
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
+export default connect(mapStateToProps)(LoginScreen)

@@ -1,1 +1,1 @@
-export const base_url = 'https://private-f0902d-komuto.apiary-mock.com'
+export const serviceUrl = 'https://private-f0902d-komuto.apiary-mock.com'

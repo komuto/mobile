@@ -4,7 +4,6 @@ import NavItems from './NavItems'
 import styles from './Styles/CustomNavBarStyles'
 import SearchBar from '../Components/SearchBar'
 import { Metrics, Images } from '../Themes'
-import SearchActions from '../Redux/SearchRedux'
 import { Actions } from 'react-native-router-flux'
 
 class CustomNavBar extends React.Component {

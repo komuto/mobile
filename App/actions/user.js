@@ -6,7 +6,11 @@ export const USER_REGISTER_REQUEST = 'USER_REGISTER_REQUEST'
 export const USER_REGISTER_SUCCESS = 'USER_REGISTER_SUCCESS'
 export const USER_REGISTER_FAILURE = 'USER_REGISTER_FAILURE'
 
-function userRegister (params) {
+export const FORGET_PASSWORD_REQUEST = 'FORGET_PASSWORD_REQUEST'
+export const FORGET_PASSWORD_SUCCESS = 'FORGET_PASSWORD_SUCCESS'
+export const FORGET_PASSWORD_FAILURE = 'FORGET_PASSWORD_FAILURE'
+
+function register (params) {
   return {
     type: USER_REGISTER_REQUEST,
     ...params
@@ -20,7 +24,15 @@ function login (params = {}) {
   }
 }
 
+function forgetPassword (params = {}) {
+  return {
+    type: FORGET_PASSWORD_REQUEST,
+    ...params
+  }
+}
+
 export {
-  userRegister,
-  login
+  register,
+  login,
+  forgetPassword
 }

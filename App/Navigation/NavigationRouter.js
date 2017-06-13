@@ -11,6 +11,8 @@ import Register from '../Containers/Register'
 import Login from '../Containers/LoginScreen'
 import PasswordBaru from '../Containers/PasswordBaru'
 import Home from '../Containers/Home'
+import NotifikasiPengguna from '../Containers/NotifikasiPengguna'
+import Transaksi from '../Containers/Transaksi'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -54,7 +56,7 @@ class NavigationRouter extends Component {
                   component={Home}
                   title='Home'
                   navBar={CustomNavBar}
-                  hideNavBar={false}
+                  hideNavBar
                   hideBackImage />
               </Scene>
               <Scene
@@ -65,7 +67,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.transaksiActive}>
                 <Scene
                   key='transactionScreen'
-                  component={Profile}
+                  component={Transaksi}
                   title='Transaksi'
                   navBar={CustomNavBar}
                   hideNavBar={false}
@@ -79,7 +81,7 @@ class NavigationRouter extends Component {
                 iconActive={Images.notifikasiActive}>
                 <Scene
                   key='notificationScreen'
-                  component={Profile}
+                  component={NotifikasiPengguna}
                   title='Notifikasi'
                   navBar={CustomNavBar}
                   hideNavBar={false}

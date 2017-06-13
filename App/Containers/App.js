@@ -2,7 +2,7 @@ import '../Config'
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
-import { store } from '../Config/store'
+import { store } from '../store'
 
 /**
  * Provides an entry point into our application.  Both index.ios.js and index.android.js

@@ -1,4 +1,11 @@
-import { authApi } from './api'
+import { authApi, publicApi } from './api'
+
+function register (action) {
+  let axios = publicApi()
+  return axios.post('users', {
+    ...action
+  })
+}
 
 function login (action) {
   let axios = authApi()
@@ -7,6 +14,15 @@ function login (action) {
   })
 }
 
+function forgetPassword (action) {
+  let axios = publicApi()
+  return axios.post('passwords/forgot', {
+    ...action
+  })
+}
+
 export {
-  login
+  login,
+  register,
+  forgetPassword
 }

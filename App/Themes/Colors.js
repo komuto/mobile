@@ -31,7 +31,8 @@ const colors = {
   lightblue: '#ebf2fc',
   doubleLightGrey: '#ebf2fc',
   lightblack: '#41475e',
-  labelgrey: '#a0a3ae'
+  labelgrey: '#a0a3ae',
+  paleGrey: '#f4f5f6'
 }
 
 export default colors

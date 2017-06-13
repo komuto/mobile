@@ -4,33 +4,40 @@ const initUser = {
   email: '',
   token: '',
   uid: '',
-  user: {},
-  status: 0
+  user: {}
 }
 
 function auth (state = initUser, action) {
-  // console.log(action)
+  console.log(action)
   switch (action.type) {
     case actions.USER_REGISTER_REQUEST:
       return {
         ...state,
         email: action.email,
         token: '',
-        uid: ''
+        uid: 0,
+        user: {},
+        message: '',
+        status: 0
       }
     case actions.USER_REGISTER_SUCCESS:
       return {
         ...state,
-        email: action.user.email,
-        token: action.token,
-        uid: action.uid
+        email: action.data.email,
+        uid: action.data.id,
+        user: action,
+        message: action.message,
+        status: action.code
       }
     case actions.USER_REGISTER_FAILURE:
       return {
         ...state,
         email: '',
         token: '',
-        uid: ''
+        uid: 0,
+        user: {},
+        message: action.message,
+        status: action.code
       }
     case actions.USER_LOGIN_REQUEST:
       return {
@@ -39,7 +46,8 @@ function auth (state = initUser, action) {
         token: '',
         uid: 0,
         user: {},
-        status: 0
+        message: action.message,
+        status: action.code
       }
     case actions.USER_LOGIN_SUCCESS:
       return {
@@ -47,7 +55,8 @@ function auth (state = initUser, action) {
         email: action.data.email,
         token: action.data.token,
         uid: action.data.id,
-        user: action.data,
+        user: action,
+        message: action.message,
         status: action.code
       }
     case actions.USER_LOGIN_FAILURE:
@@ -57,6 +66,37 @@ function auth (state = initUser, action) {
         token: '',
         uid: 0,
         user: {},
+        message: action.message,
+        status: action.code
+      }
+    case actions.FORGET_PASSWORD_REQUEST:
+      return {
+        ...state,
+        email: action.email,
+        token: '',
+        uid: 0,
+        user: {},
+        message: '',
+        status: ''
+      }
+    case actions.FORGET_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        email: action.data.email,
+        token: '',
+        uid: 0,
+        user: {},
+        message: action.message,
+        status: action.code
+      }
+    case actions.FORGET_PASSWORD_FAILURE:
+      return {
+        ...state,
+        email: '',
+        token: '',
+        uid: 0,
+        user: {},
+        message: action.message,
         status: action.code
       }
     default:

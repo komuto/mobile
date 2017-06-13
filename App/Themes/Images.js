@@ -9,10 +9,26 @@ const images = {
   notifikasiActive: require('../Images/Icons/icon-notifikasired.png'),
   transaksiActive: require('../Images/Icons/icon-transaksired.png'),
   iconBack: require('../Images/Icons/icon-back.png'),
+  verified: require('../Images/Icons/icon-verified.png'),
   phone: require('../Images/phone.png'),
   gembok: require('../Images/gembok.png'),
   welcome: require('../Images/welcome.png'),
-  facebook: require('../Images/Icons/icon-facebook.png')
+  facebook: require('../Images/Icons/icon-facebook.png'),
+  love: require('../Images/Icons/icon-love.png'),
+  shoppingCart: require('../Images/Icons/icon-shopping-cart.png'),
+  searchGrey: require('../Images/Icons/icon-search-grey.png'),
+  komputer: require('../Images/Icons/icon-computer.png'),
+  sport: require('../Images/Icons/icon-olahraga.png'),
+  kantor: require('../Images/Icons/icon-kantor.png'),
+  dapur: require('../Images/Icons/icon-dapur.png'),
+  bayi: require('../Images/Icons/icon-bayi.png'),
+  audiovideo: require('../Images/Icons/icon-audiovideo.png'),
+  rightArrow: require('../Images/Icons/icon-right-arrow.png'),
+  slider1: require('../Images/Sliders/slider1.jpg'),
+  slider2: require('../Images/Sliders/slider2.jpg'),
+  slider3: require('../Images/Sliders/slider3.jpg'),
+  slider4: require('../Images/Sliders/slider4.jpg'),
+  contohproduct: require('../Images/contoh-product.jpg')
 }
 
 export default images

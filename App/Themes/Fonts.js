@@ -4,7 +4,8 @@ const type = {
   semiBolds: 'NunitoSans-Semibold',
   light: 'NunitoSans-Light',
   regular: 'NunitoSans-Regular',
-  emphasis: 'NunitoSans-Regular'
+  emphasis: 'NunitoSans-Regular',
+  extrabold: 'NunitoSans-ExtraBold'
 }
 
 const size = {

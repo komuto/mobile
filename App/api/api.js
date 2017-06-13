@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { serviceUrl } from '../Config/config'
-import {token} from '../Config/store'
+import { serviceUrl } from '../config'
+import {token} from '../store'
 
 export function authApi () {
   return axios.create({

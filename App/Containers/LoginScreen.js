@@ -16,6 +16,7 @@ import ForgotPassword from '../Components/ForgotPassword'
 import * as loginAction from '../actions/user'
 
 class LoginScreen extends React.Component {
+
   constructor (props) {
     super(props)
     this.state = {
@@ -54,14 +55,13 @@ class LoginScreen extends React.Component {
     })
   }
 
-  handlePressLogin () {
-    this.props.dispatch(loginAction.login({
-      email: this.state.email,
-      password: this.state.password
-    }))
+  handlePressLogin = () => {
+    const { email, password } = this.state
+    this.props.attemptLogin(email, password)
   }
 
   render () {
+    const { email, password } = this.state
     return (
       <ScrollView contentContainerStyle={styles.contentContainerStyle} style={styles.container}>
         <View style={styles.containerBanner}>
@@ -78,10 +78,11 @@ class LoginScreen extends React.Component {
               <TextInput
                 ref='email'
                 style={styles.inputText}
-                value={this.state.email}
+                value={email}
                 keyboardType='default'
-                returnKeyType='go'
+                returnKeyType='next'
                 autoCapitalize='none'
+                onSubmitEditing={() => this.refs.password.focus()}
                 autoCorrect
                 onChangeText={this.handleChangeEmail}
                 underlineColorAndroid='transparent'
@@ -95,7 +96,7 @@ class LoginScreen extends React.Component {
               <TextInput
                 ref='password'
                 style={styles.inputText}
-                value={this.state.password}
+                value={password}
                 keyboardType='default'
                 returnKeyType='go'
                 autoCapitalize='none'
@@ -110,7 +111,7 @@ class LoginScreen extends React.Component {
           <View style={styles.loginRow}>
             <TouchableOpacity
               style={styles.loginButtonWrapper}
-              onPress={() => this.handlePressLogin()}
+              onPress={this.handlePressLogin}
             >
               <View style={styles.loginButton}>
                 <Text style={styles.loginText}>Login</Text>
@@ -143,4 +144,10 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps)(LoginScreen)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    attemptLogin: (email, password) => dispatch(loginAction.login({email, password}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

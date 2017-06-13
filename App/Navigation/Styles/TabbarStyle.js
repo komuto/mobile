@@ -3,7 +3,7 @@ import { Metrics, Fonts, Colors } from '../../Themes'
 export default {
   tabbar: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.snow,
     height: Metrics.tabBarHeight,
     borderWidth: 0.6,
     borderColor: '#e8e8e8'

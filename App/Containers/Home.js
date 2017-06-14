@@ -205,6 +205,12 @@ class Home extends React.Component {
               renderRow={this.renderRow.bind(this)}
             />
           </View>
+          <TouchableOpacity style={styles.allCategory}>
+            <Text style={styles.textAllCategory}>
+              Lihat semua produk terbaru
+            </Text>
+            <Image source={Images.rightArrow} style={styles.imageCategory} />
+          </TouchableOpacity>
         </ScrollView>
       </View>
     )

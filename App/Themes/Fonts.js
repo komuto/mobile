@@ -1,7 +1,7 @@
 const type = {
   base: 'NunitoSans-Regular',
   bold: 'NunitoSans-Bold',
-  semiBolds: 'NunitoSans-Semibold',
+  semiBolds: 'NunitoSans-SemiBold',
   light: 'NunitoSans-Light',
   regular: 'NunitoSans-Regular',
   emphasis: 'NunitoSans-Regular',

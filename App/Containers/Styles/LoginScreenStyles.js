@@ -4,7 +4,8 @@ import { Colors, Metrics, Fonts } from '../../Themes'
 export default StyleSheet.create({
   container: {
     paddingTop: 50,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.background,
+    flex: 1
   },
   form: {
     backgroundColor: Colors.snow,
@@ -113,5 +114,15 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.bold,
     color: Colors.bluesky
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

@@ -62,12 +62,6 @@ class LoginScreen extends React.Component {
     NavigationActions.register({ type: ActionConst.PUSH })
   }
 
-  loginfb () {
-    NavigationActions.passwordbaru({
-      type: ActionConst.PUSH
-    })
-  }
-
   handlePressLogin = () => {
     this.setState({
       loading: true
@@ -149,9 +143,7 @@ class LoginScreen extends React.Component {
               <Hr text='Atau' />
             </View>
             <View style={styles.loginRow}>
-              <Facebook
-                onPress={() => this.loginfb()}
-              />
+              <Facebook />
             </View>
           </View>
         </ScrollView>

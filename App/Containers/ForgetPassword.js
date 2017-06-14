@@ -1,6 +1,9 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as forgotPasswordAction from '../actions/user'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -16,18 +19,26 @@ class ForgetPassword extends React.Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataPassword.status === 200) {
+      NavigationActions.notifikasi({
+        type: ActionConst.PUSH,
+        tipeNotikasi: 'resetpassword'
+      })
+    }
+  }
+
   handleChangeEmail = (text) => {
     this.setState({ email: text })
   }
 
-  sukses () {
-    NavigationActions.notifikasi({
-      type: ActionConst.PUSH,
-      tipeNotikasi: 'resetpassword'
-    })
+  sukses = () => {
+    const {email} = this.state
+    this.props.forgotPass(email)
   }
 
   render () {
+    const {email} = this.state
     return (
       <ScrollView style={styles.container}>
         <View style={styles.textContainer}>
@@ -40,7 +51,7 @@ class ForgetPassword extends React.Component {
           <TextInput
             ref='password'
             style={styles.inputText}
-            value={this.state.email}
+            value={email}
             keyboardType='default'
             returnKeyType='go'
             autoCapitalize='none'
@@ -52,7 +63,7 @@ class ForgetPassword extends React.Component {
         </View>
         <TouchableOpacity
           style={styles.buttonLogin}
-          onPress={() => this.sukses()}
+          onPress={this.sukses}
         >
           <Text style={styles.textButtonLogin}>
             Reset Password
@@ -63,4 +74,17 @@ class ForgetPassword extends React.Component {
   }
 }
 
-export default ForgetPassword
+const mapStateToProps = (state) => {
+  return {
+    dataPassword: state.user
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    forgotPass: (email) => dispatch(forgotPasswordAction.userRegister({email}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ForgetPassword)
+

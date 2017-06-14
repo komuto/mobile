@@ -1,8 +1,11 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
+import * as registerAction from '../actions/user'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -25,6 +28,15 @@ class Register extends React.Component {
       index: 0,
       label: 'Pria',
       data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}]
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataRegister.status === 200) {
+      NavigationActions.notifikasi({
+        type: ActionConst.PUSH,
+        tipeNotikasi: 'register'
+      })
     }
   }
 
@@ -52,11 +64,9 @@ class Register extends React.Component {
     console.log(this.state.index, this.state.label)
   }
 
-  register () {
-    NavigationActions.notifikasi({
-      type: ActionConst.PUSH,
-      tipeNotikasi: 'register'
-    })
+  handlePressRegister = () => {
+    const {nama, hape, email, password, konfirmasiPassword, gender} = this.state
+    this.props.registers(nama, hape, email, password, konfirmasiPassword, gender)
   }
 
   login () {
@@ -65,13 +75,8 @@ class Register extends React.Component {
     })
   }
 
-  loginfb () {
-    NavigationActions.passwordbaru({
-      type: ActionConst.PUSH
-    })
-  }
-
   render () {
+    const { nama, hape, email, password, konfirmasiPassword } = this.state
     return (
       <ScrollView style={styles.container}>
         <View style={styles.containerBanner}>
@@ -87,7 +92,7 @@ class Register extends React.Component {
             <TextInput
               ref='nama'
               style={styles.inputText}
-              value={this.state.nama}
+              value={nama}
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
@@ -101,7 +106,7 @@ class Register extends React.Component {
             <TextInput
               ref='hape'
               style={styles.inputText}
-              value={this.state.hape}
+              value={hape}
               keyboardType='numeric'
               returnKeyType='next'
               autoCapitalize='none'
@@ -115,7 +120,7 @@ class Register extends React.Component {
             <TextInput
               ref='email'
               style={styles.inputText}
-              value={this.state.email}
+              value={email}
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
@@ -129,7 +134,7 @@ class Register extends React.Component {
             <TextInput
               ref='password'
               style={styles.inputText}
-              value={this.state.password}
+              value={password}
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
@@ -144,7 +149,7 @@ class Register extends React.Component {
             <TextInput
               ref='konfirmasipassword'
               style={styles.inputText}
-              value={this.state.konfirmasiPassword}
+              value={konfirmasiPassword}
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
@@ -177,7 +182,7 @@ class Register extends React.Component {
           </View>
           <TouchableOpacity
             style={styles.buttonLogin}
-            onPress={() => this.register()}
+            onPress={this.handlePressRegister}
           >
             <Text style={styles.textButtonLogin}>
               Register
@@ -187,9 +192,7 @@ class Register extends React.Component {
             <Hr text='Atau' />
           </View>
           <View style={styles.loginRow}>
-            <Facebook
-              onPress={() => this.loginfb()}
-            />
+            <Facebook />
           </View>
         </View>
       </ScrollView>
@@ -197,4 +200,16 @@ class Register extends React.Component {
   }
 }
 
-export default Register
+const mapStateToProps = (state) => {
+  return {
+    dataRegister: state.user
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    registers: (nama, hape, email, password, konfirmasiPassword, gender) => dispatch(registerAction.userRegister({nama, hape, email, password, konfirmasiPassword, gender}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register)

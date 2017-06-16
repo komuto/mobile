@@ -4,10 +4,25 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import Styles from './Styles/FacebookStyle'
 import {Images} from '../Themes'
 import FBSDK from 'react-native-fbsdk'
-
+import { connect } from 'react-redux'
+import * as userAction from '../actions/user'
 const { LoginManager, AccessToken } = FBSDK
-export default class Facebook extends React.Component {
-
+class Facebook extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      email: '',
+      nama: '',
+      gender: ''
+    }
+  }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.data.status === 200) {
+      NavigationActions.passwordbaru({
+        type: ActionConst.REPLACE
+      })
+    }
+  }
   _loginFB () {
     AccessToken.getCurrentAccessToken()
     .then((data) => {
@@ -21,10 +36,9 @@ export default class Facebook extends React.Component {
       console.log(err)
     })
   }
-
   fbAuth () {
     const _this = this
-    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_photos'])
+    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_photos', 'pages_show_list'])
     .then(
       function (result) {
         if (result.isCancelled) {
@@ -45,20 +59,23 @@ export default class Facebook extends React.Component {
     )
     .catch((err) => console.log(err))
   }
-
   initUser = (token1) => {
     this.setState({ loading: true })
-    fetch('https://graph.facebook.com/v2.9/me?fields=id,name,email,picture{url}&access_token=' + token1)
+    fetch('https://graph.facebook.com/v2.9/me?fields=id,name,email,gender,picture{url}&access_token=' + token1)
     .then((response) => response.json())
     .then((json) => {
       console.log(json)
-      NavigationActions.passwordbaru({
-        type: ActionConst.PUSH
+      this.setState({
+        email: json.email,
+        gender: json.gender,
+        nama: json.name,
+        picture: json.picture.data.url
       })
+      const {email, nama, gender} = this.state
+      this.props.loginFacebook(email, nama, gender)
     })
     .catch((err) => console.log(err))
   }
-
   render () {
     return (
       <TouchableOpacity
@@ -71,3 +88,14 @@ export default class Facebook extends React.Component {
     )
   }
 }
+const mapStateToProps = (state) => {
+  return {
+    data: state.user
+  }
+}
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginFacebook: (email, nama, gender) => dispatch(userAction.loginSocial({email, nama, gender}))
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Facebook)

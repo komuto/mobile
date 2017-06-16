@@ -1,8 +1,9 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
-import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { connect } from 'react-redux'
 import * as forgotPasswordAction from '../actions/user'
+import * as EmailValidator from 'email-validator'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -34,7 +35,31 @@ class ForgetPassword extends React.Component {
 
   sukses = () => {
     const {email} = this.state
-    this.props.forgotPass(email)
+    if (EmailValidator.validate(email)) {
+      if (email === '') {
+        this.onError('email')
+      } else {
+        this.props.forgotPass(email)
+      }
+    } else {
+      this.onError('emailNotValid')
+    }
+  }
+
+  onError = (field) => {
+    console.tron.log('field')
+    console.tron.log(field)
+    switch (field) {
+      case 'emailNotValid':
+        window.alert('Email tidak valid')
+        break
+      case 'email':
+        window.alert('Email harus diisi')
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
   }
 
   render () {
@@ -76,13 +101,13 @@ class ForgetPassword extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPassword: state.user
+    dataPassword: state.forgetPassword
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    forgotPass: (email) => dispatch(forgotPasswordAction.userRegister({email}))
+    forgotPass: (email) => dispatch(forgotPasswordAction.forgetPassword({email}))
   }
 }
 

@@ -11,11 +11,13 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as EmailValidator from 'email-validator'
 import styles from './Styles/LoginScreenStyles'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import ForgotPassword from '../Components/ForgotPassword'
 import * as loginAction from '../actions/user'
+import { Colors } from '../Themes'
 
 class LoginScreen extends React.Component {
 
@@ -24,7 +26,11 @@ class LoginScreen extends React.Component {
     this.state = {
       email: '',
       password: '',
-      loading: false
+      loading: false,
+      emailText: 'Email',
+      passwordText: 'Password',
+      emailErrorColor: Colors.snow,
+      passErrorColor: Colors.snow
     }
   }
 
@@ -37,6 +43,9 @@ class LoginScreen extends React.Component {
       AsyncStorage.setItem('saldo', nextProps.datalogin.user.data.saldo_wallet)
       AsyncStorage.setItem('foto', nextProps.datalogin.user.data.photo)
       AsyncStorage.setItem('token', nextProps.datalogin.user.data.token)
+
+      this.props.stateLogin(true)
+
       NavigationActions.backtab({ type: ActionConst.RESET })
       NavigationActions.home()
     } else if (nextProps.datalogin.status > 200) {
@@ -63,11 +72,94 @@ class LoginScreen extends React.Component {
   }
 
   handlePressLogin = () => {
-    this.setState({
-      loading: true
-    })
     const { email, password } = this.state
-    this.props.attemptLogin(email, password)
+    if (EmailValidator.validate(email)) {
+      if (password === '') {
+        this.onError('password')
+      } else {
+        this.setState({
+          loading: true
+        })
+        this.props.attemptLogin(email, password)
+      }
+    } else {
+      this.onError('emailNotValid')
+    }
+  }
+
+  onError = (field) => {
+    console.tron.log('field')
+    console.tron.log(field)
+    switch (field) {
+      case 'emailNotValid':
+        this.setState({
+          emailText: 'Email tidak valid',
+          emailErrorColor: Colors.red
+        })
+        break
+      case 'email':
+        this.setState({
+          emailText: 'Email harus diisi',
+          emailErrorColor: Colors.red
+        })
+        break
+      case 'password':
+        this.setState({
+          passwordText: 'Password harus diisi',
+          passErrorColor: Colors.red
+        })
+        break
+      case 'NETWORK_ERROR':
+        window.alert('Gangguan Jaringan')
+        break
+      case 'CLIENT_ERROR':
+        this.setState({
+          emailText: 'Email tidak terdaftar',
+          emailErrorColor: Colors.red
+        })
+        break
+      case 'empty':
+        this.setState({
+          emailText: 'Email harus diisi',
+          passwordText: 'Password harus diisi'
+        })
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
+  }
+
+  onFocus = (field) => {
+    switch (field) {
+      case 'email':
+        this.setState({
+          emailText: 'Email',
+          emailErrorColor: Colors.snow
+        })
+        break
+      default:
+        this.setState({
+          passText: 'Password shit',
+          passErrorColor: Colors.snow
+        })
+        break
+    }
+  }
+
+  onBlur = (field) => {
+    switch (field) {
+      case 'email':
+        this.setState({
+          emailErrorColor: Colors.snow
+        })
+        break
+      default:
+        this.setState({
+          passErrorColor: Colors.snow
+        })
+        break
+    }
   }
 
   render () {
@@ -75,7 +167,7 @@ class LoginScreen extends React.Component {
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
-    const { email, password } = this.state
+    const { email, password, emailText, passwordText, emailErrorColor, passErrorColor } = this.state
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.contentContainerStyle}>
@@ -93,6 +185,8 @@ class LoginScreen extends React.Component {
                 <TextInput
                   ref='email'
                   style={styles.inputText}
+                  onFocus={() => this.onFocus('email')}
+                  onBlur={() => this.onBlur('email')}
                   value={email}
                   keyboardType='default'
                   returnKeyType='next'
@@ -105,12 +199,14 @@ class LoginScreen extends React.Component {
                 />
               </View>
             </View>
-
+            <Text style={[styles.labelError, {color: emailErrorColor}]}>{emailText}</Text>
             <View style={styles.row}>
               <View style={styles.inputContainer}>
                 <TextInput
                   ref='password'
                   style={styles.inputText}
+                  onBlur={() => this.onBlur('email')}
+                  onFocus={() => this.onFocus('password')}
                   value={password}
                   keyboardType='default'
                   returnKeyType='go'
@@ -123,6 +219,7 @@ class LoginScreen extends React.Component {
                 />
               </View>
             </View>
+            <Text style={[styles.labelError, {color: passErrorColor}]}>{passwordText}</Text>
             <View style={styles.loginRow}>
               <TouchableOpacity
                 style={styles.loginButtonWrapper}
@@ -161,7 +258,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    attemptLogin: (email, password) => dispatch(loginAction.login({email, password}))
+    attemptLogin: (email, password) => dispatch(loginAction.login({email, password})),
+    stateLogin: (login) => dispatch(loginAction.stateLogin({login}))
   }
 }
 

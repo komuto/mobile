@@ -8,7 +8,9 @@ import {
   TextInput,
   ListView
 } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
+import { MaskService } from 'react-native-masked-text'
 import { Images } from '../Themes'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -43,20 +45,29 @@ class Home extends React.Component {
         <Image source={Images.verified} style={styles.imageVerified} />
       )
     }
+    return (
+      <Image source={Images.love} style={styles.imageVerified} />
+    )
   }
 
   renderDiskon (status, nominal) {
     if (status) {
+      const money = MaskService.toMask('money', nominal, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
       return (
-        <Text
-          style={styles.nominalDiskon}
-        >
-          Rp {String(nominal)}
+        <Text style={styles.nominalDiskon}>
+          {money}
         </Text>
       )
     }
     return (
-      <View style={styles.noDiskon} />
+      <Text style={styles.nominalDiskon1}>
+        asd
+      </Text>
     )
   }
 
@@ -72,8 +83,14 @@ class Home extends React.Component {
   }
 
   renderRow (rowData) {
+    const money = MaskService.toMask('money', rowData.harga, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
     return (
-      <View style={styles.rowDataContainer}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
         <Image source={rowData.gambar} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -91,7 +108,7 @@ class Home extends React.Component {
         </View>
         {this.renderDiskon(rowData.statusDiskon, rowData.nominalDiskon)}
         <Text style={styles.harga}>
-          Rp {rowData.harga}
+          {money}
         </Text>
         <View style={styles.likesContainer}>
           {this.renderLikes(rowData.like)}
@@ -99,8 +116,12 @@ class Home extends React.Component {
             {rowData.jumlahlikes}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     )
+  }
+
+  semuaKategori () {
+    NavigationActions.kategoriscreen({ type: ActionConst.PUSH })
   }
 
   render () {
@@ -189,7 +210,7 @@ class Home extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={styles.allCategory}>
+          <TouchableOpacity style={styles.allCategory} onPress={() => this.semuaKategori()}>
             <Text style={styles.textAllCategory}>
               Lihat semua kategori
             </Text>

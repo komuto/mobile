@@ -13,6 +13,7 @@ import PasswordBaru from '../Containers/PasswordBaru'
 import Home from '../Containers/Home'
 import NotifikasiPengguna from '../Containers/NotifikasiPengguna'
 import Transaksi from '../Containers/Transaksi'
+import KategoriScreen from '../Containers/KategoriScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -134,6 +135,13 @@ class NavigationRouter extends Component {
             key='passwordbaru'
             component={PasswordBaru}
             title='Password Baru'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kategoriscreen'
+            component={KategoriScreen}
+            title='Kategori'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

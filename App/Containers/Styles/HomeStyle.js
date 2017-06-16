@@ -197,6 +197,12 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey
   },
+  nominalDiskon1: {
+    textDecorationLine: 'line-through',
+    fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.snow
+  },
   noDiskon: {
     marginTop: 20
   },

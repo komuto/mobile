@@ -124,5 +124,23 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  labelError: {
+    flex: 1,
+    marginTop: -10,
+    marginBottom: -10,
+    color: Colors.red,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    textAlign: 'center'
+  },
+  labelError1: {
+    flex: 1,
+    marginTop: -10,
+    marginBottom: -10,
+    color: Colors.snow,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    textAlign: 'center'
   }
 })

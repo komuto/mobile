@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   AsyncStorage
 } from 'react-native'
+import { MaskService } from 'react-native-masked-text'
+import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -25,34 +27,37 @@ class Profile extends React.Component {
       token: '',
       nama: '',
       saldo: '',
-      foto: ''
+      foto: 'https://ca.slack-edge.com/T02VD5GNR-USLACKBOT-sv1444671949-48',
+      isLogin: this.props.datalogin.login
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.datalogin.login) {
+      this.setState({
+        isLogin: true
+      })
     }
   }
 
   componentDidMount () {
-    AsyncStorage.getItem('token').then((value) => {
-      if (value === '' || value === undefined || value === null) {
-      } else {
+    if (this.state.isLogin) {
+      AsyncStorage.getItem('nama').then((value) => {
         this.setState({
-          token: value
+          nama: value
         })
-        AsyncStorage.getItem('nama').then((value) => {
-          this.setState({
-            nama: value
-          })
-        }).done()
-        AsyncStorage.getItem('saldo').then((value) => {
-          this.setState({
-            saldo: value
-          })
-        }).done()
-        AsyncStorage.getItem('foto').then((value) => {
-          this.setState({
-            foto: value
-          })
-        }).done()
-      }
-    }).done()
+      }).done()
+      AsyncStorage.getItem('saldo').then((value) => {
+        this.setState({
+          saldo: value
+        })
+      }).done()
+      AsyncStorage.getItem('foto').then((value) => {
+        this.setState({
+          foto: value
+        })
+      }).done()
+    }
   }
 
   login () {
@@ -64,7 +69,7 @@ class Profile extends React.Component {
   }
 
   renderProfile () {
-    if (this.state.token === '' || this.state.token === undefined || this.state.token === null) {
+    if (!this.state.isLogin) {
       return (
         <View style={styles.loginContainer}>
           <Image source={Images.phone} style={styles.imagestyle} />
@@ -95,6 +100,12 @@ class Profile extends React.Component {
         </View>
       )
     }
+    const money = MaskService.toMask('money', this.state.saldo, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
     return (
       <View>
         <View style={styles.profileContainer}>
@@ -130,7 +141,7 @@ class Profile extends React.Component {
                   </Text>
                 </View>
                 <Text style={styles.textNama}>
-                  Rp {this.state.saldo}
+                  {money}
                 </Text>
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
@@ -177,4 +188,10 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile
+const mapStateToProps = (state) => {
+  return {
+    datalogin: state.isLogin
+  }
+}
+
+export default connect(mapStateToProps)(Profile)

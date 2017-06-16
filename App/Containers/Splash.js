@@ -1,17 +1,24 @@
 import React from 'react'
+import { AsyncStorage } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { connect } from 'react-redux'
+import * as loginaction from '../actions/user'
 
 // Styles
 
 class Splash extends React.Component {
 
   componentWillMount () {
-    setTimeout(() => {
+    SplashScreen.show()
+    AsyncStorage.getItem('token').then((value) => {
+      if (value === null || value === undefined || value === '') {
+      } else {
+        this.props.stateLogin(true)
+      }
       SplashScreen.hide()
       NavigationActions.backtab({ type: ActionConst.REPLACE })
-    }, 2000)
-    SplashScreen.show()
+    }).done()
   }
 
   render () {
@@ -19,4 +26,16 @@ class Splash extends React.Component {
   }
 }
 
-export default Splash
+const mapStateToProps = (state) => {
+  return {
+    datalogin: state.isLogin
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    stateLogin: (login) => dispatch(loginaction.stateLogin({login}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Splash)

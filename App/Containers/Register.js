@@ -1,10 +1,11 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import * as registerAction from '../actions/user'
+import * as EmailValidator from 'email-validator'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -27,7 +28,8 @@ class Register extends React.Component {
       gender: '',
       index: 0,
       label: 'Pria',
-      data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}]
+      data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
+      loading: false
     }
   }
 
@@ -66,7 +68,68 @@ class Register extends React.Component {
 
   handlePressRegister = () => {
     const {nama, hape, email, password, konfirmasiPassword, gender} = this.state
-    this.props.registers(nama, hape, email, password, konfirmasiPassword, gender)
+    if (EmailValidator.validate(email)) {
+      if (nama === '') {
+        this.onError('nama')
+      } else if (email === '') {
+        this.onError('email')
+      } else if (hape === '') {
+        this.onError('hape')
+      } else if (password === '') {
+        this.onError('password')
+      } else if (konfirmasiPassword === '') {
+        this.onError('konfirmasiPassword')
+      } else if (konfirmasiPassword !== password) {
+        this.onError('passwordBeda')
+      } else {
+        this.setState({
+          loading: true
+        })
+        this.props.registers(nama, hape, email, password, konfirmasiPassword, gender)
+      }
+    } else {
+      this.onError('emailNotValid')
+    }
+  }
+
+  onError = (field) => {
+    console.tron.log('field')
+    console.tron.log(field)
+    switch (field) {
+      case 'emailNotValid':
+        window.alert('Email tidak valid')
+        break
+      case 'email':
+        window.alert('Email harus diisi')
+        break
+      case 'hape':
+        window.alert('Nomer hp harus diisi')
+        break
+      case 'password':
+        window.alert('Password harus diisi')
+        break
+      case 'nama':
+        window.alert('Nama harus diisi')
+        break
+      case 'konfirmasiPassword':
+        window.alert('Konfirmasi Password harus diisi')
+        break
+      case 'passwordBeda':
+        window.alert('Password tidak cocok')
+        break
+      case 'NETWORK_ERROR':
+        window.alert('Gangguan Jaringan')
+        break
+      case 'CLIENT_ERROR':
+        window.alert('Terjadi kesalahan')
+        break
+      case 'empty':
+        window.alert('Field tidak boleh kosong')
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
   }
 
   login () {
@@ -76,126 +139,134 @@ class Register extends React.Component {
   }
 
   render () {
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     const { nama, hape, email, password, konfirmasiPassword } = this.state
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.containerBanner}>
-          <Text style={styles.textBanner}>
-            Sudah punya akun?
-          </Text>
-          <TouchableOpacity onPress={() => this.login()}>
-            <Text style={styles.textLogin}> Login Disini</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.form}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref='nama'
-              style={styles.inputText}
-              value={nama}
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeNama}
-              underlineColorAndroid='transparent'
-              placeholder='Nama Lengkap'
-            />
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.contentContainerStyle}>
+          <View style={styles.containerBanner}>
+            <Text style={styles.textBanner}>
+              Sudah punya akun?
+            </Text>
+            <TouchableOpacity onPress={() => this.login()}>
+              <Text style={styles.textLogin}> Login Disini</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref='hape'
-              style={styles.inputText}
-              value={hape}
-              keyboardType='numeric'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeHape}
-              underlineColorAndroid='transparent'
-              placeholder='Nomor Handphone'
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref='email'
-              style={styles.inputText}
-              value={email}
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeEmail}
-              underlineColorAndroid='transparent'
-              placeholder='Email'
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref='password'
-              style={styles.inputText}
-              value={password}
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangePassword}
-              secureTextEntry
-              underlineColorAndroid='transparent'
-              placeholder='Password'
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              ref='konfirmasipassword'
-              style={styles.inputText}
-              value={konfirmasiPassword}
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeKonfirmasiPassword}
-              underlineColorAndroid='transparent'
-              placeholder='Konfirmasi Password'
-            />
-          </View>
-          <View style={styles.radio}>
-            <Text style={styles.radioLabel}>Gender</Text>
-            <CustomRadio
-              data={this.state.data}
-              handlingRadio={(index1, value1) =>
-                this.setState({
-                  index: index1,
-                  label: value1
-                })}
-              horizontal
-            />
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.textBanner}>Dengan mendaftar Anda telah menyetujui</Text>
-            <View style={styles.containerText2}>
-              <TouchableOpacity onPress={() => this.handlingRadio()}>
-                <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
-              </TouchableOpacity>
-              <Text style={styles.textBanner}>dari Komuto</Text>
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='nama'
+                style={styles.inputText}
+                value={nama}
+                keyboardType='default'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeNama}
+                underlineColorAndroid='transparent'
+                placeholder='Nama Lengkap'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='hape'
+                style={styles.inputText}
+                value={hape}
+                keyboardType='numeric'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeHape}
+                underlineColorAndroid='transparent'
+                placeholder='Nomor Handphone'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='email'
+                style={styles.inputText}
+                value={email}
+                keyboardType='default'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeEmail}
+                underlineColorAndroid='transparent'
+                placeholder='Email'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='password'
+                style={styles.inputText}
+                value={password}
+                keyboardType='default'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangePassword}
+                secureTextEntry
+                underlineColorAndroid='transparent'
+                placeholder='Password'
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='konfirmasipassword'
+                style={styles.inputText}
+                value={konfirmasiPassword}
+                keyboardType='default'
+                secureTextEntry
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeKonfirmasiPassword}
+                underlineColorAndroid='transparent'
+                placeholder='Konfirmasi Password'
+              />
+            </View>
+            <View style={styles.radio}>
+              <Text style={styles.radioLabel}>Gender</Text>
+              <CustomRadio
+                data={this.state.data}
+                handlingRadio={(index1, value1) =>
+                  this.setState({
+                    index: index1,
+                    label: value1
+                  })}
+                horizontal
+              />
+            </View>
+            <View style={styles.containerText}>
+              <Text style={styles.textBanner}>Dengan mendaftar Anda telah menyetujui</Text>
+              <View style={styles.containerText2}>
+                <TouchableOpacity onPress={() => this.handlingRadio()}>
+                  <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
+                </TouchableOpacity>
+                <Text style={styles.textBanner}>dari Komuto</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={this.handlePressRegister}
+            >
+              <Text style={styles.textButtonLogin}>
+                Register
+              </Text>
+            </TouchableOpacity>
+            <View style={styles.line}>
+              <Hr text='Atau' />
+            </View>
+            <View style={styles.loginRow}>
+              <Facebook />
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.buttonLogin}
-            onPress={this.handlePressRegister}
-          >
-            <Text style={styles.textButtonLogin}>
-              Register
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.line}>
-            <Hr text='Atau' />
-          </View>
-          <View style={styles.loginRow}>
-            <Facebook />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+        {spinner}
+      </View>
     )
   }
 }
@@ -208,7 +279,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    registers: (nama, hape, email, password, konfirmasiPassword, gender) => dispatch(registerAction.userRegister({nama, hape, email, password, konfirmasiPassword, gender}))
+    registers: (nama, hape, email, password, konfirmasiPassword, gender) => dispatch(registerAction.register({nama, hape, email, password, konfirmasiPassword, gender}))
   }
 }
 

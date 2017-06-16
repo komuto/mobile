@@ -3,9 +3,9 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
-    marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.background
+    paddingTop: 50,
+    backgroundColor: Colors.background,
+    flex: 1
   },
   containerBanner: {
     height: 50,
@@ -79,5 +79,18 @@ export default StyleSheet.create({
   },
   radio: {
 
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
+  contentContainerStyle: {
+    justifyContent: 'center'
   }
 })

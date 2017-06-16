@@ -109,7 +109,7 @@ class PasswordBaru extends React.Component {
 }
 const mapStateToProps = (state) => {
   return {
-    data: state.user
+    data: state.social
   }
 }
 const mapDispatchToProps = (dispatch) => {

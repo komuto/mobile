@@ -13,7 +13,8 @@ class Notifikasi extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      type: this.props.tipeNotikasi
+      type: this.props.tipeNotikasi,
+      email: this.props.email
     }
   }
 
@@ -42,7 +43,7 @@ class Notifikasi extends React.Component {
           <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
               Kami telah mengirim link reset password ke { '\n' }
-              dwinawan@gmail.com. Silahkan periksa inbox { '\n' }
+              {this.state.email}. Silahkan periksa inbox { '\n' }
               Anda, dan ikuti petunjuk di email tersebut.
             </Text>
           </View>
@@ -98,7 +99,7 @@ class Notifikasi extends React.Component {
           <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
               Kami telah mengirim link verifikasi email ke { '\n' }
-              dwinawan@gmail.com. Silahkan periksa inbox { '\n' }
+              {this.state.email}. Silahkan periksa inbox { '\n' }
               Anda, dan ikuti petunjuk di email tersebut.
             </Text>
           </View>

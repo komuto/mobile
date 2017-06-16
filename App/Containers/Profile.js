@@ -48,14 +48,23 @@ class Profile extends React.Component {
   componentDidMount () {
     if (this.state.isLogin) {
       AsyncStorage.getItem('nama').then((value) => {
-        this.setState({
-          nama: value
-        })
+        if (value === null || value === undefined || value === '') {
+        } else {
+          this.setState({
+            nama: value
+          })
+        }
       }).done()
       AsyncStorage.getItem('saldo').then((value) => {
-        this.setState({
-          saldo: value
-        })
+        if (value === null || value === undefined || value === '') {
+          this.setState({
+            saldo: 0
+          })
+        } else {
+          this.setState({
+            saldo: value
+          })
+        }
       }).done()
       AsyncStorage.getItem('foto').then((value) => {
         this.setState({

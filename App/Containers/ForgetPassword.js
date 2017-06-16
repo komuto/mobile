@@ -24,7 +24,8 @@ class ForgetPassword extends React.Component {
     if (nextProps.dataPassword.status === 200) {
       NavigationActions.notifikasi({
         type: ActionConst.PUSH,
-        tipeNotikasi: 'resetpassword'
+        tipeNotikasi: 'resetpassword',
+        email: this.state.email
       })
     }
   }
@@ -112,4 +113,3 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ForgetPassword)
-

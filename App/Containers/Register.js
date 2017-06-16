@@ -37,7 +37,8 @@ class Register extends React.Component {
     if (nextProps.dataRegister.status === 200) {
       NavigationActions.notifikasi({
         type: ActionConst.PUSH,
-        tipeNotikasi: 'register'
+        tipeNotikasi: 'register',
+        email: this.state.email
       })
     }
   }
@@ -163,6 +164,7 @@ class Register extends React.Component {
                 value={nama}
                 keyboardType='default'
                 returnKeyType='next'
+                onSubmitEditing={() => this.refs.hape.focus()}
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeNama}
@@ -177,6 +179,7 @@ class Register extends React.Component {
                 value={hape}
                 keyboardType='numeric'
                 returnKeyType='next'
+                onSubmitEditing={() => this.refs.email.focus()}
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeHape}
@@ -191,6 +194,7 @@ class Register extends React.Component {
                 value={email}
                 keyboardType='default'
                 returnKeyType='next'
+                onSubmitEditing={() => this.refs.password.focus()}
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeEmail}
@@ -205,6 +209,7 @@ class Register extends React.Component {
                 value={password}
                 keyboardType='default'
                 returnKeyType='next'
+                onSubmitEditing={() => this.refs.konfirmasipassword.focus()}
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangePassword}
@@ -273,7 +278,7 @@ class Register extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataRegister: state.user
+    dataRegister: state.register
   }
 }
 

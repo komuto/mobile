@@ -27,7 +27,7 @@ class Profile extends React.Component {
     this.state = {
       token: '',
       nama: '',
-      saldo: '',
+      saldo: 0,
       foto: 'https://ca.slack-edge.com/T02VD5GNR-USLACKBOT-sv1444671949-48',
       isLogin: this.props.datalogin.login
     }

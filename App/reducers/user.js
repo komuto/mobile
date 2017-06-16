@@ -17,7 +17,6 @@ const initLogin = {
   login: false
 }
 function auth (state = initUser, action) {
-  console.log(action.type)
   switch (action.type) {
     case actions.USER_LOGIN_REQUEST:
       return {

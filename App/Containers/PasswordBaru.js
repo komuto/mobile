@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  AsyncStorage
+  AsyncStorage,
+  Alert
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -48,12 +49,16 @@ class PasswordBaru extends React.Component {
     this.setState({ konfirmasipassword: text })
   }
   sukses () {
-    const {email, nama, gender, password, konfirmasipassword} = this.state
-    this.setState({
-      loading: true
-    })
-    this.props.newPassword(password, konfirmasipassword)
-    this.props.loginFacebook(email, nama, gender)
+    if (this.state.password === '' || this.state.konfirmasipassword === '') {
+      Alert.alert('Pesan', 'Mohon isi password dan konfirmasi password')
+    } else {
+      const {email, nama, gender, password, konfirmasipassword} = this.state
+      this.setState({
+        loading: true
+      })
+      this.props.newPassword(password, konfirmasipassword)
+      this.props.loginFacebook(email, nama, gender)
+    }
   }
   render () {
     const spinner = this.state.loading

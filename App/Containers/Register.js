@@ -20,12 +20,12 @@ class Register extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      nama: '',
-      hape: '',
+      name: '',
+      phoneNumber: '',
       email: '',
       password: '',
       konfirmasiPassword: '',
-      gender: '',
+      gender: 'L',
       index: 0,
       label: 'Pria',
       data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
@@ -35,20 +35,28 @@ class Register extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataRegister.status === 200) {
+      this.setState({
+        loading: false
+      })
       NavigationActions.notifikasi({
         type: ActionConst.PUSH,
         tipeNotikasi: 'register',
         email: this.state.email
       })
+    } else if (nextProps.dataRegister.status > 200) {
+      this.setState({
+        loading: false
+      })
+      console.log('register gagal')
     }
   }
 
-  handleChangeNama = (text) => {
-    this.setState({ nama: text })
+  handleChangename = (text) => {
+    this.setState({ name: text })
   }
 
   handleChangeHape = (text) => {
-    this.setState({ hape: text })
+    this.setState({ phoneNumber: text })
   }
 
   handleChangeEmail = (text) => {
@@ -63,19 +71,28 @@ class Register extends React.Component {
     this.setState({ konfirmasiPassword: text })
   }
 
-  handlingRadio () {
-    console.log(this.state.index, this.state.label)
+  handlingRadio (index, value) {
+    if (value.toLowerCase() === 'pria') {
+      this.setState({
+        gender: 'L'
+      })
+    } else {
+      this.setState({
+        gender: 'W'
+      })
+    }
   }
 
   handlePressRegister = () => {
-    const {nama, hape, email, password, konfirmasiPassword, gender} = this.state
+    console.log(this.state.gender)
+    const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
     if (EmailValidator.validate(email)) {
-      if (nama === '') {
-        this.onError('nama')
+      if (name === '') {
+        this.onError('name')
       } else if (email === '') {
         this.onError('email')
-      } else if (hape === '') {
-        this.onError('hape')
+      } else if (phoneNumber === '') {
+        this.onError('phoneNumber')
       } else if (password === '') {
         this.onError('password')
       } else if (konfirmasiPassword === '') {
@@ -86,7 +103,7 @@ class Register extends React.Component {
         this.setState({
           loading: true
         })
-        this.props.registers(nama, hape, email, password, konfirmasiPassword, gender)
+        this.props.registers(name, phoneNumber, email, gender, password)
       }
     } else {
       this.onError('emailNotValid')
@@ -103,14 +120,14 @@ class Register extends React.Component {
       case 'email':
         window.alert('Email harus diisi')
         break
-      case 'hape':
+      case 'phoneNumber':
         window.alert('Nomer hp harus diisi')
         break
       case 'password':
         window.alert('Password harus diisi')
         break
-      case 'nama':
-        window.alert('Nama harus diisi')
+      case 'name':
+        window.alert('name harus diisi')
         break
       case 'konfirmasiPassword':
         window.alert('Konfirmasi Password harus diisi')
@@ -144,7 +161,7 @@ class Register extends React.Component {
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
-    const { nama, hape, email, password, konfirmasiPassword } = this.state
+    const { name, phoneNumber, email, password, konfirmasiPassword } = this.state
     return (
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.contentContainerStyle}>
@@ -159,24 +176,24 @@ class Register extends React.Component {
           <View style={styles.form}>
             <View style={styles.inputContainer}>
               <TextInput
-                ref='nama'
+                ref='name'
                 style={styles.inputText}
-                value={nama}
+                value={name}
                 keyboardType='default'
                 returnKeyType='next'
-                onSubmitEditing={() => this.refs.hape.focus()}
+                onSubmitEditing={() => this.refs.phoneNumber.focus()}
                 autoCapitalize='none'
                 autoCorrect
-                onChangeText={this.handleChangeNama}
+                onChangeText={this.handleChangename}
                 underlineColorAndroid='transparent'
                 placeholder='Nama Lengkap'
               />
             </View>
             <View style={styles.inputContainer}>
               <TextInput
-                ref='hape'
+                ref='phoneNumber'
                 style={styles.inputText}
-                value={hape}
+                value={phoneNumber}
                 keyboardType='numeric'
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.email.focus()}
@@ -238,17 +255,14 @@ class Register extends React.Component {
               <CustomRadio
                 data={this.state.data}
                 handlingRadio={(index1, value1) =>
-                  this.setState({
-                    index: index1,
-                    label: value1
-                  })}
+                  this.handlingRadio(index1, value1)}
                 horizontal
               />
             </View>
             <View style={styles.containerText}>
               <Text style={styles.textBanner}>Dengan mendaftar Anda telah menyetujui</Text>
               <View style={styles.containerText2}>
-                <TouchableOpacity onPress={() => this.handlingRadio()}>
+                <TouchableOpacity>
                   <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
                 </TouchableOpacity>
                 <Text style={styles.textBanner}>dari Komuto</Text>
@@ -284,7 +298,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    registers: (nama, hape, email, password, konfirmasiPassword, gender) => dispatch(registerAction.register({nama, hape, email, password, konfirmasiPassword, gender}))
+    registers: (name, phoneNumber, email, gender, password) => dispatch(registerAction.register({
+      name, phone_number: phoneNumber, email, gender, password}))
   }
 }
 

@@ -1,6 +1,6 @@
 import { authApi, publicApi, publicApiKomuto } from './api'
 function register (action) {
-  let axios = publicApi()
+  let axios = publicApiKomuto()
   return axios.post('users', {
     ...action
   })

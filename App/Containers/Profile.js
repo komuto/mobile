@@ -10,6 +10,7 @@ import {
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as loginaction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -36,6 +37,10 @@ class Profile extends React.Component {
     if (nextProps.datalogin.login) {
       this.setState({
         isLogin: true
+      })
+    } else if (!nextProps.datalogin.login) {
+      this.setState({
+        isLogin: false
       })
     }
   }
@@ -66,6 +71,14 @@ class Profile extends React.Component {
 
   register () {
     NavigationActions.register({ type: ActionConst.PUSH })
+  }
+
+  logout () {
+    AsyncStorage.setItem('nama', '')
+    AsyncStorage.setItem('saldo', '')
+    AsyncStorage.setItem('foto', '')
+    AsyncStorage.setItem('token', '')
+    this.props.stateLogin(false)
   }
 
   renderProfile () {
@@ -175,6 +188,19 @@ class Profile extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
+        <View style={styles.dataProfileContainer}>
+          <TouchableOpacity onPress={() => this.logout()}>
+            <View style={styles.profile}>
+              <Image source={Images.logout} style={styles.imageCategory} />
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  Logout
+                </Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     )
   }
@@ -188,10 +214,16 @@ class Profile extends React.Component {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    stateLogin: (login) => dispatch(loginaction.stateLogin({login}))
+  }
+}
+
 const mapStateToProps = (state) => {
   return {
     datalogin: state.isLogin
   }
 }
 
-export default connect(mapStateToProps)(Profile)
+export default connect(mapStateToProps, mapDispatchToProps)(Profile)

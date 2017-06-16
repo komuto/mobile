@@ -15,6 +15,7 @@ const images = {
   welcome: require('../Images/welcome.png'),
   facebook: require('../Images/Icons/icon-facebook.png'),
   love: require('../Images/Icons/icon-love.png'),
+  logout: require('../Images/Icons/icon-logout.png'),
   saldo: require('../Images/Icons/icon-saldo.png'),
   daftar: require('../Images/Icons/icon-daftar.png'),
   toko: require('../Images/Icons/icon-toko.png'),
@@ -30,7 +31,6 @@ const images = {
   slider1: require('../Images/Sliders/slider1.jpg'),
   slider2: require('../Images/Sliders/slider2.jpg'),
   slider3: require('../Images/Sliders/slider3.jpg'),
-  slider4: require('../Images/Sliders/slider4.jpg'),
   contohproduct: require('../Images/contoh-product.jpg')
 }
 

@@ -173,9 +173,6 @@ class Home extends React.Component {
             <View style={styles.slider}>
               <Image style={styles.imageSlider} source={Images.slider3} resizeMode='stretch' />
             </View>
-            <View style={styles.slider}>
-              <Image style={styles.imageSlider} source={Images.slider4} resizeMode='stretch' />
-            </View>
           </Swiper>
           <Text style={styles.titleCategory}>
             Kategory Produk

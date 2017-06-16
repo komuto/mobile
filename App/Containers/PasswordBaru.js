@@ -17,8 +17,11 @@ class PasswordBaru extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      password: 'a',
-      konfirmasipassword: 'a',
+      email: this.props.email,
+      nama: this.props.nama,
+      gender: this.props.gender,
+      password: '',
+      konfirmasipassword: '',
       loading: false
     }
   }
@@ -27,14 +30,11 @@ class PasswordBaru extends React.Component {
       this.setState({
         loading: false
       })
-
       AsyncStorage.setItem('nama', nextProps.data.user.data.name)
       AsyncStorage.setItem('saldo', nextProps.data.user.data.saldo_wallet)
       AsyncStorage.setItem('foto', nextProps.data.user.data.photo)
       AsyncStorage.setItem('token', nextProps.data.user.data.token)
-
       this.props.stateLogin(true)
-
       NavigationActions.notifikasi({
         type: ActionConst.REPLACE,
         tipeNotikasi: 'welcome'
@@ -48,11 +48,12 @@ class PasswordBaru extends React.Component {
     this.setState({ konfirmasipassword: text })
   }
   sukses () {
-    const {password, konfirmasipassword} = this.state
+    const {email, nama, gender, password, konfirmasipassword} = this.state
     this.setState({
       loading: true
     })
     this.props.newPassword(password, konfirmasipassword)
+    this.props.loginFacebook(email, nama, gender)
   }
   render () {
     const spinner = this.state.loading
@@ -114,6 +115,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     newPassword: (password, konfirmasipassword) => dispatch(userAction.newPassword({password, konfirmasipassword})),
+    loginFacebook: (email, nama, gender) => dispatch(userAction.loginSocial({email, nama, gender})),
     stateLogin: (login) => dispatch(userAction.stateLogin({login}))
   }
 }

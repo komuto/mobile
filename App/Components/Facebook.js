@@ -4,25 +4,8 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import Styles from './Styles/FacebookStyle'
 import {Images} from '../Themes'
 import FBSDK from 'react-native-fbsdk'
-import { connect } from 'react-redux'
-import * as userAction from '../actions/user'
 const { LoginManager, AccessToken } = FBSDK
 class Facebook extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      email: '',
-      nama: '',
-      gender: ''
-    }
-  }
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.data.status === 200) {
-      NavigationActions.passwordbaru({
-        type: ActionConst.REPLACE
-      })
-    }
-  }
   _loginFB () {
     AccessToken.getCurrentAccessToken()
     .then((data) => {
@@ -65,14 +48,13 @@ class Facebook extends React.Component {
     .then((response) => response.json())
     .then((json) => {
       console.log(json)
-      this.setState({
+      NavigationActions.passwordbaru({
+        type: ActionConst.PUSH,
         email: json.email,
         gender: json.gender,
         nama: json.name,
         picture: json.picture.data.url
       })
-      const {email, nama, gender} = this.state
-      this.props.loginFacebook(email, nama, gender)
     })
     .catch((err) => console.log(err))
   }
@@ -88,14 +70,4 @@ class Facebook extends React.Component {
     )
   }
 }
-const mapStateToProps = (state) => {
-  return {
-    data: state.user
-  }
-}
-const mapDispatchToProps = (dispatch) => {
-  return {
-    loginFacebook: (email, nama, gender) => dispatch(userAction.loginSocial({email, nama, gender}))
-  }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Facebook)
+export default Facebook

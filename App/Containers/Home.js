@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  ListView
+  ListView,
+  BackAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
@@ -30,13 +31,97 @@ class Home extends React.Component {
     ]
     var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
+      tipe: 'home',
       search: '',
       dataSource: dataSource.cloneWithRows(menu)
     }
   }
 
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    if (this.state.tipe === 'search') {
+      this.setState({
+        tipe: 'home'
+      })
+      return true
+    } else if (NavigationActions.pop()) {
+      NavigationActions.pop()
+      return true
+    }
+  }
+
   handleTextSearch = (text) => {
     this.setState({ search: text })
+  }
+
+  renderHome () {
+    const { search } = this.state
+    if (this.state.tipe === 'home') {
+      return (
+        <View style={styles.headerContainer}>
+          <View style={styles.header}>
+            <Text style={styles.textHeader}>
+              Galaksi Parabola
+            </Text>
+            <TouchableOpacity style={styles.buttonHeader}>
+              <Image source={Images.love} style={styles.imagestyle} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.buttonHeader}>
+              <Image source={Images.shoppingCart} style={styles.imagestyle} />
+              <View style={styles.containerNumber}>
+                <Text style={styles.number}>
+                  {String(4)}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.searchContainer}>
+            <Image source={Images.searchGrey} style={styles.searchImage} />
+            <View style={styles.textInputContainer}>
+              <TextInput
+                ref='search'
+                onFocus={() => this.openSearch()}
+                style={styles.inputText}
+                value={search}
+                keyboardType='default'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleTextSearch}
+                underlineColorAndroid='transparent'
+                placeholder='Cari barang atau toko'
+              />
+            </View>
+          </View>
+        </View>
+      )
+    }
+    return (
+      <View style={styles.floatingSearch}>
+        <Image source={Images.searchGrey} style={styles.searchImage} />
+        <View style={styles.textInputContainer}>
+          <TextInput
+            ref='search'
+            autoFocus
+            onSubmitEditing={() => this.search()}
+            style={styles.inputText}
+            value={search}
+            keyboardType='default'
+            autoCapitalize='none'
+            autoCorrect
+            onChangeText={this.handleTextSearch}
+            underlineColorAndroid='transparent'
+            placeholder='Cari barang atau toko'
+          />
+        </View>
+      </View>
+    )
   }
 
   renderVerified (status) {
@@ -124,44 +209,20 @@ class Home extends React.Component {
     NavigationActions.kategoriscreen({ type: ActionConst.PUSH })
   }
 
+  openSearch () {
+    this.setState({
+      tipe: 'search'
+    })
+  }
+
+  search () {
+    NavigationActions.searchresult({ type: ActionConst.PUSH })
+  }
+
   render () {
-    const { search } = this.state
     return (
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <Text style={styles.textHeader}>
-              Galaksi Parabola
-            </Text>
-            <TouchableOpacity style={styles.buttonHeader}>
-              <Image source={Images.love} style={styles.imagestyle} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonHeader}>
-              <Image source={Images.shoppingCart} style={styles.imagestyle} />
-              <View style={styles.containerNumber}>
-                <Text style={styles.number}>
-                  {String(4)}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.searchContainer}>
-            <Image source={Images.searchGrey} style={styles.searchImage} />
-            <View style={styles.textInputContainer}>
-              <TextInput
-                ref='search'
-                style={styles.inputText}
-                value={search}
-                keyboardType='default'
-                autoCapitalize='none'
-                autoCorrect
-                onChangeText={this.handleTextSearch}
-                underlineColorAndroid='transparent'
-                placeholder='Cari barang atau toko'
-              />
-            </View>
-          </View>
-        </View>
+        {this.renderHome()}
         <ScrollView>
           <Swiper height={190} autoplay>
             <View style={styles.slider}>

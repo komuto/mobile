@@ -69,7 +69,8 @@ export default StyleSheet.create({
   },
   inputText: {
     flex: 1,
-    fontSize: Fonts.size.medium
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.regular
   },
   slider: {
     flex: 1,
@@ -235,5 +236,14 @@ export default StyleSheet.create({
     width: 24,
     height: 24,
     tintColor: Colors.red
+  },
+  floatingSearch: {
+    elevation: 2,
+    height: 50,
+    backgroundColor: Colors.snow,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingRight: 15
   }
 })

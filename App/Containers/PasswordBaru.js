@@ -49,8 +49,11 @@ class PasswordBaru extends React.Component {
     this.setState({ konfirmasipassword: text })
   }
   sukses () {
-    if (this.state.password === '' || this.state.konfirmasipassword === '') {
+    const {password, konfirmasipassword} = this.state
+    if (password === '' || konfirmasipassword === '') {
       Alert.alert('Pesan', 'Mohon isi password dan konfirmasi password')
+    } else if (password !== konfirmasipassword) {
+      Alert.alert('Pesan', 'Password tidak sama')
     } else {
       const {email, nama, gender, password, konfirmasipassword} = this.state
       this.setState({

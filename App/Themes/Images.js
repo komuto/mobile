@@ -19,6 +19,7 @@ const images = {
   saldo: require('../Images/Icons/icon-saldo.png'),
   daftar: require('../Images/Icons/icon-daftar.png'),
   toko: require('../Images/Icons/icon-toko.png'),
+  centang: require('../Images/Icons/icon-centang.png'),
   shoppingCart: require('../Images/Icons/icon-shopping-cart.png'),
   searchGrey: require('../Images/Icons/icon-search-grey.png'),
   searchWhite: require('../Images/Icons/icon-search-white.png'),
@@ -33,7 +34,10 @@ const images = {
   slider1: require('../Images/Sliders/slider1.jpg'),
   slider2: require('../Images/Sliders/slider2.jpg'),
   slider3: require('../Images/Sliders/slider3.jpg'),
-  contohproduct: require('../Images/contoh-product.jpg')
+  contohproduct: require('../Images/contoh-product.jpg'),
+  sort: require('../Images/Icons/icon-sorting.png'),
+  filter: require('../Images/Icons/icon-filter.png'),
+  grid: require('../Images/Icons/icon-grid.png')
 }
 
 export default images

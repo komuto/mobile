@@ -8,16 +8,12 @@ export default StyleSheet.create({
   },
   headerContainer: {
     height: Metrics.navBarHeight,
-    justifyContent: 'center',
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
-  },
-  headerContainerRender: {
-    height: Metrics.navBarHeight,
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: 10,
-    paddingRight: 10
+    paddingRight: 10,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
   },
   imageStyle: {
     height: 24,
@@ -33,26 +29,18 @@ export default StyleSheet.create({
     marginLeft: 10,
     color: Colors.darkgrey
   },
-  kategori: {
-    backgroundColor: Colors.red
+  listViewContainer: {
+    flex: 1
   },
-  search: {
-    backgroundColor: Colors.snow
-  },
-  headerTextContainer: {
-    height: Metrics.navBarHeight,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 10,
-    paddingRight: 10
-  },
-  headerText: {
+  buttonStyle: {
     flex: 1,
-    fontSize: Fonts.size.regular,
-    fontFamily: Fonts.type.bold,
-    top: -1,
-    marginLeft: 10,
-    marginRight: 10,
-    color: Colors.snow
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textResult: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey
   }
 })

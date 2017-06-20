@@ -23,7 +23,7 @@ import stylesHome from './Styles/HomeStyle'
 
 import { Images } from '../Themes'
 
-class SearchResult extends React.Component {
+class ProdukTerbaruScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
@@ -39,7 +39,7 @@ class SearchResult extends React.Component {
       search: '',
       listDataSource: dataSourceList.cloneWithRows(menu),
       rowDataSource: dataSourceRow.cloneWithRows(menu),
-      header: this.props.header || 'Result',
+      header: this.props.header || 'search',
       tipe: this.props.tipe || 'kategori',
       tipeView: 'list'
     }
@@ -356,4 +356,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchResult)
+export default connect(mapStateToProps, mapDispatchToProps)(ProdukTerbaruScreenScreen)

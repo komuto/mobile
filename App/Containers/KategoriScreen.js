@@ -1,6 +1,8 @@
 import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
 import { connect } from 'react-redux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -33,9 +35,17 @@ class KategoriScreenScreen extends React.Component {
     }
   }
 
-  renderRowMenuFashionAksesoris (rowData) {
+  handleDetailKategori (rowId, title) {
+    NavigationActions.kategoriduascreen({
+      type: ActionConst.PUSH,
+      title: title,
+      jenis: title
+    })
+  }
+
+  renderRowMenuFashionAksesoris (rowData, rowId) {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.handleDetailKategori(rowId, rowData.title)}>
         <View style={styles.itemList}>
           <Image source={rowData.gambar} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
@@ -49,9 +59,9 @@ class KategoriScreenScreen extends React.Component {
     )
   }
 
-  renderRowMenuAllIbu (rowData) {
+  renderRowMenuAllIbu (rowData, rowId) {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.handleDetailKategori(rowId, rowData.title)}>
         <View style={styles.itemList}>
           <Image source={rowData.gambar} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>

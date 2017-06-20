@@ -31,7 +31,7 @@ class Home extends React.Component {
     ]
     var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      tipe: 'home',
+      tipe: this.props.tipe || 'home',
       search: '',
       dataSource: dataSource.cloneWithRows(menu)
     }
@@ -216,7 +216,14 @@ class Home extends React.Component {
   }
 
   search () {
-    NavigationActions.searchresult({ type: ActionConst.PUSH })
+    NavigationActions.search({ type: ActionConst.PUSH, search: this.state.search })
+  }
+
+  produkTerbaru () {
+    NavigationActions.produkterbaru({
+      type: ActionConst.PUSH,
+      header: 'Produk Terbaru'
+    })
   }
 
   render () {
@@ -224,7 +231,7 @@ class Home extends React.Component {
       <View style={styles.container}>
         {this.renderHome()}
         <ScrollView>
-          <Swiper height={190} autoplay>
+          <Swiper height={190} autoplay autoplayTimeout={3.5}>
             <View style={styles.slider}>
               <Image style={styles.imageSlider} source={Images.slider1} resizeMode='stretch' />
             </View>
@@ -284,7 +291,7 @@ class Home extends React.Component {
               renderRow={this.renderRow.bind(this)}
             />
           </View>
-          <TouchableOpacity style={styles.allCategory}>
+          <TouchableOpacity style={styles.allCategory} onPress={() => this.produkTerbaru()}>
             <Text style={styles.textAllCategory}>
               Lihat semua produk terbaru
             </Text>

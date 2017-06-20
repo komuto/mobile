@@ -14,7 +14,12 @@ import Home from '../Containers/Home'
 import NotifikasiPengguna from '../Containers/NotifikasiPengguna'
 import Transaksi from '../Containers/Transaksi'
 import KategoriScreen from '../Containers/KategoriScreen'
+import KategoriDuaScreen from '../Containers/KategoriDuaScreen'
+import KategoriTigaScreen from '../Containers/KategoriTigaScreen'
+import KategoriEmpatScreen from '../Containers/KategoriEmpatScreen'
 import SearchResult from '../Containers/SearchResult'
+import Search from '../Containers/Search'
+import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -153,6 +158,42 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage={false} />
+          <Scene
+            key='search'
+            component={Search}
+            title='Search'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='produkterbaru'
+            component={ProdukTerbaru}
+            title='Produk Terbaru'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='kategoriduascreen'
+            component={KategoriDuaScreen}
+            title='Fashion Pria'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kategoritigascreen'
+            component={KategoriTigaScreen}
+            title='Fashion Pria'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kategoriempatscreen'
+            showSearchIcon
+            component={KategoriEmpatScreen}
+            title='Fashion Pria'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
         </Scene>
       </Router>
     )

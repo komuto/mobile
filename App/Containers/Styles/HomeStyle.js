@@ -54,11 +54,11 @@ export default StyleSheet.create({
   searchContainer: {
     backgroundColor: Colors.background,
     borderRadius: 2,
-    marginTop: 10,
+    marginTop: 12,
     paddingLeft: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    height: 48
+    height: 43
   },
   searchImage: {
     height: 24,
@@ -82,13 +82,13 @@ export default StyleSheet.create({
     width: Metrics.screenWidth
   },
   titleCategory: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.bold,
     color: Colors.darkgrey,
     letterSpacing: 0.2,
     marginTop: 30,
     marginLeft: 20,
-    marginBottom: 20
+    marginBottom: 15
   },
   categoryContainer: {
     flex: 1,
@@ -102,7 +102,8 @@ export default StyleSheet.create({
   },
   category: {
     flex: 1,
-    padding: 20,
+    paddingTop: 26,
+    paddingBottom: 27.5,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
@@ -114,6 +115,7 @@ export default StyleSheet.create({
     width: 32
   },
   textCategory: {
+    marginTop: 9,
     color: Colors.lightblack,
     fontSize: Fonts.size.small,
     textAlign: 'center',
@@ -129,6 +131,7 @@ export default StyleSheet.create({
     elevation: 2
   },
   textAllCategory: {
+    flexWrap: 'wrap',
     color: Colors.bluesky,
     flex: 1,
     fontSize: Fonts.size.medium,
@@ -145,9 +148,10 @@ export default StyleSheet.create({
     borderRightColor: Colors.silver,
     borderBottomColor: Colors.silver,
     width: Metrics.screenWidth / 2,
-    height: 350,
+    height: 354.5,
     flexDirection: 'column',
-    padding: 20
+    padding: 20,
+    backgroundColor: Colors.snow
   },
   imageProduct: {
     height: 140,
@@ -161,71 +165,69 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: 5,
-    left: 5
+    top: 11,
+    left: 10
   },
   diskon: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     color: Colors.snow,
     fontFamily: Fonts.type.extrabold
   },
   textTitleProduct: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.regular,
     color: Colors.darkgrey,
     lineHeight: 18,
     letterSpacing: 0.2,
-    marginTop: 10
+    marginTop: 20
   },
   tokoContainer: {
-    flexDirection: 'row',
-    marginTop: 7
+    flexDirection: 'row'
   },
   namaToko: {
     fontSize: Fonts.size.small,
     fontFamily: Fonts.type.regular,
-    color: Colors.labelgrey
+    color: Colors.labelgrey,
+    marginTop: 7
   },
   imageVerified: {
     height: 24,
     width: 24,
-    marginTop: -5,
-    marginLeft: 5
+    marginTop: 2.6,
+    marginLeft: 3.5
   },
   nominalDiskon: {
     textDecorationLine: 'line-through',
     fontSize: Fonts.size.small,
     fontFamily: Fonts.type.regular,
-    color: Colors.labelgrey
+    color: Colors.labelgrey,
+    marginTop: 11
   },
   nominalDiskon1: {
     textDecorationLine: 'line-through',
     fontSize: Fonts.size.small,
     fontFamily: Fonts.type.regular,
-    color: Colors.snow
-  },
-  noDiskon: {
-    marginTop: 20
+    color: Colors.snow,
+    marginTop: 11
   },
   harga: {
     fontSize: Fonts.size.regular,
     fontFamily: Fonts.type.bold,
     color: Colors.red,
     letterSpacing: 0.2,
-    marginTop: 30
+    marginTop: 5
   },
   likesContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 15
+    marginTop: 11
   },
   like: {
     fontSize: Fonts.size.small,
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
     letterSpacing: 0.2,
-    marginLeft: 5,
-    marginTop: -2
+    marginLeft: 5
   },
   imageStyleNotLike: {
     width: 24,

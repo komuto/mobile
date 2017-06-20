@@ -1,29 +1,19 @@
 import React from 'react'
-import {
-  ScrollView,
-  Text,
-  ListView,
-  View,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  BackAndroid
-} from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, ListView, TextInput } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
-import styles from './Styles/ProdukTerbaruScreenStyle'
+import styles from './Styles/KategoriEmpatScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
-
 import { Images } from '../Themes'
 
-class SearchResult extends React.Component {
+class KategoriEmpatScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
@@ -39,31 +29,9 @@ class SearchResult extends React.Component {
       search: '',
       listDataSource: dataSourceList.cloneWithRows(menu),
       rowDataSource: dataSourceRow.cloneWithRows(menu),
-      header: this.props.header || 'Result',
+      header: this.props.header || 'search',
       tipe: this.props.tipe || 'kategori',
       tipeView: 'list'
-    }
-  }
-
-  componentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-  }
-
-  componentWillUnmount () {
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-  }
-
-  handleBack = () => {
-    if (this.state.tipe === 'search') {
-      console.log('disini')
-      this.setState({
-        tipe: 'data'
-      })
-      return true
-    } else if (NavigationActions.pop()) {
-      console.log('disana')
-      NavigationActions.pop()
-      return true
     }
   }
 
@@ -79,18 +47,12 @@ class SearchResult extends React.Component {
     NavigationActions.pop()
   }
 
-  backSearch () {
-    this.setState({
-      tipe: 'data'
-    })
-  }
-
   renderHeader () {
     const { search } = this.state
     if (this.state.tipe === 'search') {
       return (
         <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backSearch()}>
+          <TouchableOpacity onPress={() => this.backButton()}>
             <Image
               source={Images.leftArrow}
               style={stylesSearch.imageStyle}
@@ -307,6 +269,7 @@ class SearchResult extends React.Component {
   }
 
   render () {
+    console.log(this.state.tipeView)
     let background
     if (this.state.tipe === 'search') {
       background = stylesSearch.search
@@ -356,4 +319,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchResult)
+export default connect(mapStateToProps, mapDispatchToProps)(KategoriEmpatScreenScreen)

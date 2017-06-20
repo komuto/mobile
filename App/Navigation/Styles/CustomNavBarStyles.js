@@ -35,9 +35,8 @@ export default {
     marginRight: 5
   },
   buttonIcon: {
-    height: 15,
-    width: 15,
-    resizeMode: 'contain'
+    height: 24,
+    width: 24
   },
   leftLogo: {
     justifyContent: 'center',

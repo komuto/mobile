@@ -4,22 +4,21 @@ import * as userApi from '../api/user'
 
 function* register (action) {
   try {
-    console.log(action)
     const {data} = yield userApi.register(action)
     yield put({ type: userActions.USER_REGISTER_SUCCESS, ...data })
   } catch (e) {
-    console.log(e)
     yield put({ type: userActions.USER_REGISTER_FAILURE })
   }
 }
 
 function* login (action) {
-  console.log(action)
   try {
     const {data} = yield userApi.login(action)
+    console.log({data})
     yield put({ type: userActions.USER_LOGIN_SUCCESS, ...data })
   } catch (e) {
-    yield put({ type: userActions.USER_LOGIN_FAILURE })
+    const {data} = e.response
+    yield put({ type: userActions.USER_LOGIN_FAILURE, ...data })
   }
 }
 

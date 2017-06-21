@@ -27,7 +27,9 @@ class Profile extends React.Component {
     this.state = {
       token: '',
       nama: '',
-      saldo: 0,
+      saldo: '0',
+      status: '1',
+      email: '',
       foto: 'https://ca.slack-edge.com/T02VD5GNR-USLACKBOT-sv1444671949-48',
       isLogin: this.props.datalogin.login
     }
@@ -71,6 +73,16 @@ class Profile extends React.Component {
           foto: value
         })
       }).done()
+      AsyncStorage.getItem('status').then((value) => {
+        this.setState({
+          status: value
+        })
+      }).done()
+      AsyncStorage.getItem('email').then((value) => {
+        this.setState({
+          email: value
+        })
+      }).done()
     }
   }
 
@@ -87,7 +99,39 @@ class Profile extends React.Component {
     AsyncStorage.setItem('saldo', '')
     AsyncStorage.setItem('foto', '')
     AsyncStorage.setItem('token', '')
+    AsyncStorage.setItem('status', '')
+    AsyncStorage.setItem('email', '')
     this.props.stateLogin(false)
+  }
+
+  renderStatus () {
+    const { status } = this.state
+    if (status === '0') {
+      return (
+        <View style={styles.verifikasiContainer}>
+          <View style={styles.emailContainer}>
+            <Image
+              source={Images.email}
+              style={styles.imageEmail}
+            />
+          </View>
+          <View style={styles.pesanContainer}>
+            <Text multiline style={styles.verifikasi}>
+              Verifikasikan email untuk mengakses{'\n'}semua menu
+            </Text>
+            <Text multiline style={styles.klikLink}>
+              Silahkan klik link verifikasi yang telah kami {'\n'}
+              kirimkan ke {this.state.email}
+            </Text>
+            <TouchableOpacity style={styles.buttonVerifikasi}>
+              <Text style={styles.textButtonVerifikasi}>
+                Kirim Ulang link verifikasi
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
   }
 
   renderProfile () {
@@ -130,6 +174,7 @@ class Profile extends React.Component {
     })
     return (
       <View>
+        {this.renderStatus()}
         <View style={styles.profileContainer}>
           <View style={styles.dataProfileContainer}>
             <TouchableOpacity>

@@ -32,7 +32,10 @@ const colors = {
   doubleLightGrey: '#ebf2fc',
   lightblack: '#41475e',
   labelgrey: '#a0a3ae',
-  paleGrey: '#f4f5f6'
+  paleGrey: '#f4f5f6',
+  lightOrange: '#fff8e8',
+  orange: '#ffa851',
+  darkOrange: '#ea8c2f'
 }
 
 export default colors

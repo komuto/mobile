@@ -7,11 +7,13 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  BackAndroid
+  BackAndroid,
+  Modal
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import Filter from '../Components/Filter'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -21,17 +23,17 @@ import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 class ProdukTerbaruScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
     var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: false, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 }
+      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
+      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
+      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
+      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
     ]
     var dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     var dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
@@ -41,7 +43,18 @@ class ProdukTerbaruScreenScreen extends React.Component {
       rowDataSource: dataSourceRow.cloneWithRows(menu),
       header: this.props.header || 'search',
       tipe: this.props.tipe || 'kategori',
-      tipeView: 'list'
+      tipeView: 'list',
+      sortModal: false,
+      terbaruColor: Colors.lightblack,
+      termurahColor: Colors.lightblack,
+      termahalColor: Colors.lightblack,
+      terlarisColor: Colors.lightblack,
+      terbaruCek: 0,
+      termurahCek: 0,
+      termahalCek: 0,
+      terlarisCek: 0,
+      sortData: menu,
+      filter: false
     }
   }
 
@@ -132,6 +145,109 @@ class ProdukTerbaruScreenScreen extends React.Component {
           />
         </TouchableOpacity>
       </View>
+    )
+  }
+
+  openFilter () {
+    this.setState({
+      filter: true
+    })
+  }
+
+  closeModal () {
+    this.setState({
+      filter: false
+    })
+  }
+
+  setSortModal (visible) {
+    this.setState({sortModal: visible})
+  }
+
+  sortArrayAsc (array, key, field) {
+    const {bluesky, lightblack} = Colors
+    switch (field) {
+      case 'terbaru':
+        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+        return array.sort(function (a, b) {
+          return new Date(a.dateCreate).getTime() - new Date(b.dateCreate).getTime()
+        }).reverse()
+      case 'termurah':
+        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+        return array.sort(function (a, b) {
+          return b.harga > a.harga ? -1
+              : b.harga < a.harga ? 1
+              : 0
+        })
+      case 'termahal':
+        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+        return array.sort(function (a, b) {
+          return b.harga < a.harga ? -1
+              : b.harga > a.harga ? 1
+              : 0
+        })
+      case 'terlaris':
+        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+        return array.sort(function (a, b) {
+          return b.jumlahlikes < a.jumlahlikes ? -1
+              : b.jumlahlikes > a.jumlahlikes ? 1
+              : 0
+        })
+      default:
+        window.alert('Internal Error')
+        break
+    }
+  }
+
+  _onPress (field) {
+    const {sortData} = this.state
+    let sortedData = this.sortArrayAsc(sortData, 'harga', field)
+    var dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.setState({
+      listDataSource: dataSourceList.cloneWithRows(sortedData)
+    })
+  }
+
+  renderModalSort (selected) {
+    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.sortModal}
+        onRequestClose={() => this.setState({ sortModal: false })}
+        >
+        <View style={styles.blackContainer} />
+        <View style={styles.modalSortContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Urutkan Berdasarkan</Text>
+          </View>
+          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centang} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this._onPress('termurah')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centang} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this._onPress('termahal')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centang} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centang} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     )
   }
 
@@ -322,13 +438,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
           {this.viewProduk()}
         </ScrollView>
         <View style={styles.footerMenu}>
-          <TouchableOpacity style={styles.blah}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.sort} />
               <Text style={styles.footerButton}>Urutkan</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.blah}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.openFilter()}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.filter} />
               <Text style={styles.footerButton}>Filter</Text>
@@ -341,6 +457,28 @@ class ProdukTerbaruScreenScreen extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
+        <Modal
+          animationType={'slide'}
+          transparent
+          visible={this.state.filter}
+          onRequestClose={() => { this.setState({ filter: false }) }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeaderContainer}>
+              <Text style={styles.modalHeaderText}>
+                Filter
+              </Text>
+              <TouchableOpacity onPress={() => this.closeModal()}>
+                <Image
+                  source={Images.close}
+                  style={styles.imageCancel}
+                />
+              </TouchableOpacity>
+            </View>
+            <Filter />
+          </View>
+        </Modal>
+        {this.renderModalSort()}
       </View>
     )
   }

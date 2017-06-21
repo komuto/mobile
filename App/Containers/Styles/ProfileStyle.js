@@ -5,7 +5,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.paleGrey
+    backgroundColor: Colors.paleGrey,
+    marginBottom: Metrics.tabBarHeight
   },
   loginContainer: {
     backgroundColor: Colors.snow,
@@ -142,5 +143,55 @@ export default StyleSheet.create({
     height: 24,
     width: 24,
     marginLeft: 10
+  },
+  verifikasiContainer: {
+    backgroundColor: Colors.lightOrange,
+    padding: 20,
+    flexDirection: 'row'
+  },
+  emailContainer: {
+    width: 40,
+    marginRight: 20
+  },
+  imageEmail: {
+    width: 40,
+    height: 40
+  },
+  pesanContainer: {
+    flexDirection: 'column'
+  },
+  verifikasi: {
+    fontFamily: Fonts.type.bold,
+    color: Colors.darkgrey,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.37,
+    flex: 1
+  },
+  klikLink: {
+    fontFamily: Fonts.type.regular,
+    color: Colors.lightgrey,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.37,
+    marginTop: 5,
+    flex: 1
+  },
+  buttonVerifikasi: {
+    borderRadius: 5,
+    borderColor: Colors.orange,
+    borderWidth: 1,
+    width: 200,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingRight: 15,
+    paddingLeft: 15,
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textButtonVerifikasi: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    color: Colors.orange,
+    letterSpacing: 0.4
   }
 })

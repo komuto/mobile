@@ -150,5 +150,66 @@ export default StyleSheet.create({
     height: 47,
     backgroundColor: Colors.snow,
     elevation: 2
+  },
+  modalContainer: {
+    flex: 1
+  },
+  modalHeaderContainer: {
+    padding: 20,
+    height: 56,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.snow
+  },
+  modalHeaderText: {
+    flex: 1,
+    color: Colors.darkgrey,
+    letterSpacing: 0.4,
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium
+  },
+  imageCancel: {
+    width: 24,
+    height: 24
+  },
+  titleContainer: {
+    height: 56,
+    paddingLeft: 20,
+    paddingTop: 18.5,
+    paddingBottom: 18.5,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    justifyContent: 'center'
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    height: 56,
+    paddingLeft: 20,
+    paddingRight: 15,
+    paddingTop: 18.5,
+    paddingBottom: 18.5,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    justifyContent: 'center'
+  },
+  title: {
+    flex: 1,
+    fontSize: Fonts.size.medium,
+    color: Colors.lightblack
+  },
+  checkImage: {
+    width: 24,
+    height: 24,
+    opacity: 0
+  },
+  blackContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    opacity: 0.4
+  },
+  modalSortContainer: {
+    justifyContent: 'center',
+    backgroundColor: 'white'
   }
 })

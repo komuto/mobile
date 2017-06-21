@@ -43,6 +43,8 @@ class LoginScreen extends React.Component {
       AsyncStorage.setItem('saldo', nextProps.datalogin.user.data.saldo_wallet)
       AsyncStorage.setItem('foto', nextProps.datalogin.user.data.photo)
       AsyncStorage.setItem('token', nextProps.datalogin.user.data.token)
+      AsyncStorage.setItem('status', nextProps.datalogin.user.data.approval_cooperative_status)
+      AsyncStorage.setItem('email', nextProps.datalogin.user.data.email)
       this.props.stateLogin(true)
 
       NavigationActions.backtab({ type: ActionConst.RESET })

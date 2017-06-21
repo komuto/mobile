@@ -1,5 +1,14 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, ListView, TextInput } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ListView,
+  TextInput,
+  BackAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
@@ -35,6 +44,28 @@ class KategoriEmpatScreenScreen extends React.Component {
     }
   }
 
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    if (this.state.tipe === 'search') {
+      console.log('disini')
+      this.setState({
+        tipe: 'data'
+      })
+      return true
+    } else if (NavigationActions.pop()) {
+      console.log('disana')
+      NavigationActions.pop()
+      return true
+    }
+  }
+
   handleTextSearch = (text) => {
     this.setState({ search: text })
   }
@@ -47,12 +78,18 @@ class KategoriEmpatScreenScreen extends React.Component {
     NavigationActions.pop()
   }
 
+  backSearch () {
+    this.setState({
+      tipe: 'data'
+    })
+  }
+
   renderHeader () {
     const { search } = this.state
     if (this.state.tipe === 'search') {
       return (
         <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backButton()}>
+          <TouchableOpacity onPress={() => this.backSearch()}>
             <Image
               source={Images.leftArrow}
               style={stylesSearch.imageStyle}

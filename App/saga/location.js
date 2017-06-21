@@ -2,7 +2,7 @@ import { put } from 'redux-saga/effects'
 import * as locationActions from '../actions/location'
 import * as locationApi from '../api/location'
 
-function* getProvince (action) {
+function * getProvince (action) {
   try {
     const {data} = yield locationApi.getProvince(action)
     yield put({ type: locationActions.GET_PROVINCE_SUCCESS, ...data })
@@ -12,7 +12,7 @@ function* getProvince (action) {
   }
 }
 
-function* getDistrict (action) {
+function * getDistrict (action) {
   try {
     const {data} = yield locationApi.getDistrict(action)
     yield put({ type: locationActions.GET_DISTRICT_SUCCESS, ...data })
@@ -22,7 +22,7 @@ function* getDistrict (action) {
   }
 }
 
-function* getSubDistrict (action) {
+function * getSubDistrict (action) {
   try {
     const {data} = yield locationApi.getSubDistrict(action)
     yield put({ type: locationActions.GET_SUBDISTRICT_SUCCESS, ...data })
@@ -32,7 +32,7 @@ function* getSubDistrict (action) {
   }
 }
 
-function* getVillage (action) {
+function * getVillage (action) {
   try {
     const {data} = yield locationApi.getVillage(action)
     yield put({ type: locationActions.GET_VILLAGE_SUCCESS, ...data })

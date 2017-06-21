@@ -39,7 +39,8 @@ const images = {
   filter: require('../Images/Icons/icon-filter.png'),
   grid: require('../Images/Icons/icon-grid.png'),
   close: require('../Images/Icons/icon-close.png'),
-  email: require('../Images/Icons/icon-email.png')
+  email: require('../Images/Icons/icon-email.png'),
+  defaultprofile: require('../Images/Icons/icon-default-profile.png')
 }
 
 export default images

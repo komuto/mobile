@@ -6,7 +6,7 @@ const initBrand = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: true
 }
 
 function brand (state = initBrand, action) {
@@ -31,7 +31,7 @@ function brand (state = initBrand, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: true
       }
     default:
       return state

@@ -30,7 +30,7 @@ class Profile extends React.Component {
       saldo: '0',
       status: '1',
       email: '',
-      foto: 'https://ca.slack-edge.com/T02VD5GNR-USLACKBOT-sv1444671949-48',
+      foto: 'default',
       isLogin: this.props.datalogin.login
     }
   }
@@ -60,7 +60,7 @@ class Profile extends React.Component {
       AsyncStorage.getItem('saldo').then((value) => {
         if (value === null || value === undefined || value === '') {
           this.setState({
-            saldo: 0
+            saldo: '0'
           })
         } else {
           this.setState({
@@ -69,9 +69,12 @@ class Profile extends React.Component {
         }
       }).done()
       AsyncStorage.getItem('foto').then((value) => {
-        this.setState({
-          foto: value
-        })
+        if (value === '' || value === undefined || value === null) {
+        } else {
+          this.setState({
+            foto: value
+          })
+        }
       }).done()
       AsyncStorage.getItem('status').then((value) => {
         this.setState({
@@ -134,6 +137,23 @@ class Profile extends React.Component {
     }
   }
 
+  renderFoto () {
+    if (this.state.foto !== 'default') {
+      return (
+        <Image
+          source={{ uri: this.state.foto }}
+          style={styles.styleFoto}
+        />
+      )
+    }
+    return (
+      <Image
+        source={Images.defaultprofile}
+        style={styles.styleFotoDefault}
+      />
+    )
+  }
+
   renderProfile () {
     if (!this.state.isLogin) {
       return (
@@ -179,10 +199,7 @@ class Profile extends React.Component {
           <View style={styles.dataProfileContainer}>
             <TouchableOpacity>
               <View style={styles.profile}>
-                <Image
-                  source={{ uri: this.state.foto }}
-                  style={styles.styleFoto}
-                />
+                {this.renderFoto()}
                 <View style={styles.namaContainer}>
                   <Text style={styles.textNama}>
                     {this.state.nama}

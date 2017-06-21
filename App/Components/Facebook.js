@@ -1,12 +1,24 @@
 import React from 'react'
-import { Alert, Text, TouchableOpacity, Image } from 'react-native'
+import { Alert, Text, TouchableOpacity, Image, AsyncStorage, View, ActivityIndicator } from 'react-native'
+import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import FBSDK from 'react-native-fbsdk'
 import Styles from './Styles/FacebookStyle'
 import {Images} from '../Themes'
-import FBSDK from 'react-native-fbsdk'
+import * as loginAction from '../actions/user'
 const { LoginManager, AccessToken } = FBSDK
 class Facebook extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      loading: false
+    }
+  }
+
   _loginFB () {
+    this.setState({
+      loading: true
+    })
     AccessToken.getCurrentAccessToken()
     .then((data) => {
       if (data !== null) {
@@ -47,16 +59,40 @@ class Facebook extends React.Component {
     fetch('https://graph.facebook.com/v2.9/me?fields=id,name,email,gender,picture{url}&access_token=' + token1)
     .then((response) => response.json())
     .then((json) => {
-      console.log(json)
-      NavigationActions.passwordbaru({
-        type: ActionConst.PUSH,
-        email: json.email,
-        gender: json.gender,
-        nama: json.name,
-        picture: json.picture.data.url
+      this.setState({
+        loading: false
       })
+      console.log(token1)
+      AsyncStorage.setItem('nama', json.name)
+      AsyncStorage.setItem('saldo', '0')
+      AsyncStorage.setItem('foto', json.picture.data.url)
+      AsyncStorage.setItem('token', token1)
+      AsyncStorage.setItem('status', '0')
+      AsyncStorage.setItem('email', json.email)
+      this.props.stateLogin(true)
+      NavigationActions.backtab({ type: ActionConst.RESET })
     })
     .catch((err) => console.log(err))
+  }
+
+  renderLogin () {
+    const spinner = this.state.loading
+    ? (<View style={Styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
+    if (this.state.loading) {
+      return (
+        <View style={Styles.containerText}>
+          {spinner}
+        </View>
+      )
+    }
+    return (
+      <View style={Styles.containerText}>
+        <Image source={Images.facebook} style={Styles.loginIconThirdParty} />
+        <Text style={Styles.loginTextThirdParty}>Login dengan Facebook</Text>
+      </View>
+    )
   }
   render () {
     return (
@@ -64,10 +100,22 @@ class Facebook extends React.Component {
         style={Styles.loginButtonThirdParty}
         onPress={() => this._loginFB()}
       >
-        <Image source={Images.facebook} style={Styles.loginIconThirdParty} />
-        <Text style={Styles.loginTextThirdParty}>Login dengan Facebook</Text>
+        {this.renderLogin()}
       </TouchableOpacity>
     )
   }
 }
-export default Facebook
+
+const mapStateToProps = (state) => {
+  return {
+    datalogin: state.user
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    stateLogin: (login) => dispatch(loginAction.stateLogin({login}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Facebook)

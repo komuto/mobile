@@ -10,7 +10,7 @@ import * as expeditionSaga from './expedition'
 import * as locationSaga from './location'
 import { takeEvery } from 'redux-saga/effects'
 
-function* dataSaga () {
+function * dataSaga () {
   yield takeEvery(userActions.USER_REGISTER_REQUEST, userSaga.register)
   yield takeEvery(userActions.USER_LOGIN_REQUEST, userSaga.login)
   yield takeEvery(userActions.FORGET_PASSWORD_REQUEST, userSaga.forgetPassword)

@@ -6,7 +6,7 @@ const initExpedition = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: false
 }
 
 function expedition (state = initExpedition, action) {
@@ -31,7 +31,7 @@ function expedition (state = initExpedition, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: true
       }
     default:
       return state

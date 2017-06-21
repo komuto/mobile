@@ -2,7 +2,7 @@ import { put } from 'redux-saga/effects'
 import * as brandApi from '../api/brand'
 import * as brandActions from '../actions/brand'
 
-function* getBrand (action) {
+function * getBrand (action) {
   try {
     const {data} = yield brandApi.getBrand(action)
     yield put({ type: brandActions.GET_BRAND_SUCCESS, ...data })

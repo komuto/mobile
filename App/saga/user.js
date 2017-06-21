@@ -2,50 +2,63 @@ import { put } from 'redux-saga/effects'
 import * as userActions from '../actions/user'
 import * as userApi from '../api/user'
 
-function* register (action) {
+function * register (action) {
   try {
     const {data} = yield userApi.register(action)
     yield put({ type: userActions.USER_REGISTER_SUCCESS, ...data })
   } catch (e) {
-    yield put({ type: userActions.USER_REGISTER_FAILURE })
+    const {data} = e.response
+    yield put({ type: userActions.USER_REGISTER_FAILURE, ...data })
   }
 }
 
-function* login (action) {
+function * login (action) {
   try {
     const {data} = yield userApi.login(action)
-    console.log({data})
     yield put({ type: userActions.USER_LOGIN_SUCCESS, ...data })
   } catch (e) {
-    const {data} = e.response
-    yield put({ type: userActions.USER_LOGIN_FAILURE, ...data })
+    const data = e.response
+    if (data !== undefined) {
+      const {data} = e.response
+      yield put({ type: userActions.USER_LOGIN_FAILURE, ...data })
+    } else {
+      const error = {
+        message: 'Your device is offline',
+        code: 'ENOENT',
+        isOnline: false
+      }
+      yield put({ type: userActions.USER_LOGIN_FAILURE, ...error })
+    }
   }
 }
 
-function* forgetPassword (action) {
+function * forgetPassword (action) {
   try {
     const {data} = yield userApi.forgetPassword(action)
     yield put({ type: userActions.FORGET_PASSWORD_SUCCESS, ...data })
   } catch (e) {
-    yield put({ type: userActions.FORGET_PASSWORD_FAILURE })
+    const {data} = e.response
+    yield put({ type: userActions.FORGET_PASSWORD_FAILURE, ...data })
   }
 }
 
-function* loginSocial (action) {
+function * loginSocial (action) {
   try {
     const {data} = yield userApi.loginSocial(action)
     yield put({ type: userActions.LOGIN_SOCIAL_SUCCESS, ...data })
   } catch (e) {
-    yield put({ type: userActions.LOGIN_SOCIAL_FAILURE })
+    const {data} = e.response
+    yield put({ type: userActions.LOGIN_SOCIAL_FAILURE, ...data })
   }
 }
 
-function* newPassword (action) {
+function * newPassword (action) {
   try {
     const {data} = yield userApi.newPassword(action)
     yield put({ type: userActions.USER_NEWPASSWORD_SUCCESS, ...data })
   } catch (e) {
-    yield put({ type: userActions.USER_NEWPASSWORD_FAILURE })
+    const {data} = e.response
+    yield put({ type: userActions.USER_NEWPASSWORD_FAILURE, ...data })
   }
 }
 

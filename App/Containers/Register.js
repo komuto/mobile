@@ -1,5 +1,13 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  AsyncStorage
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
@@ -38,10 +46,15 @@ class Register extends React.Component {
       this.setState({
         loading: false
       })
-      NavigationActions.notifikasi({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'register',
-        email: this.state.email
+      AsyncStorage.setItem('nama', this.state.name)
+      AsyncStorage.setItem('saldo', '0')
+      AsyncStorage.setItem('foto', '')
+      AsyncStorage.setItem('token', 'token')
+      AsyncStorage.setItem('status', '0')
+      AsyncStorage.setItem('email', this.state.email)
+      this.props.stateLogin(true)
+      NavigationActions.backtab({
+        type: ActionConst.RESET
       })
     } else if (nextProps.dataRegister.status > 200) {
       this.setState({
@@ -299,7 +312,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     registers: (name, phoneNumber, email, gender, password) => dispatch(registerAction.register({
-      name, phone_number: phoneNumber, email, gender, password}))
+      name, phone_number: phoneNumber, email, gender, password})),
+    stateLogin: (login) => dispatch(registerAction.stateLogin({login}))
   }
 }
 

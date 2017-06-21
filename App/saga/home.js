@@ -2,7 +2,7 @@ import { put } from 'redux-saga/effects'
 import * as homeActions from '../actions/home'
 import * as homeApi from '../api/home'
 
-function* product (action) {
+function * product (action) {
   try {
     const {data} = yield homeApi.product(action)
     yield put({ type: homeActions.HOME_PRODUCT_SUCCESS, ...data })
@@ -12,7 +12,7 @@ function* product (action) {
   }
 }
 
-function* search (action) {
+function * search (action) {
   try {
     const {data} = yield homeApi.search(action)
     yield put({ type: homeActions.SEARCH_PRODUCT_SUCCESS, ...data })
@@ -22,7 +22,7 @@ function* search (action) {
   }
 }
 
-function* categoryList (action) {
+function * categoryList (action) {
   try {
     const {data} = yield homeApi.categoryList(action)
     yield put({ type: homeActions.HOME_CATEGORY_SUCCESS, ...data })
@@ -32,7 +32,7 @@ function* categoryList (action) {
   }
 }
 
-function* subCategory (action) {
+function * subCategory (action) {
   try {
     const {data} = yield homeApi.subCategory(action)
     yield put({ type: homeActions.HOME_SUBCATEGORY_SUCCESS, ...data })

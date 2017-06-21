@@ -107,6 +107,11 @@ export default StyleSheet.create({
     height: 40,
     borderRadius: 20
   },
+  styleFotoDefault: {
+    width: 24,
+    height: 24,
+    marginTop: -5
+  },
   namaContainer: {
     flexDirection: 'column',
     flex: 1,

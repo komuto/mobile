@@ -26,5 +26,16 @@ export default StyleSheet.create({
     alignSelf: 'center',
     marginLeft: Metrics.baseMargin,
     fontFamily: Fonts.type.bold
+  },
+  spinner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: 40,
+    marginTop: -10,
+    opacity: 0.5
+  },
+  containerText: {
+    flexDirection: 'row'
   }
 })

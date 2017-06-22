@@ -3,8 +3,8 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
     marginTop: Metrics.navBarHeight,
+    height: Metrics.screenHeight - Metrics.navBarHeight,
     backgroundColor: Colors.background
   },
   textContainer: {
@@ -48,5 +48,14 @@ export default StyleSheet.create({
     color: Colors.snow,
     fontSize: Fonts.size.regular,
     fontFamily: Fonts.type.bold
+  },
+  spinner: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

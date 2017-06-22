@@ -3,6 +3,7 @@ import * as userActions from '../actions/user'
 import * as userApi from '../api/user'
 
 function * register (action) {
+  console.log(action)
   try {
     const {data} = yield userApi.register(action)
     yield put({ type: userActions.USER_REGISTER_SUCCESS, ...data })

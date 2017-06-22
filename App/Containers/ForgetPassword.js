@@ -1,5 +1,13 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator
+} from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as forgotPasswordAction from '../actions/user'
@@ -16,17 +24,30 @@ class ForgetPassword extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      email: ''
+      email: '',
+      loading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPassword.status === 200) {
-      NavigationActions.notifikasi({
+      this.setState({
+        loading: false
+      })
+      NavigationActions.otpcode({
         type: ActionConst.PUSH,
-        tipeNotikasi: 'resetpassword',
         email: this.state.email
       })
+    } else if (nextProps.dataPassword.status > 200) {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Error', nextProps.dataPassword.message)
+    } else if (nextProps.dataPassword.status === 'ENOENT') {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Error', nextProps.dataPassword.message)
     }
   }
 
@@ -40,6 +61,9 @@ class ForgetPassword extends React.Component {
       if (email === '') {
         this.onError('email')
       } else {
+        this.setState({
+          loading: true
+        })
         this.props.forgotPass(email)
       }
     } else {
@@ -65,37 +89,44 @@ class ForgetPassword extends React.Component {
 
   render () {
     const {email} = this.state
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>
-            Silahkan menuliskan alamat email yang Anda{'\n'}
-            gunakan untuk mendaftar di Komuto
-          </Text>
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            ref='password'
-            style={styles.inputText}
-            value={email}
-            keyboardType='default'
-            returnKeyType='go'
-            autoCapitalize='none'
-            autoCorrect
-            onChangeText={this.handleChangeEmail}
-            underlineColorAndroid='transparent'
-            placeholder='Alamat Email'
-          />
-        </View>
-        <TouchableOpacity
-          style={styles.buttonLogin}
-          onPress={this.sukses}
-        >
-          <Text style={styles.textButtonLogin}>
-            Reset Password
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>
+              Silahkan menuliskan alamat email yang Anda{'\n'}
+              gunakan untuk mendaftar di Komuto
+            </Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              ref='password'
+              style={styles.inputText}
+              value={email}
+              keyboardType='default'
+              returnKeyType='go'
+              autoCapitalize='none'
+              autoCorrect
+              onChangeText={this.handleChangeEmail}
+              underlineColorAndroid='transparent'
+              placeholder='Alamat Email'
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.buttonLogin}
+            onPress={this.sukses}
+          >
+            <Text style={styles.textButtonLogin}>
+              Reset Password
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+        {spinner}
+      </View>
     )
   }
 }

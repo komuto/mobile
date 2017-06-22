@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  AsyncStorage,
   Alert
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -19,8 +18,6 @@ class PasswordBaru extends React.Component {
     super(props)
     this.state = {
       email: this.props.email,
-      nama: this.props.nama,
-      gender: this.props.gender,
       password: '',
       konfirmasipassword: '',
       loading: false
@@ -31,14 +28,9 @@ class PasswordBaru extends React.Component {
       this.setState({
         loading: false
       })
-      AsyncStorage.setItem('nama', nextProps.data.user.data.name)
-      AsyncStorage.setItem('saldo', nextProps.data.user.data.saldo_wallet)
-      AsyncStorage.setItem('foto', nextProps.data.user.data.photo)
-      AsyncStorage.setItem('token', nextProps.data.user.data.token)
-      this.props.stateLogin(true)
       NavigationActions.notifikasi({
         type: ActionConst.REPLACE,
-        tipeNotikasi: 'welcome'
+        tipeNotikasi: 'newpassword'
       })
     }
   }
@@ -55,12 +47,11 @@ class PasswordBaru extends React.Component {
     } else if (password !== konfirmasipassword) {
       Alert.alert('Pesan', 'Password tidak sama')
     } else {
-      const {email, nama, gender, password, konfirmasipassword} = this.state
+      const { password, konfirmasipassword } = this.state
       this.setState({
         loading: true
       })
       this.props.newPassword(password, konfirmasipassword)
-      this.props.loginFacebook(email, nama, gender)
     }
   }
   render () {
@@ -117,14 +108,12 @@ class PasswordBaru extends React.Component {
 }
 const mapStateToProps = (state) => {
   return {
-    data: state.social
+    data: state.newPassword
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
-    newPassword: (password, konfirmasipassword) => dispatch(userAction.newPassword({password, konfirmasipassword})),
-    loginFacebook: (email, nama, gender) => dispatch(userAction.loginSocial({email, nama, gender})),
-    stateLogin: (login) => dispatch(userAction.stateLogin({login}))
+    newPassword: (password, konfirmasipassword) => dispatch(userAction.newPassword({password, konfirmasipassword}))
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(PasswordBaru)

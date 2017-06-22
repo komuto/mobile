@@ -40,6 +40,46 @@ class Profile extends React.Component {
       this.setState({
         isLogin: true
       })
+      AsyncStorage.getItem('nama').then((value) => {
+        if (value === null || value === undefined || value === '') {
+        } else {
+          this.setState({
+            nama: value
+          })
+        }
+      }).done()
+      AsyncStorage.getItem('saldo').then((value) => {
+        if (value === null || value === undefined || value === '') {
+          this.setState({
+            saldo: '0'
+          })
+        } else {
+          this.setState({
+            saldo: value
+          })
+        }
+      }).done()
+      AsyncStorage.getItem('foto').then((value) => {
+        if (value === '' || value === undefined || value === null) {
+          this.setState({
+            foto: 'default'
+          })
+        } else {
+          this.setState({
+            foto: value
+          })
+        }
+      }).done()
+      AsyncStorage.getItem('status').then((value) => {
+        this.setState({
+          status: value
+        })
+      }).done()
+      AsyncStorage.getItem('email').then((value) => {
+        this.setState({
+          email: value
+        })
+      }).done()
     } else if (!nextProps.datalogin.login) {
       this.setState({
         isLogin: false

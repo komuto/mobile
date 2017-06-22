@@ -66,32 +66,6 @@ function auth (state = initUser, action) {
         isError: true,
         isFound: false
       }
-    case actions.USER_NEWPASSWORD_REQUEST:
-      return {
-        ...state,
-        isLoading: true
-      }
-    case actions.USER_NEWPASSWORD_SUCCESS:
-      return {
-        ...state,
-        email: action.data.email,
-        uid: action.data.id,
-        user: action,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: true,
-        isError: false
-      }
-    case actions.USER_NEWPASSWORD_FAILURE:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isError: true,
-        isFound: false
-      }
     default:
       return state
   }
@@ -216,6 +190,39 @@ function forgetPassword (state = initForgetPass, action) {
   }
 }
 
+function newPassword (state = initForgetPass, action) {
+  switch (action.type) {
+    case actions.USER_NEWPASSWORD_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.USER_NEWPASSWORD_SUCCESS:
+      return {
+        ...state,
+        email: action.data.email,
+        uid: action.data.id,
+        user: action,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true,
+        isError: false
+      }
+    case actions.USER_NEWPASSWORD_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isError: true,
+        isFound: false
+      }
+    default:
+      return state
+  }
+}
+
 function isLogin (state = initLogin, action) {
   switch (action.type) {
     case actions.IS_LOGIN:
@@ -233,5 +240,6 @@ export {
   authSocial,
   register,
   forgetPassword,
+  newPassword,
   isLogin
 }

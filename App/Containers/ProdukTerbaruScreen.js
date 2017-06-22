@@ -68,14 +68,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
   handleBack = () => {
     if (this.state.tipe === 'search') {
-      console.log('disini')
       this.setState({
         tipe: 'data'
       })
       return true
     } else if (NavigationActions.pop()) {
-      console.log('disana')
-      NavigationActions.pop()
       return true
     }
   }
@@ -217,7 +214,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         visible={this.state.sortModal}
         onRequestClose={() => this.setState({ sortModal: false })}
         >
-        <View style={styles.blackContainer} />
+        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
         <View style={styles.modalSortContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Urutkan Berdasarkan</Text>

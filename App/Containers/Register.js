@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  AsyncStorage
+  AsyncStorage,
+  Alert
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -46,12 +47,12 @@ class Register extends React.Component {
       this.setState({
         loading: false
       })
-      AsyncStorage.setItem('nama', this.state.name)
-      AsyncStorage.setItem('saldo', '0')
+      AsyncStorage.setItem('nama', nextProps.dataRegister.user.data.name)
+      AsyncStorage.setItem('saldo', String(nextProps.dataRegister.user.data.saldo_wallet))
       AsyncStorage.setItem('foto', '')
-      AsyncStorage.setItem('token', 'token')
-      AsyncStorage.setItem('status', '0')
-      AsyncStorage.setItem('email', this.state.email)
+      AsyncStorage.setItem('token', nextProps.dataRegister.user.data.token)
+      AsyncStorage.setItem('status', String(nextProps.dataRegister.user.data.status))
+      AsyncStorage.setItem('email', nextProps.dataRegister.user.data.email)
       this.props.stateLogin(true)
       NavigationActions.backtab({
         type: ActionConst.RESET
@@ -60,7 +61,12 @@ class Register extends React.Component {
       this.setState({
         loading: false
       })
-      console.log('register gagal')
+      Alert.alert('Error', nextProps.dataRegister.message)
+    } else if (nextProps.dataRegister.status === 'ENOENT') {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Error', nextProps.dataRegister.message)
     }
   }
 

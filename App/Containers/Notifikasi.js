@@ -78,7 +78,7 @@ class Notifikasi extends React.Component {
           <View style={styles.containerButton}>
             <TouchableOpacity
               style={styles.buttonLogin}
-              onPress={() => this.backToLogin()}
+              onPress={() => this.backToProfile()}
             >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Login

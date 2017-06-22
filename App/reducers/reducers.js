@@ -11,6 +11,7 @@ const komutoApps = storage.reducer(combineReducers({
   social: userReducers.authSocial,
   register: userReducers.register,
   forgetPassword: userReducers.forgetPassword,
+  newPassword: userReducers.newPassword,
   isLogin: userReducers.isLogin,
   products: homeReducers.product,
   category: homeReducers.categoryList,

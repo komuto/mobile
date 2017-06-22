@@ -20,6 +20,7 @@ import KategoriEmpatScreen from '../Containers/KategoriEmpatScreen'
 import SearchResult from '../Containers/SearchResult'
 import Search from '../Containers/Search'
 import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
+import OTPCodeScreen from '../Containers/OTPCodeScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -114,6 +115,13 @@ class NavigationRouter extends Component {
           <Scene
             key='forgetpassword'
             component={ForgetPassword}
+            title='Lupa Password'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='otpcode'
+            component={OTPCodeScreen}
             title='Lupa Password'
             navBar={CustomNavBar}
             hideNavBar={false}

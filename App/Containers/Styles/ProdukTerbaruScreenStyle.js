@@ -205,8 +205,7 @@ export default StyleSheet.create({
   },
   blackContainer: {
     flex: 1,
-    backgroundColor: 'black',
-    opacity: 0.4
+    backgroundColor: 'rgba(0,0,0,0.4)'
   },
   modalSortContainer: {
     justifyContent: 'center',

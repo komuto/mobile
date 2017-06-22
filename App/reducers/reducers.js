@@ -8,10 +8,10 @@ import * as locationReducers from './location'
 
 const komutoApps = storage.reducer(combineReducers({
   user: userReducers.auth,
+  profile: userReducers.getProfile,
   social: userReducers.authSocial,
   register: userReducers.register,
   forgetPassword: userReducers.forgetPassword,
-  newPassword: userReducers.newPassword,
   isLogin: userReducers.isLogin,
   products: homeReducers.product,
   category: homeReducers.categoryList,

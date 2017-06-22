@@ -5,9 +5,11 @@ import {
   View,
   Image,
   TouchableOpacity,
+  Alert,
   AsyncStorage
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
+const LoginManager = require('react-native').NativeModules.FBLoginManager
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
@@ -36,96 +38,30 @@ class Profile extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.datalogin.login) {
-      this.setState({
-        isLogin: true
-      })
-      AsyncStorage.getItem('nama').then((value) => {
-        if (value === null || value === undefined || value === '') {
-        } else {
-          this.setState({
-            nama: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('saldo').then((value) => {
-        if (value === null || value === undefined || value === '') {
-          this.setState({
-            saldo: '0'
-          })
-        } else {
-          this.setState({
-            saldo: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('foto').then((value) => {
-        if (value === '' || value === undefined || value === null) {
-          this.setState({
-            foto: 'default'
-          })
-        } else {
-          this.setState({
-            foto: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('status').then((value) => {
-        this.setState({
-          status: value
-        })
-      }).done()
-      AsyncStorage.getItem('email').then((value) => {
-        this.setState({
-          email: value
-        })
-      }).done()
-    } else if (!nextProps.datalogin.login) {
+    if (!nextProps.datalogin.login) {
       this.setState({
         isLogin: false
       })
+    } else if (nextProps.dataProfile.status === 200) {
+      this.setState({
+        isLogin: true,
+        nama: nextProps.dataProfile.user.name,
+        saldo: String(nextProps.dataProfile.user.saldo_wallet),
+        foto: nextProps.dataProfile.user.photo || 'default',
+        status: nextProps.dataProfile.verifyStatus,
+        email: nextProps.dataProfile.user.email
+      })
+    } else if (nextProps.dataProfile.status > 200) {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Login gagal', nextProps.dataProfile.message)
     }
   }
 
   componentDidMount () {
     if (this.state.isLogin) {
-      AsyncStorage.getItem('nama').then((value) => {
-        if (value === null || value === undefined || value === '') {
-        } else {
-          this.setState({
-            nama: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('saldo').then((value) => {
-        if (value === null || value === undefined || value === '') {
-          this.setState({
-            saldo: '0'
-          })
-        } else {
-          this.setState({
-            saldo: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('foto').then((value) => {
-        if (value === '' || value === undefined || value === null) {
-        } else {
-          this.setState({
-            foto: value
-          })
-        }
-      }).done()
-      AsyncStorage.getItem('status').then((value) => {
-        this.setState({
-          status: value
-        })
-      }).done()
-      AsyncStorage.getItem('email').then((value) => {
-        this.setState({
-          email: value
-        })
-      }).done()
+      this.props.getProfile()
     }
   }
 
@@ -138,13 +74,9 @@ class Profile extends React.Component {
   }
 
   logout () {
-    AsyncStorage.setItem('nama', '')
-    AsyncStorage.setItem('saldo', '')
-    AsyncStorage.setItem('foto', '')
     AsyncStorage.setItem('token', '')
-    AsyncStorage.setItem('status', '')
-    AsyncStorage.setItem('email', '')
     this.props.stateLogin(false)
+    LoginManager.logOut()
   }
 
   renderStatus () {
@@ -327,13 +259,15 @@ class Profile extends React.Component {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    stateLogin: (login) => dispatch(loginaction.stateLogin({login}))
+    stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
+    getProfile: (login) => dispatch(loginaction.getProfile())
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataProfile: state.profile
   }
 }
 

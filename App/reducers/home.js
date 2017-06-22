@@ -5,7 +5,7 @@ const initCategory = {
   message: '',
   status: '',
   isLoading: false,
-  isOnline: false,
+  isOnline: true,
   isFound: false
 }
 
@@ -14,7 +14,7 @@ const initProduct = {
   message: '',
   status: 0,
   isLoading: false,
-  isOnline: false,
+  isOnline: true,
   isFound: false
 }
 
@@ -40,7 +40,7 @@ function product (state = initProduct, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isOnline: true
+        isOnline: action.isOnline
       }
     case homeActions.SEARCH_PRODUCT_REQUEST:
       return {
@@ -62,7 +62,7 @@ function product (state = initProduct, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isOnline: true
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -91,7 +91,7 @@ function categoryList (state = initCategory, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isOnline: true
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -108,7 +108,7 @@ function subCategory (state = initCategory, action) {
         status: 0,
         isLoading: false,
         isFound: false,
-        isOnline: false
+        isOnline: true
       }
     case homeActions.HOME_SUBCATEGORY_REQUEST:
       return {
@@ -130,7 +130,7 @@ function subCategory (state = initCategory, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isOnline: true
+        isOnline: action.isOnline
       }
     default:
       return state

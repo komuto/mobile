@@ -32,11 +32,23 @@ class PasswordBaru extends React.Component {
         type: ActionConst.REPLACE,
         tipeNotikasi: 'newpassword'
       })
+    } else if (nextProps.data.status > 200) {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Error', nextProps.data.message)
+    } else if (nextProps.data.status === 'ENOENT') {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Error', nextProps.data.message)
     }
   }
+
   handleChangePassword = (text) => {
     this.setState({ password: text })
   }
+
   handleChangeKonfirmasiPassword = (text) => {
     this.setState({ konfirmasipassword: text })
   }

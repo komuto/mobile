@@ -11,7 +11,28 @@ class Facebook extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      loading: false
+      loading: false,
+      providerName: 'facebook',
+      providerUid: '',
+      accessToken: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataSocial.status === 200) {
+      AsyncStorage.setItem('token', nextProps.dataSocial.token)
+      this.props.stateLogin(true)
+      NavigationActions.backtab({ type: ActionConst.RESET })
+    } else if (nextProps.dataSocial.status > 200) {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Login gagal', nextProps.dataSocial.message)
+    } else if (nextProps.dataSocial.status === 'ENOENT') {
+      this.setState({
+        loading: false
+      })
+      Alert.alert('Login gagal', nextProps.dataSocial.message)
     }
   }
 
@@ -38,6 +59,9 @@ class Facebook extends React.Component {
       function (result) {
         if (result.isCancelled) {
           console.log('Login cancelled')
+          _this.setState({
+            loading: false
+          })
         } else {
           console.log('Login success with permissions: ' + result.grantedPermissions.toString())
           AccessToken.getCurrentAccessToken().then((data) => {
@@ -56,21 +80,21 @@ class Facebook extends React.Component {
   }
   initUser = (token1) => {
     this.setState({ loading: true })
+    const { providerName } = this.state
     fetch('https://graph.facebook.com/v2.9/me?fields=id,name,email,gender,picture{url}&access_token=' + token1)
     .then((response) => response.json())
     .then((json) => {
       this.setState({
         loading: false
       })
-      console.log(token1)
-      AsyncStorage.setItem('nama', json.name)
-      AsyncStorage.setItem('saldo', '0')
-      AsyncStorage.setItem('foto', json.picture.data.url)
-      AsyncStorage.setItem('token', token1)
-      AsyncStorage.setItem('status', '0')
-      AsyncStorage.setItem('email', json.email)
-      this.props.stateLogin(true)
-      NavigationActions.backtab({ type: ActionConst.RESET })
+      console.log(json)
+      this.props.loginSocial(providerName, json.id, token1)
+      // AsyncStorage.setItem('nama', json.name)
+      // AsyncStorage.setItem('saldo', '0')
+      // AsyncStorage.setItem('foto', json.picture.data.url)
+      // AsyncStorage.setItem('token', token1)
+      // AsyncStorage.setItem('status', '0')
+      // AsyncStorage.setItem('email', json.email)
     })
     .catch((err) => console.log(err))
   }
@@ -108,13 +132,16 @@ class Facebook extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.user
+    datalogin: state.user,
+    dataSocial: state.social
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    stateLogin: (login) => dispatch(loginAction.stateLogin({login}))
+    stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
+    loginSocial: (providerName, providerUid, accessToken) => dispatch(loginAction.loginSocial({
+      provider_name: providerName, provider_uid: providerUid, access_token: accessToken}))
   }
 }
 

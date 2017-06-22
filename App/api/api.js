@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { serviceUrl, apiKomuto } from '../config'
 import {token} from '../store'
+import { AsyncStorage } from 'react-native'
 
 export function authApi () {
   return axios.create({
@@ -23,8 +24,20 @@ export function publicApiKomuto () {
 }
 
 export function authApiKomuto () {
-  return axios.create({
+  const api = axios.create({
     baseURL: apiKomuto + '/',
-    headers: {'Authorization': token()}
+    timeout: 2000
   })
+  api.interceptors.request.use(async function (config) {
+    try {
+      const token = await AsyncStorage.getItem('token')
+      if (token !== null) {
+        config.headers['Authorization'] = 'JWT ' + token
+      }
+      return config
+    } catch (err) {
+      config.log('Error with message: ', err)
+    }
+  })
+  return api
 }

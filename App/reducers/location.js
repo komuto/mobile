@@ -6,7 +6,7 @@ const initProvince = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: true
 }
 
 const initDistrict = {
@@ -15,7 +15,7 @@ const initDistrict = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: true
 }
 
 const initSubDistrict = {
@@ -24,7 +24,7 @@ const initSubDistrict = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: true
 }
 
 const initVillage = {
@@ -33,7 +33,7 @@ const initVillage = {
   status: 0,
   isLoading: false,
   isFound: false,
-  isError: false
+  isOnline: true
 }
 
 function province (state = initProvince, action) {
@@ -58,7 +58,7 @@ function province (state = initProvince, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -87,7 +87,7 @@ function district (state = initDistrict, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -116,7 +116,7 @@ function subdistrict (state = initSubDistrict, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -145,7 +145,7 @@ function village (state = initVillage, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isError: true
+        isOnline: action.isOnline
       }
     default:
       return state

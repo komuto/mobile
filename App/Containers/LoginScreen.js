@@ -6,8 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
-  AsyncStorage
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -39,14 +38,7 @@ class LoginScreen extends React.Component {
       this.setState({
         loading: false
       })
-      AsyncStorage.setItem('nama', nextProps.datalogin.user.data.name)
-      AsyncStorage.setItem('saldo', String(nextProps.datalogin.user.data.saldo_wallet))
-      AsyncStorage.setItem('foto', nextProps.datalogin.user.data.photo)
-      AsyncStorage.setItem('token', nextProps.datalogin.user.data.token)
-      AsyncStorage.setItem('status', String(nextProps.datalogin.user.data.status))
-      AsyncStorage.setItem('email', nextProps.datalogin.user.data.email)
       this.props.stateLogin(true)
-
       NavigationActions.backtab({ type: ActionConst.RESET })
     } else if (nextProps.datalogin.status > 200) {
       this.setState({

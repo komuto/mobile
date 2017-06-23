@@ -49,6 +49,7 @@ class Register extends React.Component {
         loading: false
       })
       AsyncStorage.setItem('token', nextProps.dataRegister.user.token)
+      this.props.getProfile()
       this.props.stateLogin(true)
       NavigationActions.backtab({
         type: ActionConst.RESET
@@ -315,7 +316,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     registers: (name, phoneNumber, email, gender, password) => dispatch(registerAction.register({
       name, phone_number: phoneNumber, email, gender, password})),
-    stateLogin: (login) => dispatch(registerAction.stateLogin({login}))
+    stateLogin: (login) => dispatch(registerAction.stateLogin({login})),
+    getProfile: (login) => dispatch(registerAction.getProfile())
   }
 }
 

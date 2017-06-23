@@ -39,7 +39,6 @@ class LoginScreen extends React.Component {
         loading: false
       })
       this.props.stateLogin(true)
-      this.props.getProfile()
     } else if (nextProps.datalogin.status > 200) {
       this.setState({
         loading: false

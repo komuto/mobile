@@ -43,6 +43,7 @@ class Profile extends React.Component {
         isLogin: false
       })
     } else if (nextProps.dataProfile.status === 200) {
+      console.log(nextProps.dataProfile)
       this.setState({
         isLogin: true,
         nama: nextProps.dataProfile.user.name,
@@ -82,7 +83,7 @@ class Profile extends React.Component {
 
   renderStatus () {
     const { status } = this.state
-    if (status === '0') {
+    if (status === 0) {
       return (
         <View style={styles.verifikasiContainer}>
           <View style={styles.emailContainer}>

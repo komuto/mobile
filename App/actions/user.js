@@ -2,9 +2,15 @@ export const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST'
 export const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS'
 export const USER_LOGIN_FAILURE = 'USER_LOGIN_FAILURE'
 
+export const USER_VERIFICATION_REQUEST = 'USER_VERIFICATION_REQUEST'
+export const USER_VERIFICATION_SUCCESS = 'USER_VERIFICATION_SUCCESS'
+export const USER_VERIFICATION_FAILURE = 'USER_VERIFICATION_FAILURE'
+
 export const LOGIN_SOCIAL_REQUEST = 'LOGIN_SOCIAL_REQUEST'
 export const LOGIN_SOCIAL_SUCCESS = 'LOGIN_SOCIAL_SUCCESS'
 export const LOGIN_SOCIAL_FAILURE = 'LOGIN_SOCIAL_FAILURE'
+
+export const USER_LOGOUT = 'USER_LOGOUT'
 
 export const USER_REGISTER_REQUEST = 'USER_REGISTER_REQUEST'
 export const USER_REGISTER_SUCCESS = 'USER_REGISTER_SUCCESS'
@@ -31,6 +37,13 @@ function register (params) {
   }
 }
 
+function verification (params) {
+  return {
+    type: USER_VERIFICATION_REQUEST,
+    ...params
+  }
+}
+
 function newPassword (params) {
   return {
     type: USER_NEWPASSWORD_REQUEST,
@@ -49,6 +62,12 @@ function login (params = {}) {
   return {
     type: USER_LOGIN_REQUEST,
     ...params
+  }
+}
+
+function logout () {
+  return {
+    type: USER_LOGOUT
   }
 }
 
@@ -75,7 +94,9 @@ function stateLogin (params) {
 
 export {
   register,
+  verification,
   login,
+  logout,
   newPassword,
   getProfile,
   loginSocial,

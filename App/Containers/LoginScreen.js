@@ -39,7 +39,7 @@ class LoginScreen extends React.Component {
         loading: false
       })
       this.props.stateLogin(true)
-      NavigationActions.backtab({ type: ActionConst.RESET })
+      this.props.getProfile()
     } else if (nextProps.datalogin.status > 200) {
       this.setState({
         loading: false
@@ -256,7 +256,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     attemptLogin: (email, password) => dispatch(loginAction.login({email, password})),
-    stateLogin: (login) => dispatch(loginAction.stateLogin({login}))
+    stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
+    getProfile: (login) => dispatch(loginAction.getProfile())
   }
 }
 

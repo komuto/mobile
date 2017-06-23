@@ -12,6 +12,7 @@ const error = {
 function * register (action) {
   try {
     const {data} = yield userApi.register(action)
+    AsyncStorage.setItem('token', data.data.token)
     yield put({ type: userActions.USER_REGISTER_SUCCESS, ...data })
   } catch (e) {
     const data = e.response
@@ -38,6 +39,39 @@ function * login (action) {
       yield put({ type: userActions.USER_LOGIN_FAILURE, ...data })
     } else {
       yield put({ type: userActions.USER_LOGIN_FAILURE, ...error })
+    }
+  }
+}
+
+function* logout (action) {
+  try {
+    const data = {
+      message: 'USER LOGOUT SUCCESS',
+      code: 200
+    }
+    AsyncStorage.removeItem('token')
+    yield put({ type: userActions.USER_LOGOUT_SUCCESS, ...data })
+  } catch (e) {
+    const data = {
+      message: 'USER LOGOUT FAILED',
+      code: 400
+    }
+    yield put({ type: userActions.USER_LOGOUT_FAILURE, ...data })
+  }
+}
+
+function* verify (action) {
+  try {
+    const {data} = yield userApi.verification(action)
+    yield put({ type: userActions.USER_VERIFICATION_SUCCESS, ...data })
+  } catch (e) {
+    const data = e.response
+    if (data !== undefined) {
+      const {data} = e.response
+      data.isOnline = true
+      yield put({ type: userActions.USER_VERIFICATION_FAILURE, ...data })
+    } else {
+      yield put({ type: userActions.USER_VERIFICATION_FAILURE, ...error })
     }
   }
 }
@@ -109,7 +143,9 @@ function* getProfile (action) {
 
 export {
   login,
+  logout,
   register,
+  verify,
   forgetPassword,
   loginSocial,
   newPassword,

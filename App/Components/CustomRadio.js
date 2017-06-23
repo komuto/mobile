@@ -41,10 +41,10 @@ export default class CustomRadio extends React.Component {
                   index={i}
                   isSelected={this.state.index === i}
                   onPress={onPress}
-                  buttonInnerColor={Colors.red}
-                  buttonOuterColor={this.state.index === i ? Colors.red : Colors.steel}
+                  buttonInnerColor={Colors.bluesky}
+                  buttonOuterColor={this.state.index === i ? Colors.bluesky : Colors.steel}
                   buttonSize={20}
-                  buttonStyle={{}}
+                  buttonStyle={{ borderWidth: 1 }}
                   buttonWrapStyle={styles.buttonWrap}
                 />
                 <RadioButtonLabel

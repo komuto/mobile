@@ -51,7 +51,7 @@ export default StyleSheet.create({
   },
   textButtonLogin: {
     color: Colors.snow,
-    fontSize: Fonts.size.regular,
+    fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.bold
   },
   line: {

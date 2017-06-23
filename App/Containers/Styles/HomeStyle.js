@@ -118,6 +118,7 @@ export default StyleSheet.create({
     marginTop: 9,
     color: Colors.lightblack,
     fontSize: Fonts.size.small,
+    width: (Metrics.screenWidth / 3) - 40,
     textAlign: 'center',
     fontFamily: Fonts.type.regular
   },

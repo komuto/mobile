@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Text, TouchableOpacity, Image, AsyncStorage, View, ActivityIndicator } from 'react-native'
+import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import FBSDK from 'react-native-fbsdk'
@@ -19,20 +19,20 @@ class Facebook extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataSocial.status === 200) {
-      AsyncStorage.setItem('token', nextProps.dataSocial.token)
+    if (nextProps.datalogin.status === 200) {
+      this.props.getProfile()
       this.props.stateLogin(true)
       NavigationActions.backtab({ type: ActionConst.RESET })
-    } else if (nextProps.dataSocial.status > 200) {
+    } else if (nextProps.datalogin.status > 200) {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.dataSocial.message)
-    } else if (nextProps.dataSocial.status === 'ENOENT') {
+      Alert.alert('Login gagal', nextProps.datalogin.message)
+    } else if (nextProps.datalogin.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.dataSocial.message)
+      Alert.alert('Login gagal', nextProps.datalogin.message)
     }
   }
 
@@ -132,8 +132,7 @@ class Facebook extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.user,
-    dataSocial: state.social
+    datalogin: state.user
   }
 }
 
@@ -141,7 +140,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
     loginSocial: (providerName, providerUid, accessToken) => dispatch(loginAction.loginSocial({
-      provider_name: providerName, provider_uid: providerUid, access_token: accessToken}))
+      provider_name: providerName, provider_uid: providerUid, access_token: accessToken})),
+    getProfile: (login) => dispatch(loginAction.getProfile())
   }
 }
 

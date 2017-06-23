@@ -4,7 +4,6 @@ const initUser = {
   email: '',
   token: '',
   uid: '',
-  isLoggedIn: false,
   user: {},
   message: '',
   status: '',
@@ -30,6 +29,14 @@ const initForgetPass = {
   isLoading: false,
   isOnline: true,
   isFound: false
+}
+
+const initVerify = {
+  message: '',
+  status: '',
+  isLoading: false,
+  isFound: false,
+  isOnline: true
 }
 
 const initLogin = {
@@ -75,67 +82,6 @@ function auth (state = initUser, action) {
         isOnline: action.isOnline,
         isFound: false
       }
-    case actions.USER_NEWPASSWORD_REQUEST:
-      return {
-        ...state,
-        isLoading: true
-      }
-    case actions.USER_NEWPASSWORD_SUCCESS:
-      return {
-        ...state,
-        email: action.data.email,
-        uid: action.data.id,
-        user: action,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: true
-      }
-    case actions.USER_NEWPASSWORD_FAILURE:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isOnline: action.isOnline
-      }
-    default:
-      return state
-  }
-}
-
-function getProfile (state = initProfile, action) {
-  switch (action.type) {
-    case actions.GET_PROFILE_REQUEST:
-      return {
-        ...state,
-        isLoading: true
-      }
-    case actions.GET_PROFILE_SUCCESS:
-      return {
-        ...state,
-        verifyStatus: action.data.status,
-        user: action.data.user,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: true
-      }
-    case actions.GET_PROFILE_FAILURE:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isOnline: action.isOnline
-      }
-    default:
-      return state
-  }
-}
-
-function authSocial (state = initUser, action) {
-  switch (action.type) {
     case actions.LOGIN_SOCIAL_REQUEST:
       return {
         ...state,
@@ -172,10 +118,101 @@ function authSocial (state = initUser, action) {
         isLoading: false,
         isOnline: action.isOnline
       }
+    case actions.USER_LOGOUT_SUCCESS:
+      return {
+        ...state,
+        message: 'User Logout Success',
+        status: 0,
+        isLoading: false,
+        isFound: true
+      }
+    case actions.USER_NEWPASSWORD_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.USER_NEWPASSWORD_SUCCESS:
+      return {
+        ...state,
+        email: action.data.email,
+        uid: action.data.id,
+        user: action,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true
+      }
+    case actions.USER_NEWPASSWORD_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isOnline: action.isOnline
+      }
     default:
       return state
   }
 }
+
+function verify (state = initVerify, action) {
+  switch (action.type) {
+    case actions.USER_VERIFICATION_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.USER_VERIFICATION_SUCCESS:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true
+      }
+    case actions.USER_VERIFICATION_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isOnline: action.isOnline
+      }
+    default:
+      return state
+  }
+}
+
+function getProfile (state = initProfile, action) {
+  switch (action.type) {
+    case actions.GET_PROFILE_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.GET_PROFILE_SUCCESS:
+      return {
+        ...state,
+        verifyStatus: action.data.user.status,
+        user: action.data.user,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true
+      }
+    case actions.GET_PROFILE_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isOnline: action.isOnline
+      }
+    default:
+      return state
+  }
+}
+
 function register (state = initUser, action) {
   switch (action.type) {
     case actions.USER_REGISTER_REQUEST:
@@ -261,8 +298,8 @@ function isLogin (state = initLogin, action) {
 
 export {
   auth,
+  verify,
   getProfile,
-  authSocial,
   register,
   forgetPassword,
   isLogin

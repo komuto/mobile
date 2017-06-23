@@ -76,6 +76,7 @@ class Profile extends React.Component {
   logout () {
     AsyncStorage.setItem('token', '')
     this.props.stateLogin(false)
+    this.props.logout()
     LoginManager.logOut()
   }
 
@@ -260,7 +261,8 @@ class Profile extends React.Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
-    getProfile: (login) => dispatch(loginaction.getProfile())
+    getProfile: (login) => dispatch(loginaction.getProfile()),
+    logout: (login) => dispatch(loginaction.logout())
   }
 }
 

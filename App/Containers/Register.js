@@ -34,7 +34,7 @@ class Register extends React.Component {
       email: '',
       password: '',
       konfirmasiPassword: '',
-      gender: 'L',
+      gender: 'male',
       index: 0,
       label: 'Pria',
       data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
@@ -44,15 +44,11 @@ class Register extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataRegister.status === 200) {
+      console.log(nextProps.dataRegister)
       this.setState({
         loading: false
       })
-      AsyncStorage.setItem('nama', nextProps.dataRegister.user.data.name)
-      AsyncStorage.setItem('saldo', String(nextProps.dataRegister.user.data.saldo_wallet))
-      AsyncStorage.setItem('foto', '')
-      AsyncStorage.setItem('token', nextProps.dataRegister.user.data.token)
-      AsyncStorage.setItem('status', String(nextProps.dataRegister.user.data.status))
-      AsyncStorage.setItem('email', nextProps.dataRegister.user.data.email)
+      AsyncStorage.setItem('token', nextProps.dataRegister.user.token)
       this.props.stateLogin(true)
       NavigationActions.backtab({
         type: ActionConst.RESET
@@ -93,11 +89,11 @@ class Register extends React.Component {
   handlingRadio (index, value) {
     if (value.toLowerCase() === 'pria') {
       this.setState({
-        gender: 'L'
+        gender: 'male'
       })
     } else {
       this.setState({
-        gender: 'W'
+        gender: 'female'
       })
     }
   }

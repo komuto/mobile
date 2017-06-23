@@ -10,7 +10,9 @@ export const LOGIN_SOCIAL_REQUEST = 'LOGIN_SOCIAL_REQUEST'
 export const LOGIN_SOCIAL_SUCCESS = 'LOGIN_SOCIAL_SUCCESS'
 export const LOGIN_SOCIAL_FAILURE = 'LOGIN_SOCIAL_FAILURE'
 
-export const USER_LOGOUT = 'USER_LOGOUT'
+export const USER_LOGOUT_REQUEST = 'USER_LOGOUT_REQUEST'
+export const USER_LOGOUT_SUCCESS = 'USER_LOGOUT_SUCCESS'
+export const USER_LOGOUT_FAILURE = 'USER_LOGOUT_FAILURE'
 
 export const USER_REGISTER_REQUEST = 'USER_REGISTER_REQUEST'
 export const USER_REGISTER_SUCCESS = 'USER_REGISTER_SUCCESS'
@@ -27,6 +29,10 @@ export const FORGET_PASSWORD_FAILURE = 'FORGET_PASSWORD_FAILURE'
 export const GET_PROFILE_REQUEST = 'GET_PROFILE_REQUEST'
 export const GET_PROFILE_SUCCESS = 'GET_PROFILE_SUCCESS'
 export const GET_PROFILE_FAILURE = 'GET_PROFILE_FAILURE'
+
+export const VALIDATE_TOKENFORGETPASSWORD_REQUEST = 'VALIDATE_TOKENFORGETPASSWORD_REQUEST'
+export const VALIDATE_TOKENFORGETPASSWORD_SUCCESS = 'VALIDATE_TOKENFORGETPASSWORD_SUCCESS'
+export const VALIDATE_TOKENFORGETPASSWORD_FAILURE = 'VALIDATE_TOKENFORGETPASSWORD_FAILURE'
 
 export const IS_LOGIN = 'IS_LOGIN'
 
@@ -67,7 +73,7 @@ function login (params = {}) {
 
 function logout () {
   return {
-    type: USER_LOGOUT
+    type: USER_LOGOUT_REQUEST
   }
 }
 
@@ -92,6 +98,13 @@ function stateLogin (params) {
   }
 }
 
+function validateToken (params) {
+  return {
+    type: VALIDATE_TOKENFORGETPASSWORD_REQUEST,
+    ...params
+  }
+}
+
 export {
   register,
   verification,
@@ -101,5 +114,6 @@ export {
   getProfile,
   loginSocial,
   forgetPassword,
-  stateLogin
+  stateLogin,
+  validateToken
 }

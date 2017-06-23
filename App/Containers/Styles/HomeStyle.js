@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native'
 import { Colors, Metrics, Fonts } from '../../Themes/'
-
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -8,15 +7,15 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey
   },
   headerContainer: {
-    height: 120,
+    height: 110,
     backgroundColor: Colors.red,
-    padding: 10
+    paddingLeft: 15,
+    paddingRight: 15
   },
   header: {
+    backgroundColor: Colors.red,
     flexDirection: 'row',
-    paddingTop: 10,
-    paddingLeft: 10,
-    paddingRight: 10
+    paddingTop: 15
   },
   textHeader: {
     color: Colors.background,
@@ -25,7 +24,6 @@ export default StyleSheet.create({
     flex: 1
   },
   buttonHeader: {
-    marginRight: 5,
     marginLeft: 5,
     marginTop: -5,
     padding: 2
@@ -54,7 +52,7 @@ export default StyleSheet.create({
   searchContainer: {
     backgroundColor: Colors.background,
     borderRadius: 2,
-    marginTop: 12,
+    marginTop: 10,
     paddingLeft: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,20 +73,22 @@ export default StyleSheet.create({
   slider: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: Colors.background
   },
   imageSlider: {
     flex: 1,
-    width: Metrics.screenWidth
+    width: Metrics.screenWidth - 100,
+    height: 140
   },
   titleCategory: {
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.bold,
     color: Colors.darkgrey,
     letterSpacing: 0.2,
-    marginTop: 30,
+    marginTop: 25,
     marginLeft: 20,
-    marginBottom: 15
+    marginBottom: 10
   },
   categoryContainer: {
     flex: 1,
@@ -135,7 +135,7 @@ export default StyleSheet.create({
     flexWrap: 'wrap',
     color: Colors.bluesky,
     flex: 1,
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.bold,
     letterSpacing: 0.2
   },

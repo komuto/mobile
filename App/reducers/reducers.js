@@ -9,6 +9,8 @@ import * as locationReducers from './location'
 const komutoApps = storage.reducer(combineReducers({
   user: userReducers.auth,
   verification: userReducers.verify,
+  validation: userReducers.validateToken,
+  newPassword: userReducers.newPassword,
   profile: userReducers.getProfile,
   register: userReducers.register,
   forgetPassword: userReducers.forgetPassword,

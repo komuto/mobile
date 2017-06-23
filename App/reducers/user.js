@@ -12,6 +12,14 @@ const initUser = {
   isFound: false
 }
 
+const initValidate = {
+  message: '',
+  status: 0,
+  isLoading: false,
+  isFound: false,
+  isOnline: true
+}
+
 const initProfile = {
   message: '',
   status: 0,
@@ -67,6 +75,7 @@ function auth (state = initUser, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.USER_LOGIN_FAILURE:
@@ -104,6 +113,7 @@ function auth (state = initUser, action) {
         status: action.code,
         is_required_password: action.data.is_required_password,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.LOGIN_SOCIAL_FAILURE:
@@ -121,11 +131,18 @@ function auth (state = initUser, action) {
     case actions.USER_LOGOUT_SUCCESS:
       return {
         ...state,
-        message: 'User Logout Success',
-        status: 0,
+        message: action.message,
+        status: action.code,
         isLoading: false,
         isFound: true
       }
+    default:
+      return state
+  }
+}
+
+function newPassword (state = initVerify, action) {
+  switch (action.type) {
     case actions.USER_NEWPASSWORD_REQUEST:
       return {
         ...state,
@@ -134,12 +151,10 @@ function auth (state = initUser, action) {
     case actions.USER_NEWPASSWORD_SUCCESS:
       return {
         ...state,
-        email: action.data.email,
-        uid: action.data.id,
-        user: action,
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.USER_NEWPASSWORD_FAILURE:
@@ -168,6 +183,7 @@ function verify (state = initVerify, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.USER_VERIFICATION_FAILURE:
@@ -198,6 +214,7 @@ function getProfile (state = initProfile, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.GET_PROFILE_FAILURE:
@@ -232,8 +249,10 @@ function register (state = initUser, action) {
         email: action.data.email,
         uid: action.data.id,
         user: action.data,
+        token: action.data.token,
         message: action.message,
         status: action.code,
+        isOnline: true,
         isLoading: false,
         isFound: true
       }
@@ -253,6 +272,36 @@ function register (state = initUser, action) {
       return state
   }
 }
+
+function validateToken (state = initValidate, action) {
+  switch (action.type) {
+    case actions.VALIDATE_TOKENFORGETPASSWORD_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.VALIDATE_TOKENFORGETPASSWORD_SUCCESS:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isOnline: true,
+        isLoading: false,
+        isFound: true
+      }
+    case actions.VALIDATE_TOKENFORGETPASSWORD_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isOnline: action.isOnline
+      }
+    default:
+      return state
+  }
+}
+
 function forgetPassword (state = initForgetPass, action) {
   switch (action.type) {
     case actions.FORGET_PASSWORD_REQUEST:
@@ -269,6 +318,7 @@ function forgetPassword (state = initForgetPass, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case actions.FORGET_PASSWORD_FAILURE:
@@ -301,6 +351,8 @@ export {
   verify,
   getProfile,
   register,
+  newPassword,
   forgetPassword,
-  isLogin
+  isLogin,
+  validateToken
 }

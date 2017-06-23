@@ -34,9 +34,10 @@ class ForgetPassword extends React.Component {
       this.setState({
         loading: false
       })
-      NavigationActions.otpcode({
-        type: ActionConst.PUSH,
-        email: this.state.email
+      NavigationActions.notifikasi({
+        type: ActionConst.REPLACE,
+        email: this.state.email,
+        tipeNotikasi: 'resetpassword'
       })
     } else if (nextProps.dataPassword.status > 200) {
       this.setState({

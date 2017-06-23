@@ -50,6 +50,7 @@ function province (state = initProvince, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case locationActions.GET_PROVINCE_FAILURE:
@@ -79,6 +80,7 @@ function district (state = initDistrict, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
+        isOnline: true,
         isFound: true
       }
     case locationActions.GET_DISTRICT_FAILURE:
@@ -107,6 +109,7 @@ function subdistrict (state = initSubDistrict, action) {
         subdistricts: action.data,
         message: action.message,
         status: action.code,
+        isOnline: true,
         isLoading: false,
         isFound: true
       }
@@ -136,6 +139,7 @@ function village (state = initVillage, action) {
         villages: action.data,
         message: action.message,
         status: action.code,
+        isOnline: true,
         isLoading: false,
         isFound: true
       }

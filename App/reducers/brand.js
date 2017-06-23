@@ -23,7 +23,7 @@ function brand (state = initBrand, action) {
         message: action.message,
         status: action.code,
         isLoading: false,
-        isOnline: action.isOnline,
+        isOnline: true,
         isFound: true
       }
     case brandActions.GET_BRAND_FAILURE:

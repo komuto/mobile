@@ -14,6 +14,7 @@ function * dataSaga () {
   yield takeEvery(userActions.USER_REGISTER_REQUEST, userSaga.register)
   yield takeEvery(userActions.USER_VERIFICATION_REQUEST, userSaga.verify)
   yield takeEvery(userActions.USER_LOGIN_REQUEST, userSaga.login)
+  yield takeEvery(userActions.VALIDATE_TOKENFORGETPASSWORD_REQUEST, userSaga.validateToken)
   yield takeEvery(userActions.GET_PROFILE_REQUEST, userSaga.getProfile)
   yield takeEvery(userActions.FORGET_PASSWORD_REQUEST, userSaga.forgetPassword)
   yield takeEvery(userActions.LOGIN_SOCIAL_REQUEST, userSaga.loginSocial)

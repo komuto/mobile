@@ -22,6 +22,7 @@ function expedition (state = initExpedition, action) {
         expeditions: action.data,
         message: action.message,
         status: action.code,
+        isOnline: true,
         isLoading: false,
         isFound: true
       }

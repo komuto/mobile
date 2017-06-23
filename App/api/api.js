@@ -28,7 +28,7 @@ export function authApiKomuto () {
     baseURL: apiKomuto + '/',
     timeout: 10000
   })
-  api.interceptors.request.use(async function (config) {
+  api.interceptors.request.use(async config => {
     try {
       const token = await AsyncStorage.getItem('token')
       if (token !== null) {

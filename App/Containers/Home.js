@@ -231,7 +231,7 @@ class Home extends React.Component {
       <View style={styles.container}>
         {this.renderHome()}
         <ScrollView>
-          <Swiper height={190} autoplay autoplayTimeout={3.5}>
+          <Swiper height={165} autoplay autoplayTimeout={3.5}>
             <View style={styles.slider}>
               <Image style={styles.imageSlider} source={Images.slider1} resizeMode='stretch' />
             </View>

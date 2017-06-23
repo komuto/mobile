@@ -1,4 +1,4 @@
-import { authApi, authApiKomuto, publicApiKomuto } from './api'
+import { authApiKomuto, publicApiKomuto } from './api'
 
 function register (action) {
   let axios = publicApiKomuto()
@@ -10,6 +10,13 @@ function register (action) {
   })
   .catch(function (err) {
     throw (err)
+  })
+}
+
+function verification (action) {
+  let axios = publicApiKomuto()
+  return axios.get('signup-verification?token=' + action.token, {
+    ...action
   })
 }
 
@@ -53,8 +60,8 @@ function forgetPassword (action) {
 }
 
 function newPassword (action) {
-  let axios = authApi()
-  return axios.put('users', {
+  let axios = publicApiKomuto()
+  return axios.put('passwords/new', {
     ...action
   })
   .then(function (data) {
@@ -78,11 +85,29 @@ function getProfile (action) {
   })
 }
 
+function validateToken (action) {
+  let axios = publicApiKomuto()
+  return axios.get('passwords/new?token=' + action.token, {
+    ...action
+  })
+}
+
+function logout (action) {
+  let data = {
+    message: 'LOGOUT SUCCESS',
+    code: 0
+  }
+  return data
+}
+
 export {
   login,
   loginSocial,
+  verification,
+  logout,
   register,
   forgetPassword,
   newPassword,
-  getProfile
+  getProfile,
+  validateToken
 }

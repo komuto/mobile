@@ -27,27 +27,13 @@ class Home extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: false, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 }
-    ]
-    // var kategori = [
-    //   { gambar: Images.komputer, title: 'Komputer & Handphone' },
-    //   { gambar: Images.sport, title: 'Peralatan Olahraga' },
-    //   { gambar: Images.kantor, title: 'Peralatan Kantor' },
-    //   { gambar: Images.dapur, title: 'Perlengkapan Dapur' },
-    //   { gambar: Images.bayi, title: 'Peralatan Bayi' },
-    //   { gambar: Images.audiovideo, title: 'Peralatan TV dan audio' }
-    // ]
     var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       tipe: this.props.tipe || 'home',
       search: '',
       loadingKategori: true,
-      lol: [],
-      dataSource: dataSource.cloneWithRows(menu),
+      loadingProduk: true,
+      productSource: dataSource.cloneWithRows([]),
       kategoriSource: dataSource.cloneWithRows([])
     }
   }
@@ -58,18 +44,23 @@ class Home extends React.Component {
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
       })
+      const newProduct = nextProps.dataProduk.products
       this.setState({
         kategoriSource: this.state.kategoriSource.cloneWithRows(kategoriInital),
-        loadingKategori: false
+        productSource: this.state.kategoriSource.cloneWithRows(newProduct),
+        loadingKategori: false,
+        loadingProduk: false
       })
     } else if (nextProps.dataKategori.status > 200) {
       this.setState({
-        loadingKategori: true
+        loadingKategori: true,
+        loadingProduk: true
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
     } else if (nextProps.dataKategori.status === 'ENOENT') {
       this.setState({
-        loadingKategori: true
+        loadingKategori: true,
+        loadingProduk: true
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
     }
@@ -163,7 +154,7 @@ class Home extends React.Component {
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status !== 'null') {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
@@ -197,16 +188,33 @@ class Home extends React.Component {
   renderLikes (status) {
     if (status) {
       return (
-        <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => {}}>
+          <Image source={Images.love} style={styles.imageStyleLike} />
+        </TouchableOpacity>
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageStyleNotLike} />
+      <TouchableOpacity onPress={() => {}}>
+        <Image source={Images.love} style={styles.imageStyleNotLike} />
+      </TouchableOpacity>
     )
   }
 
-  renderRow (rowData) {
-    const money = MaskService.toMask('money', rowData.harga, {
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
+    return hargaDiskon
+  }
+
+  renderRowProduk (rowData) {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
+      this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
+    } else {
+      this.statusDiskon = false
+      this.hargaDiskon = rowData.product.price
+    }
+
+    const totalHarga = MaskService.toMask('money', this.hargaDiskon, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -214,37 +222,59 @@ class Home extends React.Component {
     })
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={rowData.gambar} style={styles.imageProduct} />
+        <Image source={Images.contohproduct} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
-            {rowData.diskon}
+            {rowData.product.discount}%
           </Text>
         </View>
         <Text style={styles.textTitleProduct}>
-          {rowData.title}
+          {rowData.product.name}
         </Text>
         <View style={styles.tokoContainer}>
           <Text style={styles.namaToko}>
-            {rowData.toko}
+            {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.status)}
+          {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(rowData.statusDiskon, rowData.nominalDiskon)}
+        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={styles.harga}>
-          {money}
+          {totalHarga}
         </Text>
         <View style={styles.likesContainer}>
           {this.renderLikes(rowData.like)}
           <Text style={styles.like}>
-            {rowData.jumlahlikes}
+            {rowData.product.stock}
           </Text>
         </View>
       </TouchableOpacity>
     )
   }
 
+  renderProduk () {
+    const spinner = this.state.loadingProduk
+    ? (<View style={styles.spinnerProduk}>
+      <ActivityIndicator color='#ef5656' size='small' />
+    </View>) : (<View />)
+    if (this.state.loadingProduk) {
+      return (
+        <View>
+          {spinner}
+        </View>
+      )
+    }
+    return (
+      <ListView
+        contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+        dataSource={this.state.productSource}
+        initialListSize={1}
+        renderRow={this.renderRowProduk.bind(this)}
+        enableEmptySections
+      />
+    )
+  }
+
   renderRowKategori (rowData) {
-    // 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Elektronik'
     if (rowData.name.includes('Handphone & Tablet')) {
       this.image = Images.komputer
     } else if (rowData.name.includes('Olahraga & Outbond')) {
@@ -268,7 +298,7 @@ class Home extends React.Component {
 
   renderKategori () {
     const spinner = this.state.loadingKategori
-    ? (<View style={styles.spinner}>
+    ? (<View style={styles.spinnerKategori}>
       <ActivityIndicator color='#ef5656' size='small' />
     </View>) : (<View />)
     if (this.state.loadingKategori) {
@@ -339,14 +369,7 @@ class Home extends React.Component {
           <Text style={styles.titleCategory}>
             Produk Terbaru
           </Text>
-          <View style={styles.listViewContainer}>
-            <ListView
-              contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-              dataSource={this.state.dataSource}
-              renderRow={this.renderRow.bind(this)}
-              enableEmptySections
-            />
-          </View>
+          {this.renderProduk()}
           <TouchableOpacity style={styles.allCategory} onPress={() => this.produkTerbaru()}>
             <Text style={styles.textAllCategory}>
               Lihat semua produk terbaru
@@ -360,15 +383,17 @@ class Home extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.category.categories)
+  console.log(state.products)
   return {
-    dataKategori: state.category
+    dataKategori: state.category,
+    dataProduk: state.products
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    kategoriHome: dispatch(homeAction.categoryList())
+    getKategori: dispatch(homeAction.categoryList()),
+    getProdukTerbaru: dispatch(homeAction.products())
   }
 }
 

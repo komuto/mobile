@@ -143,10 +143,6 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     letterSpacing: 0.2
   },
-  listViewContainer: {
-    backgroundColor: Colors.snow,
-    width: Metrics.screenWidth
-  },
   rowDataContainer: {
     borderBottomWidth: 0.5,
     borderRightWidth: 0.5,
@@ -179,6 +175,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.extrabold
   },
   textTitleProduct: {
+    flex: 1,
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.regular,
     color: Colors.darkgrey,
@@ -253,12 +250,20 @@ export default StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15
   },
-  spinner: {
+  spinnerKategori: {
     backgroundColor: Colors.background,
     alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,
     height: 265.5,
+    opacity: 0.5
+  },
+  spinnerProduk: {
+    backgroundColor: Colors.background,
+    height: 177.25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
     opacity: 0.5
   }
 })

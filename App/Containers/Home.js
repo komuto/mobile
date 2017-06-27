@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   TextInput,
   ListView,
-  BackAndroid
+  BackAndroid,
+  ActivityIndicator,
+  Alert
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
@@ -15,6 +17,8 @@ import { MaskService } from 'react-native-masked-text'
 import { Images } from '../Themes'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import { connect } from 'react-redux'
+import * as homeAction from '../actions/home'
 
 // Styles
 import styles from './Styles/HomeStyle'
@@ -29,11 +33,45 @@ class Home extends React.Component {
       { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 },
       { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 10000, harga: 10000, like: true, jumlahlikes: 120 }
     ]
+    // var kategori = [
+    //   { gambar: Images.komputer, title: 'Komputer & Handphone' },
+    //   { gambar: Images.sport, title: 'Peralatan Olahraga' },
+    //   { gambar: Images.kantor, title: 'Peralatan Kantor' },
+    //   { gambar: Images.dapur, title: 'Perlengkapan Dapur' },
+    //   { gambar: Images.bayi, title: 'Peralatan Bayi' },
+    //   { gambar: Images.audiovideo, title: 'Peralatan TV dan audio' }
+    // ]
     var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       tipe: this.props.tipe || 'home',
       search: '',
-      dataSource: dataSource.cloneWithRows(menu)
+      loadingKategori: true,
+      lol: [],
+      dataSource: dataSource.cloneWithRows(menu),
+      kategoriSource: dataSource.cloneWithRows([])
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataKategori.status === 200) {
+      const newKategori = nextProps.dataKategori.categories
+      var kategoriInital = newKategori.filter(function (country) {
+        return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
+      })
+      this.setState({
+        kategoriSource: this.state.kategoriSource.cloneWithRows(kategoriInital),
+        loadingKategori: false
+      })
+    } else if (nextProps.dataKategori.status > 200) {
+      this.setState({
+        loadingKategori: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
+    } else if (nextProps.dataKategori.status === 'ENOENT') {
+      this.setState({
+        loadingKategori: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
     }
   }
 
@@ -205,6 +243,52 @@ class Home extends React.Component {
     )
   }
 
+  renderRowKategori (rowData) {
+    // 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Elektronik'
+    if (rowData.name.includes('Handphone & Tablet')) {
+      this.image = Images.komputer
+    } else if (rowData.name.includes('Olahraga & Outbond')) {
+      this.image = Images.sport
+    } else if (rowData.name.includes('Office & Stationery')) {
+      this.image = Images.kantor
+    } else if (rowData.name.includes('Komputer & Laptop')) {
+      this.image = Images.audiovideo
+    } else if (rowData.name.includes('Ibu dan Anak')) {
+      this.image = Images.bayi
+    } else if (rowData.name.includes('Peralatan Rumah Tangga')) {
+      this.image = Images.dapur
+    }
+    return (
+      <TouchableOpacity style={styles.category}>
+        <Image source={this.image} style={styles.imageCategory} />
+        <Text style={styles.textCategory}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  renderKategori () {
+    const spinner = this.state.loadingKategori
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='#ef5656' size='small' />
+    </View>) : (<View />)
+    if (this.state.loadingKategori) {
+      return (
+        <View>
+          {spinner}
+        </View>
+      )
+    }
+    return (
+      <ListView
+        contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+        dataSource={this.state.kategoriSource}
+        initialListSize={5}
+        renderRow={this.renderRowKategori.bind(this)}
+        enableEmptySections
+      />
+    )
+  }
+
   semuaKategori () {
     NavigationActions.kategoriscreen({ type: ActionConst.PUSH })
   }
@@ -245,36 +329,7 @@ class Home extends React.Component {
           <Text style={styles.titleCategory}>
             Kategory Produk
           </Text>
-          <View style={styles.categoryContainer}>
-            <View style={styles.categoryRow}>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.komputer} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Komputer & Handphone</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.sport} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Peralatan Olahraga</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.kantor} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Peralatan Kantor</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.categoryRow}>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.dapur} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Perlengkapan Dapur</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.bayi} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Perlengkapan Bayi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.category}>
-                <Image source={Images.audiovideo} style={styles.imageCategory} />
-                <Text style={styles.textCategory}>Peralatan TV dan Audio</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          {this.renderKategori()}
           <TouchableOpacity style={styles.allCategory} onPress={() => this.semuaKategori()}>
             <Text style={styles.textAllCategory}>
               Lihat semua kategori
@@ -289,6 +344,7 @@ class Home extends React.Component {
               contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
               dataSource={this.state.dataSource}
               renderRow={this.renderRow.bind(this)}
+              enableEmptySections
             />
           </View>
           <TouchableOpacity style={styles.allCategory} onPress={() => this.produkTerbaru()}>
@@ -303,4 +359,17 @@ class Home extends React.Component {
   }
 }
 
-export default (Home)
+const mapStateToProps = (state) => {
+  console.log(state.category.categories)
+  return {
+    dataKategori: state.category
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    kategoriHome: dispatch(homeAction.categoryList())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

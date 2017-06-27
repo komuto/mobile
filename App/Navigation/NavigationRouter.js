@@ -55,6 +55,7 @@ class NavigationRouter extends Component {
               tabBarStyle={styles.tabbar}>
               <Scene
                 key='home'
+                initial
                 title='Home'
                 icon={TabIcon}
                 iconDefault={Images.home}
@@ -97,7 +98,6 @@ class NavigationRouter extends Component {
               </Scene>
               <Scene
                 key='acccount'
-                initial
                 title='Profile'
                 icon={TabIcon}
                 iconDefault={Images.profile}

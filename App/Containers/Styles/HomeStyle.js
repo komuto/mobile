@@ -101,13 +101,17 @@ export default StyleSheet.create({
     borderBottomColor: Colors.silver
   },
   category: {
-    flex: 1,
+    backgroundColor: Colors.background,
+    width: Metrics.screenWidth / 3,
+    height: 133,
     paddingTop: 26,
     paddingBottom: 27.5,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     flexDirection: 'column',
     borderRightWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
     borderRightColor: Colors.silver
   },
   imageCategory: {
@@ -118,7 +122,7 @@ export default StyleSheet.create({
     marginTop: 9,
     color: Colors.lightblack,
     fontSize: Fonts.size.small,
-    width: (Metrics.screenWidth / 3) - 40,
+    width: (Metrics.screenWidth / 3) - 30,
     textAlign: 'center',
     fontFamily: Fonts.type.regular
   },
@@ -248,5 +252,13 @@ export default StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 15,
     paddingRight: 15
+  },
+  spinner: {
+    backgroundColor: Colors.background,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: 265.5,
+    opacity: 0.5
   }
 })

@@ -47,7 +47,7 @@ class Home extends React.Component {
       const newProduct = nextProps.dataProduk.products
       this.setState({
         kategoriSource: this.state.kategoriSource.cloneWithRows(kategoriInital),
-        productSource: this.state.kategoriSource.cloneWithRows(newProduct),
+        productSource: this.state.productSource.cloneWithRows(newProduct),
         loadingKategori: false,
         loadingProduk: false
       })
@@ -77,7 +77,8 @@ class Home extends React.Component {
   handleBack = () => {
     if (this.state.tipe === 'search') {
       this.setState({
-        tipe: 'home'
+        tipe: 'home',
+        search: ''
       })
       return true
     } else if (NavigationActions.pop()) {
@@ -330,6 +331,7 @@ class Home extends React.Component {
   }
 
   search () {
+    // console.log(this.state.search)
     NavigationActions.search({ type: ActionConst.PUSH, search: this.state.search })
   }
 
@@ -383,7 +385,6 @@ class Home extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.products)
   return {
     dataKategori: state.category,
     dataProduk: state.products

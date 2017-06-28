@@ -6,12 +6,16 @@ import {
   Image,
   TextInput,
   ListView,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { connect } from 'react-redux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import { connect } from 'react-redux'
+import * as homeAction from '../actions/home'
+
 import { Images } from '../Themes'
 // Styles
 import styles from './Styles/SearchStyle'
@@ -20,18 +24,38 @@ class Search extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { nama: 'Sepatu Lari' },
-      { nama: 'Sepatu Lari Nike Run Casual' },
-      { nama: 'Sepatu Lari Adidas Black' },
-      { nama: 'Sepatu Lari Skechers' },
-      { nama: 'Sepatu Lari New Balance' }
-    ]
     var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       search: this.props.search,
-      dataSource: dataSource.cloneWithRows(menu)
+      query: this.props.search,
+      loadingSearch: true,
+      dataSource: dataSource.cloneWithRows([])
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataSearch.message === 'Products Search Result' && nextProps.dataSearch.statusResult === 200) {
+      const result = nextProps.dataSearch.result
+      console.log(result)
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(result),
+        loadingSearch: false
+      })
+    } else if (nextProps.dataSearch.status > 200) {
+      this.setState({
+        loadingSearch: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
+    } else if (nextProps.dataSearch.status === 'ENOENT') {
+      this.setState({
+        loadingSearch: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
+    }
+  }
+
+  componentDidMount () {
+    this.props.getSearch(this.state.query)
   }
 
   handleTextSearch = (text) => {
@@ -39,28 +63,35 @@ class Search extends React.Component {
   }
 
   detailResult (nama) {
-    NavigationActions.searchresult({ type: ActionConst.PUSH, header: nama })
+    // NavigationActions.searchresult({ type: ActionConst.PUSH, header: nama })
   }
 
   renderRow (rowData) {
     return (
       <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.nama)}>
         <Text style={styles.textResult}>
-          {rowData.nama}
+          {rowData.name}
         </Text>
       </TouchableOpacity>
     )
   }
 
   back () {
+    this.setState({
+      search: ''
+    })
     NavigationActions.pop()
   }
 
   search () {
-    // dispatch
+    this.props.getSearch(this.state.search)
   }
 
   render () {
+    const spinner = this.state.loadingSearch
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     const { search } = this.state
     return (
       <View style={styles.container}>
@@ -92,21 +123,26 @@ class Search extends React.Component {
             <ListView
               dataSource={this.state.dataSource}
               renderRow={this.renderRow.bind(this)}
+              enableEmptySections
             />
           </View>
         </ScrollView>
+        {spinner}
       </View>
     )
   }
 }
 
 const mapStateToProps = (state) => {
+  console.log(state.products)
   return {
+    dataSearch: state.products
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getSearch: (query) => dispatch(homeAction.search({query}))
   }
 }
 

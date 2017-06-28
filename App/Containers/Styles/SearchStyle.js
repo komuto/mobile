@@ -42,5 +42,15 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.medium,
     color: Colors.darkgrey
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

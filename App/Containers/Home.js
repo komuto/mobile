@@ -267,7 +267,6 @@ class Home extends React.Component {
   }
 
   search () {
-    // console.log(this.state.search)
     NavigationActions.search({ type: ActionConst.PUSH, search: this.state.search })
   }
 
@@ -389,6 +388,7 @@ class Home extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  console.log(state)
   return {
     dataKategori: state.category,
     dataProduk: state.products

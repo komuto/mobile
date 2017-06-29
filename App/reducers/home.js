@@ -51,9 +51,11 @@ function product (state = initProduct, action) {
     case homeActions.SEARCH_PRODUCT_SUCCESS:
       return {
         ...state,
-        products: action.data,
+        // products: action.data,
+        result: action.data,
         message: action.message,
         status: action.code,
+        statusResult: action.code,
         isOnline: true,
         isLoading: false,
         isFound: true

@@ -36,7 +36,6 @@ class Search extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataSearch.message === 'Products Search Result' && nextProps.dataSearch.statusResult === 200) {
       const result = nextProps.dataSearch.result
-      console.log(result)
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(result),
         loadingSearch: false
@@ -134,7 +133,6 @@ class Search extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.products)
   return {
     dataSearch: state.products
   }

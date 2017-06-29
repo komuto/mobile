@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   View,
   Image,
@@ -13,8 +12,9 @@ import {
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
+import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
@@ -27,14 +27,14 @@ class Home extends React.Component {
 
   constructor (props) {
     super(props)
-    var dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       tipe: this.props.tipe || 'home',
       search: '',
       loadingKategori: true,
       loadingProduk: true,
-      productSource: dataSource.cloneWithRows([]),
-      kategoriSource: dataSource.cloneWithRows([])
+      productSource: [],
+      kategoriSource: []
     }
   }
 
@@ -44,10 +44,9 @@ class Home extends React.Component {
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
       })
-      const newProduct = nextProps.dataProduk.products
       this.setState({
-        kategoriSource: this.state.kategoriSource.cloneWithRows(kategoriInital),
-        productSource: this.state.productSource.cloneWithRows(newProduct),
+        kategoriSource: kategoriInital,
+        productSource: nextProps.dataProduk.products,
         loadingKategori: false,
         loadingProduk: false
       })
@@ -89,69 +88,6 @@ class Home extends React.Component {
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
-  }
-
-  renderHome () {
-    const { search } = this.state
-    if (this.state.tipe === 'home') {
-      return (
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <Text style={styles.textHeader}>
-              Galaksi Parabola
-            </Text>
-            <TouchableOpacity style={styles.buttonHeader}>
-              <Image source={Images.love} style={styles.imagestyle} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonHeader}>
-              <Image source={Images.shoppingCart} style={styles.imagestyle} />
-              <View style={styles.containerNumber}>
-                <Text style={styles.number}>
-                  {String(4)}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.searchContainer}>
-            <Image source={Images.searchGrey} style={styles.searchImage} />
-            <View style={styles.textInputContainer}>
-              <TextInput
-                ref='search'
-                onFocus={() => this.openSearch()}
-                style={styles.inputText}
-                value={search}
-                keyboardType='default'
-                autoCapitalize='none'
-                autoCorrect
-                onChangeText={this.handleTextSearch}
-                underlineColorAndroid='transparent'
-                placeholder='Cari barang atau toko'
-              />
-            </View>
-          </View>
-        </View>
-      )
-    }
-    return (
-      <View style={styles.floatingSearch}>
-        <Image source={Images.searchGrey} style={styles.searchImage} />
-        <View style={styles.textInputContainer}>
-          <TextInput
-            ref='search'
-            autoFocus
-            onSubmitEditing={() => this.search()}
-            style={styles.inputText}
-            value={search}
-            keyboardType='default'
-            autoCapitalize='none'
-            autoCorrect
-            onChangeText={this.handleTextSearch}
-            underlineColorAndroid='transparent'
-            placeholder='Cari barang atau toko'
-          />
-        </View>
-      </View>
-    )
   }
 
   renderVerified (status) {
@@ -267,7 +203,7 @@ class Home extends React.Component {
     return (
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-        dataSource={this.state.productSource}
+        dataSource={this.dataSource.cloneWithRows(this.state.productSource)}
         initialListSize={1}
         renderRow={this.renderRowProduk.bind(this)}
         enableEmptySections
@@ -312,8 +248,8 @@ class Home extends React.Component {
     return (
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-        dataSource={this.state.kategoriSource}
-        initialListSize={5}
+        dataSource={this.dataSource.cloneWithRows(this.state.kategoriSource)}
+        initialListSize={10}
         renderRow={this.renderRowKategori.bind(this)}
         enableEmptySections
       />
@@ -344,9 +280,77 @@ class Home extends React.Component {
 
   render () {
     return (
-      <View style={styles.container}>
-        {this.renderHome()}
-        <ScrollView>
+      <ParallaxScrollView
+        backgroundColor={Colors.snow}
+        stickyHeaderHeight={50}
+        parallaxHeaderHeight={110}
+        backgroundSpeed={10}
+        renderBackground={() => (
+          <View key='background' style={{ backgroundColor: Colors.snow }} />
+        )}
+        renderForeground={() => (
+          <View key='parallax-header' style={{ backgroundColor: Colors.snow }} >
+            <View style={styles.headerContainer}>
+              <View style={styles.header}>
+                <Text style={styles.textHeader}>
+                  Galaksi Parabola
+                </Text>
+                <TouchableOpacity style={styles.buttonHeader}>
+                  <Image source={Images.love} style={styles.imagestyle} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonHeader}>
+                  <Image source={Images.shoppingCart} style={styles.imagestyle} />
+                  <View style={styles.containerNumber}>
+                    <Text style={styles.number}>
+                      {String(4)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.searchContainer}>
+                <Image source={Images.searchGrey} style={styles.searchImage} />
+                <View style={styles.textInputContainer}>
+                  <TextInput
+                    ref='search'
+                    style={styles.inputText}
+                    value={this.state.search}
+                    onSubmitEditing={() => this.search()}
+                    keyboardType='default'
+                    autoCapitalize='none'
+                    autoCorrect
+                    onChangeText={this.handleTextSearch}
+                    underlineColorAndroid='transparent'
+                    placeholder='Cari barang atau toko'
+                  />
+                </View>
+              </View>
+            </View>
+          </View>
+        )}
+
+        renderStickyHeader={() => (
+          <View key='sticky-header' style={{ backgroundColor: Colors.snow }}>
+            <View style={styles.floatingSearch}>
+              <Image source={Images.searchGrey} style={styles.searchImage} />
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  ref='search'
+                  onSubmitEditing={() => this.search()}
+                  style={styles.inputText}
+                  value={this.state.search}
+                  keyboardType='default'
+                  autoCapitalize='none'
+                  autoCorrect
+                  onChangeText={this.handleTextSearch}
+                  underlineColorAndroid='transparent'
+                  placeholder='Cari barang atau toko'
+                />
+              </View>
+            </View>
+          </View>
+        )}
+      >
+        <View style={styles.container}>
           <Swiper height={165} autoplay autoplayTimeout={3.5}>
             <View style={styles.slider}>
               <Image style={styles.imageSlider} source={Images.slider1} resizeMode='stretch' />
@@ -378,8 +382,8 @@ class Home extends React.Component {
             </Text>
             <Image source={Images.rightArrow} style={styles.imageCategory} />
           </TouchableOpacity>
-        </ScrollView>
-      </View>
+        </View>
+      </ParallaxScrollView>
     )
   }
 }

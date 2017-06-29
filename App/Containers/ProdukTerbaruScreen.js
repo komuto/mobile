@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   TextInput,
   BackAndroid,
-  Modal
+  Modal,
+  Alert
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
+import * as produkAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -35,12 +37,12 @@ class ProdukTerbaruScreenScreen extends React.Component {
       { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
       { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
     ]
-    var dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    var dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       search: '',
-      listDataSource: dataSourceList.cloneWithRows(menu),
-      rowDataSource: dataSourceRow.cloneWithRows(menu),
+      listDataSource: [],
+      rowDataSource: [],
       header: this.props.header || 'search',
       tipe: this.props.tipe || 'kategori',
       tipeView: 'list',
@@ -64,6 +66,31 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    console.log(nextProps.dataProduk.status)
+    if (nextProps.dataProduk.status === 200) {
+      console.log(nextProps.dataProduk.products)
+      this.setState({
+        listDataSource: nextProps.dataProduk.products,
+        rowDataSource: nextProps.dataProduk.products,
+        loadingKategori: false,
+        loadingProduk: false
+      })
+    } else if (nextProps.dataKategori.status > 200) {
+      this.setState({
+        loadingKategori: true,
+        loadingProduk: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
+    } else if (nextProps.dataKategori.status === 'ENOENT') {
+      this.setState({
+        loadingKategori: true,
+        loadingProduk: true
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
+    }
   }
 
   handleBack = () => {
@@ -167,28 +194,22 @@ class ProdukTerbaruScreenScreen extends React.Component {
       case 'terbaru':
         this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
         return array.sort(function (a, b) {
-          return new Date(a.dateCreate).getTime() - new Date(b.dateCreate).getTime()
+          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
         }).reverse()
       case 'termurah':
         this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
         return array.sort(function (a, b) {
-          return b.harga > a.harga ? -1
-              : b.harga < a.harga ? 1
-              : 0
-        })
+          return b.product.price - a.product.price
+        }).reverse()
       case 'termahal':
         this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
         return array.sort(function (a, b) {
-          return b.harga < a.harga ? -1
-              : b.harga > a.harga ? 1
-              : 0
+          return b.product.price - a.product.price
         })
       case 'terlaris':
         this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
         return array.sort(function (a, b) {
-          return b.jumlahlikes < a.jumlahlikes ? -1
-              : b.jumlahlikes > a.jumlahlikes ? 1
-              : 0
+          return b.product.stock - a.product.stock
         })
       default:
         window.alert('Internal Error')
@@ -197,11 +218,10 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   _onPress (field) {
-    const {sortData} = this.state
-    let sortedData = this.sortArrayAsc(sortData, 'harga', field)
-    var dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    const {listDataSource} = this.state
+    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
     this.setState({
-      listDataSource: dataSourceList.cloneWithRows(sortedData)
+      listDataSource: sortedData
     })
   }
 
@@ -301,8 +321,21 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
+    return hargaDiskon
+  }
+
   renderRowList (rowData) {
-    const money = MaskService.toMask('money', rowData.harga, {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
+      this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
+    } else {
+      this.statusDiskon = false
+      this.hargaDiskon = rowData.product.price
+    }
+
+    const money = MaskService.toMask('money', this.hargaDiskon, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -311,23 +344,23 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={rowData.gambar} style={styles.imageProduct} />
+        <Image source={Images.contohproduct} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
-            {rowData.diskon}
+            {rowData.product.discount} %
           </Text>
         </View>
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
-            {rowData.title}
+            {rowData.product.name}
           </Text>
           <View style={styles.tokoContainer}>
             <Text style={styles.namaToko}>
-              {rowData.toko}
+              {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.status)}
+            {this.renderVerified(rowData.store.remarks_status)}
           </View>
-          {this.renderDiskon(rowData.statusDiskon, rowData.nominalDiskon)}
+          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
           <View style={{flexDirection: 'row', paddingBottom: 28.8}}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -337,7 +370,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
             <View style={styles.likesContainer}>
               {this.renderLikes(rowData.like)}
               <Text style={styles.like}>
-                {rowData.jumlahlikes}
+                {rowData.product.stock}
               </Text>
             </View>
           </View>
@@ -347,7 +380,15 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    const money = MaskService.toMask('money', rowData.harga, {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
+      this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
+    } else {
+      this.statusDiskon = false
+      this.hargaDiskon = rowData.product.price
+    }
+
+    const money = MaskService.toMask('money', this.hargaDiskon, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -355,29 +396,29 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={rowData.gambar} style={stylesHome.imageProduct} />
+        <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
-            {rowData.diskon}
+            {rowData.product.discount} %
           </Text>
         </View>
         <Text style={stylesHome.textTitleProduct}>
-          {rowData.title}
+          {rowData.product.name}
         </Text>
         <View style={stylesHome.tokoContainer}>
           <Text style={stylesHome.namaToko}>
-            {rowData.toko}
+            {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.status)}
+          {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(rowData.statusDiskon, rowData.nominalDiskon)}
+        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
           {this.renderLikes(rowData.like)}
           <Text style={stylesHome.like}>
-            {rowData.jumlahlikes}
+            {rowData.product.stock}
           </Text>
         </View>
       </TouchableOpacity>
@@ -402,7 +443,8 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <View style={stylesHome.listViewContainer}>
           <ListView
             contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            dataSource={this.state.rowDataSource}
+            enableEmptySections
+            dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
             renderRow={this.renderRowGrid.bind(this)}
           />
         </View>
@@ -412,7 +454,8 @@ class ProdukTerbaruScreenScreen extends React.Component {
       <View style={styles.listViewContainer}>
         <ListView
           contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          dataSource={this.state.listDataSource}
+          enableEmptySections
+          dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
           renderRow={this.renderRowList.bind(this)}
         />
       </View>
@@ -483,11 +526,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataProduk: state.products
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getProdukTerbaru: dispatch(produkAction.products())
   }
 }
 

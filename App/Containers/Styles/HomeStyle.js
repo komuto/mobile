@@ -242,7 +242,8 @@ export default StyleSheet.create({
     tintColor: Colors.red
   },
   floatingSearch: {
-    elevation: 2,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
     height: 50,
     backgroundColor: Colors.snow,
     alignItems: 'center',
@@ -265,5 +266,11 @@ export default StyleSheet.create({
     justifyContent: 'center',
     width: Metrics.screenWidth,
     opacity: 0.5
+  },
+  parallaxHeader: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column',
+    paddingTop: 100
   }
 })

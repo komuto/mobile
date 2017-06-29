@@ -1,5 +1,4 @@
 import { publicApiKomuto } from './api'
-
 function product (action) {
   let axios = publicApiKomuto()
   let param = ''
@@ -9,7 +8,6 @@ function product (action) {
     {value: action.category_id, string: 'category_id'},
     {value: action.sort, string: 'sort'}
   ]
-
   let indeksCheck = []
   let i = 0
   for (i = 0; i < check.length; i++) {
@@ -17,11 +15,9 @@ function product (action) {
       indeksCheck.push(i)
     }
   }
-
   if (indeksCheck.length !== 0) {
     param = '?'
   }
-
   for (i = 0; i < indeksCheck.length; i++) {
     if (i !== indeksCheck.length - 1) {
       param = param + check[indeksCheck[i]].string + '=' + check[indeksCheck[i]].value + '&'
@@ -40,7 +36,6 @@ function product (action) {
     throw (err)
   })
 }
-
 function search (action) {
   let axios = publicApiKomuto()
   return axios.get('products/search?q=' + action.query, {
@@ -53,7 +48,6 @@ function search (action) {
     throw (err)
   })
 }
-
 function categoryList (action) {
   let axios = publicApiKomuto()
   return axios.get('categories', {
@@ -66,7 +60,6 @@ function categoryList (action) {
     throw (err)
   })
 }
-
 function subCategory (action) {
   let axios = publicApiKomuto()
   return axios.get('categories/' + action.id + '/sub-categories', {
@@ -79,7 +72,6 @@ function subCategory (action) {
     throw (err)
   })
 }
-
 export {
   product,
   search,

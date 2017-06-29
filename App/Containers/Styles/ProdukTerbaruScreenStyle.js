@@ -210,5 +210,13 @@ export default StyleSheet.create({
   modalSortContainer: {
     justifyContent: 'center',
     backgroundColor: 'white'
+  },
+  spinnerProduk: {
+    backgroundColor: Colors.background,
+    height: 177.25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    opacity: 0.5
   }
 })

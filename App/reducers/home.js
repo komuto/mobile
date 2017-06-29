@@ -51,9 +51,9 @@ function product (state = initProduct, action) {
     case homeActions.SEARCH_PRODUCT_SUCCESS:
       return {
         ...state,
-        result: action.data,
+        products: action.data,
         message: action.message,
-        statusResult: action.code,
+        status: action.code,
         isOnline: true,
         isLoading: false,
         isFound: true

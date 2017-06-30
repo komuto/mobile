@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
+import { ScrollView, Text, View, Image, TouchableOpacity, ListView, Alert, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as homeAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -15,113 +16,110 @@ import { Images } from '../Themes'
 class KategoriScreenScreen extends React.Component {
   constructor (props) {
     super(props)
-    var menuFashionAksesoris = [
-      { gambar: Images.dapur, title: 'Fashion Pria' },
-      { gambar: Images.dapur, title: 'Fashion Wanita' },
-      { gambar: Images.dapur, title: 'Fashion Wanita' },
-      { gambar: Images.dapur, title: 'Fashion Wanita' }
-    ]
-    var menuAllIbu = [
-      { gambar: Images.dapur, title: 'Perlengkapan Bayi' },
-      { gambar: Images.dapur, title: 'Susu dan Nutrisi Bayi' },
-      { gambar: Images.dapur, title: 'Baby Sitter' }
-    ]
-    var dataSourceAllFashion = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    var dataSourceAllIbu = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       search: '',
-      dataSourceAllFashion: dataSourceAllFashion.cloneWithRows(menuFashionAksesoris),
-      dataSourceAllIbu: dataSourceAllIbu.cloneWithRows(menuAllIbu)
+      data: [],
+      loadingKategori: true
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataAllCategory.status === 200) {
+      console.log(nextProps.dataAllCategory.allCategory)
+      this.setState({
+        data: nextProps.dataAllCategory.allCategory,
+        loadingKategori: false
+      })
+    } else if (nextProps.dataAllCategory.status > 200) {
+      this.setState({
+        loadingKategori: false
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
+    } else if (nextProps.dataAllCategory.status === 'ENOENT') {
+      this.setState({
+        loadingKategori: false
+      })
+      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
     }
   }
 
   handleDetailKategori (rowId, title) {
     NavigationActions.kategoriduascreen({
       type: ActionConst.PUSH,
+      id: rowId,
       title: title,
-      jenis: title
+      name: title
     })
   }
 
-  renderRowMenuFashionAksesoris (rowData, rowId) {
+  renderSubListView (subCategory) {
+    if (subCategory.length <= 0) {
+      return null
+    } else {
+      return (
+        <ListView
+          style={{ marginTop: 5 }}
+          dataSource={this.dataSource.cloneWithRows(subCategory)}
+          renderRow={this.renderSubRow.bind(this)}
+          initialListSize={2}
+          enableEmptySections
+        />
+      )
+    }
+  }
+
+  renderRow (rowData, rowId) {
+    const subCategory = rowData.sub_categories
     return (
-      <TouchableOpacity onPress={() => this.handleDetailKategori(rowId, rowData.title)}>
-        <View style={styles.itemList}>
-          <Image source={rowData.gambar} style={styles.imageCategory} />
+      <View>
+        <View style={styles.containerBanner}>
+          <Text style={styles.textBanner}>
+            Lihat semua di {rowData.name}
+          </Text>
+        </View>
+        <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
+          <Image source={Images.dapur} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
-              {rowData.title}
+              Lihat semua di {rowData.name}
             </Text>
           </View>
           <Image source={Images.rightArrow} style={styles.rightArrow} />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        {this.renderSubListView(subCategory)}
+      </View>
     )
   }
 
-  renderRowMenuAllIbu (rowData, rowId) {
+  renderSubRow (rowData, rowId) {
     return (
-      <TouchableOpacity onPress={() => this.handleDetailKategori(rowId, rowData.title)}>
-        <View style={styles.itemList}>
-          <Image source={rowData.gambar} style={styles.imageCategory} />
-          <View style={[styles.namaContainer, {marginLeft: 15}]}>
-            <Text style={styles.textNama}>
-              {rowData.title}
-            </Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.rightArrow} />
+      <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
+        <Image source={Images.dapur} style={styles.imageCategory} />
+        <View style={[styles.namaContainer, {marginLeft: 15}]}>
+          <Text style={styles.textNama}>
+            {rowData.name}
+          </Text>
         </View>
+        <Image source={Images.rightArrow} style={styles.rightArrow} />
       </TouchableOpacity>
     )
   }
 
   render () {
+    const spinner = this.state.loadingKategori
+    ? (<View style={styles.spinnerProduk}>
+      <ActivityIndicator color='#ef5656' size='small' />
+    </View>) : (<View />)
     return (
       <ScrollView style={styles.container}>
-        <View style={styles.containerBanner}>
-          <Text style={styles.textBanner}>
-            Fashion dan Aksesoris
-          </Text>
-        </View>
-        <TouchableOpacity>
-          <View style={styles.fixMenuItem}>
-            <Image source={Images.iconKategoriTemp} style={styles.imageCategory} />
-            <View style={styles.namaContainer}>
-              <Text style={styles.textNama}>
-                Lihat Semua di Fashion dan Aksesoris
-              </Text>
-            </View>
-            <Image source={Images.rightArrow} style={styles.rightArrow} />
-          </View>
-        </TouchableOpacity>
-        <View>
-          <ListView
-            dataSource={this.state.dataSourceAllFashion}
-            renderRow={this.renderRowMenuFashionAksesoris.bind(this)}
-          />
-        </View>
-        <View style={styles.containerBanner}>
-          <Text style={styles.textBanner}>
-            Ibu dan Anak
-          </Text>
-        </View>
-        <TouchableOpacity>
-          <View style={styles.fixMenuItem}>
-            <Image source={Images.iconKategoriTemp} style={styles.imageCategory} />
-            <View style={styles.namaContainer}>
-              <Text style={styles.textNama}>
-                Lihat Semua di Ibu dan Anak
-              </Text>
-            </View>
-            <Image source={Images.rightArrow} style={styles.rightArrow} />
-          </View>
-        </TouchableOpacity>
-        <View>
-          <ListView
-            dataSource={this.state.dataSourceAllIbu}
-            renderRow={this.renderRowMenuAllIbu.bind(this)}
-          />
-        </View>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.data)}
+          renderRow={this.renderRow.bind(this)}
+          initialListSize={10}
+          enableEmptySections
+        />
+        {spinner}
       </ScrollView>
     )
   }
@@ -130,11 +128,13 @@ class KategoriScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataAllCategory: state.allCategory
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getKategori: dispatch(homeAction.allCategory())
   }
 }
 

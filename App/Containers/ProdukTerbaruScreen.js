@@ -69,9 +69,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(nextProps.dataProduk.status)
     if (nextProps.dataProduk.status === 200) {
-      console.log(nextProps.dataProduk.products)
       this.setState({
         listDataSource: nextProps.dataProduk.products,
         rowDataSource: nextProps.dataProduk.products,

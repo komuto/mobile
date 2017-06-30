@@ -57,5 +57,13 @@ export default StyleSheet.create({
   rightArrow: {
     height: 24,
     width: 24
+  },
+  spinnerProduk: {
+    backgroundColor: Colors.background,
+    height: 177.25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    opacity: 0.5
   }
 })

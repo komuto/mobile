@@ -159,7 +159,7 @@ class Home extends React.Component {
     })
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={Images.contohproduct} style={styles.imageProduct} />
+        <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount}%

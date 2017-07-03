@@ -1,10 +1,13 @@
 import React from 'react'
-import { View, Text, ListView, TouchableOpacity, Image, Picker } from 'react-native'
-import { TextInputMask } from 'react-native-masked-text'
+import { View, Text, ListView, TouchableOpacity, Image, Picker, TextInput } from 'react-native'
 import styles from './Styles/FilterStyle'
 import { Images, Colors } from '../Themes'
+import { connect } from 'react-redux'
+import * as filterAction from '../actions/location'
+import * as expeditionAction from '../actions/expedition'
+import * as brandAction from '../actions/brand'
 
-export default class Filter extends React.Component {
+class Filter extends React.Component {
   constructor (props) {
     super(props)
     const dataObjects = [
@@ -20,58 +23,75 @@ export default class Filter extends React.Component {
       {id: 2, title: 'Baru', active: false},
       {id: 3, title: 'Bekas', active: false}
     ]
-    const dataPengiriman = [
-      {id: 1, title: 'Semua Ekspedisi', active: false},
-      {id: 2, title: 'JNE Reguler', active: false},
-      {id: 3, title: 'JNE Yes', active: false},
-      {id: 4, title: 'JNE OKE', active: false},
-      {id: 5, title: 'JNE Popbx', active: false},
-      {id: 6, title: 'JNE CTC', active: false},
-      {id: 7, title: 'JNE CTC OKE', active: false},
-      {id: 8, title: 'JNE CTC YES', active: false}
-    ]
-    const dataBrand = [
-      {id: 1, title: 'Semua Brand', active: false},
-      {id: 2, title: 'Adidas', active: false},
-      {id: 3, title: 'Nike', active: false},
-      {id: 4, title: 'New Balance', active: false},
-      {id: 5, title: 'Diadora', active: false},
-      {id: 6, title: 'Reebok', active: false},
-      {id: 7, title: 'Umbro', active: false}
-    ]
     const dataLainnya = [
-      {id: 1, title: 'Diskon', active: false},
-      {id: 2, title: 'Seller Terverifikasi', active: false},
-      {id: 3, title: 'Grosir', active: false}
+      {id: 1, title: 'Diskon', value: 'discount', active: false},
+      {id: 2, title: 'Seller Terverifikasi', value: 'verified', active: false},
+      {id: 3, title: 'Grosir', value: 'wholesaler', active: false}
     ]
+    this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     const rowHasChanged = (r1, r2) => r1 !== r2
     const ds = new ListView.DataSource({rowHasChanged})
     this.state = {
       dataSource: ds.cloneWithRows(dataObjects),
       dataSourceKondisi: ds.cloneWithRows(dataKondisi),
-      dataSourcePengiriman: ds.cloneWithRows(dataPengiriman),
-      dataSourceBrand: ds.cloneWithRows(dataBrand),
       dataSourceLainnya: ds.cloneWithRows(dataLainnya),
       dataObjects,
       dataKondisi,
-      dataPengiriman,
-      dataBrand,
+      dataPengiriman: [],
+      tambahanPengiriman: [
+        {
+          'id': 0,
+          'name': 'Semua Jasa Pengiriman',
+          'description': 'semua',
+          'logo': null,
+          'full_name': 'Semua Ekspedisi'
+        }
+      ],
+      dataBrand: [],
       dataLainnya,
       active: 1,
+      activeKondisi: 0,
       hargaMinimal: '',
       hargaMaksimal: '',
-      provinsi: [
-        {id: 1, title: 'DKI Jakarta'},
-        {id: 2, title: 'Jawa Barat'},
-        {id: 3, title: 'Jawa Tengah'}
-      ],
-      kota: [
-        {id: 1, title: 'Jakarta'},
-        {id: 2, title: 'Tangerang'},
-        {id: 3, title: 'Yogyakarta'}
-      ],
+      provinsi: [],
+      kota: [],
       provinsiTerpilih: 'DKI Jakarta',
-      kotaTerpilih: 'Jakarta'
+      kotaTerpilih: 'Jakarta',
+      filterPengiriman: [],
+      filterKondisi: '',
+      filterAddress: 1116,
+      filterBrand: [],
+      filterOthers: []
+    }
+  }
+
+  componentDidMount () {
+    this.props.getProvinsi()
+    this.props.getKota(11)
+    this.props.getExpedition()
+    this.props.getBrand()
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataProvinsi.status === 200) {
+      this.setState({
+        provinsi: nextProps.dataProvinsi.provinces
+      })
+    }
+    if (nextProps.dataKota.status === 200) {
+      this.setState({
+        kota: nextProps.dataKota.districts
+      })
+    }
+    if (nextProps.dataPengirimanReducer.status === 200) {
+      this.setState({
+        dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditions)
+      })
+    }
+    if (nextProps.dataBrandReducer.status === 200) {
+      this.setState({
+        dataBrand: nextProps.dataBrandReducer.brands
+      })
     }
   }
 
@@ -81,6 +101,56 @@ export default class Filter extends React.Component {
 
   handleChangeMaksimal (text) {
     this.setState({ hargaMaksimal: text })
+  }
+
+  terapkanFilter () {
+    console.log('kondisi', this.state.filterKondisi)
+    console.log('pengiriman', JSON.stringify(this.state.filterPengiriman).replace('[', '').replace(']', '').replace('0,', ''))
+    if (this.state.hargaMinimal === '' && this.state.hargaMaksimal === '') {
+      console.log('price', 50 + '-' + 10000000000)
+    } else if (this.state.hargaMinimal !== '' && this.state.hargaMaksimal === '') {
+      console.log('price', this.state.hargaMinimal + '-' + 10000000000)
+    } else if (this.state.hargaMinimal === '' && this.state.hargaMaksimal !== '') {
+      console.log('price', 50 + '-' + this.state.hargaMaksimal)
+    } else {
+      console.log('price', this.state.hargaMinimal + '-' + this.state.hargaMaksimal)
+    }
+    console.log('address', this.state.filterAddress)
+    console.log('brand', JSON.stringify(this.state.filterBrand).replace('[', '').replace(']', '').replace('0,', ''))
+    console.log('others', JSON.stringify(this.state.filterOthers).replace('[', '').replace(']', '').replace(/"/gi, ''))
+  }
+
+  resetFilter () {
+    const { dataKondisi, dataSourceKondisi, dataLainnya, dataSourceLainnya } = this.state
+    const newDataSource = dataKondisi.map(data => {
+      return {...data, active: data.id === 0}
+    })
+    dataLainnya[0].active = false
+    dataLainnya[1].active = false
+    dataLainnya[2].active = false
+    const newDataSourceLainnya = dataLainnya.map(data1 => {
+      return {...data1}
+    })
+    this.setState({
+      activeKondisi: 0,
+      dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+      dataSourceLainnya: dataSourceLainnya.cloneWithRows(newDataSourceLainnya),
+      hargaMinimal: '',
+      hargaMaksimal: '',
+      provinsi: [],
+      kota: [],
+      provinsiTerpilih: 'DKI Jakarta',
+      kotaTerpilih: 'Jakarta',
+      filterPengiriman: [],
+      filterKondisi: '',
+      filterAddress: 1116,
+      filterBrand: [],
+      filterOthers: []
+    })
+    this.props.getProvinsi()
+    this.props.getKota(11)
+    this.props.getExpedition()
+    this.props.getBrand()
   }
 
   onClickLabel = (selected) => (e) => {
@@ -97,85 +167,114 @@ export default class Filter extends React.Component {
   }
 
   onClickKondisi = (selected) => (e) => {
-    const {dataKondisi, dataSourceKondisi} = this.state
-    if (dataKondisi[selected - 1].active) {
-      dataKondisi[selected - 1].active = false
+    const {dataKondisi, activeKondisi, dataSourceKondisi} = this.state
+    if (activeKondisi !== selected) {
       const newDataSource = dataKondisi.map(data => {
-        return {...data}
+        return {...data, active: selected === data.id}
       })
+      if (dataKondisi[selected - 1].title.includes('Semua')) {
+        this.setState({
+          filterKondisi: ''
+        })
+      } else if (dataKondisi[selected - 1].title.includes('Baru')) {
+        this.setState({
+          filterKondisi: 'new'
+        })
+      } else if (dataKondisi[selected - 1].title.includes('Bekas')) {
+        this.setState({
+          filterKondisi: 'used'
+        })
+      }
       this.setState({
-        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource)
-      })
-    } else {
-      dataKondisi[selected - 1].active = true
-      const newDataSource = dataKondisi.map(data => {
-        return {...data}
-      })
-      this.setState({
-        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource)
+        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+        activeKondisi: selected
       })
     }
   }
 
   onClickPengiriman = (selected) => (e) => {
-    const {dataPengiriman, dataSourcePengiriman} = this.state
-    if (dataPengiriman[selected - 1].active) {
-      dataPengiriman[selected - 1].active = false
+    const {dataPengiriman, filterPengiriman} = this.state
+    let dummy = filterPengiriman
+    if (dataPengiriman[selected].is_checked !== null) {
+      var i = dummy.indexOf(dataPengiriman[selected].id)
+      if (i !== -1) {
+        dummy.splice(i, 1)
+      }
+      dataPengiriman[selected].is_checked = null
       const newDataSource = dataPengiriman.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourcePengiriman: dataSourcePengiriman.cloneWithRows(newDataSource)
+        dataSourcePengiriman: newDataSource,
+        filterPengiriman: dummy
       })
     } else {
-      dataPengiriman[selected - 1].active = true
+      dummy.push(dataPengiriman[selected].id)
+      dataPengiriman[selected].is_checked = 1
       const newDataSource = dataPengiriman.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourcePengiriman: dataSourcePengiriman.cloneWithRows(newDataSource)
+        dataSourcePengiriman: newDataSource,
+        filterPengiriman: dummy
       })
     }
   }
 
   onClickBrand = (selected) => (e) => {
-    const {dataBrand, dataSourceBrand} = this.state
-    if (dataBrand[selected - 1].active) {
-      dataBrand[selected - 1].active = false
+    const {dataBrand, filterBrand} = this.state
+    let dummy = filterBrand
+    if (dataBrand[selected].is_checked !== null) {
+      var i = dummy.indexOf(dataBrand[selected].id)
+      if (i !== -1) {
+        dummy.splice(i, 1)
+      }
+      dataBrand[selected].is_checked = null
       const newDataSource = dataBrand.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourceBrand: dataSourceBrand.cloneWithRows(newDataSource)
+        dataSourceBrand: newDataSource,
+        filterBrand: dummy
       })
     } else {
-      dataBrand[selected - 1].active = true
+      dummy.push(dataBrand[selected].id)
+      dataBrand[selected].is_checked = 1
       const newDataSource = dataBrand.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourceBrand: dataSourceBrand.cloneWithRows(newDataSource)
+        dataSourceBrand: newDataSource,
+        filterBrand: dummy
       })
     }
   }
 
   onClickLainnya = (selected) => (e) => {
-    const {dataLainnya, dataSourceLainnya} = this.state
+    const {dataLainnya, dataSourceLainnya, filterOthers} = this.state
+    let dummy = filterOthers
     if (dataLainnya[selected - 1].active) {
+      var i = dummy.indexOf(dataLainnya[selected - 1].value)
+      if (i !== -1) {
+        dummy.splice(i, 1)
+      }
       dataLainnya[selected - 1].active = false
       const newDataSource = dataLainnya.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourceLainnya: dataSourceLainnya.cloneWithRows(newDataSource)
+        dataSourceLainnya: dataSourceLainnya.cloneWithRows(newDataSource),
+        filterOthers: dummy
       })
     } else {
+      dummy.push(dataLainnya[selected - 1].value)
       dataLainnya[selected - 1].active = true
       const newDataSource = dataLainnya.map(data => {
         return {...data}
       })
       this.setState({
-        dataSourceLainnya: dataSourceLainnya.cloneWithRows(newDataSource)
+        dataSourceLainnya: dataSourceLainnya.cloneWithRows(newDataSource),
+        filterOthers: dummy
       })
     }
   }
@@ -213,12 +312,12 @@ export default class Filter extends React.Component {
     )
   }
 
-  renderRowDataPengiriman = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+  renderRowDataPengiriman = (rowData, sectionID, rowID, highlightRow) => {
+    const centang = rowData.is_checked !== null ? Images.centang : null
     return (
-      <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowData.id)} >
+      <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
         <View style={styles.labelContainerSecond}>
-          <Text style={styles.label}>{rowData.title}</Text>
+          <Text style={styles.label}>{rowData.full_name}</Text>
           <View style={styles.box}>
             <Image
               source={centang}
@@ -230,12 +329,12 @@ export default class Filter extends React.Component {
     )
   }
 
-  renderRowDataBrand = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+  renderRowDataBrand = (rowData, sectionID, rowID, highlightRow) => {
+    const centang = rowData.is_checked ? Images.centang : null
     return (
-      <TouchableOpacity style={styles.rowButton} onPress={this.onClickBrand(rowData.id)} >
+      <TouchableOpacity style={styles.rowButton} onPress={this.onClickBrand(rowID)} >
         <View style={styles.labelContainerSecond}>
-          <Text style={styles.label}>{rowData.title}</Text>
+          <Text style={styles.label}>{rowData.name}</Text>
           <View style={styles.box}>
             <Image
               source={centang}
@@ -264,15 +363,17 @@ export default class Filter extends React.Component {
     )
   }
 
-  provinsiValue = (key: string, value: string) => {
+  provinsiValue = (key: string, value: number) => {
     this.setState({
-      provinsiTerpilih: value
+      provinsiTerpilih: key
     })
+    this.props.getKota(this.state.provinsi[value].id)
   }
 
-  kotaValue = (key: string, value: string) => {
+  kotaValue = (key: string, value: number) => {
     this.setState({
-      kotaTerpilih: value
+      kotaTerpilih: key,
+      filterAddress: this.state.kota[value].id
     })
   }
 
@@ -289,7 +390,8 @@ export default class Filter extends React.Component {
       case 2:
         return (
           <ListView
-            dataSource={this.state.dataSourcePengiriman}
+            enableEmptySections
+            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataPengiriman)}
             renderRow={this.renderRowDataPengiriman}
           />)
       case 3:
@@ -300,12 +402,12 @@ export default class Filter extends React.Component {
               Harga Minimal
             </Text>
             <View style={styles.inputContainer}>
-              <TextInputMask
-                type={'money'}
-                options={{ unit: 'Rp ', separator: '.', delimiter: '.', precision: 3 }}
+              <TextInput
                 style={styles.inputText}
                 value={hargaMinimal}
                 keyboardType='numeric'
+                autoCapitalize='none'
+                autoCorrect
                 onChangeText={this.handleChangeMinimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='100.000'
@@ -315,12 +417,12 @@ export default class Filter extends React.Component {
               Harga Maksimal
             </Text>
             <View style={styles.inputContainer}>
-              <TextInputMask
-                type={'money'}
-                options={{ unit: 'Rp ', separator: '.', delimiter: '.', precision: 3 }}
+              <TextInput
                 style={styles.inputText}
                 value={hargaMaksimal}
                 keyboardType='numeric'
+                autoCapitalize='none'
+                autoCorrect
                 onChangeText={this.handleChangeMaksimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='250.000'
@@ -333,15 +435,15 @@ export default class Filter extends React.Component {
         const dataProvinsi = provinsi.map(provinsi =>
         (<Picker.Item
           key={provinsi.id}
-          label={provinsi.title}
-          value={provinsi.title}
+          label={provinsi.name}
+          value={provinsi.name}
           color={Colors.darkgrey}
         />))
         const dataKota = kota.map(kota =>
         (<Picker.Item
           key={kota.id}
-          label={kota.title}
-          value={kota.title}
+          label={kota.name}
+          value={kota.name}
           color={Colors.darkgrey}
         />))
         return (
@@ -352,7 +454,7 @@ export default class Filter extends React.Component {
             <Picker
               style={styles.pickerStyle}
               selectedValue={this.state.provinsiTerpilih}
-              onValueChange={this.provinsiValue.bind(this, 'provinsiTerpilih')}
+              onValueChange={this.provinsiValue.bind(this)}
               mode='dropdown'
             >
               {dataProvinsi}
@@ -364,7 +466,7 @@ export default class Filter extends React.Component {
             <Picker
               style={styles.pickerStyle}
               selectedValue={this.state.kotaTerpilih}
-              onValueChange={this.kotaValue.bind(this, 'kotaTerpilih')}
+              onValueChange={this.kotaValue.bind(this)}
               mode='dropdown'
             >
               {dataKota}
@@ -375,7 +477,7 @@ export default class Filter extends React.Component {
       case 5:
         return (
           <ListView
-            dataSource={this.state.dataSourceBrand}
+            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataBrand)}
             renderRow={this.renderRowDataBrand}
           />
         )
@@ -404,12 +506,12 @@ export default class Filter extends React.Component {
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.buttonReset}>
+          <TouchableOpacity style={styles.buttonReset} onPress={() => this.resetFilter()}>
             <Text style={styles.labelButtonReset}>
               Reset Filter
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonOke}>
+          <TouchableOpacity style={styles.buttonOke} onPress={() => this.terapkanFilter()}>
             <Text style={styles.labelButtonOke}>
               Terapkan Filter
             </Text>
@@ -419,3 +521,23 @@ export default class Filter extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    dataProvinsi: state.provinces,
+    dataKota: state.districts,
+    dataPengirimanReducer: state.expeditionServices,
+    dataBrandReducer: state.brands
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getProvinsi: () => dispatch(filterAction.getProvince()),
+    getKota: (id) => dispatch(filterAction.getDistrict({ province_id: id })),
+    getExpedition: () => dispatch(expeditionAction.getServices()),
+    getBrand: () => dispatch(brandAction.getBrand())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter)

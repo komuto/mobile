@@ -260,6 +260,10 @@ class Home extends React.Component {
     NavigationActions.kategoriscreen({ type: ActionConst.PUSH })
   }
 
+  wishlist () {
+    NavigationActions.wishlist({ type: ActionConst.PUSH })
+  }
+
   openSearch () {
     this.setState({
       tipe: 'search'
@@ -290,22 +294,6 @@ class Home extends React.Component {
         renderForeground={() => (
           <View key='parallax-header' style={{ backgroundColor: Colors.snow }} >
             <View style={styles.headerContainer}>
-              <View style={styles.header}>
-                <Text style={styles.textHeader}>
-                  Galaksi Parabola
-                </Text>
-                <TouchableOpacity style={styles.buttonHeader}>
-                  <Image source={Images.love} style={styles.imagestyle} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonHeader}>
-                  <Image source={Images.shoppingCart} style={styles.imagestyle} />
-                  <View style={styles.containerNumber}>
-                    <Text style={styles.number}>
-                      {String(4)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
               <View style={styles.searchContainer}>
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
@@ -322,6 +310,22 @@ class Home extends React.Component {
                     placeholder='Cari barang atau toko'
                   />
                 </View>
+              </View>
+              <View style={styles.header}>
+                <Text style={styles.textHeader}>
+                  Galaksi Parabola
+                </Text>
+                <TouchableOpacity style={styles.buttonHeader} onPress={() => this.wishlist()}>
+                  <Image source={Images.love} style={styles.imagestyle} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonHeader}>
+                  <Image source={Images.shoppingCart} style={styles.imagestyle} />
+                  <View style={styles.containerNumber}>
+                    <Text style={styles.number}>
+                      {String(4)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

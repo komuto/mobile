@@ -13,6 +13,7 @@ function * product (action) {
 }
 
 function * filterProduct (action) {
+  console.log(action)
   try {
     const {data} = yield homeApi.product(action)
     yield put({ type: homeActions.FILTER_PRODUCT_SUCCESS, ...data })

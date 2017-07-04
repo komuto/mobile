@@ -13,7 +13,6 @@ export default StyleSheet.create({
     paddingRight: 15
   },
   header: {
-    backgroundColor: Colors.red,
     flexDirection: 'row',
     paddingTop: 15
   },

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ListView, TouchableOpacity, Image, Picker, TextInput } from 'react-native'
+import { View, Text, ListView, TouchableOpacity, Image, Picker, TextInput, Alert } from 'react-native'
 import styles from './Styles/FilterStyle'
 import { Images, Colors } from '../Themes'
 import { connect } from 'react-redux'
@@ -54,12 +54,26 @@ class Filter extends React.Component {
       hargaMinimal: '',
       hargaMaksimal: '',
       provinsi: [],
+      tambahanProvinsi: [
+        {
+          'id': 0,
+          'name': 'Pilih Provinsi'
+        }
+      ],
       kota: [],
-      provinsiTerpilih: 'DKI Jakarta',
-      kotaTerpilih: 'Jakarta',
+      tambahanKota: [
+        {
+          'id': 0,
+          'ro_id': 0,
+          'name': 'Pilih Kota'
+        }
+      ],
+      provinsiTerpilih: 'Semua Wilayah',
+      kotaTerpilih: 'Semua Wilayah',
       filterPengiriman: [],
       filterKondisi: '',
-      filterAddress: 1116,
+      filterAddress: '',
+      filterPrice: [0, 0],
       filterBrand: [],
       filterOthers: []
     }
@@ -75,12 +89,12 @@ class Filter extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
-        provinsi: nextProps.dataProvinsi.provinces
+        provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
-        kota: nextProps.dataKota.districts
+        kota: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
@@ -97,27 +111,35 @@ class Filter extends React.Component {
 
   handleChangeMinimal (text) {
     this.setState({ hargaMinimal: text })
+    if (text === '') {
+      this.state.filterPrice[0] = 0
+    } else {
+      this.state.filterPrice[0] = Number(text)
+    }
   }
 
   handleChangeMaksimal (text) {
     this.setState({ hargaMaksimal: text })
+    if (text === '' || text === '0' || text === null) {
+      this.state.filterPrice[1] = Number(100000000000000000)
+    } else {
+      this.state.filterPrice[1] = Number(text)
+    }
   }
 
-  terapkanFilter () {
-    console.log('kondisi', this.state.filterKondisi)
-    console.log('pengiriman', JSON.stringify(this.state.filterPengiriman).replace('[', '').replace(']', '').replace('0,', ''))
-    if (this.state.hargaMinimal === '' && this.state.hargaMaksimal === '') {
-      console.log('price', 50 + '-' + 10000000000)
-    } else if (this.state.hargaMinimal !== '' && this.state.hargaMaksimal === '') {
-      console.log('price', this.state.hargaMinimal + '-' + 10000000000)
-    } else if (this.state.hargaMinimal === '' && this.state.hargaMaksimal !== '') {
-      console.log('price', 50 + '-' + this.state.hargaMaksimal)
-    } else {
-      console.log('price', this.state.hargaMinimal + '-' + this.state.hargaMaksimal)
+  handlingFilter (valueMin, valueMax) {
+    if (valueMax < valueMin) {
+      Alert.alert('Pesan', 'Harga Maksimal harus lebih besar dari harga minimal')
+    } else if (valueMin <= valueMax) {
+      this.props.handlingFilter(
+        this.state.filterKondisi,
+        this.state.filterPengiriman,
+        this.state.filterPrice,
+        this.state.filterAddress,
+        this.state.filterBrand,
+        this.state.filterOthers
+      )
     }
-    console.log('address', this.state.filterAddress)
-    console.log('brand', JSON.stringify(this.state.filterBrand).replace('[', '').replace(']', '').replace('0,', ''))
-    console.log('others', JSON.stringify(this.state.filterOthers).replace('[', '').replace(']', '').replace(/"/gi, ''))
   }
 
   resetFilter () {
@@ -364,17 +386,32 @@ class Filter extends React.Component {
   }
 
   provinsiValue = (key: string, value: number) => {
-    this.setState({
-      provinsiTerpilih: key
-    })
-    this.props.getKota(this.state.provinsi[value].id)
+    if (key.includes('Semua')) {
+      this.setState({
+        provinsiTerpilih: key,
+        kotaTerpilih: 'Semua Wilayah',
+        filterAddress: ''
+      })
+    } else {
+      this.setState({
+        provinsiTerpilih: key
+      })
+      this.props.getKota(this.state.provinsi[value].id)
+    }
   }
 
   kotaValue = (key: string, value: number) => {
-    this.setState({
-      kotaTerpilih: key,
-      filterAddress: this.state.kota[value].id
-    })
+    if (key.includes('Pilih')) {
+      this.setState({
+        kotaTerpilih: key,
+        filterAddress: ''
+      })
+    } else {
+      this.setState({
+        kotaTerpilih: key,
+        filterAddress: this.state.kota[value].id
+      })
+    }
   }
 
   renderRightView = () => {
@@ -406,7 +443,6 @@ class Filter extends React.Component {
                 style={styles.inputText}
                 value={hargaMinimal}
                 keyboardType='numeric'
-                autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeMinimal.bind(this)}
                 underlineColorAndroid='transparent'
@@ -421,7 +457,6 @@ class Filter extends React.Component {
                 style={styles.inputText}
                 value={hargaMaksimal}
                 keyboardType='numeric'
-                autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeMaksimal.bind(this)}
                 underlineColorAndroid='transparent'
@@ -492,6 +527,7 @@ class Filter extends React.Component {
   }
 
   render () {
+    const { filterPrice } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.mainContainerFilter}>
@@ -511,7 +547,7 @@ class Filter extends React.Component {
               Reset Filter
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonOke} onPress={() => this.terapkanFilter()}>
+          <TouchableOpacity style={styles.buttonOke} onPress={() => this.handlingFilter(filterPrice[0], filterPrice[1])}>
             <Text style={styles.labelButtonOke}>
               Terapkan Filter
             </Text>

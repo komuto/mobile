@@ -21,6 +21,7 @@ import SearchResult from '../Containers/SearchResult'
 import Search from '../Containers/Search'
 import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
 import OTPCodeScreen from '../Containers/OTPCodeScreen'
+import Wishlist from '../Containers/Wishlist'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -202,6 +203,13 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
+          <Scene
+            key='wishlist'
+            component={Wishlist}
+            title='Wishlist'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            />
         </Scene>
       </Router>
     )

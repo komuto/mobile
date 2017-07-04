@@ -89,6 +89,18 @@ class ProdukTerbaruScreenScreen extends React.Component {
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
     }
+    if (nextProps.dataFilter.status === 200) {
+      this.setState({
+        listDataSource: nextProps.dataFilter.products,
+        rowDataSource: nextProps.dataFilter.products
+      })
+    } else if (nextProps.dataFilter.status > 200) {
+      console.log(nextProps.dataFilter.status)
+    }
+  }
+
+  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
   }
 
   handleBack = () => {
@@ -513,7 +525,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
                 />
               </TouchableOpacity>
             </View>
-            <Filter />
+            <Filter
+              handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
+              this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
           </View>
         </Modal>
         {this.renderModalSort()}
@@ -524,13 +538,22 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.products
+    dataProduk: state.products,
+    dataFilter: state.filterProduct
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: dispatch(produkAction.products())
+    getProdukTerbaru: dispatch(produkAction.products()),
+    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(produkAction.filter({
+      condition: condition,
+      services: services,
+      price: price,
+      address: address,
+      brands: brands,
+      other: other
+    }))
   }
 }
 

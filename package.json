@@ -41,6 +41,7 @@
     "react-native-scrollable-tab-view": "^0.7.4",
     "react-native-simple-radio-button": "^2.5.0-alpha.1",
     "react-native-splash-screen": "^2.1.0",
+    "react-native-star-rating": "^1.0.7",
     "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "4.1.1",
     "react-navigation": "1.0.0-beta.11",

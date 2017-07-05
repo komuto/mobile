@@ -4,24 +4,103 @@ import {
   Text,
   Image,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  Modal,
+  ListView
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Images, Colors } from '../Themes'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import Produk1 from './LoginScreen'
 import Produk from './DetailTokoProduk'
+import DetailTokoProfile from './DetailTokoProfile'
+import DetailTokoPenilaian from './DetailTokoPenilaian'
 // Styles
 import styles from './Styles/DetailTokoStyle'
 
 class DetailToko extends React.Component {
 
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
+  constructor (props) {
+    super(props)
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.state = {
+      katalog: false,
+      modal: false,
+      data: [
+        { 'id': 1, 'kategori': 'elektronik' },
+        { 'id': 2, 'kategori': 'pakaian' },
+        { 'id': 3, 'kategori': 'alat olahraga' }
+      ]
+    }
+  }
+
+  renderFloatButton () {
+    if (!this.state.katalog) {
+      return (
+        <TouchableOpacity style={styles.floatButton} onPress={() => this.openKatalog()}>
+          <Image source={Images.katalog} style={styles.floatImage} />
+          <Text style={styles.katalog}>Daftar Katalog</Text>
+        </TouchableOpacity>
+      )
+    }
+    return null
+  }
+
+  renderRow (rowData, sectionId, rowId) {
+    if (parseInt(rowId) === this.state.data.length - 1) {
+      return (
+        <TouchableOpacity style={styles.containerDataLast}>
+          <Text style={styles.kategori}>{rowData.kategori}</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity style={styles.containerData}>
+          <Text style={styles.kategori}>{rowData.kategori}</Text>
+        </TouchableOpacity>
+      )
+    }
+  }
+
+  renderModal () {
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={this.state.modal}
+        onRequestClose={() => this.setState({ modal: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.openKatalog()}>
+          <View style={styles.listViewModal}>
+            <ListView
+              enableEmptySections
+              contentContainerStyle={{ flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.data)}
+              renderRow={this.renderRow.bind(this)}
+            />
+          </View>
+          <TouchableOpacity style={styles.floatButtonClose} onPress={() => this.openKatalog()}>
+            <Image source={Images.closewhite} style={styles.floatImage} />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
+  openKatalog () {
+    if (this.state.katalog) {
+      this.setState({
+        katalog: false,
+        modal: false
+      })
+    } else {
+      this.setState({
+        modal: true,
+        katalog: true
+      })
+    }
+  }
 
   render () {
     return (
@@ -56,19 +135,18 @@ class DetailToko extends React.Component {
           <ScrollableTabView
             tabBarBackgroundColor={Colors.snow}
             tabBarActiveTextColor={Colors.darkgrey}
-            tabBarUnderlineStyle={{ backgroundColor: 'rgba(0, 0, 0, 0)' }}
+            tabBarUnderlineStyle={{ backgroundColor: Colors.red, height: 2 }}
             tabBarInactiveTextColor={Colors.lightgrey}
             tabBarTextStyle={styles.textTab}
             locked
           >
             <Produk tabLabel='Produk' />
-            <Produk1 tabLabel='Profile' />
-            <Produk1 tabLabel='Penilaian' />
+            <DetailTokoProfile tabLabel='Profile' />
+            <DetailTokoPenilaian tabLabel='Penilaian' />
           </ScrollableTabView>
         </ScrollView>
-        <TouchableOpacity style={styles.floatButton}>
-          <Image source={Images.closewhite} style={styles.floatImage} />
-        </TouchableOpacity>
+        {this.renderFloatButton()}
+        {this.renderModal()}
       </View>
     )
   }

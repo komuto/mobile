@@ -42,6 +42,7 @@ const images = {
   list: require('../Images/Icons/icon-list.png'),
   close: require('../Images/Icons/icon-close.png'),
   closewhite: require('../Images/Icons/icon-close-white.png'),
+  katalog: require('../Images/Icons/icon-katalog.png'),
   email: require('../Images/Icons/icon-email.png'),
   pesan: require('../Images/Icons/icon-message.png'),
   tambah: require('../Images/Icons/icon-plus.png'),

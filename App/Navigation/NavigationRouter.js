@@ -22,7 +22,7 @@ import Search from '../Containers/Search'
 import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
 import OTPCodeScreen from '../Containers/OTPCodeScreen'
 import Wishlist from '../Containers/Wishlist'
-
+import DetailToko from '../Containers/DetailToko'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -207,6 +207,13 @@ class NavigationRouter extends Component {
             key='wishlist'
             component={Wishlist}
             title='Wishlist'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            />
+          <Scene
+            key='detailtoko'
+            component={DetailToko}
+            title='Detail Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             />

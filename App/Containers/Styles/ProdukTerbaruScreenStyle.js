@@ -93,12 +93,11 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     color: Colors.red,
     letterSpacing: 0.2,
-    marginTop: 5
+    marginTop: -2
   },
   likesContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6
+    alignItems: 'center'
   },
   like: {
     fontSize: Fonts.size.small,
@@ -218,5 +217,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
     width: Metrics.screenWidth,
     opacity: 0.5
+  },
+  moneyLikesContainer: {
+    flexDirection: 'row',
+    paddingBottom: 28.8,
+    alignItems: 'center'
   }
 })

@@ -235,7 +235,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
   }
 
-  renderModalSort (selected) {
+  renderModalSort () {
     const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
     return (
       <Modal
@@ -354,7 +354,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={Images.contohproduct} style={styles.imageProduct} />
+        <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount} %
@@ -371,7 +371,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
           {this.renderDiskon(this.statusDiskon, rowData.product.price)}
-          <View style={{flexDirection: 'row', paddingBottom: 28.8}}>
+          <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
                 {money}
@@ -406,7 +406,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
+        <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
             {rowData.product.discount} %

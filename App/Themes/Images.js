@@ -27,6 +27,7 @@ const images = {
   sport: require('../Images/Icons/icon-olahraga.png'),
   kantor: require('../Images/Icons/icon-kantor.png'),
   dapur: require('../Images/Icons/icon-dapur.png'),
+  keranjang: require('../Images/Icons/icon-keranjang.png'),
   bayi: require('../Images/Icons/icon-bayi.png'),
   audiovideo: require('../Images/Icons/icon-audiovideo.png'),
   rightArrow: require('../Images/Icons/icon-right-arrow.png'),
@@ -38,8 +39,12 @@ const images = {
   sort: require('../Images/Icons/icon-sorting.png'),
   filter: require('../Images/Icons/icon-filter.png'),
   grid: require('../Images/Icons/icon-grid.png'),
+  list: require('../Images/Icons/icon-list.png'),
   close: require('../Images/Icons/icon-close.png'),
+  closewhite: require('../Images/Icons/icon-close-white.png'),
   email: require('../Images/Icons/icon-email.png'),
+  pesan: require('../Images/Icons/icon-message.png'),
+  tambah: require('../Images/Icons/icon-plus.png'),
   defaultprofile: require('../Images/Icons/icon-default-profile.png')
 }
 

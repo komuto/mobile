@@ -6,6 +6,15 @@ export default StyleSheet.create({
     marginBottom: 50,
     backgroundColor: Colors.paleGrey
   },
+  fill: {
+    flex: 1
+  },
+  stickyHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0
+  },
   headerContainer: {
     height: 110,
     backgroundColor: Colors.red,

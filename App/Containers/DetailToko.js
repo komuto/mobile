@@ -31,7 +31,13 @@ class DetailToko extends React.Component {
         { 'id': 1, 'kategori': 'elektronik' },
         { 'id': 2, 'kategori': 'pakaian' },
         { 'id': 3, 'kategori': 'alat olahraga' }
-      ]
+      ],
+      tabViewStyle: {
+        backgroundColor: 'transparent'
+      },
+      firstTabSwitch: true,
+      tabAktiv: 'Produk',
+      height: []
     }
   }
 
@@ -102,6 +108,34 @@ class DetailToko extends React.Component {
     }
   }
 
+  _handleTabHeight (obj) {
+    this._setTabHeight(obj.i)
+  }
+
+  _setTabHeight (i) {
+    const dummy = this.state.height
+    if (this.state.firstTabSwitch) {
+      this.setState({
+        firstTabSwitch: false
+      })
+    } else {
+      if (i === 2) {
+        this.setState({tabViewStyle: {height: dummy[i + 1]}})
+      } else {
+        this.setState({tabViewStyle: {height: dummy[i]}})
+      }
+    }
+  }
+
+  measureView (name, event) {
+    const dummy = this.state.height
+    if (event.nativeEvent.layout.height > 0) {
+      if (dummy.length < 3) {
+        dummy.push(event.nativeEvent.layout.height)
+      }
+    }
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -133,6 +167,9 @@ class DetailToko extends React.Component {
             </View>
           </View>
           <ScrollableTabView
+            onChangeTab={(obj) => this._handleTabHeight(obj)}
+            prerenderingSiblingsNumber={1}
+            style={this.state.tabViewStyle}
             tabBarBackgroundColor={Colors.snow}
             tabBarActiveTextColor={Colors.darkgrey}
             tabBarUnderlineStyle={{ backgroundColor: Colors.red, height: 2 }}
@@ -140,9 +177,15 @@ class DetailToko extends React.Component {
             tabBarTextStyle={styles.textTab}
             locked
           >
-            <Produk tabLabel='Produk' />
-            <DetailTokoProfile tabLabel='Profile' />
-            <DetailTokoPenilaian tabLabel='Penilaian' />
+            <View tabLabel='Produk' ref='Produk' onLayout={(event) => this.measureView('Produk', event)}>
+              <Produk />
+            </View>
+            <View tabLabel='Profile' ref='Profile' onLayout={(event) => this.measureView('Profile', event)}>
+              <DetailTokoProfile />
+            </View>
+            <View tabLabel='Penilaian' ref='Penilaian' onLayout={(event) => this.measureView('Penilaian', event)}>
+              <DetailTokoPenilaian />
+            </View>
           </ScrollableTabView>
         </ScrollView>
         {this.renderFloatButton()}

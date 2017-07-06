@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, ListView } from 'react-native'
+import { Text, View, Image, ListView, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -12,11 +12,11 @@ class DetailTokoPenilaian extends React.Component {
   constructor (props) {
     super(props)
     var imageProduct = [
-      { foto: Images.contohproduct, nama: 'Budi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Adi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Benny Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Bangkit Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Indra Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' }
+      { foto: Images.contohproduct, nama: 'Budi Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
+      { foto: Images.contohproduct, nama: 'Adi Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
+      { foto: Images.contohproduct, nama: 'Benny Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
+      { foto: Images.contohproduct, nama: 'Bangkit Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
+      { foto: Images.contohproduct, nama: 'Indra Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' }
     ]
     var dataSource2 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
@@ -24,7 +24,9 @@ class DetailTokoPenilaian extends React.Component {
       foto: 'default',
       price: 1685000,
       starQuantity: 3,
-      starAccurate: 3
+      starAccurate: 3,
+      avgQuantity: 4.5,
+      avgAccurate: 4.5
     }
   }
   renderFotoProduk () {
@@ -60,26 +62,93 @@ class DetailTokoPenilaian extends React.Component {
       />
     )
   }
-  renderRow (rowData) {
+
+  renderRating () {
+    const {starAccurate, starQuantity, avgAccurate, avgQuantity} = this.state
     return (
-      <View style={styles.border}>
-        <View style={styles.border}>
-          <View style={[styles.profile, {paddingBottom: 22}]}>
-            {this.renderFotoProfil(rowData.foto)}
-            <View style={styles.namaContainer}>
-              <Text style={[styles.textNama, {lineHeight: 23}]}>
-                {rowData.nama}
-              </Text>
-              <Text style={[styles.textKelola]}>
-                {rowData.lastReview} hari yang lalu
-              </Text>
-            </View>
+      <View style={styles.ratingContainer}>
+        <View style={styles.eachQualiyRate}>
+          <Text style={styles.qualityText}> Kualitas Produk </Text>
+          <Text style={styles.qualityTextRate}>{avgQuantity}</Text>
+          <View style={styles.startContainer}>
+            <StarRating
+              disabled
+              maxStars={5}
+              starColor={'#ffcd00'}
+              emptyStarColor={'#d9e1e9'}
+              starSize={16}
+              rating={starQuantity}
+              selectedStar={(rating) => this.onStarQtyPress(rating)}
+            />
           </View>
-          {this.renderRatingUlasan(rowData.starAccurate, rowData.starQuality, rowData.isiUlasan)}
+        </View>
+        <View style={styles.eachQualiyRate}>
+          <Text style={styles.qualityText}> Akurasi Produk </Text>
+          <Text style={styles.qualityTextRate}>{avgAccurate}</Text>
+          <View style={styles.startContainer}>
+            <StarRating
+              disabled
+              maxStars={5}
+              starColor={'#ffcd00'}
+              emptyStarColor={'#d9e1e9'}
+              starSize={16}
+              rating={starAccurate}
+              selectedStar={(rating) => this.onStarAcuPress(rating)}
+            />
+          </View>
         </View>
       </View>
     )
   }
+
+  onStarQtyPress (rating) {
+    this.setState({
+      starQuantity: rating
+    })
+  }
+  onStarAcuPress (rating) {
+    this.setState({
+      starAccurate: rating
+    })
+  }
+
+  renderRow (rowData) {
+    return (
+      <View style={styles.border}>
+        <View style={styles.profile}>
+          {this.renderFotoProfil(rowData.foto)}
+          <View style={styles.namaContainer}>
+            <Text style={[styles.textNama, {lineHeight: 23}]}>
+              {rowData.nama}
+            </Text>
+            <Text style={[styles.textKelola]}>
+              {rowData.lastReview} hari yang lalu
+            </Text>
+          </View>
+        </View>
+        {this.renderProduk(rowData.foto, rowData.namaProduk, rowData.namaToko)}
+        {this.renderRatingUlasan(rowData.starAccurate, rowData.starQuality, rowData.isiUlasan)}
+      </View>
+    )
+  }
+
+  renderProduk (image, produk, namatoko) {
+    return (
+      <TouchableOpacity style={styles.produkContainer}>
+        <View style={styles.imageContainer}>
+          <Image source={image} style={styles.imageProduk} />
+        </View>
+        <View style={styles.namaProdukContainer}>
+          <Text style={[styles.textNama, {lineHeight: 23}]}>{produk}</Text>
+          <Text style={styles.textKelola}>{namatoko}</Text>
+        </View>
+        <View style={styles.rightArrow}>
+          <Image source={Images.rightArrow} style={styles.iconArrow} />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   renderRatingUlasan (starAccurate, starQuantity, isiulasan) {
     return (
       <View>
@@ -116,17 +185,20 @@ class DetailTokoPenilaian extends React.Component {
             </View>
           </View>
         </View>
-        <Text style={styles.isiUlasan}>{isiulasan}</Text>
+        <View style={styles.ulasanContainerIsi}>
+          <Text style={styles.isiUlasan}>{isiulasan}</Text>
+        </View>
       </View>
     )
   }
   render () {
     return (
-      <ScrollView style={styles.container}>
+      <View>
         <View style={[styles.ulasanContainer]}>
+          {this.renderRating()}
           {this.listViewUlasan()}
         </View>
-      </ScrollView>
+      </View>
     )
   }
 }

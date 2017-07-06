@@ -34,7 +34,8 @@ class Home extends React.Component {
       loadingKategori: true,
       loadingProduk: true,
       productSource: [],
-      kategoriSource: []
+      kategoriSource: [],
+      isLogin: this.props.datalogin.login
     }
   }
 
@@ -261,7 +262,11 @@ class Home extends React.Component {
   }
 
   wishlist () {
-    NavigationActions.wishlist({ type: ActionConst.PUSH })
+    if (this.state.isLogin) {
+      NavigationActions.wishlist({ type: ActionConst.PUSH })
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
   }
 
   openSearch () {
@@ -294,6 +299,22 @@ class Home extends React.Component {
         renderForeground={() => (
           <View key='parallax-header' style={{ backgroundColor: Colors.snow }} >
             <View style={styles.headerContainer}>
+              <View style={styles.header}>
+                <Text style={styles.textHeader}>
+                  Galaksi Parabola
+                </Text>
+                <TouchableOpacity style={styles.buttonHeader} onPress={() => this.wishlist()}>
+                  <Image source={Images.love} style={styles.imagestyle} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.buttonHeader}>
+                  <Image source={Images.shoppingCart} style={styles.imagestyle} />
+                  <View style={styles.containerNumber}>
+                    <Text style={styles.number}>
+                      {String(4)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
               <View style={styles.searchContainer}>
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
@@ -310,22 +331,6 @@ class Home extends React.Component {
                     placeholder='Cari barang atau toko'
                   />
                 </View>
-              </View>
-              <View style={styles.header}>
-                <Text style={styles.textHeader}>
-                  Galaksi Parabola
-                </Text>
-                <TouchableOpacity style={styles.buttonHeader} onPress={() => this.wishlist()}>
-                  <Image source={Images.love} style={styles.imagestyle} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonHeader}>
-                  <Image source={Images.shoppingCart} style={styles.imagestyle} />
-                  <View style={styles.containerNumber}>
-                    <Text style={styles.number}>
-                      {String(4)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -394,7 +399,8 @@ class Home extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataKategori: state.category,
-    dataProduk: state.products
+    dataProduk: state.products,
+    datalogin: state.isLogin
   }
 }
 

@@ -3,21 +3,22 @@ import { Colors, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   ulasanContainer: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.paleGrey,
     marginTop: 10
   },
   border: {
     borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
+    borderBottomColor: Colors.silver,
+    marginTop: 10,
+    padding: 20,
+    backgroundColor: Colors.snow
   },
   profile: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
     borderRadius: 2,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.background,
+    marginBottom: 20
   },
   namaContainer: {
     flexDirection: 'column',
@@ -47,31 +48,105 @@ export default StyleSheet.create({
   },
   qualityNoBorderContainer: {
     backgroundColor: Colors.background,
-    flexDirection: 'row',
-    paddingLeft: 20,
-    paddingBottom: 22.3
+    flexDirection: 'row'
+  },
+  eachQualiyRate: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRightWidth: 0.5,
+    borderRightColor: Colors.silver,
+    flex: 1
   },
   eachQualiy: {
+    flexDirection: 'column',
+    flex: 1
+  },
+  qualityContainer: {
+    backgroundColor: Colors.background,
+    flexDirection: 'row',
+    paddingLeft: 20,
+    borderBottomWidth: 0.5,
+    borderTopWidth: 0.5,
+    borderTopColor: Colors.silver,
+    borderBottomColor: Colors.silver
+  },
+  qualityTextRate: {
+    fontSize: Fonts.size.h3,
+    fontFamily: Fonts.type.bold,
+    color: Colors.darkgrey,
+    marginBottom: 8
   },
   qualityText: {
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.bold,
     color: Colors.darkgrey,
-    marginBottom: 8,
-    paddingRight: 56.8
+    marginBottom: 8
   },
   isiUlasan: {
     fontFamily: Fonts.type.regular,
-    color: Colors.brownishGrey,
+    color: Colors.darkgrey,
     fontSize: Fonts.size.smallMed,
-    paddingBottom: 21.2,
-    paddingLeft: 20,
     paddingRight: 10
   },
   separator: {
     width: 1,
-    marginRight: 24.4,
+    marginRight: 25,
     borderRightWidth: 0.5,
     borderRightColor: Colors.silver
+  },
+  flexRow: {
+    flexDirection: 'row'
+  },
+  avgTitle: {
+    marginBottom: 21,
+    fontFamily: Fonts.type.semiBolds,
+    color: Colors.darkgrey,
+    paddingLeft: 8.8,
+    fontSize: Fonts.size.regular
+  },
+  ratingContainer: {
+    elevation: 2,
+    paddingTop: 20,
+    paddingBottom: 20,
+    flexDirection: 'row',
+    backgroundColor: Colors.snow
+  },
+  ulasanContainerIsi: {
+    backgroundColor: Colors.snow,
+    marginTop: 20
+  },
+  produkContainer: {
+    borderTopColor: Colors.silver,
+    borderTopWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: Colors.snow,
+    flexDirection: 'row',
+    marginBottom: 20
+  },
+  namaProduk: {
+    marginRight: 20
+  },
+  imageContainer: {
+    marginRight: 20
+  },
+  imageProduk: {
+    width: 45,
+    height: 45
+  },
+  namaProdukContainer: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  rightArrow: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  iconArrow: {
+    height: 24,
+    width: 24
   }
 })

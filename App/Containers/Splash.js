@@ -17,7 +17,7 @@ class Splash extends React.Component {
         this.props.stateLogin(true)
       }
       SplashScreen.hide()
-      NavigationActions.detailtoko({ type: ActionConst.REPLACE, title: 'Olive Chicken' })
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
     }).done()
   }
 

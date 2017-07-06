@@ -46,7 +46,12 @@ const images = {
   email: require('../Images/Icons/icon-email.png'),
   pesan: require('../Images/Icons/icon-message.png'),
   tambah: require('../Images/Icons/icon-plus.png'),
-  defaultprofile: require('../Images/Icons/icon-default-profile.png')
+  defaultprofile: require('../Images/Icons/icon-default-profile.png'),
+  threeDot: require('../Images/Icons/3-dots.png'),
+  down: require('../Images/Icons/icon-down.png'),
+  add: require('../Images/Icons/Icon-qty-add.png'),
+  sub: require('../Images/Icons/Icon-qty-substract.png'),
+  diskusi: require('../Images/Icons/icon-diskusi.png')
 }
 
 export default images

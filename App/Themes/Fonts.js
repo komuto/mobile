@@ -20,7 +20,8 @@ const size = {
   medium: 14,
   smallMed: 13,
   small: 12,
-  tiny: 10
+  tiny: 10,
+  extraTint: 8
 }
 
 const style = {

@@ -20,7 +20,9 @@ class KategoriScreenScreen extends React.Component {
     this.state = {
       search: '',
       data: [],
-      loadingKategori: true
+      loadingKategori: true,
+      id: '',
+      categoryTitle: ''
     }
   }
 
@@ -53,6 +55,16 @@ class KategoriScreenScreen extends React.Component {
     })
   }
 
+  handleAllKategori (rowId, title) {
+    this.setState({categoryTitle: title, id: rowId})
+    NavigationActions.kategoriempatscreen({
+      type: ActionConst.PUSH,
+      id: rowId,
+      header: title,
+      name: title
+    })
+  }
+
   renderSubListView (subCategory) {
     if (subCategory.length <= 0) {
       return null
@@ -78,8 +90,8 @@ class KategoriScreenScreen extends React.Component {
             Lihat semua di {rowData.name}
           </Text>
         </View>
-        <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-          <Image source={Images.dapur} style={styles.imageCategory} />
+        <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(rowData.id, rowData.name)}>
+          <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               Lihat semua di {rowData.name}

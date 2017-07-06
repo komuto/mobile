@@ -23,6 +23,8 @@ import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
 import OTPCodeScreen from '../Containers/OTPCodeScreen'
 import Wishlist from '../Containers/Wishlist'
 import DetailToko from '../Containers/DetailToko'
+import ProductDetailScreen from '../Containers/ProductDetailScreen'
+import UlasanScreen from '../Containers/UlasanScreen'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -217,6 +219,20 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar={false}
             />
+          <Scene
+            key='productdetail'
+            component={ProductDetailScreen}
+            title='Fashion Pria'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='ulasanscreen'
+            component={UlasanScreen}
+            title='Ulasan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
         </Scene>
       </Router>
     )

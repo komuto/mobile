@@ -31,7 +31,7 @@ function product (action) {
   action.price = tempPrice
   let check = [
     {value: action.page, string: 'page'},
-    {value: action.size, string: 'size'},
+    {value: action.limit, string: 'limit'},
     {value: action.category_id, string: 'category_id'},
     // sort is filled with 'newest', 'cheapest', 'expensive', 'selling'
     {value: action.sort, string: 'sort'},
@@ -129,7 +129,7 @@ function categoryList (action) {
 
 function subCategory (action) {
   let axios = publicApiKomuto()
-  return axios.get('categories/' + action.id + '/sub-categories', {
+  return axios.get('categories/' + action.id, {
     ...action
   })
   .then(function (data) {

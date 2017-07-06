@@ -28,11 +28,10 @@ class KategoriDuaScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(nextProps.dataSubCategory.status)
     if (nextProps.dataSubCategory.status === 200) {
-      console.log(nextProps.dataSubCategory.categories)
       this.setState({
-        data: nextProps.dataSubCategory.categories,
+        data: nextProps.dataSubCategory.categories.sub_categories,
+        iconParent: nextProps.dataSubCategory.categories.icon,
         loadingKategori: false
       })
     } else if (nextProps.dataSubCategory.status > 200) {
@@ -49,17 +48,28 @@ class KategoriDuaScreenScreen extends React.Component {
   }
 
   handleDetailKategori (rowId, title) {
+    this.setState({categoryTitle: title, id: rowId})
     NavigationActions.kategoritigascreen({
       type: ActionConst.PUSH,
+      id: rowId,
       title: title,
-      jenis: title
+      name: title
+    })
+  }
+
+  handleAllKategori (rowId, title) {
+    NavigationActions.kategoriempatscreen({
+      type: ActionConst.PUSH,
+      id: rowId,
+      header: title,
+      name: title
     })
   }
 
   renderRow (rowData, rowId) {
     return (
-      <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id)}>
-        <Image source={Images.dapur} style={styles.imageCategory} />
+      <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
+        <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
         <View style={[styles.namaContainer, {marginLeft: 15}]}>
           <Text style={styles.textNama}>
             {rowData.name}
@@ -71,14 +81,15 @@ class KategoriDuaScreenScreen extends React.Component {
   }
 
   render () {
+    const {iconParent} = this.state
     const spinner = this.state.loadingKategori
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='#ef5656' size='small' />
     </View>) : (<View />)
     return (
       <ScrollView style={styles.container}>
-        <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(this.state.id)}>
-          <Image source={Images.dapur} style={styles.imageCategory} />
+        <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(this.state.id, this.state.categoryTitle)}>
+          <Image source={{uri: iconParent}} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               Lihat semua di {this.state.name}

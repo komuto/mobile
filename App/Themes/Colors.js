@@ -13,7 +13,7 @@ const colors = {
   windowTint: 'rgba(0, 0, 0, 0.4)',
   panther: '#161616',
   charcoal: '#595959',
-  coal: '#2d2d2d',
+  coal: '#d2d2d2',
   bloodOrange: '#fb5f26',
   snow: 'white',
   ember: 'rgba(164, 0, 48, 0.5)',
@@ -36,7 +36,11 @@ const colors = {
   lightOrange: '#fff8e8',
   orange: '#ffa851',
   darkOrange: '#ea8c2f',
-  lightSilver: '#eaebeb'
+  lightSilver: '#eaebeb',
+  paleGreyTwo: '#f5f5f6',
+  darkMint: '#47bf7e',
+  paleGreyThree: '#f9fbfc',
+  brownishGrey: '#666666'
 }
 
 export default colors

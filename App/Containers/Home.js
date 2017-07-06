@@ -37,6 +37,7 @@ class Home extends React.Component {
       kategoriSource: [],
       isLogin: this.props.datalogin.login
     }
+    this.props.getProdukTerbaru(6)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -159,7 +160,7 @@ class Home extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail()}>
         <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -213,22 +214,9 @@ class Home extends React.Component {
   }
 
   renderRowKategori (rowData) {
-    if (rowData.name.includes('Handphone & Tablet')) {
-      this.image = Images.komputer
-    } else if (rowData.name.includes('Olahraga & Outbond')) {
-      this.image = Images.sport
-    } else if (rowData.name.includes('Office & Stationery')) {
-      this.image = Images.kantor
-    } else if (rowData.name.includes('Komputer & Laptop')) {
-      this.image = Images.audiovideo
-    } else if (rowData.name.includes('Ibu dan Anak')) {
-      this.image = Images.bayi
-    } else if (rowData.name.includes('Peralatan Rumah Tangga')) {
-      this.image = Images.dapur
-    }
     return (
-      <TouchableOpacity style={styles.category}>
-        <Image source={this.image} style={styles.imageCategory} />
+      <TouchableOpacity style={styles.category} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
+        <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
         <Text style={styles.textCategory}>{rowData.name}</Text>
       </TouchableOpacity>
     )
@@ -283,6 +271,21 @@ class Home extends React.Component {
     NavigationActions.produkterbaru({
       type: ActionConst.PUSH,
       header: 'Produk Terbaru'
+    })
+  }
+
+  produkDetail () {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH
+    })
+  }
+
+  handleDetailKategori (rowId, title) {
+    NavigationActions.kategoriempatscreen({
+      type: ActionConst.PUSH,
+      id: rowId,
+      header: title,
+      name: title
     })
   }
 
@@ -407,7 +410,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getKategori: dispatch(homeAction.categoryList()),
-    getProdukTerbaru: dispatch(homeAction.products())
+    getProdukTerbaru: (limit) => dispatch(homeAction.products({limit}))
   }
 }
 

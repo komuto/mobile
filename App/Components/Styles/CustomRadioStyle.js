@@ -11,9 +11,12 @@ export default StyleSheet.create({
     marginTop: 10
   },
   label: {
-    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.regular,
+    letterSpacing: 0.22,
+    fontSize: Fonts.size.smallMed,
     paddingTop: 6,
     color: Colors.darkgrey,
-    marginRight: 20
+    marginRight: 20,
+    marginLeft: 4
   }
 })

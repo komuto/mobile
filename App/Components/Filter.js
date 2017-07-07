@@ -217,12 +217,12 @@ class Filter extends React.Component {
   onClickPengiriman = (selected) => (e) => {
     const {dataPengiriman, filterPengiriman} = this.state
     let dummy = filterPengiriman
-    if (dataPengiriman[selected].is_checked !== null) {
+    if (dataPengiriman[selected].is_checked) {
       var i = dummy.indexOf(dataPengiriman[selected].id)
       if (i !== -1) {
         dummy.splice(i, 1)
       }
-      dataPengiriman[selected].is_checked = null
+      dataPengiriman[selected].is_checked = false
       const newDataSource = dataPengiriman.map(data => {
         return {...data}
       })
@@ -232,7 +232,7 @@ class Filter extends React.Component {
       })
     } else {
       dummy.push(dataPengiriman[selected].id)
-      dataPengiriman[selected].is_checked = 1
+      dataPengiriman[selected].is_checked = true
       const newDataSource = dataPengiriman.map(data => {
         return {...data}
       })
@@ -246,12 +246,12 @@ class Filter extends React.Component {
   onClickBrand = (selected) => (e) => {
     const {dataBrand, filterBrand} = this.state
     let dummy = filterBrand
-    if (dataBrand[selected].is_checked !== null) {
+    if (dataBrand[selected].is_checked) {
       var i = dummy.indexOf(dataBrand[selected].id)
       if (i !== -1) {
         dummy.splice(i, 1)
       }
-      dataBrand[selected].is_checked = null
+      dataBrand[selected].is_checked = false
       const newDataSource = dataBrand.map(data => {
         return {...data}
       })
@@ -261,7 +261,7 @@ class Filter extends React.Component {
       })
     } else {
       dummy.push(dataBrand[selected].id)
-      dataBrand[selected].is_checked = 1
+      dataBrand[selected].is_checked = true
       const newDataSource = dataBrand.map(data => {
         return {...data}
       })
@@ -335,7 +335,7 @@ class Filter extends React.Component {
   }
 
   renderRowDataPengiriman = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked !== null ? Images.centang : null
+    const centang = rowData.is_checked ? Images.centang : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
         <View style={styles.labelContainerSecond}>

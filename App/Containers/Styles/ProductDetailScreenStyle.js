@@ -392,6 +392,22 @@ export default StyleSheet.create({
     paddingBottom: 8,
     paddingLeft: 7.8
   },
+  labelButtonEstimasi: {
+    fontSize: Fonts.size.smallMed,
+    paddingLeft: 3,
+    fontFamily: Fonts.type.regular,
+    color: Colors.bluesky,
+    textAlign: 'center'
+  },
+  buttonEstimasi: {
+    flexDirection: 'row',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: Colors.bluesky,
+    borderWidth: 1,
+    padding: 11
+  },
   containerNamaToko: {
     flexDirection: 'row',
     flex: 1,
@@ -416,6 +432,10 @@ export default StyleSheet.create({
     flexDirection: 'column',
     height: 100
   },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20
+  },
   menuLaporkan: {
     flex: 1,
     width: Metrics.screenWidth,
@@ -432,5 +452,34 @@ export default StyleSheet.create({
     letterSpacing: 0.23,
     color: Colors.darkgrey,
     marginLeft: 10
+  },
+  bukaEstimasiContainer: {
+    backgroundColor: Colors.snow,
+    padding: 20,
+    flexDirection: 'column'
+  },
+  lokasiContainerKurir: {
+    flexDirection: 'column',
+    flex: 1
+  },
+  pilihLokasiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 5,
+    paddingRight: 5
+  },
+  pilihDestinasi: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    flex: 0.75
+  },
+  imagePicker: {
+    height: 24,
+    width: 24
   }
 })

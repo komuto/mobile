@@ -73,7 +73,14 @@ class ProductDetailScreenScreen extends React.Component {
       loadingProduk: true,
       productSource: [],
       sizeUlasan: 2,
-      modalLaporkan: false
+      modalLaporkan: false,
+      estimasi: 0,
+      modalProvinsi: false,
+      modalKabupaten: false,
+      modalKecamatan: false
+      // provinsi: [],
+      // kabupaten: [],
+      // kecamatan: []
     }
     this.props.getProdukTerbaru(3)
   }
@@ -127,21 +134,21 @@ class ProductDetailScreenScreen extends React.Component {
   renderModalLaporkan () {
     return (
       <Modal
-        animationType={'fade'}
+        animationType={'slide'}
         transparent
         visible={this.state.modalLaporkan}
         onRequestClose={() => this.setState({ modalLaporkan: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.closeLaporkan()}>
           <View style={styles.menuLaporkanContainer}>
-            <TouchableOpacity style={styles.menuLaporkan}>
+            <TouchableOpacity style={styles.menuLaporkan} activeOpacity={0.8}>
               <Image
                 source={Images.share}
                 style={styles.imageStyle}
               />
               <Text style={styles.textBagikan}>Bagikan</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuLaporkan} onPress={() => this.laporkan()}>
+            <TouchableOpacity style={styles.menuLaporkan} onPress={() => this.laporkan()} activeOpacity={0.8}>
               <Image
                 source={Images.laporkan}
                 style={styles.imageStyle}
@@ -713,42 +720,151 @@ class ProductDetailScreenScreen extends React.Component {
     NavigationActions.ulasanscreen({ type: ActionConst.PUSH })
   }
 
-  renderEstimasiPengiriman () {
-    const {countProduct} = this.state
+  renderListProvinsi (rowData) {
     return (
-      <View>
-        <View style={[styles.qualityContainer, {paddingTop: 25}]}>
-          <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25}]}>
-            <Text style={[styles.qualityText, {marginBottom: 0}]}>Jumlah Produk</Text>
+      <TouchableOpacity style={[styles.menuLaporkan, { padding: 15 }]} activeOpacity={0.8}>
+        <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.title}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  renderModalProvinsi () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalProvinsi}
+        onRequestClose={() => this.setState({ modalProvinsi: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalProvinsi: false })}>
+          <View style={styles.menuProvinsiContainer}>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
+              renderRow={this.renderListProvinsi.bind(this)}
+              enableEmptySections
+            />
           </View>
-          <View style={[styles.eachQualiyNoMargin, {flexDirection: 'row', paddingRight: 20, paddingBottom: 0}]}>
-            <TouchableOpacity onPress={() => this.substract()}>
-              <Image source={Images.sub} style={styles.imageOperator} />
-            </TouchableOpacity>
-            <Text style={[styles.qualityText, {flex: 1, textAlign: 'center'}]}>{countProduct}</Text>
-            <TouchableOpacity onPress={() => this.add()}>
-              <Image source={Images.add} style={styles.imageOperator} />
-            </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+  renderModalKabupaten () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalKabupaten}
+        onRequestClose={() => this.setState({ modalKabupaten: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKabupaten: false })}>
+          <View style={styles.menuProvinsiContainer}>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
+              renderRow={this.renderListProvinsi.bind(this)}
+              enableEmptySections
+            />
           </View>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+  renderModalKecamatan () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalKecamatan}
+        onRequestClose={() => this.setState({ modalKecamatan: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKecamatan: false })}>
+          <View style={styles.menuProvinsiContainer}>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
+              renderRow={this.renderListProvinsi.bind(this)}
+              enableEmptySections
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
+  renderLokasi () {
+    return (
+      <View style={styles.lokasiContainerKurir}>
+        <View style={styles.pilihLokasiContainer}>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Provinsi :</Text>
+          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalProvinsi: true })}>
+            <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.provinsiTerpilih}</Text>
+            <Image source={Images.down} style={styles.imagePicker} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.lokasiContainer}>
-          <Text style={styles.qualityText}>Lokasi Pengiriman</Text>
-          <View style={styles.staticList2}>
-            <Text style={styles.lokasiItem}>Provinsi :</Text>
-            {this.pickerProvinsi()}
-          </View>
-          <View style={styles.staticList2}>
-            <Text style={styles.lokasiItem}>Kabupaten :</Text>
-            {this.pickerKabupaten()}
-          </View>
-          <View style={styles.staticList2}>
-            <Text style={styles.lokasiItem}>Kecamatan :</Text>
-            {this.pickerKecamatan()}
-          </View>
+        <View style={styles.pilihLokasiContainer}>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Kabupaten :</Text>
+          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
+            <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.kabTerpilih}</Text>
+            <Image source={Images.down} style={styles.imagePicker} />
+          </TouchableOpacity>
         </View>
-        {this.renderKurir()}
+        <View style={styles.pilihLokasiContainer}>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Kecamatan :</Text>
+          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKecamatan: true })}>
+            <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.kecTerpilih}</Text>
+            <Image source={Images.down} style={styles.imagePicker} />
+          </TouchableOpacity>
+        </View>
       </View>
     )
+  }
+
+  renderBukaEstimasiPengiriman () {
+    if (this.state.estimasi === 200) {
+      return null
+    } else {
+      return (
+        <View style={styles.bukaEstimasiContainer}>
+          <Text style={[styles.isiUlasan, { paddingLeft: 0 }]}>Lihat estimasi harga dan lama pengiriman barang ke tempat Anda</Text>
+          <TouchableOpacity style={styles.buttonEstimasi} onPress={() => this.setState({ estimasi: 200 })}>
+            <Text style={styles.labelButtonFav}>
+              Lihat Estimasi Pengiriman Barang
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }
+
+  renderEstimasiPengiriman () {
+    if (this.state.estimasi === 200) {
+      const {countProduct} = this.state
+      return (
+        <View>
+          <View style={[styles.qualityContainer, {paddingTop: 25}]}>
+            <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25}]}>
+              <Text style={[styles.qualityText, {marginBottom: 0}]}>Jumlah Produk</Text>
+            </View>
+            <View style={[styles.eachQualiyNoMargin, {flexDirection: 'row', paddingRight: 20, paddingBottom: 0}]}>
+              <TouchableOpacity onPress={() => this.substract()}>
+                <Image source={Images.sub} style={styles.imageOperator} />
+              </TouchableOpacity>
+              <Text style={[styles.qualityText, {flex: 1, textAlign: 'center'}]}>{countProduct}</Text>
+              <TouchableOpacity onPress={() => this.add()}>
+                <Image source={Images.add} style={styles.imageOperator} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.lokasiContainer}>
+            <Text style={styles.qualityText}>Lokasi Pengiriman</Text>
+            <View style={styles.staticList2}>
+              {this.renderLokasi()}
+            </View>
+          </View>
+          {this.renderKurir()}
+        </View>
+      )
+    } else {
+      return null
+    }
   }
 
   substract () {
@@ -916,6 +1032,7 @@ class ProductDetailScreenScreen extends React.Component {
           <Text style={styles.bigTitle}>Ulasan ({this.state.ulasanDataSource._cachedRowCount})</Text>
           {this.renderRowUlasan()}
           <Text style={styles.bigTitle}>Estimasi Pengiriman</Text>
+          {this.renderBukaEstimasiPengiriman()}
           {this.renderEstimasiPengiriman()}
           <Text style={styles.bigTitle}>Info Penjual</Text>
           {this.renderInfoPenjual()}
@@ -937,6 +1054,9 @@ class ProductDetailScreenScreen extends React.Component {
           </View>
         </ScrollView>
         {this.renderModalLaporkan()}
+        {this.renderModalProvinsi()}
+        {this.renderModalKabupaten()}
+        {this.renderModalKecamatan()}
       </View>
     )
   }

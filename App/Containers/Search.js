@@ -10,7 +10,7 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
@@ -61,13 +61,13 @@ class Search extends React.Component {
     this.setState({ search: text })
   }
 
-  detailResult (nama) {
-    // NavigationActions.searchresult({ type: ActionConst.PUSH, header: nama })
+  detailResult (name) {
+    NavigationActions.searchresult({ type: ActionConst.PUSH, header: name, querys: name })
   }
 
   renderRow (rowData) {
     return (
-      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.nama)}>
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.name)}>
         <Text style={styles.textResult}>
           {rowData.name}
         </Text>

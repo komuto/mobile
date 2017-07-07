@@ -403,5 +403,34 @@ export default StyleSheet.create({
   },
   flexRow: {
     flexDirection: 'row'
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuLaporkanContainer: {
+    position: 'absolute',
+    bottom: 25,
+    flexDirection: 'column',
+    height: 100
+  },
+  menuLaporkan: {
+    flex: 1,
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.snow,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    alignItems: 'center',
+    paddingLeft: 20,
+    flexDirection: 'row'
+  },
+  textBagikan: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey,
+    marginLeft: 10
   }
 })

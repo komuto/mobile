@@ -25,6 +25,7 @@ import Wishlist from '../Containers/Wishlist'
 import DetailToko from '../Containers/DetailToko'
 import ProductDetailScreen from '../Containers/ProductDetailScreen'
 import UlasanScreen from '../Containers/UlasanScreen'
+import Laporkan from '../Containers/Laporkan'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -230,6 +231,13 @@ class NavigationRouter extends Component {
             key='ulasanscreen'
             component={UlasanScreen}
             title='Ulasan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='laporkan'
+            component={Laporkan}
+            title='Laporkan Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

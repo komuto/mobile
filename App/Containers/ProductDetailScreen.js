@@ -1,5 +1,16 @@
 import React from 'react'
-import { ScrollView, View, TouchableOpacity, Text, Image, ListView, Picker, ActivityIndicator, BackAndroid } from 'react-native'
+import {
+  ScrollView,
+  View,
+  TouchableOpacity,
+  Text,
+  Image,
+  ListView,
+  Picker,
+  ActivityIndicator,
+  BackAndroid,
+  Modal
+} from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
@@ -61,7 +72,8 @@ class ProductDetailScreenScreen extends React.Component {
       kecTerpilih: 'Sedayu',
       loadingProduk: true,
       productSource: [],
-      sizeUlasan: 2
+      sizeUlasan: 2,
+      modalLaporkan: false
     }
     this.props.getProdukTerbaru(3)
   }
@@ -86,6 +98,62 @@ class ProductDetailScreenScreen extends React.Component {
     return true
   }
 
+  backButton () {
+    NavigationActions.pop()
+  }
+
+  openLaporkan () {
+    this.setState({
+      modalLaporkan: true
+    })
+  }
+
+  closeLaporkan () {
+    this.setState({
+      modalLaporkan: false
+    })
+  }
+
+  laporkan () {
+    this.setState({ modalLaporkan: false })
+    NavigationActions.laporkan({
+      type: ActionConst.PUSH,
+      images: Images.contohproduct,
+      namaBarang: 'Blue Training Kit Manchaster United',
+      harga: 1685000
+    })
+  }
+
+  renderModalLaporkan () {
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={this.state.modalLaporkan}
+        onRequestClose={() => this.setState({ modalLaporkan: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.closeLaporkan()}>
+          <View style={styles.menuLaporkanContainer}>
+            <TouchableOpacity style={styles.menuLaporkan}>
+              <Image
+                source={Images.share}
+                style={styles.imageStyle}
+              />
+              <Text style={styles.textBagikan}>Bagikan</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuLaporkan} onPress={() => this.laporkan()}>
+              <Image
+                source={Images.laporkan}
+                style={styles.imageStyle}
+              />
+              <Text style={styles.textBagikan}>Laporkan</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
   renderHeader () {
     return (
       <View style={styles.headerTextContainer}>
@@ -98,7 +166,7 @@ class ProductDetailScreenScreen extends React.Component {
         <Text style={styles.headerText}>
           Detail
         </Text>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => this.openLaporkan()}>
           <Image
             source={Images.threeDot}
             style={styles.imageStyle}
@@ -685,7 +753,9 @@ class ProductDetailScreenScreen extends React.Component {
 
   substract () {
     const {countProduct} = this.state
-    this.setState({countProduct: countProduct - 1})
+    if (countProduct > 0) {
+      this.setState({countProduct: countProduct - 1})
+    }
   }
 
   add () {
@@ -866,6 +936,7 @@ class ProductDetailScreenScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        {this.renderModalLaporkan()}
       </View>
     )
   }

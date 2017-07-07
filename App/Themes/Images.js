@@ -51,7 +51,9 @@ const images = {
   down: require('../Images/Icons/icon-down.png'),
   add: require('../Images/Icons/Icon-qty-add.png'),
   sub: require('../Images/Icons/Icon-qty-substract.png'),
-  diskusi: require('../Images/Icons/icon-diskusi.png')
+  diskusi: require('../Images/Icons/icon-diskusi.png'),
+  share: require('../Images/Icons/icon-share.png'),
+  laporkan: require('../Images/Icons/icon-laporkan.png')
 }
 
 export default images

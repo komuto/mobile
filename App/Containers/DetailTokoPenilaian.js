@@ -59,6 +59,7 @@ class DetailTokoPenilaian extends React.Component {
       <ListView
         dataSource={this.state.listDataSource}
         renderRow={this.renderRow.bind(this)}
+        enableEmptySections
       />
     )
   }

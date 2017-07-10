@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ListView, TouchableOpacity, Image } from 'react-native'
 import { connect } from 'react-redux'
-import { Images } from '../Themes'
+import { Images, Metrics } from '../Themes'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -85,7 +85,10 @@ class DetailTokoProduk extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity
+        style={[stylesHome.rowDataContainer, {width: (Metrics.screenWidth / 2) + 20}]}
+        activeOpacity={0.5}
+      >
         <Image source={rowData.gambar} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>

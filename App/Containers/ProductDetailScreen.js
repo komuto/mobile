@@ -6,7 +6,6 @@ import {
   Text,
   Image,
   ListView,
-  Picker,
   ActivityIndicator,
   BackAndroid,
   Modal
@@ -19,6 +18,8 @@ import StarRating from 'react-native-star-rating'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as homeAction from '../actions/home'
+import * as filterAction from '../actions/location'
+import * as serviceAction from '../actions/expedition'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -30,70 +31,138 @@ class ProductDetailScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
-    var imageProduct = [
-      { gambar: Images.contohproduct },
-      { gambar: Images.contohproduct },
-      { gambar: Images.contohproduct },
-      { gambar: Images.contohproduct },
-      { gambar: Images.contohproduct }
-    ]
-    var ulasan = [
-      { foto: Images.contohproduct, nama: 'Budi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Adi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' }
-    ]
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
-    var dataSource2 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      listDataSource: dataSource2.cloneWithRows(imageProduct),
+      dataImage: [],
+      id: this.props.id,
       grosir: true,
       discount: false,
+      diskon: 0,
       price: 1350000,
-      starQuantity: 3,
-      starAccurate: 3,
+      kondisi: 1,
       avgQuantity: 4.5,
       avgAccurate: 4.5,
       numOfLine: 3,
-      foto: 'default',
+      lokasiPenjual: '',
+      namaToko: '',
+      idLokasiPenjual: 0,
+      numOfLineTerm: 3,
+      readmore: styles.readMoreTextContainer,
+      readmoreTerm: styles.readMoreTextContainer,
+      verified: false,
+      title: 'Blue Training Kit Machester United',
+      fotoToko: 'default',
       countProduct: 1,
-      ulasanDataSource: dataSource2.cloneWithRows(ulasan),
-      provinsi: [
-        {id: 1, title: 'Daerah Istimewa Yogyakarta'},
-        {id: 2, title: 'Jawa Barat'},
-        {id: 3, title: 'Jawa Tengah'}
-      ],
-      kabupaten: [
-        {id: 1, title: 'Bantul'}
-      ],
-      kecamatan: [
-        {id: 1, title: 'Sedayu'}
-      ],
-      provinsiTerpilih: 'Daerah Istimewa Yogyakarta',
-      kabTerpilih: 'Bantul',
-      kecTerpilih: 'Sedayu',
+      ulasan: [],
+      kategori: '',
+      deskripsi: '',
+      termcondition: '',
+      showService: false,
+      stock: 0,
+      sold: 0,
+      weight: 0,
+      totalWeight: 0,
+      otherProduct: [],
+      imagesReport: Images.contohproduct,
+      provinsiTerpilih: 'Semua Wilayah',
+      kabTerpilih: 'Semua Wilayah',
+      kecTerpilih: 'Semua Wilayah',
+      idProvinsiTerpilih: 0,
+      idKabTerpilih: 0,
+      idKecTerpilih: 0,
       loadingProduk: true,
-      productSource: [],
       sizeUlasan: 2,
       modalLaporkan: false,
       estimasi: 0,
       modalProvinsi: false,
       modalKabupaten: false,
-      modalKecamatan: false
-      // provinsi: [],
-      // kabupaten: [],
-      // kecamatan: []
+      modalKecamatan: false,
+      tambahanProvinsi: [
+        {
+          'id': 0,
+          'name': 'Pilih Provinsi'
+        }
+      ],
+      tambahanKota: [
+        {
+          'id': 0,
+          'ro_id': 0,
+          'name': 'Pilih Kota'
+        }
+      ],
+      tambahanKecamatan: [
+        {
+          'id': 0,
+          'name': 'Pilih Kecamatan'
+        }
+      ],
+      provinsi: [],
+      kabupaten: [],
+      kecamatan: [],
+      service: [],
+      dataServices: [],
+      jumlahServis: 0
     }
-    this.props.getProdukTerbaru(3)
   }
 
   componentWillReceiveProps (nextProps) {
-    this.setState({
-      productSource: nextProps.dataProduk.products,
-      loadingProduk: false
-    })
+    if (nextProps.dataProvinsi.status === 200) {
+      this.setState({
+        provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
+      })
+    }
+    if (nextProps.dataKota.status === 200) {
+      this.setState({
+        kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
+      })
+    }
+    if (nextProps.dataSubDistrict.status === 200) {
+      this.setState({
+        kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
+      })
+    }
+    if (nextProps.dataServis.status === 200) {
+      this.setState({
+        dataServices: this.state.dataServices.concat(nextProps.dataServis.charges)
+      })
+    }
+    if (nextProps.dataDetailProduk.status === 200) {
+      console.log(nextProps.dataDetailProduk.detail)
+      this.setState({
+        loadingProduk: false,
+        grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
+        discount: nextProps.dataDetailProduk.detail.product.is_discount,
+        price: nextProps.dataDetailProduk.detail.product.price,
+        ulasan: nextProps.dataDetailProduk.detail.reviews,
+        sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
+        dataImage: nextProps.dataDetailProduk.detail.images,
+        imagesReport: nextProps.dataDetailProduk.detail.images[0].file,
+        title: nextProps.dataDetailProduk.detail.product.name,
+        diskon: nextProps.dataDetailProduk.detail.product.discount,
+        verified: nextProps.dataDetailProduk.detail.store.is_verified,
+        otherProduct: nextProps.dataDetailProduk.detail.other_products,
+        avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
+        avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
+        stock: nextProps.dataDetailProduk.detail.product.stock,
+        sold: nextProps.dataDetailProduk.detail.product.count_sold,
+        weight: nextProps.dataDetailProduk.detail.product.weight,
+        kondisi: nextProps.dataDetailProduk.detail.product.type,
+        kategori: nextProps.dataDetailProduk.detail.category.name,
+        deskripsi: nextProps.dataDetailProduk.detail.product.description,
+        termcondition: nextProps.dataDetailProduk.detail.store.note,
+        idLokasiPenjual: nextProps.dataDetailProduk.detail.store.province.id,
+        lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
+        namaToko: nextProps.dataDetailProduk.detail.store.name,
+        service: nextProps.dataDetailProduk.detail.expeditions,
+        jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length
+      })
+    }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    this.props.getProvinsi()
+    this.props.getKota(11)
   }
 
   componentWillUnmount () {
@@ -125,9 +194,9 @@ class ProductDetailScreenScreen extends React.Component {
     this.setState({ modalLaporkan: false })
     NavigationActions.laporkan({
       type: ActionConst.PUSH,
-      images: Images.contohproduct,
-      namaBarang: 'Blue Training Kit Manchaster United',
-      harga: 1685000
+      images: this.state.imagesReport,
+      namaBarang: this.state.title,
+      harga: this.state.price
     })
   }
 
@@ -186,13 +255,14 @@ class ProductDetailScreenScreen extends React.Component {
   renderImageProduct () {
     return (
       <View style={styles.scrollImage}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <ListView
-            contentContainerStyle={{ flexDirection: 'row', flex: 1, flexWrap: 'wrap' }}
-            dataSource={this.state.listDataSource}
-            renderRow={this.renderRowImageProduct.bind(this)}
-          />
-        </ScrollView>
+        <ListView
+          horizontal
+          enableEmptySections
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          showsHorizontalScrollIndicator={false}
+          dataSource={this.dataSource.cloneWithRows(this.state.dataImage)}
+          renderRow={this.renderRowImageProduct.bind(this)}
+        />
       </View>
     )
   }
@@ -202,7 +272,7 @@ class ProductDetailScreenScreen extends React.Component {
       <View style={styles.imageCotainer}>
         <View style={styles.imageProduct}>
           <Image
-            source={rowData.gambar}
+            source={{ uri: rowData.file }}
             style={styles.image}
           />
         </View>
@@ -218,12 +288,13 @@ class ProductDetailScreenScreen extends React.Component {
       delimiter: '.',
       precision: 3
     })
+    const hargaDiskon = this.discountCalculate(this.state.price, this.state.discount)
     if (!grosir && !discount) {
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              Blue Training Kit Machester United
+              {this.state.title}
             </Text>
             {this.renderLikes(true)}
           </View>
@@ -237,20 +308,20 @@ class ProductDetailScreenScreen extends React.Component {
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              Blue Training Kit Machester United
+              {this.state.title}
             </Text>
             {this.renderLikes(true)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
               <Text style={styles.diskon}>
-                10%
+                {this.state.diskon}%
               </Text>
             </View>
             <View>
               {this.renderDiskon(true, totalHarga)}
               <Text style={[styles.price, {marginTop: 0}]}>
-                {totalHarga}
+                {hargaDiskon}
               </Text>
             </View>
           </View>
@@ -267,9 +338,33 @@ class ProductDetailScreenScreen extends React.Component {
             </View>
             <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
               <Text style={styles.title}>
-                Blue Training Kit Machester United
+                {this.state.title}
               </Text>
               {this.renderLikes(false)}
+            </View>
+          </View>
+        </View>
+      )
+    } else {
+      return (
+        <View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>
+              {this.state.title}
+            </Text>
+            {this.renderLikes(true)}
+          </View>
+          <View style={styles.flexRow}>
+            <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
+              <Text style={styles.diskon}>
+                {this.state.diskon}%
+              </Text>
+            </View>
+            <View>
+              {this.renderDiskon(true, totalHarga)}
+              <Text style={[styles.price, {marginTop: 0}]}>
+                {hargaDiskon}
+              </Text>
             </View>
           </View>
         </View>
@@ -277,28 +372,28 @@ class ProductDetailScreenScreen extends React.Component {
     }
   }
 
-  renderFotoProfil () {
-    if (this.state.foto !== 'default') {
+  renderFotoProfil (foto) {
+    if (foto === '' || foto === null || foto === undefined) {
       return (
         <Image
-          source={{ uri: this.state.foto }}
+          source={Images.contohproduct}
           style={styles.styleFoto}
         />
       )
     }
     return (
       <Image
-        source={Images.contohproduct}
+        source={{ uri: foto }}
         style={styles.styleFoto}
       />
     )
   }
 
   renderFotoToko () {
-    if (this.state.foto !== 'default') {
+    if (this.state.fotoToko !== 'default') {
       return (
         <Image
-          source={{ uri: this.state.foto }}
+          source={{ uri: this.state.fotoToko }}
           style={[styles.styleFoto, {borderRadius: 0}]}
         />
       )
@@ -312,7 +407,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderRating () {
-    const {starAccurate, starQuantity, avgAccurate, avgQuantity} = this.state
+    const {avgAccurate, avgQuantity} = this.state
     return (
       <View style={styles.qualityContainer}>
         <View style={styles.eachQualiy}>
@@ -325,7 +420,7 @@ class ProductDetailScreenScreen extends React.Component {
                 starColor={'#ffcd00'}
                 emptyStarColor={'#d9e1e9'}
                 starSize={16}
-                rating={starQuantity}
+                rating={parseInt(avgQuantity)}
                 selectedStar={(rating) => this.onStarQtyPress(rating)}
               />
             </View>
@@ -342,7 +437,7 @@ class ProductDetailScreenScreen extends React.Component {
                 starColor={'#ffcd00'}
                 emptyStarColor={'#d9e1e9'}
                 starSize={16}
-                rating={starAccurate}
+                rating={parseInt(avgAccurate)}
                 selectedStar={(rating) => this.onStarAcuPress(rating)}
               />
             </View>
@@ -353,8 +448,7 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
-  renderRatingUlasan () {
-    const {starAccurate, starQuantity} = this.state
+  renderRatingUlasan (starAccurate, starQuantity) {
     return (
       <View style={styles.qualityNoBorderContainer}>
         <View style={styles.eachQualiy}>
@@ -423,75 +517,6 @@ class ProductDetailScreenScreen extends React.Component {
     })
   }
 
-  pickerProvinsi () {
-    const { provinsi } = this.state
-    const dataProvinsi = provinsi.map(provinsi =>
-    (<Picker.Item
-      key={provinsi.id}
-      label={provinsi.title}
-      value={provinsi.title}
-      color={Colors.darkgrey}
-    />))
-    return (
-      <View style={styles.pickerStyle}>
-        <Picker
-          style={{flex: 1, height: 21}}
-          selectedValue={this.state.provinsiTerpilih}
-          onValueChange={this.provinsiValue.bind(this, 'provinsiTerpilih')}
-          mode='dropdown'
-        >
-          {dataProvinsi}
-        </Picker>
-      </View>
-    )
-  }
-
-  pickerKabupaten () {
-    const { kabupaten } = this.state
-    const dataProvinsi = kabupaten.map(kabupaten =>
-    (<Picker.Item
-      key={kabupaten.id}
-      label={kabupaten.title}
-      value={kabupaten.title}
-      color={Colors.darkgrey}
-    />))
-    return (
-      <View style={styles.pickerStyle}>
-        <Picker
-          style={{flex: 1, height: 21}}
-          selectedValue={this.state.kabTerpilih}
-          onValueChange={this.kabupatenValue.bind(this, 'kabTerpilih')}
-          mode='dropdown'
-        >
-          {dataProvinsi}
-        </Picker>
-      </View>
-    )
-  }
-
-  pickerKecamatan () {
-    const { kecamatan } = this.state
-    const dataProvinsi = kecamatan.map(kecamatan =>
-    (<Picker.Item
-      key={kecamatan.id}
-      label={kecamatan.title}
-      value={kecamatan.title}
-      color={Colors.darkgrey}
-    />))
-    return (
-      <View style={styles.pickerStyle}>
-        <Picker
-          style={{flex: 1, height: 21}}
-          selectedValue={this.state.kecTerpilih}
-          onValueChange={this.kecValue.bind(this, 'kecTerpilih')}
-          mode='dropdown'
-        >
-          {dataProvinsi}
-        </Picker>
-      </View>
-    )
-  }
-
   renderVerified (status) {
     if (status) {
       return (
@@ -555,27 +580,43 @@ class ProductDetailScreenScreen extends React.Component {
     return hargaDiskon
   }
 
-  renderKurir () {
+  renderRowService (rowData) {
     return (
-      <View style={{backgroundColor: Colors.background}}>
-        <View style={styles.staticContainer}>
-          <View style={styles.staticList}>
-            <Text style={styles.staticProduct}>JNE REG</Text>
-            <Text style={[styles.staticProductVal, {flex: 1}]}>328.000</Text>
-            <Text style={styles.staticProductVal}>2-3 hari</Text>
-          </View>
-          <View style={styles.staticList}>
-            <Text style={styles.staticProduct}>JNE ONS</Text>
-            <Text style={[styles.staticProductVal, {flex: 1}]}>328.000</Text>
-            <Text style={styles.staticProductVal}>2-3 hari</Text>
-          </View>
-          <View style={styles.staticList}>
-            <Text style={styles.staticProduct}>TIKI REG</Text>
-            <Text style={[styles.staticProductVal, {flex: 1}]}>328.000</Text>
-            <Text style={styles.staticProductVal}>2-3 hari</Text>
-          </View>
-        </View>
+      <View style={styles.staticList}>
+        <Text style={styles.staticProduct}>{rowData.name}</Text>
+        <Text style={[styles.staticProductVal, {flex: 1}]}>{rowData.cost}</Text>
+        <Text style={styles.staticProductVal}>{rowData.etd} hari</Text>
       </View>
+    )
+  }
+
+  renderKurir () {
+    if (this.state.showService) {
+      if (this.state.dataServices.length > 0) {
+        return (
+          <View style={{backgroundColor: Colors.background}}>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.dataServices)}
+              renderRow={this.renderRowService.bind(this)}
+              enableEmptySections
+            />
+          </View>
+        )
+      }
+    } else {
+      return null
+    }
+  }
+
+  renderSold () {
+    const { sold } = this.state
+    if (sold === null || sold === undefined) {
+      return (
+        <Text style={styles.staticProductVal}>0</Text>
+      )
+    }
+    return (
+      <Text style={styles.staticProductVal}>{sold}</Text>
     )
   }
 
@@ -584,7 +625,7 @@ class ProductDetailScreenScreen extends React.Component {
       <View style={styles.staticContainer}>
         <View style={[styles.staticList, {borderStyle: this.state.showBorder ? 'dashed' : null}]}>
           <Text style={styles.staticProduct}>Stok Barang</Text>
-          <Text style={styles.staticProductVal}>128</Text>
+          <Text style={styles.staticProductVal}>{this.state.stock}</Text>
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Dilihat</Text>
@@ -592,7 +633,7 @@ class ProductDetailScreenScreen extends React.Component {
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Terjual</Text>
-          <Text style={styles.staticProductVal}>250</Text>
+          {this.renderSold()}
         </View>
       </View>
     )
@@ -623,18 +664,30 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
+  renderKondisi () {
+    const { kondisi } = this.state
+    if (kondisi > 0) {
+      return (
+        <Text style={styles.infoProductVal}>Baru</Text>
+      )
+    }
+    return (
+      <Text style={styles.infoProductVal}>Bekas</Text>
+    )
+  }
+
   renderInfoProduct () {
-    const { numOfLine } = this.state
+    const { numOfLine, weight } = this.state
     return (
       <View>
         <View style={styles.infoContainer}>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Berat</Text>
-            <Text style={styles.infoProductVal}>120 gram</Text>
+            <Text style={styles.infoProductVal}>{weight}</Text>
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kondisi</Text>
-            <Text style={styles.infoProductVal}>Baru</Text>
+            {this.renderKondisi()}
           </View>
         </View>
         <View style={styles.infoContainer}>
@@ -644,17 +697,18 @@ class ProductDetailScreenScreen extends React.Component {
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kategori</Text>
-            <Text style={styles.infoProductVal}>Peralatan Olahraga</Text>
+            <Text style={styles.infoProductVal}>{this.state.kategori}</Text>
           </View>
         </View>
         <View style={[styles.infoContainer, {flexDirection: 'column'}]}>
           <Text style={styles.infoProduct}>Deskripsi</Text>
-          <Text numberOfLines={numOfLine} style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing
-            elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Ut enim ad minim veniam, quis
-            nostrud exercitation ullamco laboris</Text>
-          <TouchableOpacity style={styles.readMoreTextContainer} onPress={() => this.readMore()}>
+          <Text
+            numberOfLines={numOfLine}
+            style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
+          >
+            {this.state.deskripsi}
+          </Text>
+          <TouchableOpacity style={this.state.readmore} onPress={() => this.readMore()}>
             <View style={{alignItems: 'center'}}>
               <Image source={Images.down} style={styles.imageDown} />
             </View>
@@ -671,18 +725,18 @@ class ProductDetailScreenScreen extends React.Component {
       <View style={{backgroundColor: Colors.background}}>
         <View style={styles.border}>
           <View style={styles.profile}>
-            {this.renderFotoProfil()}
+            {this.renderFotoProfil(rowData.user.photo)}
             <View style={styles.namaContainer}>
               <Text style={styles.textNama}>
-                {rowData.nama}
+                {rowData.user.name}
               </Text>
               <Text style={styles.textKelola}>
-                {rowData.lastReview} hari yang lalu
+                3 hari yang lalu
               </Text>
             </View>
           </View>
-          {this.renderRatingUlasan()}
-          <Text numberOfLines={numOfLine} style={styles.isiUlasan}>{rowData.isiUlasan}</Text>
+          {this.renderRatingUlasan(rowData.accuracy, rowData.quality)}
+          <Text numberOfLines={numOfLine} style={styles.isiUlasan}>{rowData.review}</Text>
         </View>
       </View>
     )
@@ -690,10 +744,31 @@ class ProductDetailScreenScreen extends React.Component {
 
   readMore () {
     const {numOfLine} = this.state
-    if (numOfLine != null) {
-      this.setState({numOfLine: null})
+    if (numOfLine !== null) {
+      this.setState({
+        numOfLine: null,
+        readmore: styles.readMoreTextContainer1
+      })
     } else if (numOfLine === null) {
-      this.setState({numOfLine: 3})
+      this.setState({
+        numOfLine: 3,
+        readmore: styles.readMoreTextContainer
+      })
+    }
+  }
+
+  readMoreTerm () {
+    const {numOfLineTerm} = this.state
+    if (numOfLineTerm !== null) {
+      this.setState({
+        numOfLineTerm: null,
+        readmoreTerm: styles.readMoreTextContainer1
+      })
+    } else if (numOfLineTerm === null) {
+      this.setState({
+        numOfLineTerm: 3,
+        readmoreTerm: styles.readMoreTextContainer
+      })
     }
   }
 
@@ -701,10 +776,11 @@ class ProductDetailScreenScreen extends React.Component {
     return (
       <View>
         <ListView
-          dataSource={this.state.ulasanDataSource}
+          dataSource={this.dataSource.cloneWithRows(this.state.ulasan)}
           initialListSize={3}
           pageSize={3}
           renderRow={this.renderUlasan.bind(this)}
+          enableEmptySections
         />
         <TouchableOpacity style={styles.allCategory} onPress={() => this.onPressUlasan()}>
           <Text style={styles.textAllCategory}>
@@ -717,15 +793,73 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   onPressUlasan () {
-    NavigationActions.ulasanscreen({ type: ActionConst.PUSH })
+    // NavigationActions.ulasanscreen({ type: ActionConst.PUSH })
+    console.log(this.state.provinsiTerpilih)
+    console.log(this.state.kabTerpilih)
+    console.log(this.state.kecTerpilih)
   }
 
   renderListProvinsi (rowData) {
     return (
-      <TouchableOpacity style={[styles.menuLaporkan, { padding: 15 }]} activeOpacity={0.8}>
-        <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.title}</Text>
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          this.setState({
+            provinsiTerpilih: rowData.name,
+            idProvinsiTerpilih: rowData.id,
+            modalProvinsi: false })
+          this.props.getKota(rowData.id)
+        }}
+      >
+        <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
       </TouchableOpacity>
     )
+  }
+
+  renderListKabupaten (rowData) {
+    return (
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          this.setState({
+            kabTerpilih: rowData.name,
+            idKabTerpilih: rowData.id,
+            modalKabupaten: false })
+          this.props.getSubDistrict(rowData.id)
+        }}
+      >
+        <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  renderListKecamatan (rowData) {
+    const { idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
+    return (
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          this.setState({
+            kecTerpilih: rowData.name,
+            idKecTerpilih: rowData.id,
+            modalKecamatan: false,
+            showService: true
+          })
+          this.listDataService(this.state.service, idLokasiPenjual, idKabTerpilih, totalWeight)
+        }}
+      >
+        <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  listDataService (services, originId, destinationId, weight) {
+    services.map((obj) => {
+      this.props.getServices(obj.id, originId, destinationId, weight)
+    })
   }
 
   renderModalProvinsi () {
@@ -737,13 +871,13 @@ class ProductDetailScreenScreen extends React.Component {
         onRequestClose={() => this.setState({ modalProvinsi: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalProvinsi: false })}>
-          <View style={styles.menuProvinsiContainer}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
               renderRow={this.renderListProvinsi.bind(this)}
               enableEmptySections
             />
-          </View>
+          </ScrollView>
         </TouchableOpacity>
       </Modal>
     )
@@ -757,13 +891,13 @@ class ProductDetailScreenScreen extends React.Component {
         onRequestClose={() => this.setState({ modalKabupaten: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKabupaten: false })}>
-          <View style={styles.menuProvinsiContainer}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
-              renderRow={this.renderListProvinsi.bind(this)}
+              renderRow={this.renderListKabupaten.bind(this)}
               enableEmptySections
             />
-          </View>
+          </ScrollView>
         </TouchableOpacity>
       </Modal>
     )
@@ -777,13 +911,13 @@ class ProductDetailScreenScreen extends React.Component {
         onRequestClose={() => this.setState({ modalKecamatan: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKecamatan: false })}>
-          <View style={styles.menuProvinsiContainer}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
-              renderRow={this.renderListProvinsi.bind(this)}
+              renderRow={this.renderListKecamatan.bind(this)}
               enableEmptySections
             />
-          </View>
+          </ScrollView>
         </TouchableOpacity>
       </Modal>
     )
@@ -869,14 +1003,22 @@ class ProductDetailScreenScreen extends React.Component {
 
   substract () {
     const {countProduct} = this.state
+    const berat = (countProduct - 1) * this.state.weight
     if (countProduct > 0) {
-      this.setState({countProduct: countProduct - 1})
+      this.setState({
+        countProduct: countProduct - 1,
+        totalWeight: berat
+      })
     }
   }
 
   add () {
     const {countProduct} = this.state
-    this.setState({countProduct: countProduct + 1})
+    const berat = (countProduct + 1) * this.state.weight
+    this.setState({
+      countProduct: countProduct + 1,
+      totalWeight: berat
+    })
   }
 
   detailPenjual () {
@@ -886,48 +1028,50 @@ class ProductDetailScreenScreen extends React.Component {
   renderInfoPenjual () {
     const {numOfLine} = this.state
     return (
-      <TouchableOpacity onPress={() => this.detailPenjual()}>
-        <View style={[styles.ulasanContainer]}>
-          <View style={styles.border}>
-            <View style={[styles.profile, {paddingBottom: 20}]}>
-              {this.renderFotoToko()}
-              <View style={styles.containerNamaToko}>
-                <View style={styles.namaContainer}>
-                  <View style={styles.flexRow}>
-                    <Text style={styles.textNama}>
-                      Budi Budiman
-                    </Text>
-                    {this.renderVerifiedPenjual(true)}
-                  </View>
-                  <Text style={[styles.textKelola, {color: Colors.lightgrey}]}>
-                    DKI Jakarta
+      <View style={[styles.ulasanContainer]}>
+        <View style={styles.border}>
+          <TouchableOpacity
+            style={[styles.profile, {paddingBottom: 20}]}
+            onPress={() => this.detailPenjual()}
+          >
+            {this.renderFotoToko()}
+            <View style={styles.containerNamaToko}>
+              <View style={styles.namaContainer}>
+                <View style={styles.flexRow}>
+                  <Text style={styles.textNama}>
+                    {this.state.namaToko}
                   </Text>
+                  {this.renderVerifiedPenjual(this.state.verified)}
                 </View>
-                <TouchableOpacity style={styles.buttonFav}>
-                  <Image source={Images.centang} style={styles.image24p} />
-                  <Text style={styles.labelButtonFav}>
-                    Di Favoritkan
-                  </Text>
-                </TouchableOpacity>
+                <Text style={[styles.textKelola, {color: Colors.lightgrey}]}>
+                  {this.state.lokasiPenjual}
+                </Text>
               </View>
+              <TouchableOpacity style={styles.buttonFav}>
+                <Image source={Images.centang} style={styles.image24p} />
+                <Text style={styles.labelButtonFav}>
+                  Di Favoritkan
+                </Text>
+              </TouchableOpacity>
             </View>
-          </View>
-          <View style={[styles.infoContainer, {flexDirection: 'column', marginTop: 1.8}]}>
-            <Text style={styles.infoProduct}>Terms and Conditions</Text>
-            <Text numberOfLines={numOfLine} style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}>
-              - Lorem ipsum dolor sit amet, consectetur adipis{'\n'}
-              - elit, sed do eiusmod tempor incididunt ut labore{'\n'}
-              - dolore magna aliqua. Ut enim ad minim veniam{'\n'}
-              - nostrud exercitation ullamco laboris</Text>
-            <TouchableOpacity style={styles.readMoreTextContainer} onPress={() => this.readMore()}>
-              <View style={{alignItems: 'center'}}>
-                <Image source={Images.down} style={styles.imageDown} />
-              </View>
-            </TouchableOpacity>
-            <View style={{marginBottom: 22.1}} />
-          </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+        <View style={[styles.infoContainer, {flexDirection: 'column', marginTop: 1.8}]}>
+          <Text style={styles.infoProduct}>Terms and Conditions</Text>
+          <Text
+            numberOfLines={numOfLine}
+            style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
+          >
+            {this.state.termcondition}
+          </Text>
+          <TouchableOpacity style={this.state.readmoreTerm} onPress={() => this.readMoreTerm()}>
+            <View style={{alignItems: 'center'}}>
+              <Image source={Images.down} style={styles.imageDown} />
+            </View>
+          </TouchableOpacity>
+          <View style={{marginBottom: 22.1}} />
+        </View>
+      </View>
     )
   }
 
@@ -947,8 +1091,7 @@ class ProductDetailScreenScreen extends React.Component {
       <View style={{elevation: 1, backgroundColor: Colors.background}}>
         <ListView
           contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          dataSource={this.dataSource.cloneWithRows(this.state.productSource)}
-          pageSize={3}
+          dataSource={this.dataSource.cloneWithRows(this.state.otherProduct)}
           renderRow={this.renderRowProduk.bind(this)}
           enableEmptySections
         />
@@ -963,12 +1106,12 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderRowProduk (rowData) {
-    if (rowData.product.discount > 0) {
+    if (rowData.discount > 0) {
       this.statusDiskon = true
-      this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
+      this.hargaDiskon = this.discountCalculate(rowData.price, rowData.discount)
     } else {
       this.statusDiskon = false
-      this.hargaDiskon = rowData.product.price
+      this.hargaDiskon = rowData.price
     }
 
     const money = MaskService.toMask('money', this.hargaDiskon, {
@@ -983,30 +1126,24 @@ class ProductDetailScreenScreen extends React.Component {
         <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
+            {rowData.discount} %
           </Text>
         </View>
         <View style={stylesHome.containerTitle}>
           <Text style={stylesHome.textTitleProduct}>
-            {rowData.product.name}
+            {rowData.name}
           </Text>
           <View style={stylesHome.tokoContainer}>
             <Text style={stylesHome.namaToko}>
-              {rowData.store.name}
+              {this.state.namaToko}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(this.state.verified)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+          {this.renderDiskon(this.statusDiskon, rowData.price)}
           <View style={{flexDirection: 'row', paddingBottom: 28.8}}>
             <View style={{flex: 1}}>
               <Text style={stylesHome.harga}>
                 {money}
-              </Text>
-            </View>
-            <View style={stylesHome.likesContainer}>
-              {this.renderLikes(rowData.like)}
-              <Text style={stylesHome.like}>
-                {rowData.product.stock}
               </Text>
             </View>
           </View>
@@ -1029,7 +1166,7 @@ class ProductDetailScreenScreen extends React.Component {
           {this.renderStaticProduct()}
           <Text style={styles.bigTitle}>Informasi Produk</Text>
           {this.renderInfoProduct()}
-          <Text style={styles.bigTitle}>Ulasan ({this.state.ulasanDataSource._cachedRowCount})</Text>
+          <Text style={styles.bigTitle}>Ulasan ({this.state.sizeUlasan})</Text>
           {this.renderRowUlasan()}
           <Text style={styles.bigTitle}>Estimasi Pengiriman</Text>
           {this.renderBukaEstimasiPengiriman()}
@@ -1064,13 +1201,24 @@ class ProductDetailScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.products
+    dataProduk: state.products,
+    dataDetailProduk: state.productDetail,
+    dataProvinsi: state.provinces,
+    dataKota: state.districts,
+    dataSubDistrict: state.subdistricts,
+    dataServis: state.shippingCharges
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: (limit) => dispatch(homeAction.products({limit}))
+    getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
+    getProvinsi: () => dispatch(filterAction.getProvince()),
+    getKota: (id) => dispatch(filterAction.getDistrict({ province_id: id })),
+    getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
+    getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.getShippingCharge({
+      id: id, origin_id: originId, destination_id: destinationId, weight: weight
+    }))
   }
 }
 

@@ -206,8 +206,13 @@ export default StyleSheet.create({
     paddingBottom: 21
   },
   readMoreTextContainer: {
-    marginTop: -30,
+    marginTop: -15,
     paddingTop: 30,
+    marginLeft: -20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  readMoreTextContainer1: {
+    paddingTop: 10,
     marginLeft: -20,
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
@@ -434,7 +439,8 @@ export default StyleSheet.create({
   },
   menuProvinsiContainer: {
     position: 'absolute',
-    bottom: 20
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
   },
   menuLaporkan: {
     flex: 1,

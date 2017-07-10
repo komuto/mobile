@@ -19,6 +19,7 @@ import { Images, Colors } from '../Themes'
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
 import * as homeAction from '../actions/home'
+import * as produkAction from '../actions/product'
 
 // Styles
 import styles from './Styles/HomeStyle'
@@ -160,7 +161,8 @@ class Home extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail()}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -274,10 +276,12 @@ class Home extends React.Component {
     })
   }
 
-  produkDetail () {
+  produkDetail (id) {
     NavigationActions.productdetail({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   handleDetailKategori (rowId, title) {
@@ -410,7 +414,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getKategori: dispatch(homeAction.categoryList()),
-    getProdukTerbaru: (limit) => dispatch(homeAction.products({limit}))
+    getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

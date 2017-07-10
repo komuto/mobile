@@ -84,12 +84,43 @@ function * newPassword (action) {
   }
 }
 
+function * changePassword (action) {
+  try {
+    const {data} = yield userApi.changePassword(action)
+    yield put({ type: userActions.CHANGE_PASSWORD_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.CHANGE_PASSWORD_FAILURE, e)
+  }
+}
+
 function* getProfile (action) {
   try {
     const {data} = yield userApi.getProfile(action)
     yield put({ type: userActions.GET_PROFILE_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.GET_PROFILE_FAILURE, e)
+  }
+}
+
+function * updateProfile (action) {
+  // console.log(action)
+  try {
+    const {data} = yield userApi.updateProfile(action)
+    // console.log(data)
+    yield put({ type: userActions.UPDATE_PROFILE_SUCCESS, ...data })
+  } catch (e) {
+    console.log(e)
+    yield errorHandling(userActions.UPDATE_PROFILE_FAILURE, e)
+  }
+}
+
+function * getBalance (action) {
+  try {
+    const {data} = yield userApi.getBalance(action)
+    yield put({ type: userActions.USER_BALANCE_SUCCESS, ...data })
+  } catch (e) {
+    console.log(e)
+    yield errorHandling(userActions.USER_BALANCE_FAILURE, e)
   }
 }
 
@@ -102,5 +133,8 @@ export {
   forgetPassword,
   loginSocial,
   newPassword,
-  getProfile
+  changePassword,
+  getProfile,
+  getBalance,
+  updateProfile
 }

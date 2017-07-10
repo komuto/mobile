@@ -78,6 +78,19 @@ function newPassword (action) {
   })
 }
 
+function changePassword (action) {
+  let axios = authApiKomuto()
+  return axios.put('users/password', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 function getProfile (action) {
   let axios = authApiKomuto()
   return axios.get('users/profile', {
@@ -104,6 +117,42 @@ function validateToken (action) {
   })
 }
 
+function getBalance (action) {
+  let axios = authApiKomuto()
+  return axios.get('users/balance', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function updateProfile (action) {
+  let axios = authApiKomuto()
+  // date_of_birth format is mm/dd/yyyy
+  if (action.date_of_birth !== undefined || action.date_of_birth !== '') {
+    let tempDate = action.date_of_birth
+    tempDate = tempDate.split('/')
+    let day = parseInt(tempDate[1]) + 2
+    tempDate[1] = String(day)
+    let timeStamp = new Date(tempDate).getTime() / 1000
+    action.date_of_birth = timeStamp
+  }
+  console.log(action.date_of_birth)
+  return axios.put('users', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 function logout (action) {
   let data = {
     message: 'LOGOUT SUCCESS',
@@ -120,6 +169,9 @@ export {
   register,
   forgetPassword,
   newPassword,
+  changePassword,
   getProfile,
-  validateToken
+  validateToken,
+  getBalance,
+  updateProfile
 }

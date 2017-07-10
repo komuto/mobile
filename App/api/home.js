@@ -18,13 +18,13 @@ function product (action) {
     }
   }
   if (action.other !== undefined || action.brands !== undefined || action.services !== undefined) {
-    if (action.other[0] === undefined) {
+    if (action.other !== undefined && action.other[0] === undefined) {
       action.other = undefined
     }
-    if (action.brands[0] === undefined) {
+    if (action.brands !== undefined && action.brands[0] === undefined) {
       action.brands = undefined
     }
-    if (action.services[0] === undefined) {
+    if (action.services !== undefined && action.services[0] === undefined) {
       action.services = undefined
     }
   }
@@ -47,7 +47,8 @@ function product (action) {
     // services is same with brands
     {value: action.services, string: 'services'},
     // address is number of district_id
-    {value: action.address, string: 'address'}
+    {value: action.address, string: 'address'},
+    {value: action.query, string: 'q'}
   ]
 
   let indexCheck = []

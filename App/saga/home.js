@@ -8,12 +8,12 @@ function * product (action) {
     const {data} = yield homeApi.product(action)
     yield put({ type: homeActions.HOME_PRODUCT_SUCCESS, ...data })
   } catch (e) {
+    console.log(e)
     yield errorHandling(homeActions.HOME_PRODUCT_FAILURE, e)
   }
 }
 
 function * filterProduct (action) {
-  console.log(action)
   try {
     const {data} = yield homeApi.product(action)
     yield put({ type: homeActions.FILTER_PRODUCT_SUCCESS, ...data })

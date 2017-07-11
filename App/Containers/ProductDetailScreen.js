@@ -8,6 +8,7 @@ import {
   ListView,
   ActivityIndicator,
   BackAndroid,
+  Alert,
   Modal
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -20,6 +21,8 @@ import StarRating from 'react-native-star-rating'
 import * as homeAction from '../actions/home'
 import * as filterAction from '../actions/location'
 import * as serviceAction from '../actions/expedition'
+import * as reviewAction from '../actions/review'
+import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -34,23 +37,25 @@ class ProductDetailScreenScreen extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dataImage: [],
+      isLogin: this.props.datalogin.login,
       id: this.props.id,
       grosir: true,
       discount: false,
       diskon: 0,
-      price: 1350000,
+      price: 0,
       kondisi: 1,
       avgQuantity: 4.5,
       avgAccurate: 4.5,
       numOfLine: 3,
       lokasiPenjual: '',
       namaToko: '',
+      like: false,
       idLokasiPenjual: 0,
       numOfLineTerm: 3,
       readmore: styles.readMoreTextContainer,
       readmoreTerm: styles.readMoreTextContainer,
       verified: false,
-      title: 'Blue Training Kit Machester United',
+      title: '',
       fotoToko: 'default',
       countProduct: 1,
       ulasan: [],
@@ -63,7 +68,6 @@ class ProductDetailScreenScreen extends React.Component {
       weight: 0,
       totalWeight: 0,
       otherProduct: [],
-      imagesReport: Images.contohproduct,
       provinsiTerpilih: 'Semua Wilayah',
       kabTerpilih: 'Semua Wilayah',
       kecTerpilih: 'Semua Wilayah',
@@ -106,6 +110,39 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDetailProduk.status === 200) {
+      console.log(nextProps.dataDetailProduk.detail)
+      this.setState({
+        id: nextProps.dataDetailProduk.detail.product.id,
+        loadingProduk: false,
+        grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
+        discount: nextProps.dataDetailProduk.detail.product.is_discount,
+        price: nextProps.dataDetailProduk.detail.product.price,
+        ulasan: nextProps.dataDetailProduk.detail.reviews.slice(0, 3),
+        sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
+        dataImage: nextProps.dataDetailProduk.detail.images,
+        fotoToko: nextProps.dataDetailProduk.detail.images[0].file,
+        title: nextProps.dataDetailProduk.detail.product.name,
+        like: nextProps.dataDetailProduk.detail.product.is_liked,
+        diskon: nextProps.dataDetailProduk.detail.product.discount,
+        verified: nextProps.dataDetailProduk.detail.store.is_verified,
+        otherProduct: nextProps.dataDetailProduk.detail.other_products,
+        avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
+        avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
+        stock: nextProps.dataDetailProduk.detail.product.stock,
+        sold: nextProps.dataDetailProduk.detail.product.count_sold,
+        weight: nextProps.dataDetailProduk.detail.product.weight,
+        kondisi: nextProps.dataDetailProduk.detail.product.type,
+        kategori: nextProps.dataDetailProduk.detail.category.name,
+        deskripsi: nextProps.dataDetailProduk.detail.product.description,
+        termcondition: nextProps.dataDetailProduk.detail.store.note,
+        idLokasiPenjual: nextProps.dataDetailProduk.detail.store.province.id,
+        lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
+        namaToko: nextProps.dataDetailProduk.detail.store.name,
+        service: nextProps.dataDetailProduk.detail.expeditions,
+        jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length
+      })
+    }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
@@ -126,35 +163,9 @@ class ProductDetailScreenScreen extends React.Component {
         dataServices: this.state.dataServices.concat(nextProps.dataServis.charges)
       })
     }
-    if (nextProps.dataDetailProduk.status === 200) {
-      console.log(nextProps.dataDetailProduk.detail)
+    if (nextProps.dataWishlist.status === 200) {
       this.setState({
-        loadingProduk: false,
-        grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
-        discount: nextProps.dataDetailProduk.detail.product.is_discount,
-        price: nextProps.dataDetailProduk.detail.product.price,
-        ulasan: nextProps.dataDetailProduk.detail.reviews,
-        sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
-        dataImage: nextProps.dataDetailProduk.detail.images,
-        imagesReport: nextProps.dataDetailProduk.detail.images[0].file,
-        title: nextProps.dataDetailProduk.detail.product.name,
-        diskon: nextProps.dataDetailProduk.detail.product.discount,
-        verified: nextProps.dataDetailProduk.detail.store.is_verified,
-        otherProduct: nextProps.dataDetailProduk.detail.other_products,
-        avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
-        avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
-        stock: nextProps.dataDetailProduk.detail.product.stock,
-        sold: nextProps.dataDetailProduk.detail.product.count_sold,
-        weight: nextProps.dataDetailProduk.detail.product.weight,
-        kondisi: nextProps.dataDetailProduk.detail.product.type,
-        kategori: nextProps.dataDetailProduk.detail.category.name,
-        deskripsi: nextProps.dataDetailProduk.detail.product.description,
-        termcondition: nextProps.dataDetailProduk.detail.store.note,
-        idLokasiPenjual: nextProps.dataDetailProduk.detail.store.province.id,
-        lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
-        namaToko: nextProps.dataDetailProduk.detail.store.name,
-        service: nextProps.dataDetailProduk.detail.expeditions,
-        jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length
+        like: true
       })
     }
   }
@@ -194,7 +205,7 @@ class ProductDetailScreenScreen extends React.Component {
     this.setState({ modalLaporkan: false })
     NavigationActions.laporkan({
       type: ActionConst.PUSH,
-      images: this.state.imagesReport,
+      images: this.state.fotoToko,
       namaBarang: this.state.title,
       harga: this.state.price
     })
@@ -296,7 +307,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(true)}
+            {this.renderLikes(this.state.like)}
           </View>
           <Text style={styles.price}>
             {totalHarga}
@@ -310,7 +321,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(true)}
+            {this.renderLikes(this.state.like)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -340,7 +351,7 @@ class ProductDetailScreenScreen extends React.Component {
               <Text style={styles.title}>
                 {this.state.title}
               </Text>
-              {this.renderLikes(false)}
+              {this.renderLikes(this.state.like)}
             </View>
           </View>
         </View>
@@ -352,7 +363,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(true)}
+            {this.renderLikes(this.state.like)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -420,7 +431,7 @@ class ProductDetailScreenScreen extends React.Component {
                 starColor={'#ffcd00'}
                 emptyStarColor={'#d9e1e9'}
                 starSize={16}
-                rating={parseInt(avgQuantity)}
+                rating={parseFloat(avgQuantity)}
                 selectedStar={(rating) => this.onStarQtyPress(rating)}
               />
             </View>
@@ -437,7 +448,7 @@ class ProductDetailScreenScreen extends React.Component {
                 starColor={'#ffcd00'}
                 emptyStarColor={'#d9e1e9'}
                 starSize={16}
-                rating={parseInt(avgAccurate)}
+                rating={parseFloat(avgAccurate)}
                 selectedStar={(rating) => this.onStarAcuPress(rating)}
               />
             </View>
@@ -560,16 +571,24 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
+  addWishList () {
+    if (this.state.isLogin) {
+      this.props.addWishList(this.state.id)
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
+  }
+
   renderLikes (status) {
     if (status) {
       return (
-        <TouchableOpacity onPress={() => {}}>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={() => this.addWishList()}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -777,12 +796,10 @@ class ProductDetailScreenScreen extends React.Component {
       <View>
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.ulasan)}
-          initialListSize={3}
-          pageSize={3}
           renderRow={this.renderUlasan.bind(this)}
           enableEmptySections
         />
-        <TouchableOpacity style={styles.allCategory} onPress={() => this.onPressUlasan()}>
+        <TouchableOpacity style={styles.allCategory} onPress={() => this.onPressUlasan(this.state.id)}>
           <Text style={styles.textAllCategory}>
             Lihat semua ulasan
           </Text>
@@ -792,11 +809,15 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
-  onPressUlasan () {
-    // NavigationActions.ulasanscreen({ type: ActionConst.PUSH })
-    console.log(this.state.provinsiTerpilih)
-    console.log(this.state.kabTerpilih)
-    console.log(this.state.kecTerpilih)
+  onPressUlasan (id) {
+    NavigationActions.ulasanscreen({
+      id: id,
+      type: ActionConst.PUSH,
+      price: this.state.price,
+      foto: this.state.fotoToko,
+      namaToko: this.state.namaToko
+    })
+    this.props.reviewAction(id, 1)
   }
 
   renderListProvinsi (rowData) {
@@ -1022,7 +1043,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   detailPenjual () {
-    NavigationActions.detailtoko({ type: ActionConst.PUSH, title: 'Budi Budiman' })
+    NavigationActions.detailtoko({ type: ActionConst.PUSH, title: this.state.namaToko })
   }
 
   renderInfoPenjual () {
@@ -1206,7 +1227,9 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataServis: state.shippingCharges
+    dataServis: state.shippingCharges,
+    dataWishlist: state.addWishlist,
+    datalogin: state.isLogin
   }
 }
 
@@ -1218,7 +1241,9 @@ const mapDispatchToProps = (dispatch) => {
     getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.getShippingCharge({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
-    }))
+    })),
+    reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),
+    addWishList: (id) => dispatch(productAction.addToWishlist({ id: id }))
   }
 }
 

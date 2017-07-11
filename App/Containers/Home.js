@@ -129,7 +129,7 @@ class Home extends React.Component {
     if (status) {
       return (
         <TouchableOpacity onPress={() => {}}>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }

@@ -48,6 +48,7 @@ class Wishlist extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataWishlist.status === 200) {
+      console.log(nextProps.dataWishlist.wishlist)
       this.setState({
         listDataSource: nextProps.dataWishlist.wishlist,
         rowDataSource: nextProps.dataWishlist.wishlist,
@@ -140,16 +141,9 @@ class Wishlist extends React.Component {
   }
 
   renderLikes (status) {
-    if (status) {
-      return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={stylesProduk.imageStyleLike} />
-        </TouchableOpacity>
-      )
-    }
     return (
       <TouchableOpacity>
-        <Image source={Images.love} style={stylesProduk.imageStyleNotLike} />
+        <Image source={Images.lovered} style={stylesProduk.imageStyleLike} />
       </TouchableOpacity>
     )
   }

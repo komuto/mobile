@@ -454,6 +454,36 @@ function changePassword (state = initUpdate, action) {
   }
 }
 
+function favoriteStore (state = initUpdate, action) {
+  switch (action.type) {
+    case actions.FAVORITE_STORE_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.FAVORITE_STORE_SUCCESS:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true,
+        isOnline: true
+      }
+    case actions.FAVORITE_STORE_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: false,
+        isOnline: action.isOnline
+      }
+    default:
+      return state
+  }
+}
+
 export {
   auth,
   verify,
@@ -465,5 +495,6 @@ export {
   isLogin,
   validateToken,
   getBalance,
-  updateProfile
+  updateProfile,
+  favoriteStore
 }

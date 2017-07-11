@@ -1,4 +1,4 @@
-import { publicApiKomuto } from './api'
+import { publicApiKomuto, authApiKomuto } from './api'
 
 function getProduct (action) {
   let axios = publicApiKomuto()
@@ -96,7 +96,21 @@ function productBy (action) {
   })
 }
 
+function addToWishlist (action) {
+  let axios = authApiKomuto()
+  return axios.get('products/' + action.id + '/wishlist', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 export {
     getProduct,
-    productBy
+    productBy,
+    addToWishlist
 }

@@ -2,10 +2,13 @@ import { StyleSheet } from 'react-native'
 import { Metrics, Colors, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
-  ulasanContainer: {
-    backgroundColor: Colors.background,
+  container: {
+    flex: 1,
     marginTop: Metrics.navBarHeight,
-    elevation: 1
+    backgroundColor: Colors.background
+  },
+  ulasanContainer: {
+    flex: 1
   },
   border: {
     borderBottomWidth: 0.5,
@@ -52,7 +55,8 @@ export default StyleSheet.create({
     paddingLeft: 20,
     paddingBottom: 22.3
   },
-  eachQualiy: {
+  listView: {
+    flex: 1
   },
   qualityText: {
     fontSize: Fonts.size.smallMed,

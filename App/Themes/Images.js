@@ -15,6 +15,7 @@ const images = {
   welcome: require('../Images/welcome.png'),
   facebook: require('../Images/Icons/icon-facebook.png'),
   love: require('../Images/Icons/icon-love.png'),
+  lovered: require('../Images/Icons/icon-love-red.png'),
   logout: require('../Images/Icons/icon-logout.png'),
   saldo: require('../Images/Icons/icon-saldo.png'),
   daftar: require('../Images/Icons/icon-daftar.png'),

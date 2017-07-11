@@ -79,7 +79,7 @@ class Laporkan extends React.Component {
       <ScrollView style={styles.container}>
         <View style={styles.containerData}>
           <View style={styles.headerContainer}>
-            <Image source={this.state.images} style={styles.imageStyle} />
+            <Image source={{ uri: this.state.images }} style={styles.imageStyle} />
             <View style={styles.barangContainer}>
               <Text style={styles.namaBarang}>{this.state.namaBarang}</Text>
               <Text style={styles.hargaBarang}>{this.state.harga}</Text>

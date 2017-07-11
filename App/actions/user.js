@@ -46,6 +46,10 @@ export const USER_BALANCE_REQUEST = 'USER_BALANCE_REQUEST'
 export const USER_BALANCE_SUCCESS = 'USER_BALANCE_SUCCESS'
 export const USER_BALANCE_FAILURE = 'USER_BALANCE_FAILURE'
 
+export const FAVORITE_STORE_REQUEST = 'FAVORITE_STORE_REQUEST'
+export const FAVORITE_STORE_SUCCESS = 'FAVORITE_STORE_SUCCESS'
+export const FAVORITE_STORE_FAILURE = 'FAVORITE_STORE_FAILURE'
+
 export const IS_LOGIN = 'IS_LOGIN'
 
 function register (params) {
@@ -137,6 +141,13 @@ function updateProfile (params) {
   }
 }
 
+function favoriteStore (params) {
+  return {
+    type: FAVORITE_STORE_REQUEST,
+    ...params
+  }
+}
+
 export {
   register,
   verification,
@@ -150,5 +161,6 @@ export {
   stateLogin,
   validateToken,
   getBalance,
-  updateProfile
+  updateProfile,
+  favoriteStore
 }

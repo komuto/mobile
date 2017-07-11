@@ -18,8 +18,8 @@ export default StyleSheet.create({
     borderBottomWidth: 1
   },
   imageStyle: {
-    height: 30,
-    width: 30
+    height: 32,
+    width: 32
   },
   barangContainer: {
     flex: 1,

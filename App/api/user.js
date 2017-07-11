@@ -153,6 +153,19 @@ function updateProfile (action) {
   })
 }
 
+function favoriteStore (action) {
+  let axios = authApiKomuto()
+  return axios.post('stores/' + action.id + '/favorite', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 function logout (action) {
   let data = {
     message: 'LOGOUT SUCCESS',
@@ -173,5 +186,6 @@ export {
   getProfile,
   validateToken,
   getBalance,
-  updateProfile
+  updateProfile,
+  favoriteStore
 }

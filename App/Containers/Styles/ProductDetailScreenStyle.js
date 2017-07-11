@@ -260,8 +260,8 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     color: Colors.brownishGrey,
     fontSize: Fonts.size.smallMed,
-    paddingBottom: 21.2,
-    paddingLeft: 20
+    paddingLeft: 20,
+    marginBottom: 19
   },
   estimasiContainer: {
     backgroundColor: Colors.background

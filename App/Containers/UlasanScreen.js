@@ -1,61 +1,52 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, ListView } from 'react-native'
+import { Text, View, Image, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
+import { Images } from '../Themes'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+// import YourActions from '../Redux/YourRedux'\
+import * as reviewAction from '../actions/review'
 
 // Styles
 import styles from './Styles/UlasanScreenStyle'
 
-import { Images } from '../Themes'
-
 class UlasanScreenScreen extends React.Component {
   constructor (props) {
     super(props)
-    var imageProduct = [
-      { foto: Images.contohproduct, nama: 'Budi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Adi Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Benny Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Bangkit Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Indra Budiman', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' }
-    ]
-    var dataSource2 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      listDataSource: dataSource2.cloneWithRows(imageProduct),
-      foto: 'default',
-      price: 1685000,
-      starQuantity: 3,
-      starAccurate: 3
+      id: this.props.id,
+      data: [],
+      foto: this.props.foto,
+      price: this.props.price,
+      namaToko: this.props.namaToko,
+      page: 1,
+      loadmore: true
     }
   }
 
-  renderFotoProduk () {
-    if (this.state.foto !== 'default') {
-      return (
-        <Image
-          source={{ uri: this.state.foto }}
-          style={styles.styleFotoToko}
-        />
-      )
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.id !== this.state.id) {
+      this.setState({
+        id: nextProps.id
+      })
     }
-    return (
-      <Image
-        source={Images.contohproduct}
-        style={styles.styleFotoToko}
-      />
-    )
-  }
-
-  renderFotoProfil (value) {
-    return (
-      <Image
-        source={Images.contohproduct}
-        style={styles.styleFoto}
-      />
-    )
+    if (nextProps.dataReview.status === 200) {
+      if (nextProps.dataReview.reviews.length > 0) {
+        console.log(nextProps.dataReview.reviews)
+        let data = [...this.state.data, ...nextProps.dataReview.reviews]
+        this.setState({
+          data: data,
+          page: this.state.page + 1
+        })
+      } else {
+        this.setState({
+          loadmore: false
+        })
+      }
+    }
   }
 
   renderProduct () {
@@ -68,10 +59,13 @@ class UlasanScreenScreen extends React.Component {
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
-          {this.renderFotoProduk()}
+          <Image
+            source={{ uri: this.state.foto }}
+            style={styles.styleFotoToko}
+          />
           <View style={styles.namaContainer}>
             <Text style={styles.textNama}>
-              Blue Training Kit Machester United
+              {this.state.namaToko}
             </Text>
             <Text style={styles.textKelola}>
               {totalHarga}
@@ -82,12 +76,38 @@ class UlasanScreenScreen extends React.Component {
     )
   }
 
+  loadMore () {
+    const { id, page, loadmore } = this.state
+    if (loadmore) {
+      this.props.reviewAction(id, page)
+    }
+  }
+
   listViewUlasan () {
     return (
       <ListView
-        dataSource={this.state.listDataSource}
+        dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
+        onEndReached={this.loadMore.bind(this)}
         enableEmptySections
+        style={styles.listView}
+      />
+    )
+  }
+
+  renderFotoProfil (foto) {
+    if (foto === '' || foto === null || foto === undefined) {
+      return (
+        <Image
+          source={Images.contohproduct}
+          style={styles.styleFoto}
+        />
+      )
+    }
+    return (
+      <Image
+        source={{ uri: foto }}
+        style={styles.styleFoto}
       />
     )
   }
@@ -97,17 +117,17 @@ class UlasanScreenScreen extends React.Component {
       <View style={styles.border}>
         <View style={styles.border}>
           <View style={[styles.profile, {paddingBottom: 22}]}>
-            {this.renderFotoProfil(rowData.foto)}
+            {this.renderFotoProfil(rowData.user.photo)}
             <View style={styles.namaContainer}>
               <Text style={[styles.textNama, {lineHeight: 23}]}>
-                {rowData.nama}
+                {rowData.user.name}
               </Text>
               <Text style={[styles.textKelola]}>
-                {rowData.lastReview} hari yang lalu
+                3 hari yang lalu
               </Text>
             </View>
           </View>
-          {this.renderRatingUlasan(rowData.starAccurate, rowData.starQuality, rowData.isiUlasan)}
+          {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
         </View>
       </View>
     )
@@ -156,12 +176,12 @@ class UlasanScreenScreen extends React.Component {
 
   render () {
     return (
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
           {this.renderProduct()}
           {this.listViewUlasan()}
         </View>
-      </ScrollView>
+      </View>
     )
   }
 
@@ -169,11 +189,13 @@ class UlasanScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataReview: state.productReview
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page }))
   }
 }
 

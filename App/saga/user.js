@@ -124,6 +124,15 @@ function * getBalance (action) {
   }
 }
 
+function * favoriteStore (action) {
+  try {
+    const {data} = yield userApi.favoriteStore(action)
+    yield put({ type: userActions.FAVORITE_STORE_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.FAVORITE_STORE_FAILURE, e)
+  }
+}
+
 export {
   login,
   logout,
@@ -136,5 +145,6 @@ export {
   changePassword,
   getProfile,
   getBalance,
-  updateProfile
+  updateProfile,
+  favoriteStore
 }

@@ -78,5 +78,10 @@ export default StyleSheet.create({
     marginRight: 24.4,
     borderRightWidth: 0.5,
     borderRightColor: Colors.silver
+  },
+  loadingStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8
   }
 })

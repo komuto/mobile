@@ -47,6 +47,7 @@ class Home extends React.Component {
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
       })
+      console.log(nextProps.dataProduk.products)
       this.setState({
         kategoriSource: kategoriInital,
         productSource: nextProps.dataProduk.products,

@@ -320,7 +320,7 @@ class Wishlist extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
+        <View style={[stylesHome.listViewContainer, { marginBottom: 50 }]}>
           <ListView
             contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
             enableEmptySections
@@ -339,6 +339,17 @@ class Wishlist extends React.Component {
           renderRow={this.renderRowList.bind(this)}
         />
       </View>
+    )
+  }
+
+  renderImageTypeView () {
+    if (this.state.tipeView === 'grid') {
+      return (
+        <Image source={Images.grid} style={styles.searchImage} />
+      )
+    }
+    return (
+      <Image source={Images.list} style={styles.searchImage} />
     )
   }
 
@@ -370,7 +381,7 @@ class Wishlist extends React.Component {
             <Text style={styles.textMenuBawah}>Urutkan</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.urutkanContainer} onPress={() => this.changeView()}>
-            <Image source={Images.list} style={styles.searchImage} />
+            {this.renderImageTypeView()}
             <Text style={styles.textMenuBawah}>Tampilan</Text>
           </TouchableOpacity>
         </View>

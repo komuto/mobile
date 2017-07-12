@@ -1,7 +1,14 @@
 import { publicApiKomuto, authApiKomuto } from './api'
+import { AsyncStorage } from 'react-native'
 
 function getProduct (action) {
-  let axios = publicApiKomuto()
+  let token = AsyncStorage.getItem('token')
+  let axios
+  if (token) {
+    axios = authApiKomuto()
+  } else {
+    axios = publicApiKomuto()
+  }
   return axios.get('products/' + action.id, {
     ...action
   })

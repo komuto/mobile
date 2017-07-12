@@ -105,7 +105,8 @@ class ProductDetailScreenScreen extends React.Component {
       kecamatan: [],
       service: [],
       dataServices: [],
-      jumlahServis: 0
+      jumlahServis: 0,
+      messageServices: ''
     }
   }
 
@@ -162,11 +163,18 @@ class ProductDetailScreenScreen extends React.Component {
       this.setState({
         dataServices: this.state.dataServices.concat(nextProps.dataServis.charges)
       })
+    } else if (nextProps.dataServis.status === 400) {
+      this.setState({
+        messageServices: nextProps.dataServis.message
+      })
     }
     if (nextProps.dataWishlist.status === 200) {
       this.setState({
         like: true
       })
+      if (this.state.like) {
+        this.props.resetAddToWishlist()
+      }
     }
   }
 
@@ -611,6 +619,7 @@ class ProductDetailScreenScreen extends React.Component {
 
   renderKurir () {
     if (this.state.showService) {
+      console.log(this.state.dataServices.length)
       if (this.state.dataServices.length > 0) {
         return (
           <View style={{backgroundColor: Colors.background}}>
@@ -619,6 +628,12 @@ class ProductDetailScreenScreen extends React.Component {
               renderRow={this.renderRowService.bind(this)}
               enableEmptySections
             />
+          </View>
+        )
+      } else {
+        return (
+          <View style={{backgroundColor: Colors.background}}>
+            <Text>{this.state.messageServices}</Text>
           </View>
         )
       }
@@ -1243,7 +1258,8 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),
-    addWishList: (id) => dispatch(productAction.addToWishlist({ id: id }))
+    addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
+    resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist())
   }
 }
 

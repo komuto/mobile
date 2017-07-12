@@ -101,6 +101,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
     this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+    this.setState({
+      filter: false
+    })
   }
 
   handleBack = () => {
@@ -472,6 +475,17 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
+  renderImageTypeView () {
+    if (this.state.tipeView === 'grid') {
+      return (
+        <Image source={Images.grid} style={styles.searchImage} />
+      )
+    }
+    return (
+      <Image source={Images.list} style={styles.searchImage} />
+    )
+  }
+
   render () {
     let background
     if (this.state.tipe === 'search') {
@@ -502,7 +516,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              <Image style={styles.imageFooter} source={Images.grid} />
+              {this.renderImageTypeView()}
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>

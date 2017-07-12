@@ -145,6 +145,11 @@ function addToWishlist (state = initAddWishlist, action) {
         isLoading: false,
         isOnline: action.isOnline
       }
+    case productActions.ADDTO_WISHLIST_RESET:
+      return {
+        ...state,
+        status: 0
+      }
     default:
       return state
   }

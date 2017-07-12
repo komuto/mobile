@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, Image, ListView } from 'react-native'
+import { Text, View, Image, ListView, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
@@ -89,6 +89,18 @@ class UlasanScreenScreen extends React.Component {
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
         onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
         enableEmptySections
         style={styles.listView}
       />

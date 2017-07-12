@@ -11,26 +11,28 @@ import { Images } from '../Themes'
 class DetailTokoPenilaian extends React.Component {
   constructor (props) {
     super(props)
-    var imageProduct = [
-      { foto: Images.contohproduct, nama: 'Budi Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Adi Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Benny Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Bangkit Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' },
-      { foto: Images.contohproduct, nama: 'Indra Budiman', namaProduk: 'Sepatu Jogging Nike Hitam', namaToko: 'Sport Station Shop', lastReview: '5', starQuality: 3, starAccurate: 3, isiUlasan: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua' }
-    ]
-    var dataSource2 = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      listDataSource: dataSource2.cloneWithRows(imageProduct),
-      foto: 'default',
-      price: 1685000,
-      starQuantity: 3,
-      starAccurate: 3,
-      avgQuantity: 4.5,
-      avgAccurate: 4.5
+      data: [],
+      quality: 0,
+      accuracy: 0,
+      namaToko: ''
     }
   }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataToko.status === 200) {
+      this.setState({
+        quality: nextProps.dataToko.store.rating.quality || 0,
+        accuracy: nextProps.dataToko.store.rating.accuracy || 0,
+        data: nextProps.dataToko.store.rating.reviews,
+        namaToko: nextProps.dataToko.store.store.name
+      })
+    }
+  }
+
   renderFotoProduk () {
-    if (this.state.foto !== 'default') {
+    if (this.state.foto !== null) {
       return (
         <Image
           source={{ uri: this.state.foto }}
@@ -46,9 +48,15 @@ class DetailTokoPenilaian extends React.Component {
     )
   }
   renderFotoProfil (value) {
+    let image
+    if (value !== null) {
+      image = { uri: value }
+    } else {
+      image = Images.contohproduct
+    }
     return (
       <Image
-        source={Images.contohproduct}
+        source={image}
         style={styles.styleFoto}
       />
     )
@@ -57,7 +65,7 @@ class DetailTokoPenilaian extends React.Component {
   listViewUlasan () {
     return (
       <ListView
-        dataSource={this.state.listDataSource}
+        dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
         enableEmptySections
       />
@@ -65,12 +73,12 @@ class DetailTokoPenilaian extends React.Component {
   }
 
   renderRating () {
-    const {starAccurate, starQuantity, avgAccurate, avgQuantity} = this.state
+    const {quality, accuracy} = this.state
     return (
       <View style={styles.ratingContainer}>
         <View style={styles.eachQualiyRate}>
           <Text style={styles.qualityText}> Kualitas Produk </Text>
-          <Text style={styles.qualityTextRate}>{avgQuantity}</Text>
+          <Text style={styles.qualityTextRate}>{String(quality).substring(0, 3)}</Text>
           <View style={styles.startContainer}>
             <StarRating
               disabled
@@ -78,14 +86,13 @@ class DetailTokoPenilaian extends React.Component {
               starColor={'#ffcd00'}
               emptyStarColor={'#d9e1e9'}
               starSize={16}
-              rating={starQuantity}
-              selectedStar={(rating) => this.onStarQtyPress(rating)}
+              rating={parseFloat(quality)}
             />
           </View>
         </View>
         <View style={styles.eachQualiyRate}>
           <Text style={styles.qualityText}> Akurasi Produk </Text>
-          <Text style={styles.qualityTextRate}>{avgAccurate}</Text>
+          <Text style={styles.qualityTextRate}>{String(accuracy).substring(0, 3)}</Text>
           <View style={styles.startContainer}>
             <StarRating
               disabled
@@ -93,8 +100,7 @@ class DetailTokoPenilaian extends React.Component {
               starColor={'#ffcd00'}
               emptyStarColor={'#d9e1e9'}
               starSize={16}
-              rating={starAccurate}
-              selectedStar={(rating) => this.onStarAcuPress(rating)}
+              rating={parseFloat(accuracy)}
             />
           </View>
         </View>
@@ -102,33 +108,28 @@ class DetailTokoPenilaian extends React.Component {
     )
   }
 
-  onStarQtyPress (rating) {
-    this.setState({
-      starQuantity: rating
-    })
-  }
-  onStarAcuPress (rating) {
-    this.setState({
-      starAccurate: rating
-    })
-  }
-
   renderRow (rowData) {
+    let image
+    try {
+      image = rowData.user.photo
+    } catch (e) {
+      image = null
+    }
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
-          {this.renderFotoProfil(rowData.foto)}
+          {this.renderFotoProfil(image)}
           <View style={styles.namaContainer}>
             <Text style={[styles.textNama, {lineHeight: 23}]}>
-              {rowData.nama}
+              {rowData.user.name}
             </Text>
             <Text style={[styles.textKelola]}>
-              {rowData.lastReview} hari yang lalu
+              3 hari yang lalu
             </Text>
           </View>
         </View>
-        {this.renderProduk(rowData.foto, rowData.namaProduk, rowData.namaToko)}
-        {this.renderRatingUlasan(rowData.starAccurate, rowData.starQuality, rowData.isiUlasan)}
+        {this.renderProduk(rowData.product.image.file, rowData.product.name, rowData.namaToko)}
+        {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
       </View>
     )
   }
@@ -137,7 +138,7 @@ class DetailTokoPenilaian extends React.Component {
     return (
       <TouchableOpacity style={styles.produkContainer}>
         <View style={styles.imageContainer}>
-          <Image source={image} style={styles.imageProduk} />
+          <Image source={{ uri: image }} style={styles.imageProduk} />
         </View>
         <View style={styles.namaProdukContainer}>
           <Text style={[styles.textNama, {lineHeight: 23}]}>{produk}</Text>
@@ -205,6 +206,7 @@ class DetailTokoPenilaian extends React.Component {
 }
 const mapStateToProps = (state) => {
   return {
+    dataToko: state.stores
   }
 }
 const mapDispatchToProps = (dispatch) => {

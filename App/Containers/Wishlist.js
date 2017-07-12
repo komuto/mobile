@@ -11,9 +11,11 @@ import {
   Modal
 } from 'react-native'
 import { connect } from 'react-redux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors } from '../Themes'
 import * as wishlistAction from '../actions/wishlist'
+import * as produkAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -153,6 +155,14 @@ class Wishlist extends React.Component {
     return hargaDiskon
   }
 
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
+  }
+
   renderModalSort () {
     const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
     return (
@@ -213,7 +223,8 @@ class Wishlist extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} />
         <View style={stylesProduk.containerDiskon}>
           <Text style={stylesProduk.diskon}>
@@ -268,7 +279,8 @@ class Wishlist extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -399,7 +411,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getWishlist: dispatch(wishlistAction.wishlist())
+    getWishlist: dispatch(wishlistAction.wishlist()),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

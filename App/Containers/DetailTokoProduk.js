@@ -16,66 +16,70 @@ class DetailTokoProduk extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      data: [{
-        kategori: 'Gadget dan Elektronik',
-        product: [
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-        ]
-      },
-      {
-        kategori: 'Gadget dan Elektronik',
-        product: [
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-        ]
-      },
-      {
-        kategori: 'Gadget dan Elektronik',
-        product: [
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-          { diskon: 50, gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-        ]
-      }
-      ]
+      data: [],
+      namaToko: '',
+      verified: false
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataToko.status === 200) {
+      console.log(nextProps.dataToko.store)
+      this.setState({
+        data: nextProps.dataToko.store.catalogs,
+        namaToko: nextProps.dataToko.store.store.name,
+        verified: nextProps.dataToko.store.store.is_verified
+      })
     }
   }
 
   renderList (rowData) {
+    if (rowData.products.length > 0) {
+      return (
+        <View style={styles.containerListView}>
+          <View style={styles.containerKategori}>
+            <View style={styles.kategori}>
+              <Text style={styles.textKategori}>{rowData.name}</Text>
+            </View>
+            <TouchableOpacity style={styles.lihat}>
+              <Text style={styles.textButton}>Lihat Semuanya</Text>
+            </TouchableOpacity>
+          </View>
+          <ListView
+            horizontal
+            enableEmptySections
+            showsHorizontalScrollIndicator={false}
+            dataSource={this.dataSource.cloneWithRows(rowData.products)}
+            renderRow={this.renderRow.bind(this)}
+          />
+        </View>
+      )
+    }
     return (
       <View style={styles.containerListView}>
         <View style={styles.containerKategori}>
           <View style={styles.kategori}>
-            <Text style={styles.textKategori}>{rowData.kategori}</Text>
+            <Text style={styles.textKategori}>{rowData.name}</Text>
           </View>
           <TouchableOpacity style={styles.lihat}>
             <Text style={styles.textButton}>Lihat Semuanya</Text>
           </TouchableOpacity>
         </View>
-        <ListView
-          horizontal
-          enableEmptySections
-          showsHorizontalScrollIndicator={false}
-          dataSource={this.dataSource.cloneWithRows(rowData.product)}
-          renderRow={this.renderRow.bind(this)}
-        />
+        <View style={styles.containerKategori}>
+          <Text style={styles.textTitleProduct}>Tidak ada data</Text>
+        </View>
       </View>
     )
   }
 
   renderRow (rowData) {
-    if (rowData.diskon > 0) {
+    let image
+    if (rowData.discount > 0) {
       this.statusDiskon = true
-      this.hargaDiskon = this.discountCalculate(rowData.harga, rowData.diskon)
+      this.hargaDiskon = this.discountCalculate(rowData.price, rowData.discount)
     } else {
       this.statusDiskon = false
-      this.hargaDiskon = rowData.harga
+      this.hargaDiskon = rowData.price
     }
 
     const money = MaskService.toMask('money', String(this.hargaDiskon), {
@@ -84,37 +88,53 @@ class DetailTokoProduk extends React.Component {
       delimiter: '.',
       precision: 3
     })
+    try {
+      image = rowData.image.file
+    } catch (e) {
+      image = null
+    }
     return (
       <TouchableOpacity
         style={[stylesHome.rowDataContainer, {width: (Metrics.screenWidth / 2) + 20}]}
         activeOpacity={0.5}
       >
-        <Image source={rowData.gambar} style={stylesHome.imageProduct} />
+        {this.renderImage(image)}
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
-            {rowData.diskon} %
+            {rowData.discount} %
           </Text>
         </View>
         <Text style={stylesHome.textTitleProduct}>
-          {rowData.title}
+          {rowData.name}
         </Text>
         <View style={stylesHome.tokoContainer}>
           <Text style={stylesHome.namaToko}>
-            {rowData.toko}
+            {this.state.namaToko}
           </Text>
-          {this.renderVerified(rowData.status)}
+          {this.renderVerified(this.state.verified)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.harga)}
+        {this.renderDiskon(this.statusDiskon, rowData.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(rowData.like)}
+          {this.renderLikes(true)}
           <Text style={stylesHome.like}>
-            {rowData.jumlahlikes}
+            {10}
           </Text>
         </View>
       </TouchableOpacity>
+    )
+  }
+
+  renderImage (image) {
+    if (image === null) {
+      return (
+        <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
+      )
+    }
+    return (
+      <Image source={{ uri: image }} style={stylesHome.imageProduct} />
     )
   }
 
@@ -154,7 +174,7 @@ class DetailTokoProduk extends React.Component {
     if (status) {
       return (
         <TouchableOpacity>
-          <Image source={Images.love} style={stylesHome.imageStyleLike} />
+          <Image source={Images.lovered} style={stylesHome.imageStyleLike} />
         </TouchableOpacity>
       )
     }
@@ -185,6 +205,7 @@ class DetailTokoProduk extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataToko: state.stores
   }
 }
 

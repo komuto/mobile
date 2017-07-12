@@ -23,6 +23,7 @@ import * as filterAction from '../actions/location'
 import * as serviceAction from '../actions/expedition'
 import * as reviewAction from '../actions/review'
 import * as productAction from '../actions/product'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -106,7 +107,8 @@ class ProductDetailScreenScreen extends React.Component {
       service: [],
       dataServices: [],
       jumlahServis: 0,
-      messageServices: ''
+      messageServices: '',
+      storeId: 0
     }
   }
 
@@ -141,7 +143,8 @@ class ProductDetailScreenScreen extends React.Component {
         lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
         namaToko: nextProps.dataDetailProduk.detail.store.name,
         service: nextProps.dataDetailProduk.detail.expeditions,
-        jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length
+        jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
+        storeId: nextProps.dataDetailProduk.detail.store.id
       })
     }
     if (nextProps.dataProvinsi.status === 200) {
@@ -633,7 +636,7 @@ class ProductDetailScreenScreen extends React.Component {
       } else {
         return (
           <View style={{backgroundColor: Colors.background}}>
-            <Text>{this.state.messageServices}</Text>
+            <Text style={styles.errorExpedition}>{this.state.messageServices}</Text>
           </View>
         )
       }
@@ -1057,18 +1060,19 @@ class ProductDetailScreenScreen extends React.Component {
     })
   }
 
-  detailPenjual () {
-    NavigationActions.detailtoko({ type: ActionConst.PUSH, title: this.state.namaToko })
+  detailPenjual (id) {
+    this.props.getToko(id)
+    NavigationActions.detailtoko({ type: ActionConst.PUSH })
   }
 
   renderInfoPenjual () {
-    const {numOfLine} = this.state
+    const {numOfLine, storeId} = this.state
     return (
       <View style={[styles.ulasanContainer]}>
         <View style={styles.border}>
           <TouchableOpacity
             style={[styles.profile, {paddingBottom: 20}]}
-            onPress={() => this.detailPenjual()}
+            onPress={() => this.detailPenjual(storeId)}
           >
             {this.renderFotoToko()}
             <View style={styles.containerNamaToko}>
@@ -1259,7 +1263,8 @@ const mapDispatchToProps = (dispatch) => {
     })),
     reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),
     addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
-    resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist())
+    resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist()),
+    getToko: (id) => dispatch(storeAction.getStores({ id: id }))
   }
 }
 

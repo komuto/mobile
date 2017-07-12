@@ -161,5 +161,9 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     letterSpacing: 0.22,
     color: Colors.darkgrey
+  },
+  scrollView: {
+    paddingTop: 10,
+    paddingBottom: 10
   }
 })

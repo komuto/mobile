@@ -27,17 +27,30 @@ class DetailToko extends React.Component {
     this.state = {
       katalog: false,
       modal: false,
-      data: [
-        { 'id': 1, 'kategori': 'elektronik' },
-        { 'id': 2, 'kategori': 'pakaian' },
-        { 'id': 3, 'kategori': 'alat olahraga' }
-      ],
+      data: [],
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
       firstTabSwitch: true,
       tabAktiv: 'Produk',
-      height: []
+      height: [],
+      namaToko: '',
+      alamat: 'Jakarta Selatan, DKI Jakarta',
+      verified: false,
+      fotoToko: null
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataToko.status === 200) {
+      console.log(nextProps.dataToko.store)
+      this.setState({
+        data: nextProps.dataToko.store.catalogs,
+        namaToko: nextProps.dataToko.store.store.name,
+        alamat: nextProps.dataToko.store.store.district || 'Jakarta Selatan, DKI Jakarta',
+        verified: nextProps.dataToko.store.store.is_verified,
+        fotoToko: nextProps.dataToko.store.store.logo || null
+      })
     }
   }
 
@@ -57,13 +70,13 @@ class DetailToko extends React.Component {
     if (parseInt(rowId) === this.state.data.length - 1) {
       return (
         <TouchableOpacity style={styles.containerDataLast}>
-          <Text style={styles.kategori}>{rowData.kategori}</Text>
+          <Text style={styles.kategori}>{rowData.name}</Text>
         </TouchableOpacity>
       )
     } else {
       return (
         <TouchableOpacity style={styles.containerData}>
-          <Text style={styles.kategori}>{rowData.kategori}</Text>
+          <Text style={styles.kategori}>{rowData.name}</Text>
         </TouchableOpacity>
       )
     }
@@ -108,86 +121,77 @@ class DetailToko extends React.Component {
     }
   }
 
-  _handleTabHeight (obj) {
-    this._setTabHeight(obj.i)
+  renderVerified () {
+    if (this.state.verified) {
+      return (
+        <View>
+          <Image source={Images.verified} style={styles.imageVerify} />
+          <Text style={styles.verifiedText}>Terverifikasi</Text>
+        </View>
+      )
+    }
+    return null
   }
 
-  _setTabHeight (i) {
-    const dummy = this.state.height
-    if (this.state.firstTabSwitch) {
-      this.setState({
-        firstTabSwitch: false
-      })
-    } else {
-      if (i === 2) {
-        this.setState({tabViewStyle: {height: dummy[i + 1]}})
-      } else {
-        this.setState({tabViewStyle: {height: dummy[i]}})
-      }
+  renderFotoToko () {
+    if (this.state.fotoToko === null) {
+      return (
+        <Image source={Images.contohproduct} style={styles.profilImage} />
+      )
     }
-  }
-
-  measureView (name, event) {
-    const dummy = this.state.height
-    if (event.nativeEvent.layout.height > 0) {
-      if (dummy.length < 3) {
-        dummy.push(event.nativeEvent.layout.height)
-      }
-    }
+    return (
+      <Image source={{ uri: this.state.fotoToko }} style={styles.profilImage} />
+    )
   }
 
   render () {
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <View style={styles.headerContainer}>
-            <View style={styles.infoContainer}>
-              <View style={styles.profilContainer}>
-                <Image source={Images.contohproduct} style={styles.profilImage} />
-              </View>
-              <View style={styles.info}>
-                <Text style={styles.namaToko}>Sports Station Shop</Text>
-                <Text style={styles.alamatToko}>Jakarta Selatan, DKI Jakarta</Text>
-                <View style={styles.verifyContainer}>
-                  <Image source={Images.verified} style={styles.imageVerify} />
-                  <Text style={styles.verifiedText}>Terverifikasi</Text>
-                </View>
-              </View>
+        <View style={styles.headerContainer}>
+          <View style={styles.infoContainer}>
+            <View style={styles.profilContainer}>
+              {this.renderFotoToko()}
             </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
-                <Image source={Images.pesan} style={styles.image} />
-                <Text style={styles.verifiedText}>Kirim Pesan</Text>
-              </TouchableOpacity>
-              <View style={styles.separator} />
-              <TouchableOpacity style={styles.button}>
-                <Image source={Images.tambah} style={styles.image} />
-                <Text style={styles.verifiedText}>Favorit</Text>
-              </TouchableOpacity>
+            <View style={styles.info}>
+              <Text style={styles.namaToko}>{this.state.namaToko}</Text>
+              <Text style={styles.alamatToko}>{this.state.alamat}</Text>
+              <View style={styles.verifyContainer}>
+                {this.renderVerified()}
+              </View>
             </View>
           </View>
-          <ScrollableTabView
-            onChangeTab={(obj) => this._handleTabHeight(obj)}
-            prerenderingSiblingsNumber={1}
-            style={this.state.tabViewStyle}
-            tabBarBackgroundColor={Colors.snow}
-            tabBarActiveTextColor={Colors.darkgrey}
-            tabBarUnderlineStyle={{ backgroundColor: Colors.red, height: 2 }}
-            tabBarInactiveTextColor={Colors.lightgrey}
-            tabBarTextStyle={styles.textTab}
-            locked
-          >
-            <View tabLabel='Produk' ref='Produk' onLayout={(event) => this.measureView('Produk', event)}>
-              <Produk />
-            </View>
-            <View tabLabel='Profile' ref='Profile' onLayout={(event) => this.measureView('Profile', event)}>
-              <DetailTokoProfile />
-            </View>
-            <View tabLabel='Penilaian' ref='Penilaian' onLayout={(event) => this.measureView('Penilaian', event)}>
-              <DetailTokoPenilaian />
-            </View>
-          </ScrollableTabView>
-        </ScrollView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button}>
+              <Image source={Images.pesan} style={styles.image} />
+              <Text style={styles.verifiedText}>Kirim Pesan</Text>
+            </TouchableOpacity>
+            <View style={styles.separator} />
+            <TouchableOpacity style={styles.button}>
+              <Image source={Images.tambah} style={styles.image} />
+              <Text style={styles.verifiedText}>Favorit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ScrollableTabView
+          prerenderingSiblingsNumber={2}
+          style={this.state.tabViewStyle}
+          tabBarBackgroundColor={Colors.snow}
+          tabBarActiveTextColor={Colors.darkgrey}
+          tabBarUnderlineStyle={{ backgroundColor: Colors.red, height: 2 }}
+          tabBarInactiveTextColor={Colors.lightgrey}
+          tabBarTextStyle={styles.textTab}
+          locked
+        >
+          <ScrollView tabLabel='Produk' ref='Produk' style={styles.scrollView}>
+            <Produk />
+          </ScrollView>
+          <ScrollView tabLabel='Profile' ref='Profile' style={styles.scrollView}>
+            <DetailTokoProfile />
+          </ScrollView>
+          <ScrollView tabLabel='Penilaian' ref='Penilaian' style={styles.scrollView}>
+            <DetailTokoPenilaian />
+          </ScrollView>
+        </ScrollableTabView>
         {this.renderFloatButton()}
         {this.renderModal()}
       </View>
@@ -197,6 +201,7 @@ class DetailToko extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataToko: state.stores
   }
 }
 

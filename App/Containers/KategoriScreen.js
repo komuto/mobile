@@ -69,14 +69,19 @@ class KategoriScreenScreen extends React.Component {
     if (subCategory.length <= 0) {
       return null
     } else {
+      const subCategoryView = subCategory.map((obj) =>
+        (<TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
+          <Image source={Images.dapur} style={styles.imageCategory} />
+          <View style={[styles.namaContainer, {marginLeft: 15}]}>
+            <Text style={styles.textNama}>
+              {obj.name}
+            </Text>
+          </View>
+          <Image source={Images.rightArrow} style={styles.rightArrow} />
+        </TouchableOpacity>)
+      )
       return (
-        <ListView
-          style={{ marginTop: 5 }}
-          dataSource={this.dataSource.cloneWithRows(subCategory)}
-          renderRow={this.renderSubRow.bind(this)}
-          initialListSize={2}
-          enableEmptySections
-        />
+        <View>{subCategoryView}</View>
       )
     }
   }

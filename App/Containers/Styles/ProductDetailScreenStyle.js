@@ -487,5 +487,13 @@ export default StyleSheet.create({
   imagePicker: {
     height: 24,
     width: 24
+  },
+  errorExpedition: {
+    fontSize: Fonts.size.smallMed,
+    fontFamily: Fonts.type.bold,
+    color: Colors.darkgrey,
+    paddingLeft: 10,
+    paddingTop: 10,
+    paddingBottom: 10
   }
 })

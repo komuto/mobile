@@ -47,7 +47,6 @@ class Home extends React.Component {
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
       })
-      console.log(nextProps.dataProduk.products)
       this.setState({
         kategoriSource: kategoriInital,
         productSource: nextProps.dataProduk.products,
@@ -95,7 +94,7 @@ class Home extends React.Component {
   }
 
   renderVerified (status) {
-    if (status !== 'null') {
+    if (status) {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
@@ -177,7 +176,7 @@ class Home extends React.Component {
           <Text style={styles.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
         {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={styles.harga}>

@@ -10,10 +10,24 @@ import styles from './Styles/DetailTokoProfileStyle'
 
 class DetailTokoProfile extends React.Component {
 
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
+  constructor (props) {
+    super(props)
+    this.state = {
+      alamat: 'Lokasi Toko',
+      slogan: '',
+      deskripsi: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataToko.status === 200) {
+      this.setState({
+        alamat: nextProps.dataToko.store.store.district || 'Jakarta Selatan, DKI Jakarta',
+        slogan: nextProps.dataToko.store.store.slogan,
+        deskripsi: nextProps.dataToko.store.store.description
+      })
+    }
+  }
 
   renderMenu (image, teks, data) {
     return (
@@ -41,19 +55,17 @@ class DetailTokoProfile extends React.Component {
         <View style={styles.sloganContainer}>
           <Text style={styles.title}>Slogan</Text>
           <Text style={styles.isi}>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna
+            {this.state.slogan}
           </Text>
         </View>
         <View style={styles.sloganContainer}>
           <Text style={styles.title}>Deskripsi Toko</Text>
           <Text style={styles.isi}>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna
+            {this.state.deskripsi}
           </Text>
         </View>
         {this.renderMenu(Images.toko, 'Terakhir Update', '2 jam yang lalu')}
-        {this.renderMenu(Images.toko, 'Lokasi Toko', 'Jakarta Selatan')}
+        {this.renderMenu(Images.toko, 'Lokasi Toko', this.state.alamat)}
         {this.renderMenu(Images.toko, 'Buka sejak', '4 bulan yang lalu')}
         {this.renderMenu(Images.toko, 'Favorit', '200')}
         {this.renderMenu(Images.toko, 'Produk Terjual', '2500')}
@@ -64,6 +76,7 @@ class DetailTokoProfile extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataToko: state.stores
   }
 }
 

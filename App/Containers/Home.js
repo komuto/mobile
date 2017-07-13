@@ -66,6 +66,10 @@ class Home extends React.Component {
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
     }
+    if (nextProps.dataWishlist.status === 200) {
+      this.props.resetAddToWishlist()
+      this.props.getProdukTerbaru(6)
+    }
   }
 
   componentDidMount () {
@@ -91,6 +95,14 @@ class Home extends React.Component {
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
+  }
+
+  addWishList (id) {
+    if (this.state.isLogin) {
+      this.props.addWishList(id)
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
   }
 
   renderVerified (status) {
@@ -125,16 +137,16 @@ class Home extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -183,7 +195,7 @@ class Home extends React.Component {
           {totalHarga}
         </Text>
         <View style={styles.likesContainer}>
-          {this.renderLikes(rowData.like)}
+          {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={styles.like}>
             {rowData.product.stock}
           </Text>
@@ -406,7 +418,8 @@ const mapStateToProps = (state) => {
   return {
     dataKategori: state.category,
     dataProduk: state.products,
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataWishlist: state.addWishlist
   }
 }
 
@@ -414,7 +427,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getKategori: dispatch(homeAction.categoryList()),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
+    resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlist())
   }
 }
 

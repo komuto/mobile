@@ -15,7 +15,13 @@ function getProduct (action) {
 }
 
 function productBy (action) {
-  let axios = publicApiKomuto()
+  let token = AsyncStorage.getItem('token')
+  let axios
+  if (token) {
+    axios = authApiKomuto()
+  } else {
+    axios = publicApiKomuto()
+  }
   let param = ''
   let tempPrice = action.price
   if (tempPrice !== undefined) {
@@ -24,8 +30,11 @@ function productBy (action) {
     } else {
       if (tempPrice[0] === 0) {
         tempPrice[0] = 50
+        if (tempPrice[1] === 0) {
+          tempPrice[1] = 1000000000000
+        }
         tempPrice = tempPrice[0] + '-' + tempPrice[1]
-      } else {
+      } else if (tempPrice[1] === 0) {
         tempPrice[1] = 1000000000000
         tempPrice = tempPrice[0] + '-' + tempPrice[1]
       }

@@ -149,7 +149,7 @@ class ProductDetailScreenScreen extends React.Component {
         jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
         storeId: nextProps.dataDetailProduk.detail.store.id,
         dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
-        asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
+        asuransi: nextProps.dataDetailProduk.detail.product.insurance,
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view
       })
     }
@@ -641,7 +641,7 @@ class ProductDetailScreenScreen extends React.Component {
         )
       } else {
         return (
-          <View style={{backgroundColor: Colors.background}}>
+          <View style={{backgroundColor: Colors.lightOrange, paddingLeft: 10}}>
             <Text style={styles.errorExpedition}>{this.state.messageServices}</Text>
           </View>
         )
@@ -737,11 +737,11 @@ class ProductDetailScreenScreen extends React.Component {
   renderAsuransi () {
     if (this.state.asuransi) {
       return (
-        <Text style={styles.infoProductVal}>Opsional</Text>
+        <Text style={styles.infoProductVal}>Wajib</Text>
       )
     }
     return (
-      <Text style={styles.infoProductVal}>Tidak ada</Text>
+      <Text style={styles.infoProductVal}>Optional</Text>
     )
   }
 

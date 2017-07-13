@@ -104,6 +104,19 @@ function getProfile (action) {
   })
 }
 
+function getProfileManage (action) {
+  let axios = authApiKomuto()
+  return axios.get('accounts/profile', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 function validateToken (action) {
   let axios = publicApiKomuto()
   return axios.get('passwords/new?token=' + action.token, {
@@ -141,8 +154,8 @@ function updateProfile (action) {
     let timeStamp = new Date(tempDate).getTime() / 1000
     action.date_of_birth = timeStamp
   }
-  console.log(action.date_of_birth)
-  return axios.put('users', {
+  // console.log(action.date_of_birth)
+  return axios.put('accounts/profile', {
     ...action
   })
   .then(function (data) {
@@ -156,6 +169,71 @@ function updateProfile (action) {
 function favoriteStore (action) {
   let axios = authApiKomuto()
   return axios.post('stores/' + action.id + '/favorite', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function addToBucket (action) {
+  let axios = authApiKomuto()
+  return axios.post('buckets', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function countBucket (action) {
+  let axios = authApiKomuto()
+  return axios.get('buckets/count', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function getBucket (action) {
+  let axios = authApiKomuto()
+  return axios.get('users/bucket', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function getPhone (action) {
+  let axios = authApiKomuto()
+  return axios.get('accounts/phone', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    return (err)
+  })
+}
+
+function updatePhone (action) {
+  let axios = authApiKomuto()
+  return axios.put('accounts/phone', {
     ...action
   })
   .then(function (data) {
@@ -187,5 +265,11 @@ export {
   validateToken,
   getBalance,
   updateProfile,
-  favoriteStore
+  favoriteStore,
+  addToBucket,
+  countBucket,
+  getBucket,
+  getProfileManage,
+  getPhone,
+  updatePhone
 }

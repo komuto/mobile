@@ -33,7 +33,7 @@ const colors = {
   lightblack: '#41475e',
   labelgrey: '#a0a3ae',
   paleGrey: '#f4f5f6',
-  lightOrange: '#fff8e8',
+  lightOrange: '#fff2d7',
   orange: '#ffa851',
   darkOrange: '#ea8c2f',
   lightSilver: '#eaebeb',

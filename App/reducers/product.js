@@ -1,7 +1,7 @@
 import * as productActions from '../actions/product'
 
 const initDetailProduct = {
-  detail: [],
+  detail: {},
   message: '',
   status: '',
   isLoading: false,

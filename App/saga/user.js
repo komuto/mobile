@@ -7,7 +7,7 @@ import { errorHandling } from '../config'
 function * register (action) {
   try {
     const {data} = yield userApi.register(action)
-    AsyncStorage.setItem('token', data.data.token)
+    yield AsyncStorage.setItem('token', data.data.token)
     yield put({ type: userActions.USER_REGISTER_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.USER_REGISTER_FAILURE, e)
@@ -36,7 +36,7 @@ function* validateToken (action) {
 function* logout (action) {
   try {
     const data = yield userApi.logout(action)
-    AsyncStorage.removeItem('token')
+    yield AsyncStorage.removeItem('token')
     yield put({ type: userActions.USER_LOGOUT_SUCCESS, ...data })
   } catch (e) {
     const data = {
@@ -68,7 +68,7 @@ function * forgetPassword (action) {
 function * loginSocial (action) {
   try {
     const {data} = yield userApi.loginSocial(action)
-    AsyncStorage.setItem('token', data.data.token)
+    yield AsyncStorage.setItem('token', data.data.token)
     yield put({ type: userActions.LOGIN_SOCIAL_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.LOGIN_SOCIAL_FAILURE, e)
@@ -99,6 +99,33 @@ function* getProfile (action) {
     yield put({ type: userActions.GET_PROFILE_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.GET_PROFILE_FAILURE, e)
+  }
+}
+
+function* getProfileManage (action) {
+  try {
+    const {data} = yield userApi.getProfileManage(action)
+    yield put({ type: userActions.GET_PROFILEMANAGE_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.GET_PROFILEMANAGE_FAILURE, e)
+  }
+}
+
+function* getPhone (action) {
+  try {
+    const {data} = yield userApi.getPhone(action)
+    yield put({ type: userActions.GET_PHONE_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.GET_PHONE_FAILURE, e)
+  }
+}
+
+function* updatePhone (action) {
+  try {
+    const {data} = yield userApi.updatePhone(action)
+    yield put({ type: userActions.UPDATE_PHONE_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.UPDATE_PHONE_FAILURE, e)
   }
 }
 
@@ -133,6 +160,33 @@ function * favoriteStore (action) {
   }
 }
 
+function * addToBucket (action) {
+  try {
+    const {data} = yield userApi.addToBucket(action)
+    yield put({ type: userActions.ADDTO_BUCKET_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.ADDTO_BUCKET_FAILURE, e)
+  }
+}
+
+function * countBucket (action) {
+  try {
+    const {data} = yield userApi.countBucket(action)
+    yield put({ type: userActions.COUNT_BUCKET_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.COUNT_BUCKET_FAILURE, e)
+  }
+}
+
+function * getBucket (action) {
+  try {
+    const {data} = yield userApi.getBucket(action)
+    yield put({ type: userActions.GET_BUCKET_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.GET_BUCKET_FAILURE, e)
+  }
+}
+
 export {
   login,
   logout,
@@ -144,7 +198,13 @@ export {
   newPassword,
   changePassword,
   getProfile,
+  getProfileManage,
   getBalance,
+  getPhone,
+  updatePhone,
   updateProfile,
-  favoriteStore
+  favoriteStore,
+  addToBucket,
+  countBucket,
+  getBucket
 }

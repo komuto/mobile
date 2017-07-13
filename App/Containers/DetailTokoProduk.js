@@ -24,11 +24,10 @@ class DetailTokoProduk extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
-      console.log(nextProps.dataToko.store)
       this.setState({
         data: nextProps.dataToko.store.catalogs,
-        namaToko: nextProps.dataToko.store.store.name,
-        verified: nextProps.dataToko.store.store.is_verified
+        namaToko: nextProps.dataToko.store.name,
+        verified: nextProps.dataToko.store.is_verified
       })
     }
   }
@@ -89,7 +88,7 @@ class DetailTokoProduk extends React.Component {
       precision: 3
     })
     try {
-      image = rowData.image.file
+      image = rowData.image
     } catch (e) {
       image = null
     }

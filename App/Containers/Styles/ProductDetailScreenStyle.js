@@ -495,5 +495,10 @@ export default StyleSheet.create({
     paddingLeft: 10,
     paddingTop: 10,
     paddingBottom: 10
+  },
+  otherProductMoneyContainer: {
+    flexDirection: 'row',
+    paddingBottom: 28.8,
+    alignItems: 'center'
   }
 })

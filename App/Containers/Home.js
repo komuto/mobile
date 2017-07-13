@@ -42,7 +42,7 @@ class Home extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataKategori.status === 200) {
+    if (nextProps.dataProduk.status === 200) {
       const newKategori = nextProps.dataKategori.categories
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
@@ -208,7 +208,6 @@ class Home extends React.Component {
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
         dataSource={this.dataSource.cloneWithRows(this.state.productSource)}
-        initialListSize={1}
         renderRow={this.renderRowProduk.bind(this)}
         enableEmptySections
       />

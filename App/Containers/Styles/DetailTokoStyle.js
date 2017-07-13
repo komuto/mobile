@@ -80,7 +80,7 @@ export default StyleSheet.create({
     width: 20
   },
   buttonContainer: {
-    marginTop: 50,
+    marginTop: 20,
     flexDirection: 'row'
   },
   image: {

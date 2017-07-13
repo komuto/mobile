@@ -46,10 +46,10 @@ class DetailToko extends React.Component {
       console.log(nextProps.dataToko.store)
       this.setState({
         data: nextProps.dataToko.store.catalogs,
-        namaToko: nextProps.dataToko.store.store.name,
-        alamat: nextProps.dataToko.store.store.district || 'Jakarta Selatan, DKI Jakarta',
-        verified: nextProps.dataToko.store.store.is_verified,
-        fotoToko: nextProps.dataToko.store.store.logo || null
+        namaToko: nextProps.dataToko.store.name,
+        alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
+        verified: nextProps.dataToko.store.is_verified,
+        fotoToko: nextProps.dataToko.store.logo || null
       })
     }
   }

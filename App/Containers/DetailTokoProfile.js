@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Images } from '../Themes'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -15,16 +15,20 @@ class DetailTokoProfile extends React.Component {
     this.state = {
       alamat: 'Lokasi Toko',
       slogan: '',
-      deskripsi: ''
+      deskripsi: '',
+      produkTerjual: '0',
+      totalFavorit: 0
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
       this.setState({
-        alamat: nextProps.dataToko.store.store.district || 'Jakarta Selatan, DKI Jakarta',
-        slogan: nextProps.dataToko.store.store.slogan,
-        deskripsi: nextProps.dataToko.store.store.description
+        alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
+        slogan: nextProps.dataToko.store.slogan,
+        deskripsi: nextProps.dataToko.store.description,
+        produkTerjual: nextProps.dataToko.store.total_product_sold,
+        totalFavorit: nextProps.dataToko.store.total_favorite || 0
       })
     }
   }
@@ -32,19 +36,17 @@ class DetailTokoProfile extends React.Component {
   renderMenu (image, teks, data) {
     return (
       <View style={styles.menuContainer}>
-        <TouchableOpacity>
-          <View style={styles.imageContainer}>
-            <Image source={image} style={styles.image} />
-            <View style={styles.textContainer}>
-              <Text style={styles.text}>
-                {teks}
-              </Text>
-              <Text style={styles.textData}>
-                {data}
-              </Text>
-            </View>
+        <View style={styles.imageContainer}>
+          <Image source={image} style={styles.image} />
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>
+              {teks}
+            </Text>
+            <Text style={styles.textData}>
+              {data}
+            </Text>
           </View>
-        </TouchableOpacity>
+        </View>
       </View>
     )
   }
@@ -64,11 +66,10 @@ class DetailTokoProfile extends React.Component {
             {this.state.deskripsi}
           </Text>
         </View>
-        {this.renderMenu(Images.toko, 'Terakhir Update', '2 jam yang lalu')}
-        {this.renderMenu(Images.toko, 'Lokasi Toko', this.state.alamat)}
-        {this.renderMenu(Images.toko, 'Buka sejak', '4 bulan yang lalu')}
-        {this.renderMenu(Images.toko, 'Favorit', '200')}
-        {this.renderMenu(Images.toko, 'Produk Terjual', '2500')}
+        {this.renderMenu(Images.lokasi, 'Lokasi Toko', this.state.alamat)}
+        {this.renderMenu(Images.kalender, 'Buka sejak', '4 bulan yang lalu')}
+        {this.renderMenu(Images.bintang, 'Favorit', String(this.state.totalFavorit))}
+        {this.renderMenu(Images.sold, 'Produk Terjual', this.state.produkTerjual)}
       </View>
     )
   }

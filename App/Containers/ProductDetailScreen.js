@@ -38,6 +38,7 @@ class ProductDetailScreenScreen extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dataImage: [],
+      dataGrosir: [],
       isLogin: this.props.datalogin.login,
       id: this.props.id,
       grosir: true,
@@ -108,7 +109,9 @@ class ProductDetailScreenScreen extends React.Component {
       dataServices: [],
       jumlahServis: 0,
       messageServices: '',
-      storeId: 0
+      storeId: 0,
+      asuransi: false,
+      jumlahLihat: 0
     }
   }
 
@@ -135,16 +138,19 @@ class ProductDetailScreenScreen extends React.Component {
         stock: nextProps.dataDetailProduk.detail.product.stock,
         sold: nextProps.dataDetailProduk.detail.product.count_sold,
         weight: nextProps.dataDetailProduk.detail.product.weight,
-        kondisi: nextProps.dataDetailProduk.detail.product.type,
+        kondisi: nextProps.dataDetailProduk.detail.product.condition,
         kategori: nextProps.dataDetailProduk.detail.category.name,
         deskripsi: nextProps.dataDetailProduk.detail.product.description,
-        termcondition: nextProps.dataDetailProduk.detail.store.note,
+        termcondition: nextProps.dataDetailProduk.detail.store.term_condition,
         idLokasiPenjual: nextProps.dataDetailProduk.detail.store.province.id,
         lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
         namaToko: nextProps.dataDetailProduk.detail.store.name,
         service: nextProps.dataDetailProduk.detail.expeditions,
         jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
-        storeId: nextProps.dataDetailProduk.detail.store.id
+        storeId: nextProps.dataDetailProduk.detail.store.id,
+        dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
+        asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
+        jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view
       })
     }
     if (nextProps.dataProvinsi.status === 200) {
@@ -666,7 +672,7 @@ class ProductDetailScreenScreen extends React.Component {
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Dilihat</Text>
-          <Text style={styles.staticProductVal}>1.760 kali</Text>
+          <Text style={styles.staticProductVal}>{this.state.jumlahLihat}</Text>
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Terjual</Text>
@@ -677,27 +683,42 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   listDiscount () {
-    const {grosir} = this.state
-    if (grosir) {
+    const {dataGrosir} = this.state
+    if (dataGrosir.length > 0) {
       return (
         <View style={styles.staticContainer}>
-          <View style={[styles.staticList]}>
-            <Text style={styles.staticProduct}>5 - 10 Barang</Text>
-            <Text style={styles.staticProductVal}>Rp 1.500.000 / barang</Text>
-          </View>
-          <View style={styles.staticList}>
-            <Text style={styles.staticProduct}>11 - 15 Barang</Text>
-            <Text style={styles.staticProductVal}>Rp 1.450.000 / barang</Text>
-          </View>
-          <View style={styles.staticList}>
-            <Text style={styles.staticProduct}>16 - 20 Barang</Text>
-            <Text style={styles.staticProductVal}>Rp 1.250.000 / barang</Text>
-          </View>
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.dataGrosir)}
+            renderRow={this.renderRowGrosir.bind(this)}
+            enableEmptySections
+          />
         </View>
       )
     }
     return (
       <View />
+    )
+  }
+
+  renderRowGrosir (rowData, sectionID, rowID, highlightRow) {
+    let warnaText
+    const money = MaskService.toMask('money', rowData.price, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    if (parseInt(rowID) === this.state.dataGrosir.length - 1) {
+      warnaText = { color: Colors.darkMint }
+    } else {
+      warnaText = { color: Colors.red }
+    }
+    return (
+      <View style={[styles.staticList]}>
+        <Text style={styles.staticProduct}>{rowData.min} - {rowData.max} Barang</Text>
+        <Text style={[styles.staticProductVal, warnaText]}>{money}</Text>
+        <Text style={styles.staticProductVal}> / barang </Text>
+      </View>
     )
   }
 
@@ -710,6 +731,17 @@ class ProductDetailScreenScreen extends React.Component {
     }
     return (
       <Text style={styles.infoProductVal}>Bekas</Text>
+    )
+  }
+
+  renderAsuransi () {
+    if (this.state.asuransi) {
+      return (
+        <Text style={styles.infoProductVal}>Opsional</Text>
+      )
+    }
+    return (
+      <Text style={styles.infoProductVal}>Tidak ada</Text>
     )
   }
 
@@ -730,7 +762,7 @@ class ProductDetailScreenScreen extends React.Component {
         <View style={styles.infoContainer}>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Asuransi</Text>
-            <Text style={styles.infoProductVal}>Opsional</Text>
+            {this.renderAsuransi()}
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kategori</Text>
@@ -1163,7 +1195,7 @@ class ProductDetailScreenScreen extends React.Component {
 
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
+        <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
             {rowData.discount} %
@@ -1180,10 +1212,16 @@ class ProductDetailScreenScreen extends React.Component {
             {this.renderVerified(this.state.verified)}
           </View>
           {this.renderDiskon(this.statusDiskon, rowData.price)}
-          <View style={{flexDirection: 'row', paddingBottom: 28.8}}>
+          <View style={styles.otherProductMoneyContainer}>
             <View style={{flex: 1}}>
               <Text style={stylesHome.harga}>
                 {money}
+              </Text>
+            </View>
+            <View style={stylesHome.likesContainer}>
+              {this.renderLikes(rowData.is_liked)}
+              <Text style={stylesHome.like}>
+                {rowData.count_like}
               </Text>
             </View>
           </View>

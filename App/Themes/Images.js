@@ -54,7 +54,11 @@ const images = {
   sub: require('../Images/Icons/Icon-qty-substract.png'),
   diskusi: require('../Images/Icons/icon-diskusi.png'),
   share: require('../Images/Icons/icon-share.png'),
-  laporkan: require('../Images/Icons/icon-laporkan.png')
+  laporkan: require('../Images/Icons/icon-laporkan.png'),
+  lokasi: require('../Images/Icons/icon-lokasi.png'),
+  kalender: require('../Images/Icons/icon-calendar.png'),
+  bintang: require('../Images/Icons/icon-bintang.png'),
+  sold: require('../Images/Icons/icon-sold.png')
 }
 
 export default images

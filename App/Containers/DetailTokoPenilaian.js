@@ -26,7 +26,7 @@ class DetailTokoPenilaian extends React.Component {
         quality: nextProps.dataToko.store.rating.quality || 0,
         accuracy: nextProps.dataToko.store.rating.accuracy || 0,
         data: nextProps.dataToko.store.rating.reviews,
-        namaToko: nextProps.dataToko.store.store.name
+        namaToko: nextProps.dataToko.store.name
       })
     }
   }
@@ -128,7 +128,7 @@ class DetailTokoPenilaian extends React.Component {
             </Text>
           </View>
         </View>
-        {this.renderProduk(rowData.product.image.file, rowData.product.name, rowData.namaToko)}
+        {this.renderProduk(rowData.product.image, rowData.product.name, rowData.namaToko)}
         {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
       </View>
     )

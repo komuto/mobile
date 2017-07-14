@@ -17,7 +17,7 @@ function * register (action) {
 function * login (action) {
   try {
     const {data} = yield userApi.login(action)
-    AsyncStorage.setItem('token', data.data.token)
+    yield AsyncStorage.setItem('token', data.data.token)
     yield put({ type: userActions.USER_LOGIN_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.USER_LOGIN_FAILURE, e)

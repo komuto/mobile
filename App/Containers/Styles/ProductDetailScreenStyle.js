@@ -500,5 +500,35 @@ export default StyleSheet.create({
     flexDirection: 'row',
     paddingBottom: 28.8,
     alignItems: 'center'
+  },
+  serviceContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.coal,
+    padding: 16
+  },
+  serviceName: {
+    flex: 1,
+    fontFamily: Fonts.type.semiBolds,
+    color: Colors.lightblack,
+    fontSize: Fonts.size.smallMed
+  },
+  serviceCost: {
+    fontFamily: Fonts.type.semiBolds,
+    color: Colors.lightblack,
+    fontSize: Fonts.size.smallMed,
+    paddingLeft: 5,
+    paddingRight: 5,
+    flex: 0.5
+  },
+  serviceEtd: {
+    fontFamily: Fonts.type.semiBolds,
+    textAlign: 'right',
+    color: Colors.lightblack,
+    fontSize: Fonts.size.smallMed,
+    paddingLeft: 5,
+    paddingRight: 5,
+    flex: 0.5,
+    justifyContent: 'flex-end'
   }
 })

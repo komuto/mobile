@@ -617,21 +617,26 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderRowService (rowData) {
+    const money = MaskService.toMask('money', rowData.cost, {
+      unit: '',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
     return (
-      <View style={styles.staticList}>
-        <Text style={styles.staticProduct}>{rowData.name}</Text>
-        <Text style={[styles.staticProductVal, {flex: 1}]}>{rowData.cost}</Text>
-        <Text style={styles.staticProductVal}>{rowData.etd} hari</Text>
+      <View style={styles.serviceContainer}>
+        <Text style={styles.serviceName}>{rowData.full_name}</Text>
+        <Text style={styles.serviceCost}>{money}</Text>
+        <Text style={styles.serviceEtd}>{rowData.etd} hari</Text>
       </View>
     )
   }
 
   renderKurir () {
     if (this.state.showService) {
-      console.log(this.state.dataServices.length)
       if (this.state.dataServices.length > 0) {
         return (
-          <View style={{backgroundColor: Colors.background}}>
+          <View style={{ backgroundColor: Colors.background }}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.dataServices)}
               renderRow={this.renderRowService.bind(this)}
@@ -907,7 +912,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderListKecamatan (rowData) {
-    const { idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
+    const { id, idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 15 }]}
@@ -919,7 +924,7 @@ class ProductDetailScreenScreen extends React.Component {
             modalKecamatan: false,
             showService: true
           })
-          this.listDataService(this.state.service, idLokasiPenjual, idKabTerpilih, totalWeight)
+          this.listDataService(id, idLokasiPenjual, idKabTerpilih, totalWeight)
         }}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -927,10 +932,8 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
-  listDataService (services, originId, destinationId, weight) {
-    services.map((obj) => {
-      this.props.getServices(obj.id, originId, destinationId, weight)
-    })
+  listDataService (id, originId, destinationId, weight) {
+    this.props.getServices(id, originId, destinationId, weight)
   }
 
   renderModalProvinsi () {
@@ -1284,7 +1287,7 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataServis: state.shippingCharges,
+    dataServis: state.estimatedCharges,
     dataWishlist: state.addWishlist,
     datalogin: state.isLogin
   }
@@ -1296,7 +1299,7 @@ const mapDispatchToProps = (dispatch) => {
     getProvinsi: () => dispatch(filterAction.getProvince()),
     getKota: (id) => dispatch(filterAction.getDistrict({ province_id: id })),
     getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
-    getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.getShippingCharge({
+    getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),

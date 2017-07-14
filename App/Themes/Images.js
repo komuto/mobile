@@ -58,7 +58,18 @@ const images = {
   lokasi: require('../Images/Icons/icon-lokasi.png'),
   kalender: require('../Images/Icons/icon-calendar.png'),
   bintang: require('../Images/Icons/icon-bintang.png'),
-  sold: require('../Images/Icons/icon-sold.png')
+  sold: require('../Images/Icons/icon-sold.png'),
+  bukaToko: require('../Images/berhasil-membuka-toko.png'),
+  chat: require('../Images/Icons/icon-chat.png'),
+  listProduk: require('../Images/Icons/icon-daftar-produk.png'),
+  diReview: require('../Images/Icons/icon-direview.png'),
+  pengaturanToko: require('../Images/Icons/icon-gear.png'),
+  help: require('../Images/Icons/icon-help.png'),
+  komentar: require('../Images/Icons/icon-komentar.png'),
+  penjualan: require('../Images/Icons/icon-bag.png'),
+  noHpNotVerify: require('../Images/no-hp-belum-verifikasi.png'),
+  hpVerify: require('../Images/no-hp-sudah-verifikasi.png'),
+  closeGreen: require('../Images/Icons/icon-close-Green.png')
 }
 
 export default images

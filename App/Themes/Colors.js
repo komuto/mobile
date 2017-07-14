@@ -40,7 +40,9 @@ const colors = {
   paleGreyTwo: '#f5f5f6',
   darkMint: '#47bf7e',
   paleGreyThree: '#f9fbfc',
-  brownishGrey: '#666666'
+  brownishGrey: '#666666',
+  charcoalGreyTwo: '#484a4c',
+  duckEggBlue: '#e0fae7'
 }
 
 export default colors

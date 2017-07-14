@@ -329,6 +329,27 @@ class Wishlist extends React.Component {
     this.setState({sortModal: visible})
   }
 
+  search () {
+    const { listDataSource, search } = this.state
+    const temp = []
+    if (search === '') {
+      this.setState({
+        listDataSource: this.props.dataWishlist.wishlist,
+        rowDataSource: this.props.dataWishlist.wishlist
+      })
+    } else {
+      listDataSource.map(function (obj, index) {
+        if (obj.product.name.toLowerCase().includes(search.toLowerCase())) {
+          temp.push(obj)
+        }
+      })
+      this.setState({
+        listDataSource: temp,
+        rowDataSource: temp
+      })
+    }
+  }
+
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
@@ -381,6 +402,7 @@ class Wishlist extends React.Component {
               onChangeText={this.handleTextSearch}
               underlineColorAndroid='transparent'
               placeholder='Cari Produk Favorit Anda disini'
+              onSubmitEditing={() => this.search()}
             />
           </View>
         </View>

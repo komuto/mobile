@@ -26,6 +26,11 @@ import DetailToko from '../Containers/DetailToko'
 import ProductDetailScreen from '../Containers/ProductDetailScreen'
 import UlasanScreen from '../Containers/UlasanScreen'
 import Laporkan from '../Containers/Laporkan'
+import InfoAlamatToko from '../Containers/InfoAlamatTokoScreen'
+import InfoPemilikToko from '../Containers/InfoPemilikTokoScreen'
+import InfoToko from '../Containers/InformasiTokoScreen'
+import EkspedisiKirimToko from '../Containers/EkspedisiPengirimanTokoScreen'
+import TokoDashboard from '../Containers/TokoDashboardScreen'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -238,6 +243,41 @@ class NavigationRouter extends Component {
             key='laporkan'
             component={Laporkan}
             title='Laporkan Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='infotoko'
+            component={InfoToko}
+            title='Isi Informasi Toko'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='ekspedisitoko'
+            component={EkspedisiKirimToko}
+            title='Ekspedisi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='infopemilik'
+            component={InfoPemilikToko}
+            title='Info Pemilik'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='infoalamattoko'
+            component={InfoAlamatToko}
+            title='Info Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tokodashboard'
+            component={TokoDashboard}
+            title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

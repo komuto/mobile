@@ -143,6 +143,37 @@ class Notifikasi extends React.Component {
           </View>
         </View>
       )
+    } else if (this.state.type === 'successBukaToko') {
+      return (
+        <View>
+          <Image source={Images.bukaToko} style={[styles.imagestyle, {height: 206.9, width: 206.9, marginTop: 30}]} />
+          <View style={[styles.welcomeContainer, {marginTop: 11}]}>
+            <Text style={styles.welcomeText}>
+              Selamat, Anda telah membuka Toko
+            </Text>
+          </View>
+          <View style={[styles.welcome2Container, {marginTop: 10}]}>
+            <Text style={[styles.welcome2Text, {fontSize: 13}]}>
+              Kami akan mengirim kode verifikasi toko anda{ '\n' }
+              ke alamat toko anda via pengiriman kurir POS.{ '\n' }
+              { '\n' }
+              Sebelum toko anda terverifikasi sistem kami,{ '\n' }
+              Toko anda hanya dapat menjual produk selama{ '\n' }
+              30 hari dari Sekarang.
+            </Text>
+          </View>
+          <View style={styles.containerButton}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.backToProfile()}
+            >
+              <Text style={styles.textButtonLogin}>
+                Kembali ke Halaman Profil
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
     }
   }
 

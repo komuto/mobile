@@ -198,5 +198,60 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     color: Colors.orange,
     letterSpacing: 0.4
+  },
+  bgModal: {
+    backgroundColor: 'rgba(72,74,76, 0.8)',
+    flex: 1
+  },
+  contaierModal: {
+    flex: 1,
+    borderRadius: 5,
+    marginTop: 86,
+    marginBottom: 86,
+    marginLeft: 30.5,
+    marginRight: 30.5,
+    backgroundColor: Colors.snow,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  titleModal: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey,
+    letterSpacing: 0.19,
+    textAlign: 'center',
+    marginBottom: 6
+  },
+  descModal: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.brownishGrey,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    marginBottom: 23
+  },
+  verifikasiButton: {
+    backgroundColor: Colors.bluesky,
+    borderRadius: 5,
+    marginBottom: 25.5,
+    height: 50,
+    justifyContent: 'center',
+    width: 250
+  },
+  batalButton: {
+    borderRadius: 5
+  },
+  textVerifikasiButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    color: Colors.background,
+    letterSpacing: 0.23,
+    textAlign: 'center'
+  },
+  textBatalButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    color: Colors.bluesky,
+    letterSpacing: 0.23
   }
 })

@@ -44,11 +44,12 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    marginTop: 30
+    marginTop: 20
   },
   buttonLogin: {
     flex: 1,
-    margin: 20,
+    marginRight: 20,
+    marginLeft: 20,
     height: 50,
     backgroundColor: Colors.bluesky,
     borderRadius: 5,

@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  AsyncStorage
+  AsyncStorage,
+  Modal
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 const LoginManager = require('react-native').NativeModules.FBLoginManager
@@ -33,7 +34,8 @@ class Profile extends React.Component {
       status: '1',
       email: '',
       foto: 'default',
-      isLogin: this.props.datalogin.login
+      isLogin: this.props.datalogin.login,
+      vefifikasiModal: false
     }
   }
 
@@ -218,7 +220,7 @@ class Profile extends React.Component {
           </View>
         </View>
         <View style={styles.dataProfileContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => this.setState({ vefifikasiModal: true })}>
             <View style={styles.profile}>
               <Image source={Images.toko} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
@@ -246,8 +248,46 @@ class Profile extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
+        {this.modalVerifikasiNoTelepon()}
       </View>
     )
+  }
+
+  modalVerifikasiNoTelepon () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.vefifikasiModal}
+        onRequestClose={() => this.setState({ vefifikasiModal: false })}
+        >
+        <View style={styles.bgModal}>
+          <View style={styles.contaierModal}>
+            <Image source={Images.noHpNotVerify} style={{height: 172, width: 172}} />
+            <Text style={styles.titleModal}>Anda Belum Memverifikasi{'\n'}Nomor Telepon</Text>
+            <Text style={styles.descModal}>
+              Verifikasi Nomor Telepon Anda terlebih{'\n'}dahulu untuk melanjutkan proses{'\n'}membuka toko
+            </Text>
+            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleVerifikasi()}>
+              <Text style={styles.textVerifikasiButton}>Verifikasi Sekarang</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.batalButton} onPress={() => this.setState({vefifikasiModal: false})}>
+              <Text style={styles.textBatalButton}>Batal</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
+  handleVerifikasi () {
+    this.setState({vefifikasiModal: false})
+    NavigationActions.otpcode({
+      type: ActionConst.PUSH,
+      title: 'Verifikasi Nomor Telepon',
+      noTelep: '082113101585',
+      typeVerifikasi: 'verifikasitelepon'
+    })
   }
 
   render () {

@@ -187,6 +187,15 @@ function * getBucket (action) {
   }
 }
 
+function * getDiscussion (action) {
+  try {
+    const {data} = yield userApi.getDiscussion(action)
+    yield put({ type: userActions.GET_USERDISCUSSION_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.GET_USERDISCUSSION_FAILURE, e)
+  }
+}
+
 export {
   login,
   logout,
@@ -206,5 +215,6 @@ export {
   favoriteStore,
   addToBucket,
   countBucket,
-  getBucket
+  getBucket,
+  getDiscussion
 }

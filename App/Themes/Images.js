@@ -69,7 +69,9 @@ const images = {
   penjualan: require('../Images/Icons/icon-bag.png'),
   noHpNotVerify: require('../Images/no-hp-belum-verifikasi.png'),
   hpVerify: require('../Images/no-hp-sudah-verifikasi.png'),
-  closeGreen: require('../Images/Icons/icon-close-Green.png')
+  closeGreen: require('../Images/Icons/icon-close-Green.png'),
+  diskusiGrey: require('../Images/Icons/icon-diskusi-grey.png'),
+  addDiskusi: require('../Images/Icons/icon-add-diskusi.png')
 }
 
 export default images

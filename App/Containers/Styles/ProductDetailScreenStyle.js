@@ -335,7 +335,9 @@ export default StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: Colors.silver,
-    backgroundColor: Colors.snow
+    backgroundColor: Colors.snow,
+    position: 'absolute',
+    bottom: 0
   },
   buttonReset: {
     flexDirection: 'row',

@@ -1,0 +1,208 @@
+import React from 'react'
+import {
+  View,
+  Image,
+  Text,
+  ListView,
+  ActivityIndicator,
+  TouchableOpacity
+} from 'react-native'
+import { connect } from 'react-redux'
+import { MaskService } from 'react-native-masked-text'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Images } from '../Themes'
+import * as productAction from '../actions/product'
+// Add Actions - replace 'Your' with whatever your reducer is called :)
+// import YourActions from '../Redux/YourRedux'
+
+// Styles
+import styles from './Styles/DiskusiProdukStyle'
+
+class DiskusiProduk extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.state = {
+      id: this.props.id,
+      data: [],
+      foto: this.props.foto,
+      price: this.props.price,
+      namaProduk: this.props.namaProduk,
+      page: 1,
+      loadmore: true
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.newDiscussion.status === 200) {
+      this.props.getDiscussion(this.state.id, 1)
+      this.props.resetDiscussion()
+      NavigationActions.pop()
+      this.setState({
+        pertanyaan: ''
+      })
+    }
+    if (nextProps.dataDiskusi.status === 200) {
+      if (nextProps.dataDiskusi.discussions.length > 0) {
+        console.log(nextProps.dataDiskusi.discussions)
+        let data = [...this.state.data, ...nextProps.dataDiskusi.discussions]
+        this.setState({
+          data: data,
+          page: this.state.page + 1
+        })
+      } else {
+        this.setState({
+          loadmore: false
+        })
+      }
+    }
+  }
+
+  renderProduct () {
+    const totalHarga = MaskService.toMask('money', this.state.price, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    return (
+      <View style={styles.border}>
+        <View style={styles.profile}>
+          <Image
+            source={{ uri: this.state.foto }}
+            style={styles.styleFotoToko}
+          />
+          <View style={styles.namaContainer}>
+            <Text style={styles.textNama}>
+              {this.state.namaProduk}
+            </Text>
+            <Text style={styles.textKelola}>
+              {totalHarga}
+            </Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  renderRow (rowData) {
+    return (
+      <View style={styles.diskusiContainer}>
+        <View style={styles.profileContainer}>
+          <Image source={{ uri: rowData.user.photo }} style={styles.foto} />
+          <View style={styles.infoUser}>
+            <Text style={styles.textNama}>
+              {rowData.user.name}
+            </Text>
+            <Text style={styles.textKelola}>
+              {rowData.created_at}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.profileContainer}>
+          <View style={styles.foto} />
+          <View style={styles.infoContainerRow}>
+            <Text style={styles.questionContainer}>
+              {rowData.question}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.komentarContainer}>
+          <View style={styles.foto} />
+          <TouchableOpacity style={styles.infoContainerRow}>
+            <Image source={Images.diskusiGrey} style={styles.logoDiskusi} />
+            <Text style={styles.textKomentarContainer}>
+              {rowData.count_comments} komentar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  renderListDiskusi () {
+    if (this.state.data.length > 0) {
+      return (
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.data)}
+          renderRow={this.renderRow.bind(this)}
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore && this.state.data > 10) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            } else {
+              return <View />
+            }
+          }}
+          enableEmptySections
+        />
+      )
+    }
+    return (
+      <Text>blm ada komentar</Text>
+    )
+  }
+
+  loadMore () {
+    const { id, page, loadmore } = this.state
+    if (loadmore) {
+      this.props.getDiscussion(id, page)
+    }
+  }
+
+  addDiskusi () {
+    NavigationActions.tambahDiskusi({
+      type: ActionConst.PUSH,
+      id: this.state.id,
+      foto: this.state.foto,
+      price: this.state.price,
+      namaProduk: this.props.namaProduk
+    })
+  }
+
+  renderFloatImage () {
+    return (
+      <TouchableOpacity
+        style={styles.floatImageContainer}
+        onPress={() => this.addDiskusi()}
+      >
+        <Image source={Images.addDiskusi} style={styles.floatImage} />
+      </TouchableOpacity>
+    )
+  }
+
+  render () {
+    return (
+      <View style={styles.container}>
+        {this.renderProduct()}
+        <View style={styles.scrollView}>
+          {this.renderListDiskusi()}
+        </View>
+        {this.renderFloatImage()}
+      </View>
+    )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    dataDiskusi: state.discussions,
+    newDiscussion: state.newDiscussion
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
+    resetDiscussion: () => dispatch(productAction.resetDiscussion())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DiskusiProduk)

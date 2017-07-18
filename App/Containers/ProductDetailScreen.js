@@ -111,7 +111,8 @@ class ProductDetailScreenScreen extends React.Component {
       messageServices: '',
       storeId: 0,
       asuransi: false,
-      jumlahLihat: 0
+      jumlahLihat: 0,
+      diskusi: 0
     }
   }
 
@@ -137,7 +138,9 @@ class ProductDetailScreenScreen extends React.Component {
         avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
         stock: nextProps.dataDetailProduk.detail.product.stock,
         sold: nextProps.dataDetailProduk.detail.product.count_sold,
+        diskusi: nextProps.dataDetailProduk.detail.product.count_discussion,
         weight: nextProps.dataDetailProduk.detail.product.weight,
+        totalWeight: nextProps.dataDetailProduk.detail.product.weight,
         kondisi: nextProps.dataDetailProduk.detail.product.condition,
         kategori: nextProps.dataDetailProduk.detail.category.name,
         deskripsi: nextProps.dataDetailProduk.detail.product.description,
@@ -152,6 +155,7 @@ class ProductDetailScreenScreen extends React.Component {
         asuransi: nextProps.dataDetailProduk.detail.product.insurance,
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view
       })
+      // this.props.resetProduk()
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
@@ -178,10 +182,16 @@ class ProductDetailScreenScreen extends React.Component {
       })
     }
     if (nextProps.dataWishlist.status === 200) {
-      this.setState({
-        like: true
-      })
+      console.log(this.state.like)
       if (this.state.like) {
+        this.setState({
+          like: false
+        })
+        this.props.resetAddToWishlist()
+      } else if (!this.state.like) {
+        this.setState({
+          like: true
+        })
         this.props.resetAddToWishlist()
       }
     }
@@ -226,6 +236,14 @@ class ProductDetailScreenScreen extends React.Component {
       namaBarang: this.state.title,
       harga: this.state.price
     })
+  }
+
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
   }
 
   renderModalLaporkan () {
@@ -324,7 +342,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(this.state.like)}
+            {this.renderLikes()}
           </View>
           <Text style={styles.price}>
             {totalHarga}
@@ -338,7 +356,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(this.state.like)}
+            {this.renderLikes()}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -368,7 +386,7 @@ class ProductDetailScreenScreen extends React.Component {
               <Text style={styles.title}>
                 {this.state.title}
               </Text>
-              {this.renderLikes(this.state.like)}
+              {this.renderLikes()}
             </View>
           </View>
         </View>
@@ -380,7 +398,7 @@ class ProductDetailScreenScreen extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(this.state.like)}
+            {this.renderLikes()}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -596,10 +614,10 @@ class ProductDetailScreenScreen extends React.Component {
     }
   }
 
-  renderLikes (status) {
-    if (status) {
+  renderLikes () {
+    if (this.state.like) {
       return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.addWishList()}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
@@ -611,13 +629,24 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
+  renderLikesProduk (status) {
+    if (status) {
+      return (
+        <Image source={Images.lovered} style={styles.imageStyleLike} />
+      )
+    }
+    return (
+      <Image source={Images.love} style={styles.imageStyleNotLike} />
+    )
+  }
+
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
     return hargaDiskon
   }
 
   renderRowService (rowData) {
-    const money = MaskService.toMask('money', rowData.cost, {
+    const money = MaskService.toMask('money', rowData.cost * parseInt(this.state.totalWeight), {
       unit: '',
       separator: '.',
       delimiter: '.',
@@ -912,7 +941,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderListKecamatan (rowData) {
-    const { id, idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
+    const { id, idLokasiPenjual, idKabTerpilih } = this.state
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 15 }]}
@@ -924,7 +953,7 @@ class ProductDetailScreenScreen extends React.Component {
             modalKecamatan: false,
             showService: true
           })
-          this.listDataService(id, idLokasiPenjual, idKabTerpilih, totalWeight)
+          this.listDataService(id, idLokasiPenjual, idKabTerpilih, 1)
         }}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -1197,7 +1226,11 @@ class ProductDetailScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity
+        style={stylesHome.rowDataContainer}
+        activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.id)}
+      >
         <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -1222,7 +1255,7 @@ class ProductDetailScreenScreen extends React.Component {
               </Text>
             </View>
             <View style={stylesHome.likesContainer}>
-              {this.renderLikes(rowData.is_liked)}
+              {this.renderLikesProduk(rowData.is_liked)}
               <Text style={stylesHome.like}>
                 {rowData.count_like}
               </Text>
@@ -1231,6 +1264,24 @@ class ProductDetailScreenScreen extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  diskusi () {
+    this.props.getDiscussion(this.state.id, 1)
+    NavigationActions.diskusiproduk({
+      id: this.state.id,
+      type: ActionConst.PUSH,
+      price: this.state.price,
+      foto: this.state.fotoToko,
+      namaProduk: this.state.title,
+      data: []
+    })
+  }
+
+  beliSekarang () {
+    NavigationActions.pembelianinfopengguna({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {
@@ -1256,21 +1307,20 @@ class ProductDetailScreenScreen extends React.Component {
           {this.renderInfoPenjual()}
           <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
           {this.renderProduk()}
-          <View style={{height: 20.3}} />
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonReset}>
-              <Image source={Images.diskusi} style={{marginTop: 2, height: 14, width: 15}} />
-              <Text style={styles.labelButtonReset}>
-                  Diskusi (278)
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonOke}>
-              <Text style={styles.labelButtonOke}>
-                Beli Sekarang
-              </Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.buttonReset} onPress={() => this.diskusi()}>
+            <Image source={Images.diskusi} style={{marginTop: 2, height: 14, width: 15}} />
+            <Text style={styles.labelButtonReset}>
+                Diskusi ({this.state.diskusi})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonOke} onPress={() => this.beliSekarang()}>
+            <Text style={styles.labelButtonOke}>
+              Beli Sekarang
+            </Text>
+          </TouchableOpacity>
+        </View>
         {this.renderModalLaporkan()}
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}
@@ -1305,7 +1355,10 @@ const mapDispatchToProps = (dispatch) => {
     reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),
     addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist()),
-    getToko: (id) => dispatch(storeAction.getStores({ id: id }))
+    getToko: (id) => dispatch(storeAction.getStores({ id: id })),
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
+    getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
+    resetProduk: () => dispatch(productAction.reset())
   }
 }
 

@@ -31,6 +31,10 @@ import InfoPemilikToko from '../Containers/InfoPemilikTokoScreen'
 import InfoToko from '../Containers/InformasiTokoScreen'
 import EkspedisiKirimToko from '../Containers/EkspedisiPengirimanTokoScreen'
 import TokoDashboard from '../Containers/TokoDashboardScreen'
+import DiskusiProduk from '../Containers/DiskusiProduk'
+import DiskusiAdd from '../Containers/DiskusiAdd'
+import PembelianInfoPengguna from '../Containers/PembelianInfoPengguna'
+import PembelianKeranjangBelanja from '../Containers/PembelianKeranjangBelanja'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -278,6 +282,34 @@ class NavigationRouter extends Component {
             key='tokodashboard'
             component={TokoDashboard}
             title='Info Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='diskusiproduk'
+            component={DiskusiProduk}
+            title='Diskusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambahDiskusi'
+            component={DiskusiAdd}
+            title='Buat Diskusi Baru'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembelianinfopengguna'
+            component={PembelianInfoPengguna}
+            title='Isi Informasi Data Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembeliankeranjangbelanja'
+            component={PembelianKeranjangBelanja}
+            title='Keranjang Belanja'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

@@ -12,6 +12,15 @@ const initUser = {
   isFound: false
 }
 
+const initDiscussion = {
+  discussions: [],
+  message: '',
+  status: '',
+  isLoading: false,
+  isOnline: true,
+  isFound: false
+}
+
 const initUpdate = {
   message: '',
   status: 0,
@@ -688,6 +697,37 @@ function updatePhone (state = initUpdate, action) {
   }
 }
 
+function getDiscussion (state = initDiscussion, action) {
+  switch (action.type) {
+    case actions.GET_USERDISCUSSION_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.GET_USERDISCUSSION_SUCCESS:
+      return {
+        ...state,
+        discussions: action.data,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true,
+        isOnline: true
+      }
+    case actions.GET_USERDISCUSSION_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: false,
+        isOnline: action.isOnline
+      }
+    default:
+      return state
+  }
+}
+
 export {
   auth,
   verify,
@@ -705,5 +745,6 @@ export {
   countBucket,
   getBucket,
   getPhone,
-  updatePhone
+  updatePhone,
+  getDiscussion
 }

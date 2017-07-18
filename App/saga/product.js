@@ -41,9 +41,59 @@ function * addToWishlist (action) {
   }
 }
 
+function * addToWishlistHome (action) {
+  try {
+    const {data} = yield productApi.addToWishlistHome(action)
+    yield put({ type: productActions.ADDTO_WISHLISTHOME_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(productActions.ADDTO_WISHLISTHOME_FAILURE, e)
+  }
+}
+
+function * getDiscussion (action) {
+  try {
+    const {data} = yield productApi.getDiscussion(action)
+    yield put({ type: productActions.GET_DISCUSSION_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(productActions.GET_DISCUSSION_FAILURE, e)
+  }
+}
+
+function * newDiscussion (action) {
+  try {
+    const {data} = yield productApi.newDiscussion(action)
+    yield put({ type: productActions.NEW_DISCUSSION_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(productActions.NEW_DISCUSSION_FAILURE, e)
+  }
+}
+
+function * newComment (action) {
+  try {
+    const {data} = yield productApi.newComment(action)
+    yield put({ type: productActions.NEW_COMMENT_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(productActions.NEW_COMMENT_FAILURE, e)
+  }
+}
+
+function * getComment (action) {
+  try {
+    const {data} = yield productApi.getComment(action)
+    yield put({ type: productActions.GET_COMMENT_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(productActions.GET_COMMENT_FAILURE, e)
+  }
+}
+
 export {
     getProduct,
     productByCategory,
     productBySearch,
-    addToWishlist
+    addToWishlist,
+    addToWishlistHome,
+    getDiscussion,
+    newDiscussion,
+    newComment,
+    getComment
 }

@@ -41,8 +41,7 @@ export default StyleSheet.create({
   },
   styleFotoToko: {
     width: 40,
-    height: 40,
-    borderRadius: 0
+    height: 40
   },
   styleFoto: {
     width: 40,

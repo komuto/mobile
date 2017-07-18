@@ -55,6 +55,7 @@ function listReviewPagination (state = initReview, action) {
     case reviewActions.LIST_REVIEW_REQUEST:
       return {
         ...state,
+        reviews: [],
         isLoading: true
       }
     case reviewActions.LIST_REVIEW_SUCCESS:

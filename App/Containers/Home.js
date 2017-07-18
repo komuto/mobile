@@ -140,7 +140,7 @@ class Home extends React.Component {
   renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
@@ -419,7 +419,7 @@ const mapStateToProps = (state) => {
     dataKategori: state.category,
     dataProduk: state.products,
     datalogin: state.isLogin,
-    dataWishlist: state.addWishlist
+    dataWishlist: state.addWishlistHome
   }
 }
 
@@ -428,8 +428,8 @@ const mapDispatchToProps = (dispatch) => {
     getKategori: dispatch(homeAction.categoryList()),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
-    resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlist())
+    addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),
+    resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome())
   }
 }
 

@@ -74,6 +74,10 @@ export const UPDATE_PHONE_REQUEST = 'UPDATE_PHONE_REQUEST'
 export const UPDATE_PHONE_SUCCESS = 'UPDATE_PHONE_SUCCESS'
 export const UPDATE_PHONE_FAILURE = 'UPDATE_PHONE_FAILURE'
 
+export const GET_USERDISCUSSION_REQUEST = 'GET_USERDISCUSSION_REQUEST'
+export const GET_USERDISCUSSION_SUCCESS = 'GET_USERDISCUSSION_SUCCESS'
+export const GET_USERDISCUSSION_FAILURE = 'GET_USERDISCUSSION_FAILURE'
+
 export const IS_LOGIN = 'IS_LOGIN'
 
 function register (params) {
@@ -210,6 +214,12 @@ function updatePhone (params) {
   }
 }
 
+function getDiscussion () {
+  return {
+    type: GET_USERDISCUSSION_REQUEST
+  }
+}
+
 export {
   register,
   verification,
@@ -230,5 +240,6 @@ export {
   countBucket,
   getBucket,
   getPhone,
-  updatePhone
+  updatePhone,
+  getDiscussion
 }

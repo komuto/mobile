@@ -155,7 +155,7 @@ class ProductDetailScreenScreen extends React.Component {
         asuransi: nextProps.dataDetailProduk.detail.product.insurance,
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view
       })
-      // this.props.resetProduk()
+      this.props.resetProduk()
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
@@ -1358,7 +1358,7 @@ const mapDispatchToProps = (dispatch) => {
     getToko: (id) => dispatch(storeAction.getStores({ id: id })),
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
-    resetProduk: () => dispatch(productAction.reset())
+    resetProduk: () => dispatch(productAction.resetDetail())
   }
 }
 

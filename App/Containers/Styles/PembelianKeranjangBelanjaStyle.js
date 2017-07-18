@@ -37,7 +37,7 @@ export default StyleSheet.create({
     marginLeft: 16
   },
   textNama: {
-    fontFamily: Fonts.type.semiBolds,
+    fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.smallMed,
     color: Colors.darkgrey,
     letterSpacing: 0.22,
@@ -101,5 +101,152 @@ export default StyleSheet.create({
     fontSize: Fonts.type.smallMed,
     letterSpacing: 0.22,
     color: Colors.bluesky
+  },
+  containerPicker: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 20
+  },
+  catatanContainer: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 20
+  },
+  teksPicker: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey,
+    letterSpacing: 0.2,
+    marginTop: 5,
+    marginRight: 10
+  },
+  imagePicker: {
+    height: 24,
+    width: 24,
+    marginTop: 3
+  },
+  rincianContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    backgroundColor: Colors.paleGreyThree,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5
+  },
+  rincian: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10
+  },
+  rincianDiskon: {
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  textBold: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey,
+    letterSpacing: 0.2,
+    marginTop: 5,
+    marginRight: 10
+  },
+  separator: {
+    height: 20,
+    backgroundColor: Colors.paleGrey
+  },
+  diskon: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    letterSpacing: 0.22,
+    color: Colors.green,
+    marginTop: 10
+  },
+  totalContainer: {
+    flexDirection: 'row'
+  },
+  total: {
+    flex: 1,
+    padding: 17,
+    flexDirection: 'column',
+    justifyContent: 'center'
+  },
+  button: {
+    backgroundColor: Colors.bluesky,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    height: 40,
+    width: Metrics.screenWidth / 2 - 36
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.type.medium,
+    color: Colors.snow
+  },
+  hargaTotal: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.regular,
+    letterSpacing: 0.3,
+    color: Colors.red
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
+  },
+  menuLaporkan: {
+    flex: 1,
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.snow,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    alignItems: 'center',
+    paddingLeft: 20,
+    flexDirection: 'row'
+  },
+  textBagikan: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey,
+    marginLeft: 10
+  },
+  headerListView: {
+    height: 60,
+    backgroundColor: Colors.snow,
+    padding: 20,
+    justifyContent: 'center',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 1
+  },
+  headerTextListView: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
+  },
+  logoEkspedisi: {
+    height: 15,
+    width: 50,
+    resizeMode: 'contain',
+    marginRight: 10,
+    marginLeft: -5,
+    marginTop: 3
+  },
+  gambarCentang: {
+    width: 24,
+    height: 24,
+    top: -2,
+    marginRight: 15
   }
 })

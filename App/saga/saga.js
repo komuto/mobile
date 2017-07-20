@@ -11,6 +11,7 @@ import * as emailActions from '../actions/email'
 import * as addressActions from '../actions/address'
 import * as bankActions from '../actions/bank'
 import * as catalogActions from '../actions/catalog'
+import * as cartActions from '../actions/cart'
 import * as userSaga from './user'
 import * as homeSaga from './home'
 import * as brandSaga from './brand'
@@ -24,6 +25,7 @@ import * as emailSaga from './email'
 import * as addressSaga from './address'
 import * as bankSaga from './bank'
 import * as catalogSaga from './catalog'
+import * as cartSaga from './cart'
 import { takeEvery } from 'redux-saga/effects'
 
 function * dataSaga () {
@@ -102,6 +104,7 @@ function * dataSaga () {
   yield takeEvery(addressActions.GET_PRIMARYADDRESS_REQUEST, addressSaga.getPrimaryAddress)
   yield takeEvery(bankActions.LIST_BANK_REQUEST, bankSaga.listBank)
   yield takeEvery(bankActions.GET_BANK_REQUEST, bankSaga.getBank)
+  yield takeEvery(cartActions.ADD_TO_CART_REQUEST, cartSaga.addToCart)
 }
 
 export default dataSaga

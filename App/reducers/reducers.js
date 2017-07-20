@@ -13,6 +13,7 @@ import * as storeReducers from './stores'
 import * as addressReducers from './address'
 import * as bankReducers from './bank'
 import * as catalogReducers from './catalog'
+import * as cartReducers from './cart'
 
 const komutoApps = storage.reducer(combineReducers({
   user: userReducers.auth,
@@ -83,7 +84,8 @@ const komutoApps = storage.reducer(combineReducers({
   bank: bankReducers.getBank,
   banks: bankReducers.listBank,
   address: addressReducers.address,
-  primaryAddress: addressReducers.primaryAddress
+  primaryAddress: addressReducers.primaryAddress,
+  cart: cartReducers.cart
 }))
 
 export default komutoApps

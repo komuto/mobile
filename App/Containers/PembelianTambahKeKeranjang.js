@@ -12,9 +12,9 @@ import {
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as produkAction from '../actions/product'
 import * as addressAction from '../actions/address'
 import * as serviceAction from '../actions/expedition'
+import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -36,10 +36,10 @@ class PembelianTambahKeKeranjang extends React.Component {
       dataSourceKurir: ds.cloneWithRows(dataKurir),
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
-      idProduct: '',
-      price: 100000,
-      foto: 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-      namaProduk: 'Sepatu',
+      idProduct: this.props.dataDetailProduk.detail.product.id,
+      price: this.props.dataDetailProduk.detail.product.price,
+      foto: this.props.dataDetailProduk.detail.images[0].file,
+      namaProduk: this.props.dataDetailProduk.detail.product.name,
       countProduct: 1,
       alamat: 'Alamat Pengiriman',
       jalan: 'Kemanggisan Jakarta Barat, Palmerah',
@@ -54,29 +54,28 @@ class PembelianTambahKeKeranjang extends React.Component {
       email: 'dwinawan@gmail.com',
       telepon: 'Telp: 0821 - 1310 - 1585',
       kodepos: '',
-      weight: '',
+      weight: this.props.dataDetailProduk.detail.product.weight,
       kurir: '',
       tipeKurir: '',
       asuransi: 'Tidak',
+      boolAsuransi: false,
       catatan: '',
-      subtotal: '250000',
-      biayaAsuransi: '0',
+      subtotal: this.props.dataDetailProduk.detail.product.price * 1,
       ongkir: '0',
-      diskon: '20000',
+      diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
       total: '0',
-      originId: '',
-      dataKurir: [],
+      originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+      dataKurir: this.props.dataDetailProduk.detail.expeditions,
       dataCost: [],
+      expeditionFee: '',
       dataAsuransi: [
         {
           'id': 1,
-          'title': 'Ya',
-          'cost': '8000'
+          'title': 'Ya'
         },
         {
           'id': 0,
-          'title': 'Tidak',
-          'cost': '0'
+          'title': 'Tidak'
         }
       ],
       activeKurir: 0,
@@ -90,33 +89,18 @@ class PembelianTambahKeKeranjang extends React.Component {
       modalAsuransi: false,
       statusAlamat: true,
       dataKosong: false,
-      height: 50
+      height: 50,
+      errorKurir: false,
+      errorSubKurir: false,
+      idAlamat: ''
     }
-  }
-
-  componentDidMount () {
-    this.props.getDetailProduk(93)
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataDetailProduk.status === 200) {
-      const { countProduct } = this.state
-      console.log(nextProps.dataDetailProduk.detail)
-      this.setState({
-        idProduct: nextProps.dataDetailProduk.detail.product.id,
-        dataKurir: nextProps.dataDetailProduk.detail.expeditions,
-        price: nextProps.dataDetailProduk.detail.product.price,
-        foto: nextProps.dataDetailProduk.detail.images[0].file,
-        weight: nextProps.dataDetailProduk.detail.product.weight,
-        namaProduk: nextProps.dataDetailProduk.detail.product.name,
-        originId: nextProps.dataDetailProduk.detail.store.district.ro_id,
-        subtotal: nextProps.dataDetailProduk.detail.product.price * countProduct,
-        diskon: String((nextProps.dataDetailProduk.detail.product.price * nextProps.dataDetailProduk.detail.product.discount) / 100)
-      })
-    }
     if (nextProps.dataAddress.status === 200) {
       console.log(nextProps.dataAddress.address)
       this.setState({
+        idAlamat: nextProps.dataAddress.address.id,
         alamat: nextProps.dataAddress.address.alias_address,
         jalan: nextProps.dataAddress.address.address,
         nama: nextProps.dataAddress.address.name,
@@ -131,6 +115,11 @@ class PembelianTambahKeKeranjang extends React.Component {
         email: nextProps.dataAddress.address.email,
         telepon: 'Telp: ' + nextProps.dataAddress.address.phone_number
       })
+      if (nextProps.dataAddress.address.address === '' || nextProps.dataAddress.address.address === null || nextProps.dataAddress.address.address === undefined) {
+        this.setState({
+          statusAlamat: false
+        })
+      }
     }
     if (nextProps.dataServices.status === 200) {
       console.log(nextProps.dataServices.charges)
@@ -192,7 +181,7 @@ class PembelianTambahKeKeranjang extends React.Component {
 
   substract () {
     const {countProduct, price} = this.state
-    if (countProduct > 0) {
+    if (countProduct > 1) {
       const temp = (countProduct - 1) * price
       this.setState({
         countProduct: countProduct - 1,
@@ -261,25 +250,48 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   renderInformasiPemesanan () {
-    const { kurir, tipeKurir, asuransi } = this.state
+    const { kurir, tipeKurir, asuransi, errorKurir, errorSubKurir } = this.state
+    let renderkurir
     let rendersubkurir
     let renderasuransi
-    const renderkurir = kurir === ''
-    ? (<TouchableOpacity
-      style={styles.containerPicker}
-      onPress={() => this.setState({ modalKurir: true })}
-    >
-      <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Pilih Kurir Pengiriman</Text>
-      <Image source={Images.down} style={styles.imagePicker} />
-    </TouchableOpacity>)
-    : (<TouchableOpacity
-      style={styles.containerPicker}
-      onPress={() => this.setState({ modalKurir: true })}
-    >
-      <Text style={[styles.teksPicker, { flex: 1 }]}>Kurir Pengiriman</Text>
-      <Text style={styles.teksPicker}>{kurir}</Text>
-      <Image source={Images.down} style={styles.imagePicker} />
-    </TouchableOpacity>)
+
+    if (kurir === '' && !errorKurir) {
+      renderkurir = (
+        <TouchableOpacity
+          style={styles.containerPicker}
+          onPress={() => this.setState({ modalKurir: true })}
+        >
+          <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Pilih Kurir Pengiriman</Text>
+          <Image source={Images.down} style={styles.imagePicker} />
+        </TouchableOpacity>
+      )
+    } else if (kurir === '' && errorKurir) {
+      renderkurir = (
+        <View>
+          <TouchableOpacity
+            style={styles.containerPicker}
+            onPress={() => this.setState({ modalKurir: true })}
+          >
+            <Text style={[styles.buttonIsiInfoError, { marginTop: 5, flex: 1 }]}>Pilih Kurir Pengiriman</Text>
+            <Image source={Images.down} style={styles.imagePicker} />
+          </TouchableOpacity>
+          <View style={styles.containerError}>
+            <Text style={styles.error}>Mohon pilih kurir pengiriman</Text>
+          </View>
+        </View>
+      )
+    } else if (kurir !== '') {
+      renderkurir = (
+        <TouchableOpacity
+          style={styles.containerPicker}
+          onPress={() => this.setState({ modalKurir: true })}
+        >
+          <Text style={[styles.teksPicker, { flex: 1 }]}>Kurir Pengiriman</Text>
+          <Text style={styles.teksPicker}>{kurir}</Text>
+          <Image source={Images.down} style={styles.imagePicker} />
+        </TouchableOpacity>
+      )
+    }
 
     if (kurir !== '' && tipeKurir !== '') {
       rendersubkurir =
@@ -301,17 +313,30 @@ class PembelianTambahKeKeranjang extends React.Component {
         <Text style={styles.teksPicker}>{asuransi}</Text>
         <Image source={Images.down} style={styles.imagePicker} />
       </TouchableOpacity>)
-    } else if (kurir !== '' && tipeKurir === '') {
+    } else if (kurir !== '' && tipeKurir === '' && !errorSubKurir) {
       rendersubkurir =
-      (<TouchableOpacity
-        style={styles.containerPicker}
-        onPress={() => this.setState({ modalSubkurir: true })}
-      >
-        <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
-        <Image source={Images.down} style={styles.imagePicker} />
-      </TouchableOpacity>)
-    } else {
-      rendersubkurir = null
+      (<View>
+        <TouchableOpacity
+          style={styles.containerPicker}
+          onPress={() => this.setState({ modalSubkurir: true })}
+        >
+          <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
+          <Image source={Images.down} style={styles.imagePicker} />
+        </TouchableOpacity>
+        <View style={styles.separator} /></View>)
+    } else if (kurir !== '' && tipeKurir === '' && errorSubKurir) {
+      rendersubkurir =
+      (<View>
+        <TouchableOpacity
+          style={styles.containerPicker}
+          onPress={() => this.setState({ modalSubkurir: true })}
+        >
+          <Text style={[styles.buttonIsiInfoError, { marginTop: 5, flex: 1 }]}>Paket Pengiriman</Text>
+          <Image source={Images.down} style={styles.imagePicker} />
+        </TouchableOpacity>
+        <View style={styles.containerError}>
+          <Text style={styles.error}>Mohon pilih paket pengiriman</Text>
+        </View></View>)
     }
 
     return (
@@ -351,15 +376,21 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   renderRincian () {
-    const { subtotal, biayaAsuransi, ongkir } = this.state
-    const total = parseInt(subtotal) + parseInt(biayaAsuransi) + parseInt(ongkir)
+    const { subtotal, price, expeditionFee, ongkir, asuransi, countProduct } = this.state
+    let temp2 = 0
+    if (asuransi === 'Ya') {
+      temp2 = price * expeditionFee * parseInt(countProduct) / 100
+    } else if (asuransi === 'Tidak') {
+      temp2 = 0
+    }
+    const total = parseInt(subtotal) + parseInt(temp2) + parseInt(ongkir)
     const hargaSubtotal = MaskService.toMask('money', subtotal, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
-    const hargaBiayaAsuransi = MaskService.toMask('money', biayaAsuransi, {
+    const hargaBiayaAsuransi = MaskService.toMask('money', temp2, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -441,11 +472,63 @@ class PembelianTambahKeKeranjang extends React.Component {
   renderKeranjang () {
     return (
       <View style={styles.total}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => this.addCart()}>
           <Text style={styles.textButton}>Masukkan Ke Keranjang</Text>
         </TouchableOpacity>
       </View>
     )
+  }
+
+  addCart () {
+    const {
+      jalan,
+      nama,
+      provinsi,
+      telepon,
+      statusAlamat,
+      kodepos,
+      kabupaten,
+      district,
+      email,
+      kurir,
+      tipeKurir,
+      dataKosong,
+      errorKurir,
+      errorSubKurir,
+      idProduct,
+      idKurir,
+      idSubKurir,
+      countProduct,
+      catatan,
+      idAlamat,
+      asuransi,
+      ongkir
+    } = this.state
+    let boolAsuransi
+    if (asuransi === 'Ya') {
+      boolAsuransi = true
+    } else if (asuransi === 'Tidak') {
+      boolAsuransi = false
+    }
+    if (jalan === '' && nama === '' && provinsi === '' && telepon === '' && statusAlamat === '' && kodepos === '' && kabupaten === '' && district === '' && email === '') {
+      this.setState({ dataKosong: true })
+    } else if (jalan !== '' && nama !== '' && provinsi !== '' && telepon !== '' && statusAlamat !== '' && kodepos !== '' && kabupaten !== '' && district !== '' && email !== '') {
+      this.setState({ dataKosong: false, statusAlamat: true })
+    }
+
+    if (kurir === '') {
+      this.setState({ errorKurir: true })
+    } else if (kurir !== '') {
+      this.setState({ errorKurir: false })
+    }
+    if (kurir !== '' && tipeKurir === '') {
+      this.setState({ errorSubKurir: true })
+    } else if (kurir !== '' && tipeKurir !== '') {
+      this.setState({ errorSubKurir: false })
+    }
+    if (!dataKosong && !errorKurir && !errorSubKurir) {
+      this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, ongkir)
+    }
   }
 
   renderModalKurir () {
@@ -550,6 +633,7 @@ class PembelianTambahKeKeranjang extends React.Component {
     this.setState({
       kurir: dataKurir[row].name,
       idKurir: dataKurir[row].id,
+      expeditionFee: dataKurir[row].insurance_fee,
       modalKurir: false
     })
     this.props.getServices(idProduct, originId, roIdDistrict, 1)
@@ -618,7 +702,6 @@ class PembelianTambahKeKeranjang extends React.Component {
     this.setState({
       asuransi: dataAsuransi[row].title,
       idAsuransi: dataAsuransi[row].id,
-      biayaAsuransi: dataAsuransi[row].cost,
       modalAsuransi: false
     })
   }
@@ -647,7 +730,6 @@ class PembelianTambahKeKeranjang extends React.Component {
           {this.renderAlamat()}
           {this.renderErrorAlamat(dataKosong)}
           {this.renderInformasiPemesanan()}
-          <View style={styles.separator} />
           {this.renderCatatan()}
           <View style={styles.separator} />
           {this.renderRincian()}
@@ -672,11 +754,21 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     getAddress: dispatch(addressAction.getPrimaryAddress()),
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
-    }))
+    })),
+    addCart: (productId, expeditionId, expeditionServiceId, countProduct, catatan, idAlamat, asuransi, ongkir) =>
+      dispatch(cartAction.addToCart({
+        product_id: productId,
+        expedition_id: expeditionId,
+        expedition_service_id: expeditionServiceId,
+        qty: countProduct,
+        note: catatan,
+        address_id: idAlamat,
+        is_insurance: asuransi,
+        delivery_cost: ongkir
+      }))
   }
 }
 

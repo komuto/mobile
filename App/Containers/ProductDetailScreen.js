@@ -1107,7 +1107,7 @@ class ProductDetailScreenScreen extends React.Component {
   substract () {
     const {countProduct} = this.state
     const berat = (countProduct - 1) * this.state.weight
-    if (countProduct > 0) {
+    if (countProduct > 1) {
       this.setState({
         countProduct: countProduct - 1,
         totalWeight: berat
@@ -1282,6 +1282,7 @@ class ProductDetailScreenScreen extends React.Component {
     NavigationActions.pembeliantambahkekeranjang({
       type: ActionConst.PUSH
     })
+    this.props.getDetailProduk(this.state.id)
   }
 
   render () {

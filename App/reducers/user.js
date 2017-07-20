@@ -141,6 +141,8 @@ function auth (state = initUser, action) {
         isFound: true
       }
     case actions.USER_LOGIN_FAILURE:
+      console.log('Previous state', state)
+      console.log('returning object')
       return {
         ...state,
         email: '',

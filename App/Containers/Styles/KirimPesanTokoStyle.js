@@ -4,8 +4,25 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.background
+  },
+  headerContainer: {
+    height: Metrics.navBarHeight,
+    backgroundColor: Colors.red,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: 20,
+    paddingLeft: 20
+  },
+  textTitle: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.snow
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
   },
   border: {
     borderBottomWidth: 0.5,
@@ -39,7 +56,7 @@ export default StyleSheet.create({
   },
   textKelola: {
     fontFamily: Fonts.type.regular,
-    fontSize: Fonts.size.small,
+    fontSize: Fonts.size.smallMed,
     color: Colors.lightgrey,
     opacity: 0.50,
     letterSpacing: 0.2

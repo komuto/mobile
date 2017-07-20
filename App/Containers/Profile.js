@@ -48,11 +48,11 @@ class Profile extends React.Component {
       console.log(nextProps.dataProfile)
       this.setState({
         isLogin: true,
-        nama: nextProps.dataProfile.user.name,
-        saldo: String(nextProps.dataProfile.user.saldo_wallet),
-        foto: nextProps.dataProfile.user.photo || 'default',
-        status: nextProps.dataProfile.verifyStatus,
-        email: nextProps.dataProfile.user.email
+        nama: nextProps.dataProfile.user.user.name,
+        saldo: String(nextProps.dataProfile.user.user.saldo_wallet),
+        foto: nextProps.dataProfile.user.user.photo || 'default',
+        status: nextProps.dataProfile.user.verifyStatus,
+        email: nextProps.dataProfile.user.user.email
       })
     } else if (nextProps.dataProfile.status > 200) {
       this.setState({

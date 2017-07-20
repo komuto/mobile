@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { serviceUrl, apiKomuto } from '../config'
 import {token} from '../store'
-import { AsyncStorage } from 'react-native'
+import {AsyncStorage} from 'react-native'
 
 export function authApi () {
   return axios.create({

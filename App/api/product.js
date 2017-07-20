@@ -1,5 +1,5 @@
 import { publicApiKomuto, authApiKomuto } from './api'
-import { AsyncStorage } from 'react-native'
+import {AsyncStorage} from 'react-native'
 
 function getProduct (action) {
   let token = AsyncStorage.getItem('token')
@@ -223,6 +223,32 @@ function getComment (action) {
   })
 }
 
+function newComment (action) {
+  let axios = authApiKomuto()
+  return axios.post('products/' + action.productId + '/discussions/' + action.id + '/comments', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
+function reportProduct (action) {
+  let axios = authApiKomuto()
+  return axios.post('products/' + action.id + '/report', {
+    ...action
+  })
+  .then(function (data) {
+    return data
+  })
+  .catch(function (err) {
+    throw (err)
+  })
+}
+
 export {
     getProduct,
     productBy,
@@ -230,5 +256,7 @@ export {
     addToWishlistHome,
     getDiscussion,
     newDiscussion,
-    getComment
+    getComment,
+    newComment,
+    reportProduct
 }

@@ -11,6 +11,7 @@ import {
 import { connect } from 'react-redux'
 import { Images, Colors } from '../Themes'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import Produk from './DetailTokoProduk'
@@ -28,6 +29,7 @@ class DetailToko extends React.Component {
       katalog: false,
       modal: false,
       data: [],
+      id: '',
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
@@ -47,6 +49,7 @@ class DetailToko extends React.Component {
       this.setState({
         data: nextProps.dataToko.store.catalogs,
         namaToko: nextProps.dataToko.store.name,
+        id: nextProps.dataToko.store.id,
         alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
         verified: nextProps.dataToko.store.is_verified,
         fotoToko: nextProps.dataToko.store.logo || null
@@ -80,6 +83,16 @@ class DetailToko extends React.Component {
         </TouchableOpacity>
       )
     }
+  }
+
+  kirimPesan () {
+    NavigationActions.kirimpesan({
+      type: ActionConst.PUSH,
+      id: this.state.id,
+      foto: this.state.fotoToko,
+      namaToko: this.state.namaToko,
+      alamat: this.state.alamat
+    })
   }
 
   renderModal () {
@@ -161,7 +174,7 @@ class DetailToko extends React.Component {
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => this.kirimPesan()}>
               <Image source={Images.pesan} style={styles.image} />
               <Text style={styles.verifiedText}>Kirim Pesan</Text>
             </TouchableOpacity>

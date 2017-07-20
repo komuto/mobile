@@ -6,10 +6,12 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  ListView
+  ListView,
+  TextInput
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as produkAction from '../actions/product'
 import * as addressAction from '../actions/address'
 import * as serviceAction from '../actions/expedition'
@@ -18,9 +20,9 @@ import * as serviceAction from '../actions/expedition'
 import { Images } from '../Themes'
 
 // Styles
-import styles from './Styles/PembelianKeranjangBelanjaStyle'
+import styles from './Styles/PembelianTambahKeKeranjangStyle'
 
-class PembelianKeranjangBelanja extends React.Component {
+class PembelianTambahKeKeranjang extends React.Component {
 
   constructor (props) {
     super(props)
@@ -39,30 +41,30 @@ class PembelianKeranjangBelanja extends React.Component {
       foto: 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
       namaProduk: 'Sepatu',
       countProduct: 1,
-      weight: '',
-      originId: '',
       alamat: 'Alamat Pengiriman',
       jalan: 'Kemanggisan Jakarta Barat, Palmerah',
       nama: 'Dwinawan Hariwijaya',
+      provinsi: 'Jakarta Barat DKI Jakarta, 55673',
+      idProvinsi: '',
+      kabupaten: '',
+      idKabupaten: '',
       roIdDistrict: '',
       idDistrict: '',
       district: '',
-      idProvinsi: '',
-      provinsi: 'Jakarta Barat DKI Jakarta, 55673',
-      kabupaten: '',
-      idKabupaten: '',
-      kodepos: '',
-      email: '',
+      email: 'dwinawan@gmail.com',
       telepon: 'Telp: 0821 - 1310 - 1585',
+      kodepos: '',
+      weight: '',
       kurir: '',
       tipeKurir: '',
       asuransi: 'Tidak',
-      catatan: 'Saya pesan barang yang warna merah',
+      catatan: '',
       subtotal: '250000',
       biayaAsuransi: '0',
       ongkir: '0',
       diskon: '20000',
       total: '0',
+      originId: '',
       dataKurir: [],
       dataCost: [],
       dataAsuransi: [
@@ -85,7 +87,10 @@ class PembelianKeranjangBelanja extends React.Component {
       idAsuransi: 0,
       modalKurir: false,
       modalSubkurir: false,
-      modalAsuransi: false
+      modalAsuransi: false,
+      statusAlamat: true,
+      dataKosong: false,
+      height: 50
     }
   }
 
@@ -206,55 +211,141 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   renderAlamat () {
-    const { alamat, jalan, nama, provinsi, telepon } = this.state
-    return (
-      <View style={styles.alamatContainer}>
-        <View style={styles.alamat}>
-          <Text style={styles.textNama}> {alamat} </Text>
-          <Text style={styles.textAlamat}> {nama} </Text>
-          <Text style={styles.textAlamat}> {jalan} </Text>
-          <Text style={styles.textAlamat}> {provinsi} </Text>
-          <Text style={styles.textAlamat}> {telepon} </Text>
+    const { jalan, nama, provinsi, telepon, statusAlamat, kodepos, kabupaten, district, email, dataKosong } = this.state
+    if (dataKosong) {
+      return (
+        <View style={{ flexDirection: 'column' }}>
+          <TouchableOpacity
+            style={styles.containerIsiInfo}
+            onPress={() => NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})}
+          >
+            <Text style={styles.buttonIsiInfoError}>Isi Informasi Data Pengiriman</Text>
+            <Image source={Images.rightArrow} style={styles.imagePicker} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.textGanti}>Ganti</Text>
-        </TouchableOpacity>
-      </View>
+      )
+    } else if (statusAlamat) {
+      return (
+        <View style={styles.alamat}>
+          <View style={styles.titleInfo}>
+            <Text style={[styles.textNama, { flex: 1 }]}> Informasi Data Pengiriman </Text>
+            <TouchableOpacity onPress={() => NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})}>
+              <Text style={styles.textGanti}>Ganti</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.containerInfoAlamat}>
+            <Text style={styles.textLabel}> Nama Penerima </Text>
+            <Text style={styles.textAlamat}> {nama} </Text>
+            <Text style={styles.textLabel}> Alamat Email </Text>
+            <Text style={styles.textAlamat}> {email} </Text>
+            <Text style={styles.textLabel}> No Handphone </Text>
+            <Text style={styles.textAlamat}> {telepon} </Text>
+            <Text style={styles.textLabel}> Alamat </Text>
+            <Text style={styles.textAlamat}> {jalan} </Text>
+            <Text style={styles.textAlamat}> {kabupaten} </Text>
+            <Text style={styles.textAlamat}> {district} </Text>
+            <Text style={styles.textAlamat}> {provinsi}, {kodepos} </Text>
+          </View>
+        </View>
+      )
+    }
+    return (
+      <TouchableOpacity
+        style={styles.containerIsiInfo}
+        onPress={() => NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})}
+      >
+        <Text style={styles.buttonIsiInfo}>Isi Informasi Data Pengiriman</Text>
+        <Image source={Images.rightArrow} style={styles.imagePicker} />
+      </TouchableOpacity>
     )
   }
 
   renderInformasiPemesanan () {
-    const { kurir, tipeKurir, asuransi, catatan } = this.state
+    const { kurir, tipeKurir, asuransi } = this.state
+    let rendersubkurir
+    let renderasuransi
+    const renderkurir = kurir === ''
+    ? (<TouchableOpacity
+      style={styles.containerPicker}
+      onPress={() => this.setState({ modalKurir: true })}
+    >
+      <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Pilih Kurir Pengiriman</Text>
+      <Image source={Images.down} style={styles.imagePicker} />
+    </TouchableOpacity>)
+    : (<TouchableOpacity
+      style={styles.containerPicker}
+      onPress={() => this.setState({ modalKurir: true })}
+    >
+      <Text style={[styles.teksPicker, { flex: 1 }]}>Kurir Pengiriman</Text>
+      <Text style={styles.teksPicker}>{kurir}</Text>
+      <Image source={Images.down} style={styles.imagePicker} />
+    </TouchableOpacity>)
+
+    if (kurir !== '' && tipeKurir !== '') {
+      rendersubkurir =
+      (<TouchableOpacity
+        style={styles.containerPicker}
+        onPress={() => this.setState({ modalSubkurir: true })}
+      >
+        <Text style={[styles.teksPicker, { flex: 1 }]}>Paket Pengiriman</Text>
+        <Text style={styles.teksPicker}>{tipeKurir}</Text>
+        <Image source={Images.down} style={styles.imagePicker} />
+      </TouchableOpacity>)
+
+      renderasuransi =
+      (<TouchableOpacity
+        style={styles.containerPicker}
+        onPress={() => this.setState({ modalAsuransi: true })}
+      >
+        <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
+        <Text style={styles.teksPicker}>{asuransi}</Text>
+        <Image source={Images.down} style={styles.imagePicker} />
+      </TouchableOpacity>)
+    } else if (kurir !== '' && tipeKurir === '') {
+      rendersubkurir =
+      (<TouchableOpacity
+        style={styles.containerPicker}
+        onPress={() => this.setState({ modalSubkurir: true })}
+      >
+        <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
+        <Image source={Images.down} style={styles.imagePicker} />
+      </TouchableOpacity>)
+    } else {
+      rendersubkurir = null
+    }
+
     return (
       <View>
-        <TouchableOpacity
-          style={styles.containerPicker}
-          onPress={() => this.setState({ modalKurir: true })}
-        >
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Kurir Pengiriman</Text>
-          <Text style={styles.teksPicker}>{kurir}</Text>
-          <Image source={Images.down} style={styles.imagePicker} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.containerPicker}
-          onPress={() => this.setState({ modalSubkurir: true })}
-        >
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Paket Pengiriman</Text>
-          <Text style={styles.teksPicker}>{tipeKurir}</Text>
-          <Image source={Images.down} style={styles.imagePicker} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.containerPicker}
-          onPress={() => this.setState({ modalAsuransi: true })}
-        >
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
-          <Text style={styles.teksPicker}>{asuransi}</Text>
-          <Image source={Images.down} style={styles.imagePicker} />
-        </TouchableOpacity>
-        <View style={styles.catatanContainer}>
-          <Text style={styles.teksPicker}>Catatan</Text>
-          <Text style={styles.textAlamat}>{catatan}</Text>
-        </View>
+        {renderkurir}
+        {rendersubkurir}
+        {renderasuransi}
+      </View>
+    )
+  }
+
+  handleCatatan = (text) => {
+    this.setState({ catatan: text })
+  }
+
+  renderCatatan () {
+    const { catatan } = this.state
+    return (
+      <View style={styles.catatanContainer}>
+        <Text style={styles.teksPicker}>Catatan (optional)</Text>
+        <TextInput
+          style={[styles.textInput, { height: this.state.height }]}
+          multiline
+          value={catatan}
+          onContentSizeChange={(event) => {
+            this.setState({height: event.nativeEvent.contentSize.height})
+          }}
+          keyboardType='default'
+          autoCapitalize='none'
+          autoCorrect
+          onChangeText={this.handleCatatan}
+          underlineColorAndroid='transparent'
+          placeholder='Contoh: saya pesan yang merah'
+        />
       </View>
     )
   }
@@ -288,22 +379,28 @@ class PembelianKeranjangBelanja extends React.Component {
     })
     return (
       <View style={styles.rincianContainer}>
-        <Text style={[styles.textBold, { marginBottom: 10 }]}>Rincian Harga</Text>
-        <View style={styles.rincian}>
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Subtotal</Text>
-          <Text style={styles.teksPicker}>{hargaSubtotal}</Text>
+        <View style={styles.labelRincianNoBorder}>
+          <Text style={[styles.textBold, { marginTop: 0 }]}>Rincian Harga</Text>
         </View>
-        <View style={styles.rincian}>
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Biaya Asuransi</Text>
-          <Text style={styles.teksPicker}>{hargaBiayaAsuransi}</Text>
+        <View style={styles.labelRincian}>
+          <View style={[styles.rincian, { marginTop: 0 }]}>
+            <Text style={[styles.teksPicker, { flex: 1 }]}>Harga Barang</Text>
+            <Text style={styles.teksPicker}>{hargaSubtotal}</Text>
+          </View>
+          <View style={styles.rincian}>
+            <Text style={[styles.teksPicker, { flex: 1 }]}>Ongkos Kirim</Text>
+            <Text style={styles.teksPicker}>{hargaOngkir}</Text>
+          </View>
+          <View style={styles.rincian}>
+            <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
+            <Text style={styles.teksPicker}>{hargaBiayaAsuransi}</Text>
+          </View>
         </View>
-        <View style={styles.rincian}>
-          <Text style={[styles.teksPicker, { flex: 1 }]}>Ongkos Kirim</Text>
-          <Text style={styles.teksPicker}>{hargaOngkir}</Text>
-        </View>
-        <View style={styles.rincian}>
-          <Text style={[styles.textBold, { flex: 1 }]}>Total</Text>
-          <Text style={styles.textBold}>{hargaTotal}</Text>
+        <View style={styles.labelRincianNoBorder}>
+          <View style={[styles.rincian, { marginTop: 0 }]}>
+            <Text style={[styles.textBold, { flex: 1 }]}>Total Harga</Text>
+            <Text style={styles.textBold}>{hargaTotal}</Text>
+          </View>
         </View>
       </View>
     )
@@ -312,7 +409,7 @@ class PembelianKeranjangBelanja extends React.Component {
   renderButtonKode () {
     return (
       <View style={styles.containerPicker}>
-        <Text style={[styles.teksPicker, { flex: 1 }]}>Punya Kode Voucher</Text>
+        <Text style={[styles.teksPicker, { flex: 1 }]}>Kurir Pengiriman</Text>
         <TouchableOpacity>
           <Text style={styles.textGanti}>Gunakan Kode</Text>
         </TouchableOpacity>
@@ -341,26 +438,12 @@ class PembelianKeranjangBelanja extends React.Component {
     )
   }
 
-  renderTotal () {
-    const { subtotal, biayaAsuransi, ongkir, diskon } = this.state
-    const total = parseInt(subtotal) + parseInt(biayaAsuransi) + parseInt(ongkir) - parseInt(diskon)
-    const hargaTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+  renderKeranjang () {
     return (
-      <View style={styles.totalContainer}>
-        <View style={styles.total}>
-          <Text style={styles.teksPicker}>Total Pembayaran</Text>
-          <Text style={styles.hargaTotal}>{hargaTotal}</Text>
-        </View>
-        <View style={styles.total}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Bayar Sekarang</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.total}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.textButton}>Masukkan Ke Keranjang</Text>
+        </TouchableOpacity>
       </View>
     )
   }
@@ -414,41 +497,6 @@ class PembelianKeranjangBelanja extends React.Component {
     )
   }
 
-  renderListSubKurir (rowData, section, row) {
-    const centang = row === this.state.activeSubKurir ? Images.centang : Images.closewhite
-    return (
-      <TouchableOpacity
-        style={[styles.menuLaporkan, { padding: 20 }]}
-        activeOpacity={1}
-        onPress={() => this.onPressSubKurir(row)}
-      >
-        <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.full_name}</Text>
-        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd}</Text>
-        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.cost}</Text>
-        <Image source={centang} style={styles.gambarCentang} />
-      </TouchableOpacity>
-    )
-  }
-
-  onPressSubKurir (row) {
-    const {dataCost, activeSubKurir, dataSourceSubKurir} = this.state
-    if (activeSubKurir !== row) {
-      const newDataSource = dataCost.map(data => {
-        return {...data, activeSubKurir: row === data.id}
-      })
-      this.setState({
-        dataSourceSubKurir: dataSourceSubKurir.cloneWithRows(newDataSource),
-        activeSubKurir: row
-      })
-    }
-    this.setState({
-      tipeKurir: dataCost[row].full_name,
-      idSubKurir: dataCost[row].id,
-      ongkir: dataCost[row].cost,
-      modalSubkurir: false
-    })
-  }
-
   renderModalAsuransi () {
     return (
       <Modal
@@ -489,7 +537,7 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   onPressKurir (row) {
-    const {idProduct, originId, roIdDistrict, dataKurir, activeKurir, dataSourceKurir} = this.state
+    const {idProduct, dataKurir, originId, roIdDistrict, activeKurir, dataSourceKurir} = this.state
     if (activeKurir !== row) {
       const newDataSource = dataKurir.map(data => {
         return {...data, activeKurir: row === data.id}
@@ -505,6 +553,41 @@ class PembelianKeranjangBelanja extends React.Component {
       modalKurir: false
     })
     this.props.getServices(idProduct, originId, roIdDistrict, 1)
+  }
+
+  renderListSubKurir (rowData, section, row) {
+    const centang = row === this.state.activeSubKurir ? Images.centang : Images.closewhite
+    return (
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 20 }]}
+        activeOpacity={1}
+        onPress={() => this.onPressSubKurir(row)}
+      >
+        <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.full_name}</Text>
+        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd}</Text>
+        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.cost}</Text>
+        <Image source={centang} style={styles.gambarCentang} />
+      </TouchableOpacity>
+    )
+  }
+
+  onPressSubKurir (row) {
+    const {dataCost, activeSubKurir, dataSourceSubKurir} = this.state
+    if (activeSubKurir !== row) {
+      const newDataSource = dataCost.map(data => {
+        return {...data, activeSubKurir: row === data.id}
+      })
+      this.setState({
+        dataSourceSubKurir: dataSourceSubKurir.cloneWithRows(newDataSource),
+        activeSubKurir: row
+      })
+    }
+    this.setState({
+      tipeKurir: dataCost[row].full_name,
+      idSubKurir: dataCost[row].id,
+      ongkir: dataCost[row].cost,
+      modalSubkurir: false
+    })
   }
 
   renderListAsuransi (rowData, section, row) {
@@ -536,23 +619,40 @@ class PembelianKeranjangBelanja extends React.Component {
       asuransi: dataAsuransi[row].title,
       idAsuransi: dataAsuransi[row].id,
       biayaAsuransi: dataAsuransi[row].cost,
-      modalAsuransi: false })
+      modalAsuransi: false
+    })
+  }
+
+  renderErrorAlamat (errorAlamat) {
+    if (errorAlamat) {
+      return (
+        <View style={styles.containerError}>
+          <Text style={styles.error}>Mohon isi informasi data pengiriman terlebih dahulu.</Text>
+        </View>
+      )
+    }
+    return (
+      <View style={styles.separator} />
+    )
   }
 
   render () {
+    const { dataKosong } = this.state
     return (
       <View style={styles.container}>
         <ScrollView>
           {this.renderProduct()}
           {this.renderJumlah()}
+          <View style={styles.separator} />
           {this.renderAlamat()}
+          {this.renderErrorAlamat(dataKosong)}
           {this.renderInformasiPemesanan()}
+          <View style={styles.separator} />
+          {this.renderCatatan()}
+          <View style={styles.separator} />
           {this.renderRincian()}
           <View style={styles.separator} />
-          {this.renderButtonKode()}
-          {this.renderKode()}
-          <View style={styles.separator} />
-          {this.renderTotal()}
+          {this.renderKeranjang()}
         </ScrollView>
         {this.renderModalKurir()}
         {this.renderModalSubKurir()}
@@ -565,8 +665,8 @@ class PembelianKeranjangBelanja extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataDetailProduk: state.productDetail,
-    dataServices: state.estimatedCharges,
-    dataAddress: state.primaryAddress
+    dataAddress: state.primaryAddress,
+    dataServices: state.estimatedCharges
   }
 }
 
@@ -580,4 +680,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PembelianKeranjangBelanja)
+export default connect(mapStateToProps, mapDispatchToProps)(PembelianTambahKeKeranjang)

@@ -5,12 +5,14 @@ import {
   Text,
   ListView,
   ActivityIndicator,
+  ScrollView,
+  RefreshControl,
   TouchableOpacity
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -30,26 +32,20 @@ class DiskusiProduk extends React.Component {
       price: this.props.price,
       namaProduk: this.props.namaProduk,
       page: 1,
-      loadmore: true
+      loadmore: true,
+      isRefreshing: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.newDiscussion.status === 200) {
-      this.props.getDiscussion(this.state.id, 1)
-      this.props.resetDiscussion()
-      NavigationActions.pop()
-      this.setState({
-        pertanyaan: ''
-      })
-    }
     if (nextProps.dataDiskusi.status === 200) {
       if (nextProps.dataDiskusi.discussions.length > 0) {
         console.log(nextProps.dataDiskusi.discussions)
         let data = [...this.state.data, ...nextProps.dataDiskusi.discussions]
         this.setState({
           data: data,
-          page: this.state.page + 1
+          page: this.state.page + 1,
+          isRefreshing: false
         })
       } else {
         this.setState({
@@ -57,6 +53,11 @@ class DiskusiProduk extends React.Component {
         })
       }
     }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshing: true, data: [] })
+    this.props.getDiscussion(this.state.id, 1)
   }
 
   renderProduct () {
@@ -145,9 +146,7 @@ class DiskusiProduk extends React.Component {
         />
       )
     }
-    return (
-      <Text>blm ada komentar</Text>
-    )
+    return null
   }
 
   loadMore () {
@@ -182,9 +181,22 @@ class DiskusiProduk extends React.Component {
     return (
       <View style={styles.container}>
         {this.renderProduct()}
-        <View style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+      }
+        >
           {this.renderListDiskusi()}
-        </View>
+        </ScrollView>
         {this.renderFloatImage()}
       </View>
     )

@@ -1,7 +1,7 @@
 import { put } from 'redux-saga/effects'
 import * as userActions from '../actions/user'
 import * as userApi from '../api/user'
-import { AsyncStorage } from 'react-native'
+import {AsyncStorage} from 'react-native'
 import { errorHandling } from '../config'
 
 function * register (action) {
@@ -196,6 +196,34 @@ function * getDiscussion (action) {
   }
 }
 
+function * listFavoriteStore (action) {
+  try {
+    const {data} = yield userApi.listFavoriteStore(action)
+    yield put({ type: userActions.LIST_FAVORITSTORE_SUCCESS, ...data })
+  } catch (e) {
+    console.log(e)
+    yield errorHandling(userActions.LIST_FAVORITSTORE_FAILURE, e)
+  }
+}
+
+function * sendOTPPhone (action) {
+  try {
+    const {data} = yield userApi.sendOTPPhone(action)
+    yield put({ type: userActions.SEND_PHONEOTP_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.SEND_PHONEOTP_FAILURE, e)
+  }
+}
+
+function * verifyPhone (action) {
+  try {
+    const {data} = yield userApi.verifyPhone(action)
+    yield put({ type: userActions.VERIFIY_PHONE_SUCCESS, ...data })
+  } catch (e) {
+    yield errorHandling(userActions.VERIFIY_PHONE_FAILURE, e)
+  }
+}
+
 export {
   login,
   logout,
@@ -216,5 +244,8 @@ export {
   addToBucket,
   countBucket,
   getBucket,
-  getDiscussion
+  getDiscussion,
+  listFavoriteStore,
+  verifyPhone,
+  sendOTPPhone
 }

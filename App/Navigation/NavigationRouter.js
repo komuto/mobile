@@ -35,6 +35,8 @@ import DiskusiProduk from '../Containers/DiskusiProduk'
 import DiskusiAdd from '../Containers/DiskusiAdd'
 import PembelianInfoPengguna from '../Containers/PembelianInfoPengguna'
 import PembelianKeranjangBelanja from '../Containers/PembelianKeranjangBelanja'
+import PembelianTambahKeKeranjang from '../Containers/PembelianTambahKeKeranjang'
+import KirimPesan from '../Containers/KirimPesanToko'
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -310,6 +312,20 @@ class NavigationRouter extends Component {
             key='pembeliankeranjangbelanja'
             component={PembelianKeranjangBelanja}
             title='Keranjang Belanja'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kirimpesan'
+            component={KirimPesan}
+            title='Kirim Pesan'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='pembeliantambahkekeranjang'
+            component={PembelianTambahKeKeranjang}
+            title='Proses Pembelian'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

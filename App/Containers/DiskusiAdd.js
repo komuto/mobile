@@ -1,6 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, Alert } from 'react-native'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator, ToastAndroid } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import * as productAction from '../actions/product'
@@ -16,21 +15,25 @@ class DiskusiAdd extends React.Component {
     super(props)
     this.state = {
       id: this.props.id,
-      data: [],
       foto: this.props.foto,
       price: this.props.price,
       namaProduk: this.props.namaProduk,
       pertanyaan: '',
-      height: 50
+      height: 50,
+      loading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDiskusi.status === 200) {
       this.setState({
-        pertanyaan: ''
+        pertanyaan: '',
+        loading: false
       })
-      NavigationActions.pop()
+      ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
+    } else if (nextProps.dataDiskusi.status > 200) {
+      this.setState({ loading: false })
+      Alert.alert('Pesan', nextProps.dataDiskusi.message)
     }
   }
 
@@ -68,10 +71,30 @@ class DiskusiAdd extends React.Component {
   newDiscussion () {
     const {id, pertanyaan} = this.state
     if (this.state.pertanyaan !== '') {
+      this.setState({ loading: true })
       this.props.newDiscussion(id, pertanyaan)
     } else {
       Alert.alert('Pesan', 'Pertanyaan tidak boleh kosong..')
     }
+  }
+
+  renderloading () {
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
+    if (this.state.loading) {
+      return (
+        <View style={styles.containerText}>
+          {spinner}
+        </View>
+      )
+    }
+    return (
+      <Text style={styles.textButton}>
+        Kirimkan Pertanyaan
+      </Text>
+    )
   }
 
   render () {
@@ -98,9 +121,7 @@ class DiskusiAdd extends React.Component {
           />
         </View>
         <TouchableOpacity style={styles.buttonContainer} onPress={() => this.newDiscussion()}>
-          <Text style={styles.textButton}>
-            Kirimkan Pertanyaan
-          </Text>
+          {this.renderloading()}
         </TouchableOpacity>
       </View>
     )

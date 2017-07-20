@@ -174,7 +174,7 @@ class ProductDetailScreenScreen extends React.Component {
     }
     if (nextProps.dataServis.status === 200) {
       this.setState({
-        dataServices: this.state.dataServices.concat(nextProps.dataServis.charges)
+        dataServices: nextProps.dataServis.charges
       })
     } else if (nextProps.dataServis.status === 400) {
       this.setState({
@@ -1279,7 +1279,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   beliSekarang () {
-    NavigationActions.pembelianinfopengguna({
+    NavigationActions.pembeliantambahkekeranjang({
       type: ActionConst.PUSH
     })
   }

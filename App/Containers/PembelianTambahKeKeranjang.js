@@ -17,6 +17,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import * as addressAction from '../actions/address'
 import * as serviceAction from '../actions/expedition'
 import * as cartAction from '../actions/cart'
+import * as produkAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
@@ -98,7 +99,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       modalAlamat: false,
       dataAlamat: [],
       loadingAlamat: false,
-      activeAlamat: 0
+      activeAlamat: 0,
+      modalNotifikasi: false,
+      loadingCart: false
     }
   }
 
@@ -135,15 +138,16 @@ class PembelianTambahKeKeranjang extends React.Component {
       })
     }
     if (nextProps.dataCart.status === 200) {
-      console.log('sukses')
+      this.setState({ loadingCart: 'false', modalNotifikasi: true })
     } else if (nextProps.dataCart.status > 200) {
+      this.setState({ loadingCart: 'false' })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
     }
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
-      this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
+      this.setState({ loadingCart: false, dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status > 200) {
-      this.setState({ loadingAlamat: false })
+      this.setState({ loadingCart: false, loadingAlamat: false })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }
   }
@@ -494,13 +498,27 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   renderKeranjang () {
-    return (
-      <View style={styles.total}>
-        <TouchableOpacity style={styles.button} onPress={() => this.addCart()}>
-          <Text style={styles.textButton}>Masukkan Ke Keranjang</Text>
-        </TouchableOpacity>
-      </View>
-    )
+    const spinner = this.state.loadingCart
+    ? (<View style={[styles.spinner, {backgroundColor: Colors.bluesky}]}>
+      <ActivityIndicator color={Colors.snow} size='large' />
+    </View>) : (<View />)
+    if (this.state.loadingCart) {
+      return (
+        <View style={styles.total}>
+          <View style={[styles.button, { backgroundColor: Colors.bluesky }]}>
+            {spinner}
+          </View>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.total}>
+          <TouchableOpacity style={styles.button} onPress={() => this.addCart()}>
+            <Text style={styles.textButton}>Masukkan Ke Keranjang</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
   }
 
   addCart () {
@@ -550,9 +568,53 @@ class PembelianTambahKeKeranjang extends React.Component {
     } else if (kurir !== '' && tipeKurir !== '') {
       this.setState({ errorSubKurir: false })
     }
-    if (!dataKosong && !errorKurir && !errorSubKurir) {
+    if (tipeKurir !== '' && !dataKosong && !errorKurir && !errorSubKurir) {
+      this.setState({ loadingCart: true })
       this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, ongkir)
     }
+  }
+
+  keranjang () {
+    this.props.getDetailProduk(this.state.id)
+    this.setState({ modalNotifikasi: false })
+    NavigationActions.pembeliankeranjangbelanja({
+      id: this.state.id,
+      type: ActionConst.PUSH
+    })
+  }
+
+  home () {
+    NavigationActions.backtab({
+      type: 'reset'
+    })
+  }
+
+  renderModalNotifikasi () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalNotifikasi}
+        onRequestClose={() => console.log('')}
+        >
+        <View style={styles.modalContainer}>
+          <View style={styles.containerNotifikasi}>
+            <Image source={Images.tas} style={styles.gambarNotifikasi} />
+            <Text style={styles.textNotifikasi}>Produk telah berhasil dimasukkan{'\n'}ke Keranjang Belanja</Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity style={styles.buttonKeranjang} onPress={() => this.keranjang()}>
+                <Text style={styles.textButton}>Lihat Keranjang Belanja</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity style={styles.buttonKembaliBelanja} onPress={() => this.home()}>
+                <Text style={styles.textButtonBelanja}>Kembali Belanja</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View >
+      </Modal>
+    )
   }
 
   renderModalAlamat () {
@@ -842,6 +904,7 @@ class PembelianTambahKeKeranjang extends React.Component {
         {this.renderModalKurir()}
         {this.renderModalSubKurir()}
         {this.renderModalAsuransi()}
+        {this.renderModalNotifikasi()}
       </View>
     )
   }
@@ -875,7 +938,8 @@ const mapDispatchToProps = (dispatch) => {
         address_id: idAlamat,
         is_insurance: asuransi,
         delivery_cost: ongkir
-      }))
+      })),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

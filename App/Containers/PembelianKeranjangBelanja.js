@@ -89,10 +89,6 @@ class PembelianKeranjangBelanja extends React.Component {
     }
   }
 
-  componentDidMount () {
-    this.props.getDetailProduk(93)
-  }
-
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
       const { countProduct } = this.state

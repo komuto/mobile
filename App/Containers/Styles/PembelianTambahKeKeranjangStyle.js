@@ -346,5 +346,58 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     marginRight: 10
+  },
+  containerNotifikasi: {
+    flexDirection: 'column',
+    marginRight: 30,
+    marginLeft: 30,
+    marginTop: 130,
+    marginBottom: 115,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    paddingTop: 25,
+    paddingLeft: 30,
+    paddingRight: 30,
+    paddingBottom: 25,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  gambarNotifikasi: {
+    height: 160,
+    width: 160
+  },
+  textNotifikasi: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.lightgrey,
+    letterSpacing: 0.2,
+    marginTop: 5,
+    lineHeight: 22,
+    textAlign: 'center'
+  },
+  buttonKeranjang: {
+    flex: 1,
+    backgroundColor: Colors.bluesky,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    marginTop: 20,
+    marginBottom: 15
+  },
+  textButtonBelanja: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.type.medium,
+    color: Colors.bluesky
+  },
+  buttonKembaliBelanja: {
+    flex: 1,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    borderColor: Colors.bluesky,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50
   }
 })

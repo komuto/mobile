@@ -2,6 +2,8 @@ import React from 'react'
 import { Text, View, TextInput, TouchableOpacity, Modal, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as userAction from '../actions/user'
+import * as bankAction from '../actions/bank'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -27,7 +29,30 @@ class OTPCodeScreen extends React.Component {
       focusCode3: false,
       focusCode4: false,
       focusCode5: false,
-      vefifikasiModal: false
+      vefifikasiModal: false,
+      codeOtp: [],
+      email: this.props.email,
+      namaPemilik: this.props.name,
+      nomerRek: this.props.nomerRek,
+      idBank: this.props.idBank,
+      namaCabang: this.props.cabangBank
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasiKelolatelepon') {
+      NavigationActions.nomerhape({
+        type: ActionConst.PUSH,
+        statusVerifikasi: 'true',
+        gantiNoHape: 'false',
+        nomerHape: this.state.fieldPass
+      })
+    } else if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasitelepon') {
+      this.setState({vefifikasiModal: true})
+    } else if (nextProps.createRek.state === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
+      NavigationActions.account({
+        type: ActionConst.PUSH
+      })
     }
   }
 
@@ -38,7 +63,13 @@ class OTPCodeScreen extends React.Component {
   }
 
   verifikaksi () {
-    this.setState({vefifikasiModal: true})
+    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+    this.props.verifyOtp(tempOTp)
+  }
+
+  verifikaksiKelola () {
+    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+    this.props.verifyOtp(tempOTp)
   }
 
   handleVerifikasi () {
@@ -46,6 +77,17 @@ class OTPCodeScreen extends React.Component {
     NavigationActions.infotoko({
       type: ActionConst.PUSH
     })
+  }
+
+  verifikasiCodeOtpEmail () {
+    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+    this.props.createRekening(
+      tempOTp,
+      this.state.idBank,
+      this.state.namaPemilik,
+      this.state.nomerRek,
+      this.state.namaCabang
+    )
   }
 
   modalVerifikasiSukses () {
@@ -174,26 +216,23 @@ class OTPCodeScreen extends React.Component {
             style={styles.buttonLogin}
           >
             <Text style={styles.textButtonLogin}>
-              Verifikasikan Verifikasi Nomor Telepon
+              Verifikasi Nomor Telepon
             </Text>
           </TouchableOpacity>
           <View style={styles.containerBanner}>
             <Text style={styles.textBanner}>
               Belum menerima kode aktifasi
             </Text>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => this.props.sentOTPCode()}>
               <Text style={styles.textLogin}> Klik Disini</Text>
             </TouchableOpacity>
           </View>
         </View>
       )
-    } else if (typeVerifikasi === 'verifikasitoko') {
+    } else if (typeVerifikasi === 'verifikasiKelolatelepon') {
       return (
         <View>
-          <View style={styles.notif}>
-            <Text style={styles.titleNotif}>Kode Verifikasi sedang dalam proses pengantaran{'\n'}ke alamat toko Anda.</Text>
-          </View>
-          <Text style={styles.title}>Silahkan menuliskan kode yang telah{'\n'}kami kirimkan ke alamat Toko Anda</Text>
+          <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
           <View style={styles.containerCodeStyle}>
             <View>
               <TextInput
@@ -286,13 +325,134 @@ class OTPCodeScreen extends React.Component {
             </View>
           </View>
           <TouchableOpacity
-            onPress={() => this.verifikaksi()}
+            onPress={() => this.verifikaksiKelola()}
             style={styles.buttonLogin}
           >
             <Text style={styles.textButtonLogin}>
-              Konfirmasi Kode Verifikasi
+              Verifikasi Nomor Telepon
             </Text>
           </TouchableOpacity>
+          <View style={styles.containerBanner}>
+            <Text style={styles.textBanner}>
+              Belum menerima kode aktifasi
+            </Text>
+            <TouchableOpacity onPress={() => this.props.sentOTPCode()}>
+              <Text style={styles.textLogin}> Klik Disini</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    } else if (typeVerifikasi === 'otptambahrekening') {
+      return (
+        <View>
+          <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
+          <View style={styles.containerCodeStyle}>
+            <View>
+              <TextInput
+                autoFocus
+                keyboardType='numeric'
+                maxLength={1}
+                returnKeyType='next'
+                underlineColorAndroid='transparent'
+                value={this.state.code1}
+                style={styles.codeStyle}
+                blurOnSubmit={false}
+                onChange={(event) =>
+                  this.setState({
+                    code1: event.nativeEvent.text,
+                    nextField: 2
+                  })
+                }
+              />
+            </View>
+            <View>
+              <TextInput
+                ref='2'
+                underlineColorAndroid='transparent'
+                keyboardType='numeric'
+                maxLength={1}
+                returnKeyType='next'
+                value={this.state.code2}
+                style={styles.codeStyle}
+                blurOnSubmit={false}
+                onChange={(event) =>
+                  this.setState({
+                    code2: event.nativeEvent.text,
+                    nextField: 3
+                  })
+                }
+              />
+            </View>
+            <View>
+              <TextInput
+                ref='3'
+                underlineColorAndroid='transparent'
+                keyboardType='numeric'
+                maxLength={1}
+                returnKeyType='next'
+                value={this.state.code3}
+                style={styles.codeStyle}
+                blurOnSubmit={false}
+                onChange={(event) =>
+                  this.setState({
+                    code3: event.nativeEvent.text,
+                    nextField: 4
+                  })
+                }
+              />
+            </View>
+            <View>
+              <TextInput
+                ref='4'
+                underlineColorAndroid='transparent'
+                keyboardType='numeric'
+                maxLength={1}
+                returnKeyType='next'
+                value={this.state.code4}
+                style={styles.codeStyle}
+                blurOnSubmit={false}
+                onChange={(event) =>
+                  this.setState({
+                    code4: event.nativeEvent.text,
+                    nextField: 5
+                  })
+                }
+              />
+            </View>
+            <View>
+              <TextInput
+                ref='5'
+                underlineColorAndroid='transparent'
+                keyboardType='numeric'
+                maxLength={1}
+                returnKeyType='next'
+                value={this.state.code5}
+                style={styles.codeStyle}
+                blurOnSubmit={false}
+                onChange={(event) =>
+                  this.setState({
+                    code5: event.nativeEvent.text
+                  })
+                }
+              />
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={() => this.verifikasiCodeOtpEmail()}
+            style={styles.buttonLogin}
+          >
+            <Text style={styles.textButtonLogin}>
+              Verifikasi Kode OTP
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.containerBanner}>
+            <Text style={styles.textBanner}>
+              Belum menerima kode aktifasi
+            </Text>
+            <TouchableOpacity onPress={() => this.props.sendOtpEmail()}>
+              <Text style={styles.textLogin}> Klik Disini</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )
     }
@@ -310,12 +470,26 @@ class OTPCodeScreen extends React.Component {
 }
 
 const mapStateToProps = (state) => {
+  console.log(state.bankAccount)
   return {
+    dataOTP: state.verifyPhone,
+    createRek: state.bankAccount
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    verifyOtp: (otp) => dispatch(userAction.verifyPhone({code: otp})),
+    sentOTPCode: () => dispatch(userAction.sendOTPPhone()),
+    sendOtpEmail: () => dispatch(userAction.sendOTPBank()),
+    createRekening: (code, idBank, namaPemilik, nomerRek, namaCabang) =>
+    dispatch(bankAction.addBankAccount({
+      code: code,
+      master_bank_id: idBank,
+      holder_name: namaPemilik,
+      holder_account_number: nomerRek,
+      bank_branch_office_name: namaCabang
+    }))
   }
 }
 

@@ -132,5 +132,15 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     color: Colors.bluesky,
     letterSpacing: 0.23
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

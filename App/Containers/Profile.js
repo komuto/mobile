@@ -10,7 +10,7 @@ import {
   Modal
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
-const LoginManager = require('react-native').NativeModules.FBLoginManager
+// const LoginManager = require('react-native').NativeModules.FBLoginManager
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
@@ -31,11 +31,17 @@ class Profile extends React.Component {
       token: '',
       nama: '',
       saldo: '0',
-      status: '1',
+      status: '',
       email: '',
       foto: 'default',
       isLogin: this.props.datalogin.login,
-      vefifikasiModal: false
+      vefifikasiModal: false,
+      namaToko: 'Toko',
+      fotoToko: null,
+      statusToko: '',
+      verifyNoHp: '',
+      nomerHape: '',
+      loading: true
     }
   }
 
@@ -45,14 +51,18 @@ class Profile extends React.Component {
         isLogin: false
       })
     } else if (nextProps.dataProfile.status === 200) {
-      console.log(nextProps.dataProfile)
       this.setState({
         isLogin: true,
         nama: nextProps.dataProfile.user.user.name,
         saldo: String(nextProps.dataProfile.user.user.saldo_wallet),
         foto: nextProps.dataProfile.user.user.photo || 'default',
-        status: nextProps.dataProfile.user.verifyStatus,
-        email: nextProps.dataProfile.user.user.email
+        status: nextProps.dataProfile.verifyStatus,
+        email: nextProps.dataProfile.user.user.email,
+        verifyNoHp: nextProps.dataProfile.user.user.is_phone_verified,
+        nomerHape: nextProps.dataProfile.user.user.phone_number,
+        namaToko: nextProps.dataProfile.user.store.name,
+        fotoToko: nextProps.dataProfile.user.store.logo,
+        statusToko: nextProps.dataProfile.user.store.status
       })
     } else if (nextProps.dataProfile.status > 200) {
       this.setState({
@@ -80,7 +90,7 @@ class Profile extends React.Component {
     AsyncStorage.setItem('token', '')
     this.props.stateLogin(false)
     this.props.logout()
-    LoginManager.logOut()
+    // LoginManager.logOut()
   }
 
   renderStatus () {
@@ -173,7 +183,7 @@ class Profile extends React.Component {
         {this.renderStatus()}
         <View style={styles.profileContainer}>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.handleKelolaAkun()}>
               <View style={styles.profile}>
                 {this.renderFoto()}
                 <View style={styles.namaContainer}>
@@ -184,11 +194,7 @@ class Profile extends React.Component {
                     Kelola Akun
                   </Text>
                 </View>
-                <View style={styles.notifContainer}>
-                  <Text style={styles.notif}>
-                    1
-                  </Text>
-                </View>
+                {this.verifikasiNoHp()}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </TouchableOpacity>
@@ -219,22 +225,7 @@ class Profile extends React.Component {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.dataProfileContainer}>
-          <TouchableOpacity onPress={() => this.setState({ vefifikasiModal: true })}>
-            <View style={styles.profile}>
-              <Image source={Images.toko} style={styles.imageCategory} />
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Anda belum memiliki Toko
-                </Text>
-                <Text style={styles.textKelola}>
-                  Buat Sekarang
-                </Text>
-              </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-        </View>
+        {this.rernderToko()}
         <View style={styles.dataProfileContainer}>
           <TouchableOpacity onPress={() => this.logout()}>
             <View style={styles.profile}>
@@ -253,6 +244,32 @@ class Profile extends React.Component {
     )
   }
 
+  verifikasiNoHp () {
+    if (!this.state.verifyNoHp) {
+      return (
+        <View style={styles.notifContainer}>
+          <Text style={styles.notif}>
+            !
+          </Text>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
+  handleKelolaAkun () {
+    NavigationActions.kelolaakun({
+      type: ActionConst.PUSH,
+      statusNoHp: this.state.verifyNoHp,
+      nomerHape: this.state.nomerHape,
+      name: this.state.nama,
+      email: this.state.email
+    })
+  }
+
   modalVerifikasiNoTelepon () {
     return (
       <Modal
@@ -268,7 +285,7 @@ class Profile extends React.Component {
             <Text style={styles.descModal}>
               Verifikasi Nomor Telepon Anda terlebih{'\n'}dahulu untuk melanjutkan proses{'\n'}membuka toko
             </Text>
-            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleVerifikasi()}>
+            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleBukaToko()}>
               <Text style={styles.textVerifikasiButton}>Verifikasi Sekarang</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.batalButton} onPress={() => this.setState({vefifikasiModal: false})}>
@@ -280,7 +297,68 @@ class Profile extends React.Component {
     )
   }
 
-  handleVerifikasi () {
+  rernderToko () {
+    if (this.state.statusToko === 1) {
+      return (
+        <View style={styles.dataProfileContainer}>
+          <TouchableOpacity onPress={() => this.handleCekNoHp()}>
+            <View style={styles.profile}>
+              <View style={{borderRadius: 21, backgroundColor: 'red'}}>
+                <Image source={{uri: this.state.fotoToko}} style={[styles.imageCategory]} />
+              </View>
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  {this.state.namaToko}
+                </Text>
+                <Text style={styles.textKelola}>
+                  Kelola Toko Anda
+                </Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.dataProfileContainer}>
+          <TouchableOpacity onPress={() => this.handleCekNoHp()}>
+            <View style={styles.profile}>
+              <Image source={Images.toko} style={styles.imageCategory} />
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  Anda belum memiliki Toko
+                </Text>
+                <Text style={styles.textKelola}>
+                  Buat Sekarang
+                </Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }
+
+  handleCekNoHp () {
+    if (this.state.verifyNoHp) {
+      if (this.state.statusToko === 1) {
+        NavigationActions.tokodashboard({
+          type: ActionConst.PUSH
+        })
+      } else {
+        NavigationActions.infotoko({
+          type: ActionConst.PUSH
+        })
+      }
+    } else {
+      this.setState({ vefifikasiModal: true })
+    }
+  }
+
+  handleBukaToko () {
+    this.props.sentOTP()
     this.setState({vefifikasiModal: false})
     NavigationActions.otpcode({
       type: ActionConst.PUSH,
@@ -303,14 +381,16 @@ const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     getProfile: (login) => dispatch(loginaction.getProfile()),
-    logout: (login) => dispatch(loginaction.logout())
+    logout: (login) => dispatch(loginaction.logout()),
+    sentOTP: () => dispatch(loginaction.sendOTPPhone())
   }
 }
 
 const mapStateToProps = (state) => {
   return {
     datalogin: state.isLogin,
-    dataProfile: state.profile
+    dataProfile: state.profile,
+    dataOTP: state.sendOTPPhone
   }
 }
 

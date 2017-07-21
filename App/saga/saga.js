@@ -27,6 +27,7 @@ import * as bankSaga from './bank'
 import * as catalogSaga from './catalog'
 import * as cartSaga from './cart'
 import { takeEvery } from 'redux-saga/effects'
+import { typeReq } from '../config'
 
 function * dataSaga () {
   yield takeEvery(userActions.USER_REGISTER_REQUEST, userSaga.register)
@@ -101,10 +102,11 @@ function * dataSaga () {
   yield takeEvery(addressActions.DELETE_ADDRESS_REQUEST, addressSaga.deleteAddress)
   yield takeEvery(addressActions.GET_ADDRESSDETAIL_REQUEST, addressSaga.getAddressDetail)
   yield takeEvery(addressActions.GET_LISTADDRESS_REQUEST, addressSaga.getListAddress)
-  yield takeEvery(addressActions.GET_PRIMARYADDRESS_REQUEST, addressSaga.getPrimaryAddress)
+  yield takeEvery(cartActions.ADD_TO_CART_REQUEST, cartSaga.addToCart)
   yield takeEvery(bankActions.LIST_BANK_REQUEST, bankSaga.listBank)
   yield takeEvery(bankActions.GET_BANK_REQUEST, bankSaga.getBank)
-  yield takeEvery(cartActions.ADD_TO_CART_REQUEST, cartSaga.addToCart)
+  yield takeEvery(typeReq(userActions.SEND_BANK_OTP), userSaga.sendOTPBank)
+  yield takeEvery(typeReq(bankActions.ADD_BANK_ACCOUNT), bankSaga.addBankAccount)
 }
 
 export default dataSaga

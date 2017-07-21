@@ -38,6 +38,17 @@ import PembelianKeranjangBelanja from '../Containers/PembelianKeranjangBelanja'
 import PembelianTambahKeKeranjang from '../Containers/PembelianTambahKeKeranjang'
 import KirimPesan from '../Containers/KirimPesanToko'
 import DiskusiProdukKomentar from '../Containers/DiskusiProdukKomentar'
+import TambahAlamat from '../Containers/TambahAlamatScreen'
+import EditAlamat from '../Containers/EditAlamatScreen'
+import DataAlamat from '../Containers/DataAlamatScreen'
+import DataRekening from '../Containers/DataRekeningScreen'
+import TambahRekening from '../Containers/TambahDataRekeningScreen'
+import PengaturanNotifikasi from '../Containers/PengaturanNotifikasiScreen'
+import KelolaAkunScreen from '../Containers/KelolaAkunScreen'
+import BiodataScreen from '../Containers/BiodataScreen'
+import NomerHandphoneScreen from '../Containers/NomerHandphoneScreen'
+import GantiPassword from '../Containers/GantiPasswordScreen'
+
 // custom navbar
 import CustomNavBar from './CustomNavBar'
 import { Images, Colors } from '../Themes'
@@ -334,6 +345,76 @@ class NavigationRouter extends Component {
             key='diskusiprodukkomentar'
             component={DiskusiProdukKomentar}
             title='Detail Diskusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambahalamat'
+            component={TambahAlamat}
+            title='Tambah Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='editalamat'
+            component={EditAlamat}
+            title='Tambah Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='dataalamat'
+            component={DataAlamat}
+            title='Data Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambahrekening'
+            component={TambahRekening}
+            title='Tambah Rekening'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='datarekening'
+            component={DataRekening}
+            title='Data Rekening'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pengarutannotif'
+            component={PengaturanNotifikasi}
+            title='Pengaturan Notifikasi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kelolaakun'
+            component={KelolaAkunScreen}
+            title='Kelola Akun'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='biodata'
+            component={BiodataScreen}
+            title='Biodata'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='nomerhape'
+            component={NomerHandphoneScreen}
+            title='Nomor Handphone'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='gantipassword'
+            component={GantiPassword}
+            title='Ganti Password'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

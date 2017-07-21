@@ -1,4 +1,5 @@
 import * as actions from '../actions/bank'
+import { initState, reqState, succState, failState, typeReq, typeSucc, typeFail } from '../config'
 
 const initListBank = {
   banks: [],
@@ -16,6 +17,11 @@ const initBank = {
   isLoading: false,
   isFound: false,
   isOnline: true
+}
+
+const initBankAccount = {
+  bankAccount: {},
+  ...initState()
 }
 
 function listBank (state = initListBank, action) {
@@ -75,6 +81,19 @@ function getBank (state = initBank, action) {
         isFound: false,
         isOnline: actions.isOnline
       }
+    default:
+      return state
+  }
+}
+
+export const bankAccount = (state = initBankAccount, action) => {
+  switch (action.type) {
+    case typeReq(actions.ADD_BANK_ACCOUNT):
+      return reqState(state)
+    case typeSucc(actions.ADD_BANK_ACCOUNT):
+      return succState(action, 'bankAccount')
+    case typeFail(actions.ADD_BANK_ACCOUNT):
+      return failState(action, 'bankAccount', state.bankAccount)
     default:
       return state
   }

@@ -319,6 +319,12 @@ function verifyPhone (action) {
   })
 }
 
+export const sendOTPBank = async () => {
+  const axios = authApiKomuto()
+  return await axios.post('accounts/otp/bank', {})
+    .catch((err) => { throw err })
+}
+
 function logout (action) {
   let data = {
     message: 'LOGOUT SUCCESS',

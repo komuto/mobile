@@ -72,7 +72,14 @@ const images = {
   closeGreen: require('../Images/Icons/icon-close-Green.png'),
   diskusiGrey: require('../Images/Icons/icon-diskusi-grey.png'),
   addDiskusi: require('../Images/Icons/icon-add-diskusi.png'),
-  tas: require('../Images/tas.png')
+  tas: require('../Images/tas.png'),
+  pengaturanNotif: require('../Images/Icons/pengaturannotifikasi.png'),
+  gantiPassword: require('../Images/Icons/icon-gantipassword.png'),
+  dataAlamat: require('../Images/Icons/icon-dataalamat.png'),
+  rekening: require('../Images/Icons/icon-rekening.png'),
+  noHp: require('../Images/Icons/icon-nohp.png'),
+  biodata: require('../Images/Icons/icon-biodata.png'),
+  threeDotSilver: require('../Images/Icons/3-dots-silver.png')
 }
 
 export default images

@@ -1,4 +1,5 @@
 import * as actions from '../actions/user'
+import { reqState, succState, failState, typeReq, typeSucc, typeFail } from '../config'
 
 const initUser = {
   email: '',
@@ -141,8 +142,6 @@ function auth (state = initUser, action) {
         isFound: true
       }
     case actions.USER_LOGIN_FAILURE:
-      console.log('Previous state', state)
-      console.log('returning object')
       return {
         ...state,
         email: '',
@@ -199,6 +198,37 @@ function auth (state = initUser, action) {
         status: action.code,
         isLoading: false,
         isFound: true
+      }
+    default:
+      return state
+  }
+}
+
+function getDiscussion (state = initDiscussion, action) {
+  switch (action.type) {
+    case actions.GET_USERDISCUSSION_REQUEST:
+      return {
+        ...state,
+        isLoading: true
+      }
+    case actions.GET_USERDISCUSSION_SUCCESS:
+      return {
+        ...state,
+        discussions: action.data,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: true,
+        isOnline: true
+      }
+    case actions.GET_USERDISCUSSION_FAILURE:
+      return {
+        ...state,
+        message: action.message,
+        status: action.code,
+        isLoading: false,
+        isFound: false,
+        isOnline: action.isOnline
       }
     default:
       return state
@@ -708,37 +738,6 @@ function updatePhone (state = initUpdate, action) {
   }
 }
 
-function getDiscussion (state = initDiscussion, action) {
-  switch (action.type) {
-    case actions.GET_USERDISCUSSION_REQUEST:
-      return {
-        ...state,
-        isLoading: true
-      }
-    case actions.GET_USERDISCUSSION_SUCCESS:
-      return {
-        ...state,
-        discussions: action.data,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: true,
-        isOnline: true
-      }
-    case actions.GET_USERDISCUSSION_FAILURE:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: false,
-        isOnline: action.isOnline
-      }
-    default:
-      return state
-  }
-}
-
 function sendOTPPhone (state = initValidate, action) {
   switch (action.type) {
     case actions.SEND_PHONEOTP_REQUEST:
@@ -831,6 +830,19 @@ function listFavoriteStore (state = initFavoriteStore, action) {
   }
 }
 
+export const sendOTPBank = (state = initValidate, action) => {
+  switch (action.type) {
+    case typeReq(actions.SEND_BANK_OTP):
+      return reqState(state)
+    case typeSucc(actions.SEND_BANK_OTP):
+      return succState(action)
+    case typeFail(actions.SEND_BANK_OTP):
+      return failState(action)
+    default:
+      return state
+  }
+}
+
 export {
   auth,
   verify,
@@ -849,8 +861,8 @@ export {
   getBucket,
   getPhone,
   updatePhone,
-  getDiscussion,
-  listFavoriteStore,
   sendOTPPhone,
-  verifyPhone
+  verifyPhone,
+  getDiscussion,
+  listFavoriteStore
 }

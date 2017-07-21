@@ -2,7 +2,7 @@ import { put } from 'redux-saga/effects'
 import * as userActions from '../actions/user'
 import * as userApi from '../api/user'
 import {AsyncStorage} from 'react-native'
-import { errorHandling } from '../config'
+import { errorHandling, typeSucc, typeFail } from '../config'
 
 function * register (action) {
   try {
@@ -221,6 +221,15 @@ function * verifyPhone (action) {
     yield put({ type: userActions.VERIFIY_PHONE_SUCCESS, ...data })
   } catch (e) {
     yield errorHandling(userActions.VERIFIY_PHONE_FAILURE, e)
+  }
+}
+
+export const sendOTPBank = function* () {
+  try {
+    const { data } = yield userApi.sendOTPBank()
+    yield put({ type: typeSucc(userActions.SEND_BANK_OTP), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(userActions.SEND_BANK_OTP), e)
   }
 }
 

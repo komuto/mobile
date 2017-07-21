@@ -1,0 +1,349 @@
+import React from 'react'
+import { ScrollView, View, BackAndroid, Text, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
+import { connect } from 'react-redux'
+import CameraModal from '../Components/CameraModal'
+import { Actions as NavigationActions } from 'react-native-router-flux'
+import DatePicker from 'react-native-datepicker'
+
+// Add Actions - replace 'Your' with whatever your reducer is called :)
+// import YourActions from '../Redux/YourRedux'
+import * as locationAction from '../actions/location'
+import * as storeAction from '../actions/stores'
+import * as userAction from '../actions/user'
+
+import { Images, Colors, Fonts, Metrics } from '../Themes'
+import CustomRadio from '../Components/CustomRadio'
+
+// Styles
+import styles from './Styles/BiodataScreenStyle'
+import stylesLokasi from './Styles/ProductDetailScreenStyle'
+
+class BiodataScreenScreen extends React.Component {
+
+  constructor (props) {
+    super(props)
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.state = {
+      fotoProfil: null,
+      showModalCamera: false,
+      gender: 'female',
+      index: 1,
+      dataGender: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
+      loading: false,
+      namaPemilik: '',
+      tambahanKota: [
+        {
+          'id': 0,
+          'ro_id': 0,
+          'name': 'Pilih Kota'
+        }
+      ],
+      modalKabupaten: false,
+      kabTerpilih: 'Tempat Lahir Anda',
+      idKabTerpilih: 0,
+      kabupaten: [],
+      colorPicker: Colors.labelgrey,
+      date: '',
+      notif: false
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataProfil.status === 200) {
+      this.setState({
+        fotoProfil: nextProps.dataProfil.user.user.photo,
+        namaPemilik: nextProps.dataProfil.user.user.name,
+        gender: nextProps.dataProfil.user.user.gender,
+        kabTerpilih: nextProps.dataProfil.user.user.place_of_birth,
+        date: String(nextProps.dataProfil.user.user.date_of_birth),
+        colorPicker: Colors.darkgrey
+      })
+    }
+    if (nextProps.dataKota.status === 200) {
+      this.setState({
+        kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
+      })
+    }
+    if (nextProps.dataUpdate.status === 200) {
+      this.setState({notif: true})
+    }
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
+  backButton () {
+    NavigationActions.pop()
+  }
+
+  notif () {
+    if (this.state.notif) {
+      return (
+        <View style={styles.notif}>
+          <Text style={styles.textNotif}>Berhasil memperbarui biodata Anda</Text>
+          <TouchableOpacity onPress={() => this.setState({notif: false})}>
+            <Image source={Images.closeGreen} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
+  renderCameraButton () {
+    if (this.state.fotoProfil === null) {
+      return (
+        <TouchableOpacity onPress={() => this.setState({showModalCamera: true})}>
+          <View style={styles.foto}>
+            <Image style={styles.fotoStyle} source={Images.defaultprofile} />
+          </View>
+        </TouchableOpacity>
+      )
+    }
+
+    return (
+      <TouchableOpacity onPress={() => this.setState({showModalCamera: true})}>
+        <View style={styles.foto}>
+          <Image style={styles.fotoStyle} source={{uri: this.state.fotoProfil}} />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
+  renderModalKabupaten () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalKabupaten}
+        onRequestClose={() => this.setState({ modalKabupaten: false })}
+        >
+        <View style={styles.rowContainer}>
+          <View style={styles.modalHeader} >
+            <Text style={styles.textModalTitle}>Pilih Kota Kelahiran</Text>
+            <TouchableOpacity onPress={() => this.setState({modalKabupaten: false})}>
+              <Image source={Images.close} style={styles.closeImage} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.modalSearch} >
+            <Image source={Images.searchGrey} style={styles.closeImage} />
+            <TextInput
+              style={styles.textSearch}
+              value={this.state.search}
+              keyboardType='default'
+              returnKeyType='done'
+              autoCapitalize='none'
+              autoCorrect
+              onChangeText={this.handleChangename}
+              underlineColorAndroid='transparent'
+              placeholder='Cari kota kelahiran Anda'
+            />
+          </View>
+          <ScrollView>
+            <ListView
+              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
+              renderRow={this.renderListKabupaten.bind(this)}
+              enableEmptySections
+            />
+          </ScrollView>
+        </View>
+      </Modal>
+    )
+  }
+
+  renderListKabupaten (rowData) {
+    return (
+      <TouchableOpacity
+        style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.8}
+        onPress={() => {
+          this.setState({
+            kabTerpilih: rowData.name,
+            idKabTerpilih: rowData.id,
+            colorPicker: Colors.darkgrey,
+            modalKabupaten: false })
+        }}
+      >
+        <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  addPhoto (photo) {
+    this.setState({ fotoProfil: photo, showModalCamera: false, loading: true })
+    const PicturePath = this.state.fotoProfil
+    const postData = new FormData()
+    postData.append('images', { uri: PicturePath, type: 'image/jpg', name: 'image.jpg' })
+    postData.append('type', 'store')
+    this.props.postFotoToko(postData)
+  }
+
+  handleChangename = (text) => {
+    this.setState({ namaPemilik: text })
+  }
+
+  handlingRadio (index, value) {
+    if (value.toLowerCase() === 'pria') {
+      this.setState({
+        gender: 'male'
+      })
+    } else {
+      this.setState({
+        gender: 'female'
+      })
+    }
+  }
+
+  handleUpdateProfil () {
+    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.date)
+    this.props.getProfil()
+  }
+
+  renderFoto () {
+    return (
+      <View>
+        <CameraModal
+          visible={this.state.showModalCamera}
+          onClose={() => {
+            this.setState({showModalCamera: false})
+          }}
+          onPhotoCaptured={(path) => {
+            this.addPhoto(path)
+          }}
+        />
+        <View style={styles.containerFoto}>
+          {this.renderCameraButton()}
+          <TouchableOpacity onPress={() => this.setState({showModalCamera: true})}>
+            <Text style={styles.uploadText}>Ganti Foto Profil</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.textLabel}>Nama Lengkap</Text>
+          <TextInput
+            ref='name'
+            style={styles.inputText}
+            value={this.state.namaPemilik}
+            keyboardType='default'
+            returnKeyType='next'
+            autoCapitalize='none'
+            autoCorrect
+            onChangeText={this.handleChangename}
+            underlineColorAndroid='transparent'
+            placeholder='Nama Lengkap Anda'
+          />
+          <Text style={styles.radioLabel}>Gender</Text>
+          <View style={{marginLeft: -10}}>
+            <CustomRadio
+              data={this.state.dataGender}
+              handlingRadio={(index1, value1) =>
+                this.handlingRadio(index1, value1)}
+              horizontal
+            />
+          </View>
+          <View style={styles.lokasiSeparator}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
+                <Text style={[styles.inputText, {color: this.state.colorPicker, borderBottomWidth: 0, flex: 1, marginLeft: 0}]}>{this.state.kabTerpilih}</Text>
+                <Image source={Images.down} style={styles.imagePicker} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.lokasiSeparator}>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
+                <DatePicker
+                  style={{width: Metrics.screenWidth - 24 - 40, height: 32}}
+                  date={this.state.date}
+                  mode='date'
+                  androidMode='spinner'
+                  placeholder='Tanggal Lahir Anda'
+                  format='MM/DD/YYYY'
+                  minDate='01-01-1970'
+                  maxDate='01-01-2019'
+                  showIcon={false}
+                  confirmBtnText='Confirm'
+                  cancelBtnText='Cancel'
+                  customStyles={{
+                    dateInput: {
+                      marginLeft: 0,
+                      borderBottomWidth: 0,
+                      borderColor: '#fff',
+                      alignItems: 'flex-start',
+                      height: 32
+                    },
+                    dateText: {
+                      fontFamily: Fonts.type.regular,
+                      color: Colors.darkgrey,
+                      fontSize: 14
+                    },
+                    placeholderText: {
+                      fontFamily: Fonts.type.regular,
+                      color: Colors.labelgrey,
+                      fontSize: 13,
+                      textAlign: 'left'
+                    }
+                  }}
+                  onDateChange={(date) => { this.setState({date: date}) }}
+                />
+                <Image source={Images.down} style={styles.imagePicker} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdateProfil()}>
+          <Text style={styles.textButtonNext}>
+            Simpan Perubahan
+          </Text>
+        </TouchableOpacity>
+        {this.renderModalKabupaten()}
+      </View>
+    )
+  }
+
+  render () {
+    return (
+      <View style={styles.container}>
+        {this.notif()}
+        <ScrollView>
+          {this.renderFoto()}
+        </ScrollView>
+      </View>
+    )
+  }
+}
+
+const mapStateToProps = (state) => {
+  console.log(state.profile)
+  return {
+    dataKota: state.districts,
+    dataProfil: state.profile,
+    dataPhoto: state.upload,
+    dataUpdate: state.updateProfile
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data})),
+    getKota: dispatch(locationAction.getDistrict()),
+    getProfils: dispatch(userAction.getProfile()),
+    getProfil: () => dispatch(userAction.getProfile()),
+    updateProfile: (namaLengkap, gender, tempatLahir, tanggalLahir) => dispatch(userAction.updateProfile({name: namaLengkap, gender: gender, place_of_birth: tempatLahir, date_of_birth: tanggalLahir}))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(BiodataScreenScreen)

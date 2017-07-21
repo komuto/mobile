@@ -43,7 +43,11 @@ const colors = {
   brownishGrey: '#666666',
   charcoalGreyTwo: '#484a4c',
   duckEggBlue: '#e0fae7',
-  green: '#489b66'
+  green: '#489b66',
+  coolGreyThree: '#b3b7bb',
+  teal: '#009688',
+  teal2: '#00ffe5',
+  greenish: '#45a35f'
 }
 
 export default colors

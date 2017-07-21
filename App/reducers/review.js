@@ -23,6 +23,7 @@ function getReview (state = initReview, action) {
       return {
         ...state,
         isLoading: true,
+        reviews: [],
         message: '',
         status: 0
       }

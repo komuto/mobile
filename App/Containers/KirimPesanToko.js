@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, Image, TouchableOpacity, TextInput, ToastAndroid, ActivityIndicator } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as storeAction from '../actions/stores'
@@ -28,13 +28,13 @@ class KirimPesanToko extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPesan.status === 200) {
-      Alert.alert('Pesan', 'Pesan berhasil dikirim')
+      ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
       this.setState({
         loading: false
       })
       this.props.resetSendMessage()
     } else if (nextProps.dataPesan.status > 200) {
-      Alert.alert('Pesan', nextProps.dataPesan.message)
+      ToastAndroid.show('Terjadi Kesalahan, ' + nextProps.dataPesan.message, ToastAndroid.LONG)
     }
   }
 

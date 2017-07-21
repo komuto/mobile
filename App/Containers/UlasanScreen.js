@@ -1,9 +1,9 @@
 import React from 'react'
-import { Text, View, Image, ListView, ActivityIndicator } from 'react-native'
+import { Text, View, Image, ListView, ActivityIndicator, RefreshControl } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'\
@@ -23,27 +23,28 @@ class UlasanScreenScreen extends React.Component {
       price: this.props.price,
       namaToko: this.props.namaToko,
       page: 1,
-      loadmore: true
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.id !== this.state.id) {
-      this.setState({
-        id: nextProps.id
-      })
-    }
     if (nextProps.dataReview.status === 200) {
       if (nextProps.dataReview.reviews.length > 0) {
         console.log(nextProps.dataReview.reviews)
         let data = [...this.state.data, ...nextProps.dataReview.reviews]
         this.setState({
           data: data,
-          page: this.state.page + 1
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true
         })
       } else {
         this.setState({
-          loadmore: false
+          loadmore: false,
+          isLoading: false
         })
       }
     }
@@ -77,10 +78,18 @@ class UlasanScreenScreen extends React.Component {
   }
 
   loadMore () {
-    const { id, page, loadmore } = this.state
-    if (loadmore) {
-      this.props.reviewAction(id, page)
+    const { id, page, loadmore, isLoading } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.reviewAction(id, page)
+      }
     }
+  }
+
+  refresh = () => {
+    const { id } = this.state
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.props.reviewAction(id, 1)
   }
 
   listViewUlasan () {
@@ -88,6 +97,17 @@ class UlasanScreenScreen extends React.Component {
       <ListView
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
         onEndReached={this.loadMore.bind(this)}
         renderFooter={() => {
           if (this.state.loadmore) {

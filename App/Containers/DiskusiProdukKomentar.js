@@ -6,20 +6,21 @@ import {
   ListView,
   ActivityIndicator,
   RefreshControl,
-  TouchableOpacity
+  TextInput,
+  Alert,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { Images, Colors } from '../Themes'
+import { Colors } from '../Themes'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
-import styles from './Styles/DiskusiProdukStyle'
+import styles from './Styles/DiskusiProdukKomentarStyle'
 
-class DiskusiProduk extends React.Component {
+class DiskusiProdukKomentar extends React.Component {
 
   constructor (props) {
     super(props)
@@ -30,18 +31,20 @@ class DiskusiProduk extends React.Component {
       foto: this.props.foto,
       price: this.props.price,
       namaProduk: this.props.namaProduk,
+      discussionId: this.props.discussionId,
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false
+      isLoading: false,
+      komentar: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDiskusi.status === 200) {
-      if (nextProps.dataDiskusi.discussions.length > 0) {
-        console.log(nextProps.dataDiskusi.discussions)
-        let data = [...this.state.data, ...nextProps.dataDiskusi.discussions]
+      if (nextProps.dataDiskusi.comments.length > 0) {
+        console.log(nextProps.dataDiskusi.comments)
+        let data = [...this.state.data, ...nextProps.dataDiskusi.comments]
         this.setState({
           data: data,
           page: this.state.page + 1,
@@ -57,24 +60,21 @@ class DiskusiProduk extends React.Component {
         })
       }
     }
+    if (nextProps.tambahKomentar.status === 200) {
+      ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
+      this.setState({ data: [], komentar: '' })
+      this.props.getComment(this.state.id, this.state.discussionId, 1)
+      this.props.resetNewComment()
+    }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.getDiscussion(this.state.id, 1)
+    this.props.getComment(this.state.id, this.state.discussionId, 1)
   }
 
-  detailDiskusi (produkId, id, page) {
-    this.props.getComment(produkId, id, page)
-    NavigationActions.diskusiprodukkomentar({
-      id: this.state.id,
-      type: ActionConst.PUSH,
-      price: this.state.price,
-      foto: this.state.foto,
-      namaProduk: this.state.namaProduk,
-      discussionId: id,
-      data: []
-    })
+  handlePertanyaan = (text) => {
+    this.setState({ komentar: text })
   }
 
   renderProduct () {
@@ -122,18 +122,9 @@ class DiskusiProduk extends React.Component {
           <View style={styles.foto} />
           <View style={styles.infoContainerRow}>
             <Text style={styles.questionContainer}>
-              {rowData.question}
+              {rowData.content}
             </Text>
           </View>
-        </View>
-        <View style={styles.komentarContainer}>
-          <View style={styles.foto} />
-          <TouchableOpacity style={styles.infoContainerRow} onPress={() => this.detailDiskusi(this.state.id, rowData.id, 1)}>
-            <Image source={Images.diskusiGrey} style={styles.logoDiskusi} />
-            <Text style={styles.textKomentarContainer}>
-              {rowData.count_comments} komentar
-            </Text>
-          </TouchableOpacity>
         </View>
       </View>
     )
@@ -145,6 +136,7 @@ class DiskusiProduk extends React.Component {
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.data)}
           renderRow={this.renderRow.bind(this)}
+          style={{ marginBottom: 50 }}
           refreshControl={
             <RefreshControl
               refreshing={this.state.isRefreshing}
@@ -178,33 +170,40 @@ class DiskusiProduk extends React.Component {
   }
 
   loadMore () {
-    const { id, page, loadmore, isLoading } = this.state
+    const { id, discussionId, page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
         this.setState({ isLoading: true })
-        this.props.getDiscussion(id, page)
+        this.props.getComment(id, discussionId, page)
       }
     }
   }
 
-  addDiskusi () {
-    NavigationActions.tambahDiskusi({
-      type: ActionConst.PUSH,
-      id: this.state.id,
-      foto: this.state.foto,
-      price: this.state.price,
-      namaProduk: this.props.namaProduk
-    })
+  kirimKomentar () {
+    const { komentar, id, discussionId } = this.state
+    if (komentar !== '') {
+      this.props.newComment(id, discussionId, komentar)
+    } else {
+      Alert.alert('Pesan', 'Mohon tulis komentar anda dahulu')
+    }
   }
 
   renderFloatImage () {
     return (
-      <TouchableOpacity
-        style={styles.floatImageContainer}
-        onPress={() => this.addDiskusi()}
-      >
-        <Image source={Images.addDiskusi} style={styles.floatImage} />
-      </TouchableOpacity>
+      <View style={styles.floatImageContainer}>
+        <TextInput
+          style={styles.textInput}
+          value={this.state.komentar}
+          keyboardType='default'
+          autoCapitalize='none'
+          autoCorrect
+          blurOnSubmit
+          onSubmitEditing={() => this.kirimKomentar()}
+          onChangeText={this.handlePertanyaan}
+          underlineColorAndroid='transparent'
+          placeholder='Tulis Komentar'
+        />
+      </View>
     )
   }
 
@@ -221,17 +220,17 @@ class DiskusiProduk extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataDiskusi: state.discussions,
-    newDiscussion: state.newDiscussion
+    dataDiskusi: state.comments,
+    tambahKomentar: state.newComment
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
-    resetDiscussion: () => dispatch(productAction.resetDiscussion()),
-    getComment: (productId, id, page) => dispatch(productAction.getComment({ productId: productId, id: id, page: page }))
+    getComment: (productId, id, page) => dispatch(productAction.getComment({ productId: productId, id: id, page: page })),
+    newComment: (productId, id, content) => dispatch(productAction.newComment({ productId: productId, id: id, content: content })),
+    resetNewComment: () => dispatch(productAction.resetNewComment())
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiskusiProduk)
+export default connect(mapStateToProps, mapDispatchToProps)(DiskusiProdukKomentar)

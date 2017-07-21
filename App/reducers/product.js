@@ -247,6 +247,7 @@ function getDiscussion (state = initDiscussion, action) {
     case productActions.GET_DISCUSSION_REQUEST:
       return {
         ...state,
+        status: 0,
         discussions: [],
         isLoading: true
       }

@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   Modal,
   ListView,
-  TextInput
+  TextInput,
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -17,7 +19,7 @@ import * as serviceAction from '../actions/expedition'
 import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 // Styles
 import styles from './Styles/PembelianTambahKeKeranjangStyle'
@@ -41,18 +43,18 @@ class PembelianTambahKeKeranjang extends React.Component {
       foto: this.props.dataDetailProduk.detail.images[0].file,
       namaProduk: this.props.dataDetailProduk.detail.product.name,
       countProduct: 1,
-      alamat: 'Alamat Pengiriman',
-      jalan: 'Kemanggisan Jakarta Barat, Palmerah',
-      nama: 'Dwinawan Hariwijaya',
-      provinsi: 'Jakarta Barat DKI Jakarta, 55673',
+      alamat: '',
+      jalan: '',
+      nama: '',
+      provinsi: '',
       idProvinsi: '',
       kabupaten: '',
       idKabupaten: '',
       roIdDistrict: '',
       idDistrict: '',
       district: '',
-      email: 'dwinawan@gmail.com',
-      telepon: 'Telp: 0821 - 1310 - 1585',
+      email: '',
+      telepon: '',
       kodepos: '',
       weight: this.props.dataDetailProduk.detail.product.weight,
       kurir: '',
@@ -92,40 +94,57 @@ class PembelianTambahKeKeranjang extends React.Component {
       height: 50,
       errorKurir: false,
       errorSubKurir: false,
-      idAlamat: ''
+      idAlamat: '',
+      modalAlamat: false,
+      dataAlamat: [],
+      loadingAlamat: false,
+      activeAlamat: 0
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataAddress.status === 200) {
       console.log(nextProps.dataAddress.address)
-      this.setState({
-        idAlamat: nextProps.dataAddress.address.id,
-        alamat: nextProps.dataAddress.address.alias_address,
-        jalan: nextProps.dataAddress.address.address,
-        nama: nextProps.dataAddress.address.name,
-        roIdDistrict: nextProps.dataAddress.address.district.ro_id,
-        idDistrict: nextProps.dataAddress.address.district.id,
-        district: nextProps.dataAddress.address.district.name,
-        provinsi: nextProps.dataAddress.address.province.name,
-        idProvinsi: nextProps.dataAddress.address.province.id,
-        kabupaten: nextProps.dataAddress.address.subDistrict.name,
-        idKabupaten: nextProps.dataAddress.address.subDistrict.id,
-        kodepos: nextProps.dataAddress.address.postal_code,
-        email: nextProps.dataAddress.address.email,
-        telepon: 'Telp: ' + nextProps.dataAddress.address.phone_number
-      })
       if (nextProps.dataAddress.address.address === '' || nextProps.dataAddress.address.address === null || nextProps.dataAddress.address.address === undefined) {
         this.setState({
           statusAlamat: false
         })
+      } else {
+        this.setState({
+          idAlamat: nextProps.dataAddress.address.id,
+          alamat: nextProps.dataAddress.address.alias_address,
+          jalan: nextProps.dataAddress.address.address,
+          nama: nextProps.dataAddress.address.name,
+          roIdDistrict: nextProps.dataAddress.address.district.ro_id,
+          idDistrict: nextProps.dataAddress.address.district.id,
+          district: nextProps.dataAddress.address.district.name,
+          provinsi: nextProps.dataAddress.address.province.name,
+          idProvinsi: nextProps.dataAddress.address.province.id,
+          kabupaten: nextProps.dataAddress.address.subDistrict.name,
+          idKabupaten: nextProps.dataAddress.address.subDistrict.id,
+          kodepos: nextProps.dataAddress.address.postal_code,
+          email: nextProps.dataAddress.address.email,
+          telepon: 'Telp: ' + nextProps.dataAddress.address.phone_number
+        })
+        this.props.resetStatusAddress()
       }
     }
     if (nextProps.dataServices.status === 200) {
-      console.log(nextProps.dataServices.charges)
       this.setState({
         dataCost: nextProps.dataServices.charges
       })
+    }
+    if (nextProps.dataCart.status === 200) {
+      console.log('sukses')
+    } else if (nextProps.dataCart.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataAddressList.status === 200) {
+      console.log(nextProps.dataAddressList.address)
+      this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
+    } else if (nextProps.dataAddressList.status > 200) {
+      this.setState({ loadingAlamat: false })
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }
   }
 
@@ -199,6 +218,11 @@ class PembelianTambahKeKeranjang extends React.Component {
     })
   }
 
+  getListAlamat () {
+    this.setState({ modalAlamat: true, loadingAlamat: true })
+    this.props.getListAlamat()
+  }
+
   renderAlamat () {
     const { jalan, nama, provinsi, telepon, statusAlamat, kodepos, kabupaten, district, email, dataKosong } = this.state
     if (dataKosong) {
@@ -218,7 +242,7 @@ class PembelianTambahKeKeranjang extends React.Component {
         <View style={styles.alamat}>
           <View style={styles.titleInfo}>
             <Text style={[styles.textNama, { flex: 1 }]}> Informasi Data Pengiriman </Text>
-            <TouchableOpacity onPress={() => NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})}>
+            <TouchableOpacity onPress={() => this.getListAlamat()}>
               <Text style={styles.textGanti}>Ganti</Text>
             </TouchableOpacity>
           </View>
@@ -531,6 +555,45 @@ class PembelianTambahKeKeranjang extends React.Component {
     }
   }
 
+  renderModalAlamat () {
+    let viewAlamat
+    const spinner = this.state.loadingAlamat
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color={Colors.bluesky} size='large' />
+    </View>) : (<View />)
+    if (this.state.loadingAlamat) {
+      viewAlamat = (<View>{spinner}</View>)
+    } else {
+      viewAlamat = (
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.dataAlamat)}
+          renderRow={this.renderListAlamat.bind(this)}
+          enableEmptySections
+        />
+      )
+    }
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalAlamat}
+        onRequestClose={() => this.setState({ modalAlamat: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalAlamat: false })}>
+          <ScrollView style={styles.menuProvinsiContainer}>
+            <View style={styles.headerListView}>
+              <Text style={styles.headerTextListView}>Pilih Alamat Pengiriman</Text>
+            </View>
+            {viewAlamat}
+            <TouchableOpacity style={styles.buttonAlamat}>
+              <Text style={styles.textGanti}>+ Tambah Alamat Baru</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
   renderModalKurir () {
     return (
       <Modal
@@ -602,6 +665,45 @@ class PembelianTambahKeKeranjang extends React.Component {
         </TouchableOpacity>
       </Modal>
     )
+  }
+
+  renderListAlamat (rowData, section, row) {
+    const centang = row === this.state.activeAlamat ? Images.centang : null
+    return (
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 20 }]}
+        onPress={() => this.onPressAlamat(row)}
+      >
+        <View style={styles.listAlamatContainer}>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.alias_address}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.address}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.district.name}, {rowData.province.name}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.postal_code}</Text>
+        </View>
+        <Image source={centang} style={styles.gambarCentang} />
+      </TouchableOpacity>
+    )
+  }
+
+  onPressAlamat (row) {
+    const { dataAlamat } = this.state
+    this.setState({
+      modalAlamat: false,
+      idAlamat: dataAlamat[row].id,
+      alamat: dataAlamat[row].alias_address,
+      jalan: dataAlamat[row].address,
+      nama: dataAlamat[row].name,
+      roIdDistrict: dataAlamat[row].district.ro_id,
+      idDistrict: dataAlamat[row].district.id,
+      district: dataAlamat[row].district.name,
+      provinsi: dataAlamat[row].province.name,
+      idProvinsi: dataAlamat[row].province.id,
+      kabupaten: dataAlamat[row].subDistrict.name,
+      idKabupaten: dataAlamat[row].subDistrict.id,
+      kodepos: dataAlamat[row].postal_code,
+      email: dataAlamat[row].email,
+      telepon: 'Telp: ' + dataAlamat[row].phone_number
+    })
   }
 
   renderListKurir (rowData, section, row) {
@@ -736,6 +838,7 @@ class PembelianTambahKeKeranjang extends React.Component {
           <View style={styles.separator} />
           {this.renderKeranjang()}
         </ScrollView>
+        {this.renderModalAlamat()}
         {this.renderModalKurir()}
         {this.renderModalSubKurir()}
         {this.renderModalAsuransi()}
@@ -748,16 +851,20 @@ const mapStateToProps = (state) => {
   return {
     dataDetailProduk: state.productDetail,
     dataAddress: state.primaryAddress,
-    dataServices: state.estimatedCharges
+    dataAddressList: state.listAddress,
+    dataServices: state.estimatedCharges,
+    dataCart: state.cart
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getAddress: dispatch(addressAction.getPrimaryAddress()),
+    resetStatusAddress: () => dispatch(addressAction.resetStatusAddress()),
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
+    getListAlamat: () => dispatch(addressAction.getListAddress()),
     addCart: (productId, expeditionId, expeditionServiceId, countProduct, catatan, idAlamat, asuransi, ongkir) =>
       dispatch(cartAction.addToCart({
         product_id: productId,

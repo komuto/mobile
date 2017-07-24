@@ -1,13 +1,5 @@
-export const GET_WISHLIST_REQUEST = 'GET_WISHLIST_REQUEST'
-export const GET_WISHLIST_SUCCESS = 'GET_WISHLIST_SUCCESS'
-export const GET_WISHLIST_FAILURE = 'GET_WISHLIST_FAILURE'
+import { buildAction, typeReq } from '../config'
 
-function wishlist () {
-  return {
-    type: GET_WISHLIST_REQUEST
-  }
-}
+export const GET_WISHLIST = 'GET_WISHLIST'
 
-export {
-    wishlist
-}
+export const wishlist = () => buildAction(typeReq(GET_WISHLIST))

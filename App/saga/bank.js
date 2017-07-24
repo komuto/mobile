@@ -6,28 +6,26 @@ import { errorHandling, typeSucc, typeFail } from '../config'
 function * listBank (action) {
   try {
     const {data} = yield apis.listBank(action)
-    yield put({ type: actions.LIST_BANK_SUCCESS, ...data })
+    yield put({ type: typeSucc(actions.LIST_BANK), ...data })
   } catch (e) {
-    yield errorHandling(actions.LIST_BANK_FAILURE, e)
+    yield errorHandling(typeFail(actions.LIST_BANK), e)
   }
 }
 
 function * getBank (action) {
   try {
     const {data} = yield apis.getBank(action)
-    yield put({ type: actions.GET_BANK_SUCCESS, ...data })
+    yield put({ type: typeSucc(actions.GET_BANK), ...data })
   } catch (e) {
-    yield errorHandling(actions.GET_BANK_FAILURE, e)
+    yield errorHandling(typeFail(actions.GET_BANK), e)
   }
 }
 
 export const addBankAccount = function* (action) {
-  console.log(action)
   try {
     const { data } = yield apis.addBankAccount(action)
     yield put({ type: typeSucc(actions.ADD_BANK_ACCOUNT), ...data })
   } catch (e) {
-    console.log(e)
     yield errorHandling(typeFail(actions.ADD_BANK_ACCOUNT), e)
   }
 }

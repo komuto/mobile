@@ -27,12 +27,10 @@ class Facebook extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.datalogin.message)
     } else if (nextProps.datalogin.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.datalogin.message)
     }
   }
 

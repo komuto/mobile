@@ -7,14 +7,18 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  ListView
+  ListView,
+  ToastAndroid,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
-
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as filterAction from '../actions/location'
+import * as productAction from '../actions/product'
+import * as addressAction from '../actions/address'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/PembelianInfoPenggunaStyle'
 
@@ -24,6 +28,7 @@ class PembelianInfoPengguna extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
+      id: this.props.dataDetailProduk.detail.product.id,
       namaAlamat: '',
       nama: '',
       nomorHp: '',
@@ -69,7 +74,8 @@ class PembelianInfoPengguna extends React.Component {
       modalProvinsi: false,
       modalKabupaten: false,
       modalKecamatan: false,
-      modalKelurahan: false
+      modalKelurahan: false,
+      loadingCart: false
     }
   }
 
@@ -93,6 +99,18 @@ class PembelianInfoPengguna extends React.Component {
       this.setState({
         dataKelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
       })
+    }
+    if (nextProps.dataCreateAlamat.status === 200) {
+      this.setState({
+        loadingCart: false
+      })
+      ToastAndroid.show('Alamat berhasil dibuat', ToastAndroid.LONG)
+      NavigationActions.pembeliantambahkekeranjang({
+        type: ActionConst.PUSH,
+        statusAlamat: true
+      })
+    } else if (nextProps.dataCreateAlamat.status > 200) {
+      ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.LONG)
     }
   }
 
@@ -271,8 +289,56 @@ class PembelianInfoPengguna extends React.Component {
     )
   }
 
+  buatAlamat () {
+    this.setState({
+      loadingCart: true
+    })
+    const {
+      namaAlamat,
+      nama,
+      nomorHp,
+      alamat,
+      kodepos,
+      idProvinsi,
+      idKabupaten,
+      idKecamatan,
+      idKelurahan
+  } = this.state
+    this.props.createAddress(
+      idProvinsi,
+      idKabupaten,
+      idKecamatan,
+      idKelurahan,
+      nama,
+      nomorHp,
+      kodepos,
+      alamat,
+      namaAlamat,
+      true
+    )
+    this.props.getListAlamat()
+  }
+
   render () {
-    const { provinsi, kabupaten, kecamatan, kelurahan, namaAlamat, nama, nomorHp, alamat, kodepos } = this.state
+    const { provinsi, kabupaten, kecamatan, kelurahan, namaAlamat, nama, nomorHp, alamat, kodepos, loadingCart } = this.state
+    const spinner = loadingCart
+    ? (<View style={[styles.spinner, {backgroundColor: Colors.bluesky}]}>
+      <ActivityIndicator color={Colors.snow} size='large' />
+    </View>) : (<View />)
+    let tombol
+    if (this.state.loadingCart) {
+      tombol = (
+        <View style={styles.button}>
+          {spinner}
+        </View>
+      )
+    } else {
+      tombol = (
+        <TouchableOpacity style={styles.button} onPress={() => this.buatAlamat()}>
+          <Text style={styles.textButton}>Simpan Alamat</Text>
+        </TouchableOpacity>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -378,9 +444,7 @@ class PembelianInfoPengguna extends React.Component {
             />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.textButton}>Simpan Alamat</Text>
-            </TouchableOpacity>
+            {tombol}
           </View>
         </ScrollView>
         {this.renderModalProvinsi()}
@@ -397,16 +461,45 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataVillage: state.villages
+    dataVillage: state.villages,
+    dataCreateAlamat: state.addAddress,
+    dataDetailProduk: state.productDetail
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
     getProvinsi: dispatch(filterAction.getProvince()),
     getKota: (id) => dispatch(filterAction.getDistrict({ province_id: id })),
     getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
-    getVillage: (id) => dispatch(filterAction.getVillage({ sub_district_id: id }))
+    getVillage: (id) => dispatch(filterAction.getVillage({ sub_district_id: id })),
+    getListAlamat: () => dispatch(addressAction.getListAddress()),
+    createAddress: (
+      provinceId,
+      districtId,
+      subDistrictId,
+      villageId,
+      name,
+      phoneNumber,
+      postalCode,
+      address,
+      aliasAddress,
+      isPrimary
+    ) => dispatch(addressAction.addAddress(
+      {
+        province_id: provinceId,
+        district_id: districtId,
+        sub_district_id: subDistrictId,
+        village_id: villageId,
+        name: name,
+        phone_number: phoneNumber,
+        postal_code: postalCode,
+        address: address,
+        alias_address: aliasAddress,
+        is_primary: isPrimary
+      }
+    ))
   }
 }
 

@@ -1,4 +1,4 @@
-import { publicApiKomuto } from './api'
+import { publicApiKomuto, authApiKomuto } from './api'
 
 function listBank (action) {
   let axios = publicApiKomuto()
@@ -24,6 +24,12 @@ function getBank (action) {
   .catch(function (err) {
     throw (err)
   })
+}
+
+export const addBankAccount = async (action) => {
+  const axios = authApiKomuto()
+  return await axios.post('accounts/banks', { ...action })
+    .catch((err) => { throw err })
 }
 
 export {

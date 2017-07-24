@@ -49,6 +49,7 @@ export const initState = () => {
 export const reqState = (state) => {
   return {
     ...state,
+    status: 0,
     isLoading: true
   }
 }
@@ -58,10 +59,10 @@ export const reqState = (state) => {
  * @param action {object}
  * @param data {string} Prop name
  */
-export const succState = (action, data = false) => {
+export const succState = (action, data) => {
   const state = {
     message: action.message,
-    state: action.code,
+    status: action.code,
     isLoading: false,
     isFound: true,
     isOnline: true
@@ -71,15 +72,28 @@ export const succState = (action, data = false) => {
 }
 
 /**
+ * Build success state by keeping previous data
+ * @param action {object}
+ * @param data {string} Prop name
+ * @param value {array} previous data
+ */
+export const succKeepState = (action, data, value) => {
+  return {
+    ...succState(action),
+    [data]: [action.data, ...value]
+  }
+}
+
+/**
  * Build failure state
  * @param action {object}
  * @param data {string} Prop name
  * @param value {*} value for the prop
  */
-export const failState = (action, data = false, value = false) => {
+export const failState = (action, data, value = false) => {
   const state = {
     message: action.message,
-    state: action.code,
+    status: action.code,
     isLoading: false,
     isFound: false,
     isOnline: action.isOnline
@@ -96,6 +110,38 @@ export const buildAction = (type, params = false) => {
     }
   }
   return { type }
+}
+
+/**
+ * Build reducer
+ * @param state {object}
+ * @param action {object}
+ * @param type {string}
+ * @param name {string} additional field name
+ * @param keep {bool} Keep previous state
+ */
+export const buildReducer = (state, action, type, name, keep = false) => {
+  switch (action.type) {
+    case typeReq(type):
+      return reqState(state)
+    case typeSucc(type):
+      return !keep ? succState(action, name) : succKeepState(action, name, state[name])
+    case typeFail(type):
+      return failState(action, name, state[name])
+    default:
+      return state
+  }
+}
+
+/**
+ * Remove [REQUEST, SUCCESS, FAILURE] from action type
+ * @param type {string}
+ */
+export const buildType = (type) => {
+  type = type.split('_')
+  if (type[type.length - 1] === 'RESET') return type
+  type.splice(type.length - 1, 1)
+  return type.join('_')
 }
 
 export const typeReq = type => `${type}_REQUEST`

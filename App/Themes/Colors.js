@@ -47,7 +47,8 @@ const colors = {
   coolGreyThree: '#b3b7bb',
   teal: '#009688',
   teal2: '#00ffe5',
-  greenish: '#45a35f'
+  greenish: '#45a35f',
+  lightgrey2: '#edf3f8'
 }
 
 export default colors

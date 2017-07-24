@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Alert,
+  ToastAndroid,
   ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -43,12 +43,12 @@ class LoginScreen extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.datalogin.message)
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     } else if (nextProps.datalogin.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.datalogin.message)
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
   }
   handleChangeEmail = (text) => {

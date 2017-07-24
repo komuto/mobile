@@ -5,7 +5,7 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Alert,
+  ToastAndroid,
   AsyncStorage,
   Modal
 } from 'react-native'
@@ -51,6 +51,7 @@ class Profile extends React.Component {
         isLogin: false
       })
     } else if (nextProps.dataProfile.status === 200) {
+      console.log(nextProps.dataProfile)
       this.setState({
         isLogin: true,
         nama: nextProps.dataProfile.user.user.name,
@@ -68,7 +69,7 @@ class Profile extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Login gagal', nextProps.dataProfile.message)
+      ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
     }
   }
 

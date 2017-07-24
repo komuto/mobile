@@ -69,9 +69,7 @@ function getListAddress (action) {
 
 function getPrimaryAddress (action) {
   let axios = authApiKomuto()
-  return axios.get('users/address', {
-    ...action
-  })
+  return axios.get('users/address', {})
   .then(function (data) {
     return data
   })

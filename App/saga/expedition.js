@@ -1,52 +1,50 @@
 import { put } from 'redux-saga/effects'
 import * as expeditionActions from '../actions/expedition'
 import * as expeditionApi from '../api/expedition'
-import { errorHandling } from '../config'
+import { errorHandling, typeSucc, typeFail } from '../config'
 
 function * getExpedition (action) {
   try {
     const {data} = yield expeditionApi.getExpedition(action)
-    yield put({ type: expeditionActions.GET_EXPEDITION_SUCCESS, ...data })
+    yield put({ type: typeSucc(expeditionActions.GET_EXPEDITION), ...data })
   } catch (e) {
-    yield errorHandling(expeditionActions.GET_EXPEDITION_FAILURE, e)
+    yield errorHandling(typeFail(expeditionActions.GET_EXPEDITION), e)
   }
 }
 
 function * getServices (action) {
   try {
     const {data} = yield expeditionApi.getServices(action)
-    yield put({ type: expeditionActions.GET_EXPEDITIONSERVICES_SUCCESS, ...data })
+    yield put({ type: typeSucc(expeditionActions.GET_EXPEDITION_SERVICES), ...data })
   } catch (e) {
-    yield errorHandling(expeditionActions.GET_EXPEDITIONSERVICES_FAILURE, e)
+    yield errorHandling(typeFail(expeditionActions.GET_EXPEDITION_SERVICES), e)
   }
 }
 
 function * estimatedCharge (action) {
   try {
     const {data} = yield expeditionApi.estimatedShipping(action)
-    yield put({ type: expeditionActions.ESTIMATED_SHIPPING_SUCCESS, ...data })
+    yield put({ type: typeSucc(expeditionActions.ESTIMATED_SHIPPING), ...data })
   } catch (e) {
-    console.log(e)
-    yield errorHandling(expeditionActions.ESTIMATED_SHIPPING_FAILURE, e)
+    yield errorHandling(typeFail(expeditionActions.ESTIMATED_SHIPPING), e)
   }
 }
 
 function * getShippingCharge (action) {
   try {
     const {data} = yield expeditionApi.getShippingCharge(action)
-    yield put({ type: expeditionActions.GET_SHIPPINGCHARGE_SUCCESS, ...data })
+    yield put({ type: typeSucc(expeditionActions.GET_SHIPPING_CHARGE), ...data })
   } catch (e) {
-    yield errorHandling(expeditionActions.GET_SHIPPINGCHARGE_FAILURE, e)
+    yield errorHandling(typeFail(expeditionActions.GET_SHIPPING_CHARGE), e)
   }
 }
 
 function * updateExpedition (action) {
   try {
     const {data} = yield expeditionApi.updateExpedition(action)
-    yield put({ type: expeditionActions.UPDATE_EXPEDITION_SUCCESS, ...data })
+    yield put({ type: typeSucc(expeditionActions.UPDATE_EXPEDITION), ...data })
   } catch (e) {
-    console.log(e)
-    yield errorHandling(expeditionActions.UPDATE_EXPEDITION_FAILURE, e)
+    yield errorHandling(typeFail(expeditionActions.UPDATE_EXPEDITION), e)
   }
 }
 

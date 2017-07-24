@@ -105,13 +105,26 @@ class PembelianTambahKeKeranjang extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.props.getListAlamat()
+  }
+
   componentWillReceiveProps (nextProps) {
+    if (nextProps.dataCreateAlamat.status === 200) {
+      this.props.resetCreateStatus()
+    }
     if (nextProps.dataAddress.status === 200) {
       console.log(nextProps.dataAddress.address)
       if (nextProps.dataAddress.address.address === '' || nextProps.dataAddress.address.address === null || nextProps.dataAddress.address.address === undefined) {
-        this.setState({
-          statusAlamat: false
-        })
+        if (this.state.dataAlamat.length > 0) {
+          this.setState({
+            statusAlamat: true
+          })
+        } else {
+          this.setState({
+            statusAlamat: false
+          })
+        }
       } else {
         this.setState({
           idAlamat: nextProps.dataAddress.address.id,
@@ -138,9 +151,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       })
     }
     if (nextProps.dataCart.status === 200) {
-      this.setState({ loadingCart: 'false', modalNotifikasi: true })
+      this.setState({ loadingCart: false, modalNotifikasi: true })
     } else if (nextProps.dataCart.status > 200) {
-      this.setState({ loadingCart: 'false' })
+      this.setState({ loadingCart: false })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
     }
     if (nextProps.dataAddressList.status === 200) {
@@ -242,6 +255,12 @@ class PembelianTambahKeKeranjang extends React.Component {
         </View>
       )
     } else if (statusAlamat) {
+      let provinsiText
+      if (provinsi === '') {
+        provinsiText = null
+      } else {
+        provinsiText = (<Text style={styles.textAlamat}> {provinsi}, {kodepos} </Text>)
+      }
       return (
         <View style={styles.alamat}>
           <View style={styles.titleInfo}>
@@ -261,7 +280,7 @@ class PembelianTambahKeKeranjang extends React.Component {
             <Text style={styles.textAlamat}> {jalan} </Text>
             <Text style={styles.textAlamat}> {kabupaten} </Text>
             <Text style={styles.textAlamat}> {district} </Text>
-            <Text style={styles.textAlamat}> {provinsi}, {kodepos} </Text>
+            {provinsiText}
           </View>
         </View>
       )
@@ -510,7 +529,7 @@ class PembelianTambahKeKeranjang extends React.Component {
           </View>
         </View>
       )
-    } else {
+    } else if (!this.state.loadingCart) {
       return (
         <View style={styles.total}>
           <TouchableOpacity style={styles.button} onPress={() => this.addCart()}>
@@ -575,11 +594,52 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   keranjang () {
-    this.props.getDetailProduk(this.state.id)
+    const {
+      alamat,
+      jalan,
+      nama,
+      roIdDistrict,
+      idDistrict,
+      district,
+      provinsi,
+      idProvinsi,
+      kabupaten,
+      idKabupaten,
+      kodepos,
+      email,
+      expeditionFee,
+      ongkir,
+      catatan,
+      asuransi,
+      countProduct,
+      kurir,
+      tipeKurir,
+      telepon } = this.state
+    // this.props.getDetailProduk(this.state.id)
     this.setState({ modalNotifikasi: false })
     NavigationActions.pembeliankeranjangbelanja({
       id: this.state.id,
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      alamat: alamat,
+      jalan: jalan,
+      nama: nama,
+      roIdDistrict: roIdDistrict,
+      idDistrict: idDistrict,
+      district: district,
+      provinsi: provinsi,
+      idProvinsi: idProvinsi,
+      kabupaten: kabupaten,
+      idKabupaten: idKabupaten,
+      kodepos: kodepos,
+      email: email,
+      catatan: catatan,
+      ongkir: ongkir,
+      countProduct: countProduct,
+      asuransi: asuransi,
+      kurir: kurir,
+      tipeKurir: tipeKurir,
+      expeditionFee: expeditionFee,
+      telepon: telepon
     })
   }
 
@@ -647,7 +707,13 @@ class PembelianTambahKeKeranjang extends React.Component {
               <Text style={styles.headerTextListView}>Pilih Alamat Pengiriman</Text>
             </View>
             {viewAlamat}
-            <TouchableOpacity style={styles.buttonAlamat}>
+            <TouchableOpacity
+              style={styles.buttonAlamat}
+              onPress={() => {
+                NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})
+                this.setState({ modalAlamat: false })
+              }}
+            >
               <Text style={styles.textGanti}>+ Tambah Alamat Baru</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -916,7 +982,8 @@ const mapStateToProps = (state) => {
     dataAddress: state.primaryAddress,
     dataAddressList: state.listAddress,
     dataServices: state.estimatedCharges,
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataCreateAlamat: state.addAddress
   }
 }
 
@@ -939,7 +1006,8 @@ const mapDispatchToProps = (dispatch) => {
         is_insurance: asuransi,
         delivery_cost: ongkir
       })),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    resetCreateStatus: () => dispatch(cartAction.addToCartReset())
   }
 }
 

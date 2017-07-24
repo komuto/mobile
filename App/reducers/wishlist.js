@@ -1,46 +1,16 @@
-import * as wishlistAction from '../actions/wishlist'
+import * as actions from '../actions/wishlist'
+import { buildReducer, buildType, initState } from '../config'
 
 const initWishlist = {
-  status: '',
-  message: '',
   wishlist: [],
-  isOnline: true,
-  isFound: false,
-  isLoading: false
+  ...initState()
 }
 
 function wishlist (state = initWishlist, action) {
-  switch (action.type) {
-    case wishlistAction.GET_WISHLIST_REQUEST:
-      return {
-        ...state,
-        message: '',
-        status: '',
-        wishlist: [],
-        isOnline: true,
-        isLoading: true,
-        isFound: false
-      }
-    case wishlistAction.GET_WISHLIST_SUCCESS:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        wishlist: action.data,
-        isOnline: true,
-        isFound: true,
-        isLoading: false
-      }
-    case wishlistAction.GET_WISHLIST_FAILURE:
-      return {
-        ...state,
-        message: action.message,
-        status: action.code,
-        wishlist: [],
-        isOnline: action.isOnline,
-        isFound: false,
-        isLoading: false
-      }
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_WISHLIST:
+      return buildReducer(state, action, type, 'wishlist')
     default:
       return state
   }

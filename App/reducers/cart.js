@@ -1,37 +1,18 @@
 import * as actions from '../actions/cart'
+import { buildReducer, buildType, initState } from '../config'
 
 const initCart = {
   cart: [],
-  message: '',
-  status: 0,
-  isLoading: false,
-  isFound: false,
-  isOnline: true
+  ...initState()
 }
 
 export const cart = (state = initCart, action) => {
-  switch (action.type) {
-    case actions.ADD_TO_CART_REQUEST:
-      return {
-        ...state,
-        isLoading: true
-      }
-    case actions.ADD_TO_CART_SUCCESS:
-      return {
-        cart: action.data,
-        message: action.message,
-        status: action.code,
-        isLoading: false,
-        isFound: true,
-        isOnline: true
-      }
-    case actions.ADD_TO_CART_FAILURE:
-      return {
-        ...state,
-        isLoading: false,
-        isFound: true,
-        isOnline: action.isOnline
-      }
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.ADD_TO_CART:
+      return buildReducer(state, action, type, 'cart')
+    case actions.ADD_TO_CART_RESET:
+      return initCart
     default:
       return state
   }

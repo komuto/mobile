@@ -6,12 +6,11 @@ import {
   Image,
   TouchableOpacity,
   Modal,
-  ListView
+  ListView,
+  TextInput
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import * as produkAction from '../actions/product'
-import * as addressAction from '../actions/address'
 import * as serviceAction from '../actions/expedition'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -34,36 +33,37 @@ class PembelianKeranjangBelanja extends React.Component {
       dataSourceKurir: ds.cloneWithRows(dataKurir),
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
-      idProduct: '',
-      price: 100000,
-      foto: 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-      namaProduk: 'Sepatu',
-      countProduct: 1,
-      weight: '',
-      originId: '',
-      alamat: 'Alamat Pengiriman',
-      jalan: 'Kemanggisan Jakarta Barat, Palmerah',
-      nama: 'Dwinawan Hariwijaya',
-      roIdDistrict: '',
-      idDistrict: '',
-      district: '',
-      idProvinsi: '',
-      provinsi: 'Jakarta Barat DKI Jakarta, 55673',
-      kabupaten: '',
-      idKabupaten: '',
-      kodepos: '',
-      email: '',
-      telepon: 'Telp: 0821 - 1310 - 1585',
-      kurir: '',
-      tipeKurir: '',
-      asuransi: 'Tidak',
-      catatan: 'Saya pesan barang yang warna merah',
-      subtotal: '250000',
-      biayaAsuransi: '0',
-      ongkir: '0',
-      diskon: '20000',
-      total: '0',
-      dataKurir: [],
+      idProduct: this.props.dataDetailProduk.detail.product.id,
+      price: this.props.dataDetailProduk.detail.product.price,
+      foto: this.props.dataDetailProduk.detail.images[0].file,
+      namaProduk: this.props.dataDetailProduk.detail.product.name,
+      countProduct: this.props.countProduct,
+      weight: this.props.dataDetailProduk.detail.product.weight,
+      originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+      alamat: this.props.alamat,
+      jalan: this.props.jalan,
+      nama: this.props.name,
+      roIdDistrict: this.props.roIdDistrict,
+      idDistrict: this.props.idDistrict,
+      district: this.props.district,
+      idProvinsi: this.props.idProvinsi,
+      provinsi: this.props.provinsi,
+      kabupaten: this.props.kabupaten,
+      idKabupaten: this.props.idKabupaten,
+      kodepos: this.props.kodepos,
+      email: this.props.email,
+      telepon: this.props.telepon,
+      kurir: this.props.kurir,
+      tipeKurir: this.props.tipeKurir,
+      asuransi: this.props.asuransi,
+      catatan: this.props.catatan,
+      subtotal: parseInt(this.props.dataDetailProduk.detail.product.price) * parseInt(this.props.countProduct),
+      biayaAsuransi: (parseInt(this.props.expeditionFee) * parseInt(this.props.countProduct) * parseInt(this.props.dataDetailProduk.detail.product.price)) / 100,
+      expeditionFee: this.props.expeditionFee,
+      ongkir: this.props.ongkir,
+      diskon: '0',
+      total: this.props.totalHarga,
+      dataKurir: this.props.dataDetailProduk.detail.expeditions,
       dataCost: [],
       dataAsuransi: [
         {
@@ -85,44 +85,14 @@ class PembelianKeranjangBelanja extends React.Component {
       idAsuransi: 0,
       modalKurir: false,
       modalSubkurir: false,
-      modalAsuransi: false
+      modalAsuransi: false,
+      modalPromo: false,
+      statusPromo: false,
+      kodeVoucher: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataDetailProduk.status === 200) {
-      const { countProduct } = this.state
-      console.log(nextProps.dataDetailProduk.detail)
-      this.setState({
-        idProduct: nextProps.dataDetailProduk.detail.product.id,
-        dataKurir: nextProps.dataDetailProduk.detail.expeditions,
-        price: nextProps.dataDetailProduk.detail.product.price,
-        foto: nextProps.dataDetailProduk.detail.images[0].file,
-        weight: nextProps.dataDetailProduk.detail.product.weight,
-        namaProduk: nextProps.dataDetailProduk.detail.product.name,
-        originId: nextProps.dataDetailProduk.detail.store.district.ro_id,
-        subtotal: nextProps.dataDetailProduk.detail.product.price * countProduct,
-        diskon: String((nextProps.dataDetailProduk.detail.product.price * nextProps.dataDetailProduk.detail.product.discount) / 100)
-      })
-    }
-    if (nextProps.dataAddress.status === 200) {
-      console.log(nextProps.dataAddress.address)
-      this.setState({
-        alamat: nextProps.dataAddress.address.alias_address,
-        jalan: nextProps.dataAddress.address.address,
-        nama: nextProps.dataAddress.address.name,
-        roIdDistrict: nextProps.dataAddress.address.district.ro_id,
-        idDistrict: nextProps.dataAddress.address.district.id,
-        district: nextProps.dataAddress.address.district.name,
-        provinsi: nextProps.dataAddress.address.province.name,
-        idProvinsi: nextProps.dataAddress.address.province.id,
-        kabupaten: nextProps.dataAddress.address.subDistrict.name,
-        idKabupaten: nextProps.dataAddress.address.subDistrict.id,
-        kodepos: nextProps.dataAddress.address.postal_code,
-        email: nextProps.dataAddress.address.email,
-        telepon: 'Telp: ' + nextProps.dataAddress.address.phone_number
-      })
-    }
     if (nextProps.dataServices.status === 200) {
       console.log(nextProps.dataServices.charges)
       this.setState({
@@ -308,8 +278,8 @@ class PembelianKeranjangBelanja extends React.Component {
   renderButtonKode () {
     return (
       <View style={styles.containerPicker}>
-        <Text style={[styles.teksPicker, { flex: 1 }]}>Punya Kode Voucher</Text>
-        <TouchableOpacity>
+        <Text style={[styles.teksPicker, { flex: 1, marginTop: 0 }]}>Punya Kode Voucher</Text>
+        <TouchableOpacity onPress={() => this.setState({ modalPromo: true })}>
           <Text style={styles.textGanti}>Gunakan Kode</Text>
         </TouchableOpacity>
       </View>
@@ -317,6 +287,7 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   renderKode () {
+    const { statusDiskon } = this.state
     const { diskon } = this.state
     const hargaDiskon = MaskService.toMask('money', diskon, {
       unit: 'Rp ',
@@ -324,17 +295,21 @@ class PembelianKeranjangBelanja extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    return (
-      <View style={styles.rincianContainer}>
-        <View style={styles.rincianDiskon}>
-          <Text style={[styles.teksPicker, { flex: 1, marginTop: 0 }]}>Belanja Enak</Text>
-          <TouchableOpacity>
-            <Text style={styles.textHapus}>Batal</Text>
-          </TouchableOpacity>
+    if (statusDiskon) {
+      return (
+        <View style={styles.rincianContainer}>
+          <View style={styles.rincianDiskon}>
+            <Text style={[styles.teksPicker, { flex: 1, marginTop: 0 }]}>Belanja Enak</Text>
+            <TouchableOpacity>
+              <Text style={styles.textHapus}>Batal</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.diskon}>- {hargaDiskon}</Text>
         </View>
-        <Text style={styles.diskon}>- {hargaDiskon}</Text>
-      </View>
-    )
+      )
+    } else {
+      return null
+    }
   }
 
   renderTotal () {
@@ -535,6 +510,52 @@ class PembelianKeranjangBelanja extends React.Component {
       modalAsuransi: false })
   }
 
+  handleCatatan = (text) => {
+    this.setState({ kodeVoucher: text })
+  }
+
+  renderModalPromo () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalPromo}
+        onRequestClose={() => this.setState({ modalPromo: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalPromo: false })}>
+          <View style={styles.containerModalPromo}>
+            <View style={styles.headerModalPromo}>
+              <Text style={[styles.textBold, { flex: 1, marginTop: -3 }]}>Gunakan Kode Voucher</Text>
+              <TouchableOpacity onPress={() => this.setState({ modalPromo: false })}>
+                <Image source={Images.close} style={styles.imageOperator} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.bodyModalPromo}>
+              <Text style={[styles.textAlamat, { fontSize: 14 }]}>Masukkan Kode Voucher</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={styles.inputKode}
+                  value={this.state.kodeVoucher}
+                  keyboardType='default'
+                  autoCapitalize='characters'
+                  onChangeText={this.handleCatatan}
+                  underlineColorAndroid='transparent'
+                />
+              </View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.buttonVoucher}>
+                  <Text style={styles.textButton}>
+                    Gunakan Kode Voucher
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -553,6 +574,7 @@ class PembelianKeranjangBelanja extends React.Component {
         {this.renderModalKurir()}
         {this.renderModalSubKurir()}
         {this.renderModalAsuransi()}
+        {this.renderModalPromo()}
       </View>
     )
   }
@@ -568,8 +590,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    getAddress: dispatch(addressAction.getPrimaryAddress()),
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     }))

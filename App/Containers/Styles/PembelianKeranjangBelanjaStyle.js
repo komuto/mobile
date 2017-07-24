@@ -248,5 +248,53 @@ export default StyleSheet.create({
     height: 24,
     top: -2,
     marginRight: 15
+  },
+  containerModalPromo: {
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 200,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    flexDirection: 'column'
+  },
+  headerModalPromo: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.lightgrey2
+  },
+  bodyModalPromo: {
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    padding: 20,
+    flexDirection: 'column',
+    backgroundColor: Colors.snow
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 1
+  },
+  inputKode: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    marginLeft: -3,
+    flex: 1
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 20
+  },
+  buttonVoucher: {
+    height: 50,
+    borderRadius: 5,
+    flex: 1,
+    backgroundColor: Colors.bluesky,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 })

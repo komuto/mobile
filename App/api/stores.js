@@ -70,10 +70,8 @@ function storeExpeditionList (action) {
 
 function photoUpload (action) {
   let axios = authApiKomuto()
-  return axios({
-    method: 'POST',
-    url: 'images', // url alamat upload
-    data: action.data
+  return axios.post('images', {
+    ...action
   })
   .then(function (data) {
     return data

@@ -47,6 +47,8 @@ class Home extends React.Component {
       var kategoriInital = newKategori.filter(function (country) {
         return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
       })
+      console.log(nextProps.dataKategori.categories)
+      console.log(nextProps.dataProduk.products)
       this.setState({
         kategoriSource: kategoriInital,
         productSource: nextProps.dataProduk.products,
@@ -175,7 +177,7 @@ class Home extends React.Component {
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount}%

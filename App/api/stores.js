@@ -133,6 +133,12 @@ function sendMessageStore (action) {
   })
 }
 
+export const getOwnStore = async () => {
+  const axios = authApiKomuto()
+  return await axios.get('users/profile')
+    .catch((err) => { throw err })
+}
+
 export {
     getStores,
     createStore,

@@ -17,3 +17,4 @@ export const getAddressDetail = params => buildAction(typeReq(GET_ADDRESS_DETAIL
 export const getListAddress = () => buildAction(typeReq(GET_LIST_ADDRESS))
 export const resetStatusAddress = () => buildAction(STATUS_ADDRESS_RESET)
 export const getPrimaryAddress = params => buildAction(typeReq(GET_PRIMARY_ADDRESS), params)
+

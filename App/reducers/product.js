@@ -47,7 +47,7 @@ function getProduct (state = initDetailProduct, action) {
     case actions.GET_PRODUCT:
       return buildReducer(state, action, type, 'detail')
     case actions.GET_PRODUCT_RESET:
-      return initDetailProduct
+      return {...state, status: 0}
     default:
       return state
   }

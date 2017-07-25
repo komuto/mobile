@@ -152,16 +152,18 @@ class PembelianTambahKeKeranjang extends React.Component {
     }
     if (nextProps.dataCart.status === 200) {
       this.setState({ loadingCart: false, modalNotifikasi: true })
+      this.props.resetCreateStatus()
     } else if (nextProps.dataCart.status > 200) {
       this.setState({ loadingCart: false })
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
+      this.props.resetCreateStatus()
     }
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
       this.setState({ loadingCart: false, dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status > 200) {
       this.setState({ loadingCart: false, loadingAlamat: false })
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }
   }
 
@@ -241,7 +243,7 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   renderAlamat () {
-    const { jalan, nama, provinsi, telepon, statusAlamat, kodepos, kabupaten, district, email, dataKosong } = this.state
+    const { jalan, nama, provinsi, telepon, statusAlamat, kodepos, kabupaten, district, email, dataKosong, dataAlamat } = this.state
     if (dataKosong) {
       return (
         <View style={{ flexDirection: 'column' }}>
@@ -253,6 +255,16 @@ class PembelianTambahKeKeranjang extends React.Component {
             <Image source={Images.rightArrow} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
+      )
+    } else if (statusAlamat && dataAlamat.length > 0 && jalan === '') {
+      return (
+        <TouchableOpacity
+          style={styles.containerIsiInfo}
+          onPress={() => this.getListAlamat()}
+        >
+          <Text style={styles.buttonIsiInfo}>Isi Informasi Data Pengiriman</Text>
+          <Image source={Images.rightArrow} style={styles.imagePicker} />
+        </TouchableOpacity>
       )
     } else if (statusAlamat) {
       let provinsiText
@@ -614,6 +626,7 @@ class PembelianTambahKeKeranjang extends React.Component {
       countProduct,
       kurir,
       tipeKurir,
+      idKurir,
       telepon } = this.state
     // this.props.getDetailProduk(this.state.id)
     this.setState({ modalNotifikasi: false })
@@ -634,6 +647,7 @@ class PembelianTambahKeKeranjang extends React.Component {
       email: email,
       catatan: catatan,
       ongkir: ongkir,
+      idKurir: idKurir,
       countProduct: countProduct,
       asuransi: asuransi,
       kurir: kurir,

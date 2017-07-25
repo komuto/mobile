@@ -201,6 +201,7 @@ export default StyleSheet.create({
   },
   menuProvinsiContainer: {
     position: 'absolute',
+    backgroundColor: Colors.snow,
     bottom: 20,
     maxHeight: (Metrics.screenHeight * 3) / 4
   },
@@ -296,5 +297,26 @@ export default StyleSheet.create({
     backgroundColor: Colors.bluesky,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  spinner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.snow,
+    height: 50,
+    opacity: 0.5
+  },
+  buttonAlamat: {
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderTopColor: Colors.silver,
+    backgroundColor: Colors.white
+  },
+  listAlamatContainer: {
+    flexDirection: 'column',
+    flex: 1,
+    marginRight: 10
   }
 })

@@ -11,3 +11,12 @@ export const addToCart = function* (action) {
     yield errorHandling(typeFail(actions.ADD_TO_CART), e)
   }
 }
+
+export const getPromo = function* (action) {
+  try {
+    const { data } = yield apis.getPromo(action)
+    yield put({ type: typeSucc(actions.GET_PROMO), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(actions.GET_PROMO), e)
+  }
+}

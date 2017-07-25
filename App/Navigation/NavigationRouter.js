@@ -48,6 +48,8 @@ import KelolaAkunScreen from '../Containers/KelolaAkunScreen'
 import BiodataScreen from '../Containers/BiodataScreen'
 import NomerHandphoneScreen from '../Containers/NomerHandphoneScreen'
 import GantiPassword from '../Containers/GantiPasswordScreen'
+import Pembayaran from '../Containers/Pembayaran'
+import PembayaranKeranjangBelanja from '../Containers/PembayaranKeranjangBelanja'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -415,6 +417,20 @@ class NavigationRouter extends Component {
             key='gantipassword'
             component={GantiPassword}
             title='Ganti Password'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaran'
+            component={Pembayaran}
+            title='Pembayaran'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarankeranjangbelanja'
+            component={PembayaranKeranjangBelanja}
+            title='Detail Pembelian'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

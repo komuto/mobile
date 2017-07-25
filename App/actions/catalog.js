@@ -10,7 +10,7 @@ export const DELETE_CATALOG = 'DELETE_CATALOG'
 export const createCatalog = params => buildAction(typeReq(CREATE_CATALOG), params)
 export const resetCreateCatalog = () => buildAction(CREATE_CATALOG_RESET)
 export const updateCatalog = params => buildAction(typeReq(UPDATE_CATALOG), params)
-export const getCatalog = () => buildAction(typeReq(GET_CATALOG))
-export const getListCatalog = params => buildAction(typeReq(GET_LIST_CATALOG), params)
+export const getCatalog = params => buildAction(typeReq(GET_CATALOG), params)
+export const getListCatalog = () => buildAction(typeReq(GET_LIST_CATALOG))
 export const deleteCatalog = params => buildAction(typeReq(DELETE_CATALOG), params)
 

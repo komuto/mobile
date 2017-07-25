@@ -66,6 +66,16 @@ function * sendMessageStore (action) {
   }
 }
 
+export const getOwnStore = function* () {
+  try {
+    const { data } = yield storeApi.getOwnStore()
+    data.data = data.data.store
+    yield put({ type: typeSucc(storeActions.GET_OWN_STORE), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(storeActions.GET_OWN_STORE), e)
+  }
+}
+
 export {
   getStores,
   createStore,

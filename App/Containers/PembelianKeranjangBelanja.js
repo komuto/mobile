@@ -7,14 +7,19 @@ import {
   TouchableOpacity,
   Modal,
   ListView,
-  TextInput
+  TextInput,
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import * as serviceAction from '../actions/expedition'
+import * as addressAction from '../actions/address'
+import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 // Styles
 import styles from './Styles/PembelianKeranjangBelanjaStyle'
@@ -68,19 +73,17 @@ class PembelianKeranjangBelanja extends React.Component {
       dataAsuransi: [
         {
           'id': 1,
-          'title': 'Ya',
-          'cost': '8000'
+          'title': 'Ya'
         },
         {
           'id': 0,
-          'title': 'Tidak',
-          'cost': '0'
+          'title': 'Tidak'
         }
       ],
       activeKurir: 0,
       activeSubKurir: 0,
       activeAsuransi: 0,
-      idKurir: '',
+      idKurir: this.props.idKurir,
       idSubKurir: '',
       idAsuransi: 0,
       modalKurir: false,
@@ -88,8 +91,17 @@ class PembelianKeranjangBelanja extends React.Component {
       modalAsuransi: false,
       modalPromo: false,
       statusPromo: false,
-      kodeVoucher: ''
+      kodeVoucher: '',
+      modalAlamat: false,
+      loadingAlamat: false,
+      dataAlamat: []
     }
+    this.props.getServices(
+      this.props.dataDetailProduk.detail.product.id,
+      this.props.dataDetailProduk.detail.store.district.ro_id,
+      this.props.roIdDistrict,
+      1
+    )
   }
 
   componentWillReceiveProps (nextProps) {
@@ -98,6 +110,13 @@ class PembelianKeranjangBelanja extends React.Component {
       this.setState({
         dataCost: nextProps.dataServices.charges
       })
+    }
+    if (nextProps.dataAddressList.status === 200) {
+      console.log(nextProps.dataAddressList.address)
+      this.setState({ loadingCart: false, dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
+    } else if (nextProps.dataAddressList.status > 200) {
+      this.setState({ loadingCart: false, loadingAlamat: false })
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }
   }
 
@@ -182,7 +201,7 @@ class PembelianKeranjangBelanja extends React.Component {
           <Text style={styles.textAlamat}> {provinsi} </Text>
           <Text style={styles.textAlamat}> {telepon} </Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.getListAlamat()}>
           <Text style={styles.textGanti}>Ganti</Text>
         </TouchableOpacity>
       </View>
@@ -226,15 +245,21 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   renderRincian () {
-    const { subtotal, biayaAsuransi, ongkir } = this.state
-    const total = parseInt(subtotal) + parseInt(biayaAsuransi) + parseInt(ongkir)
+    const { subtotal, ongkir, asuransi } = this.state
+    let temp2
+    if (asuransi === 'Ya') {
+      temp2 = (parseInt(this.state.expeditionFee) * parseInt(this.state.countProduct) * parseInt(this.state.price)) / 100
+    } else {
+      temp2 = 0
+    }
+    const total = parseInt(subtotal) + parseInt(temp2) + parseInt(ongkir)
     const hargaSubtotal = MaskService.toMask('money', subtotal, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
-    const hargaBiayaAsuransi = MaskService.toMask('money', biayaAsuransi, {
+    const hargaBiayaAsuransi = MaskService.toMask('money', temp2, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -503,15 +528,111 @@ class PembelianKeranjangBelanja extends React.Component {
         activeAsuransi: row
       })
     }
+    let temp2
+    if (String(row) === '0') {
+      temp2 = (parseInt(this.state.expeditionFee) * parseInt(this.state.countProduct) * parseInt(this.state.price)) / 100
+    } else if (String(row) === '1') {
+      temp2 = 0
+    }
+
     this.setState({
       asuransi: dataAsuransi[row].title,
       idAsuransi: dataAsuransi[row].id,
-      biayaAsuransi: dataAsuransi[row].cost,
+      biayaAsuransi: temp2,
       modalAsuransi: false })
   }
 
   handleCatatan = (text) => {
     this.setState({ kodeVoucher: text })
+  }
+
+  renderModalAlamat () {
+    let viewAlamat
+    const spinner = this.state.loadingAlamat
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color={Colors.bluesky} size='large' />
+    </View>) : (<View />)
+    if (this.state.loadingAlamat) {
+      viewAlamat = (<View>{spinner}</View>)
+    } else {
+      viewAlamat = (
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.dataAlamat)}
+          renderRow={this.renderListAlamat.bind(this)}
+          enableEmptySections
+        />
+      )
+    }
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalAlamat}
+        onRequestClose={() => this.setState({ modalAlamat: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalAlamat: false })}>
+          <ScrollView style={styles.menuProvinsiContainer}>
+            <View style={styles.headerListView}>
+              <Text style={styles.headerTextListView}>Pilih Alamat Pengiriman</Text>
+            </View>
+            {viewAlamat}
+            <TouchableOpacity
+              style={styles.buttonAlamat}
+              onPress={() => {
+                NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})
+                this.setState({ modalAlamat: false })
+              }}
+            >
+              <Text style={styles.textGanti}>+ Tambah Alamat Baru</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
+  renderListAlamat (rowData, section, row) {
+    const centang = row === this.state.activeAlamat ? Images.centang : null
+    return (
+      <TouchableOpacity
+        style={[styles.menuLaporkan, { padding: 20 }]}
+        onPress={() => this.onPressAlamat(row)}
+      >
+        <View style={styles.listAlamatContainer}>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.alias_address}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.address}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.district.name}, {rowData.province.name}</Text>
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.postal_code}</Text>
+        </View>
+        <Image source={centang} style={styles.gambarCentang} />
+      </TouchableOpacity>
+    )
+  }
+
+  getListAlamat () {
+    this.setState({ modalAlamat: true, loadingAlamat: true })
+    this.props.getListAlamat()
+  }
+
+  onPressAlamat (row) {
+    const { dataAlamat } = this.state
+    this.setState({
+      modalAlamat: false,
+      idAlamat: dataAlamat[row].id,
+      alamat: dataAlamat[row].alias_address,
+      jalan: dataAlamat[row].address,
+      nama: dataAlamat[row].name,
+      roIdDistrict: dataAlamat[row].district.ro_id,
+      idDistrict: dataAlamat[row].district.id,
+      district: dataAlamat[row].district.name,
+      provinsi: dataAlamat[row].province.name,
+      idProvinsi: dataAlamat[row].province.id,
+      kabupaten: dataAlamat[row].subDistrict.name,
+      idKabupaten: dataAlamat[row].subDistrict.id,
+      kodepos: dataAlamat[row].postal_code,
+      email: dataAlamat[row].email,
+      telepon: 'Telp: ' + dataAlamat[row].phone_number
+    })
   }
 
   renderModalPromo () {
@@ -543,7 +664,7 @@ class PembelianKeranjangBelanja extends React.Component {
                 />
               </View>
               <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.buttonVoucher}>
+                <TouchableOpacity style={styles.buttonVoucher} onPress={() => this.cekVoucher()}>
                   <Text style={styles.textButton}>
                     Gunakan Kode Voucher
                   </Text>
@@ -554,6 +675,11 @@ class PembelianKeranjangBelanja extends React.Component {
         </TouchableOpacity>
       </Modal>
     )
+  }
+
+  cekVoucher () {
+    const { kodeVoucher } = this.state
+    this.props.getPromo(kodeVoucher)
   }
 
   render () {
@@ -575,6 +701,7 @@ class PembelianKeranjangBelanja extends React.Component {
         {this.renderModalSubKurir()}
         {this.renderModalAsuransi()}
         {this.renderModalPromo()}
+        {this.renderModalAlamat()}
       </View>
     )
   }
@@ -584,7 +711,8 @@ const mapStateToProps = (state) => {
   return {
     dataDetailProduk: state.productDetail,
     dataServices: state.estimatedCharges,
-    dataAddress: state.primaryAddress
+    dataAddress: state.primaryAddress,
+    dataAddressList: state.listAddress
   }
 }
 
@@ -592,7 +720,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
-    }))
+    })),
+    getListAlamat: () => dispatch(addressAction.getListAddress()),
+    getPromo: (kodepromo) => dispatch(cartAction.getPromo(kodepromo))
   }
 }
 

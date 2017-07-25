@@ -20,6 +20,11 @@ const initUpload = {
   ...initState()
 }
 
+const initOwnStore = {
+  ownStore: {},
+  ...initState()
+}
+
 function stores (state = initStore, action) {
   const type = buildType(action.type)
   switch (type) {
@@ -87,6 +92,16 @@ function sendMessageStore (state = initStore, action) {
       return buildReducer(state, action, type, 'store')
     case actions.MESSAGE_STORE_RESET:
       return initStore
+    default:
+      return state
+  }
+}
+
+export const getOwnStore = (state = initOwnStore, action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_OWN_STORE:
+      return buildReducer(state, action, type, 'ownStore')
     default:
       return state
   }

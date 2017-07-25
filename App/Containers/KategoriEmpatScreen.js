@@ -78,13 +78,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
         loadingKategori: false,
         loadingProduk: false
       })
-    } else if (nextProps.dataKategori.status > 200) {
+    } else if (nextProps.dataProduk.status > 200) {
       this.setState({
         loadingKategori: true,
         loadingProduk: true
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataKategori.status === 'ENOENT') {
+    } else if (nextProps.dataProduk.status === 'ENOENT') {
       this.setState({
         loadingKategori: true,
         loadingProduk: true

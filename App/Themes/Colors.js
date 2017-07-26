@@ -48,7 +48,11 @@ const colors = {
   teal: '#009688',
   teal2: '#00ffe5',
   greenish: '#45a35f',
-  lightgrey2: '#edf3f8'
+  lightgrey2: '#edf3f8',
+  black: '#000000',
+  boldOrange: '#d69515',
+  lightBlue: '#edf7ff',
+  blue: '#5996c9'
 }
 
 export default colors

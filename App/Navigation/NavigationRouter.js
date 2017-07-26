@@ -50,6 +50,9 @@ import NomerHandphoneScreen from '../Containers/NomerHandphoneScreen'
 import GantiPassword from '../Containers/GantiPasswordScreen'
 import Pembayaran from '../Containers/Pembayaran'
 import PembayaranKeranjangBelanja from '../Containers/PembayaranKeranjangBelanja'
+import PembayaranTransferBank from '../Containers/PembayaranTransferBank'
+import PembayaranTransferBankDetail from '../Containers/PembayaranTransferBankDetail'
+import PembayaranDetailBarang from '../Containers/PembayaranDetailBarang'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -431,6 +434,27 @@ class NavigationRouter extends Component {
             key='pembayarankeranjangbelanja'
             component={PembayaranKeranjangBelanja}
             title='Detail Pembelian'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarantransferbank'
+            component={PembayaranTransferBank}
+            title='Transfer Bank'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarantransferbankdetail'
+            component={PembayaranTransferBankDetail}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarandetailbarang'
+            component={PembayaranDetailBarang}
+            title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

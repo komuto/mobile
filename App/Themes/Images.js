@@ -79,7 +79,10 @@ const images = {
   rekening: require('../Images/Icons/icon-rekening.png'),
   noHp: require('../Images/Icons/icon-nohp.png'),
   biodata: require('../Images/Icons/icon-biodata.png'),
-  threeDotSilver: require('../Images/Icons/3-dots-silver.png')
+  threeDotSilver: require('../Images/Icons/3-dots-silver.png'),
+  waktu: require('../Images/Icons/icon-waktu.png'),
+  arrowUp: require('../Images/Icons/icon-arrow-up.png'),
+  arrowDown: require('../Images/Icons/icon-arrow-down.png')
 }
 
 export default images

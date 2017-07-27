@@ -6,12 +6,16 @@ export default StyleSheet.create({
     flex: 1,
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey,
-    padding: 15
+    paddingLeft: 15,
+    paddingRight: 15
   },
   totalContainer: {
     backgroundColor: Colors.snow,
     elevation: 1,
-    margin: 5,
+    marginLeft: 5,
+    marginRight: 5,
+    marginBottom: 5,
+    marginTop: 15,
     borderRadius: 3,
     flexDirection: 'column'
   },
@@ -86,6 +90,12 @@ export default StyleSheet.create({
     height: 24,
     width: 24,
     marginTop: 3
+  },
+  imageBank: {
+    height: 30,
+    width: 45,
+    marginRight: 5,
+    resizeMode: 'center'
   },
   totalContainerBank: {
     backgroundColor: Colors.snow,

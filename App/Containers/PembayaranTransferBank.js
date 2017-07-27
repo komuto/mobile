@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -95,7 +96,7 @@ class PembayaranTransferBank extends React.Component {
           </View>
           <View style={styles.rincianRow}>
             <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
-            <Text style={styles.textTitle}>{hargaDiskon}</Text>
+            <Text style={styles.textGreen}>{hargaDiskon}</Text>
           </View>
           <View style={styles.rincianRow}>
             <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
@@ -118,11 +119,17 @@ class PembayaranTransferBank extends React.Component {
         <Text style={[styles.time, { fontSize: 12 }]}>
           Dengan menekan tombol "Lanjutkan" Anda telah menyetujui Syarat dan Ketentuan dari Komuto
         </Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
           <Text style={styles.textI}>Bayar dengan Transfer Bank</Text>
         </TouchableOpacity>
       </View>
     )
+  }
+
+  transferBank () {
+    NavigationActions.pembayarantransferbankdetail({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {

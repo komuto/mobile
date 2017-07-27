@@ -110,6 +110,19 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.state.idProduct !== this.props.dataDetailProduk.detail.product.id) {
+      this.setState({
+        idProduct: this.props.dataDetailProduk.detail.product.id,
+        price: this.props.dataDetailProduk.detail.product.price,
+        foto: this.props.dataDetailProduk.detail.images[0].file,
+        namaProduk: this.props.dataDetailProduk.detail.product.name,
+        weight: this.props.dataDetailProduk.detail.product.weight,
+        subtotal: this.props.dataDetailProduk.detail.product.price * 1,
+        diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
+        originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+        dataKurir: this.props.dataDetailProduk.detail.expeditions
+      })
+    }
     if (nextProps.dataCreateAlamat.status === 200) {
       this.props.resetCreateStatus()
     }

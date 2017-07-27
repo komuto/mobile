@@ -53,6 +53,8 @@ import PembayaranKeranjangBelanja from '../Containers/PembayaranKeranjangBelanja
 import PembayaranTransferBank from '../Containers/PembayaranTransferBank'
 import PembayaranTransferBankDetail from '../Containers/PembayaranTransferBankDetail'
 import PembayaranDetailBarang from '../Containers/PembayaranDetailBarang'
+import PembayaranKartuKredit from '../Containers/PembayaranKartuKredit'
+import PembayaranSaldo from '../Containers/PembayaranSaldo'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -454,7 +456,21 @@ class NavigationRouter extends Component {
           <Scene
             key='pembayarandetailbarang'
             component={PembayaranDetailBarang}
-            title='Detail Transaksi'
+            title='Detail Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarankartukredit'
+            component={PembayaranKartuKredit}
+            title='Kartu Kredit'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaransaldo'
+            component={PembayaranSaldo}
+            title='Bayar Dengan Saldo'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

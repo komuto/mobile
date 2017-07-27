@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -279,7 +280,7 @@ class PembayaranTransferBankDetail extends React.Component {
 
   renderRowBarang (rowData) {
     return (
-      <TouchableOpacity style={styles.containerBarang}>
+      <TouchableOpacity style={styles.containerBarang} onPress={() => this.detailBarang()}>
         <Image source={{ uri: rowData.image }} style={styles.imageBarang} />
         <View style={styles.namaBarangContainer}>
           <Text style={styles.bold}>{rowData.name}</Text>
@@ -297,6 +298,12 @@ class PembayaranTransferBankDetail extends React.Component {
     } else {
       this.setState({ expand: true })
     }
+  }
+
+  detailBarang () {
+    NavigationActions.pembayarandetailbarang({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {

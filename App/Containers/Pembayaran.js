@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, Image } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -14,7 +15,7 @@ class Pembayaran extends React.Component {
     super(props)
     this.state = {
       total: '250219',
-      saldo: '450000'
+      saldo: '300000'
     }
   }
 
@@ -53,7 +54,7 @@ class Pembayaran extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer} onPress={() => this.saldo()}>
         <View style={styles.total}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Saldo ({totalSaldo})</Text>
@@ -66,7 +67,7 @@ class Pembayaran extends React.Component {
 
   renderBank () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.transferBank()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Transfer Bank</Text>
@@ -74,11 +75,10 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.mandiri} style={styles.imageBank} />
+          <Image source={Images.bca} style={styles.imageBank} />
+          <Image source={Images.bni} style={styles.imageBank} />
+          <Image source={Images.bri} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -86,7 +86,7 @@ class Pembayaran extends React.Component {
 
   renderKartuKredit () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.kartuKredit()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Kartu Kredit</Text>
@@ -94,11 +94,8 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.visa} style={styles.imageBank} />
+          <Image source={Images.masterCard} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -114,11 +111,9 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.atmBersama} style={styles.imageBank} />
+          <Image source={Images.prima} style={styles.imageBank} />
+          <Image source={Images.alto} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -134,7 +129,7 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.mandiriClickPay} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -150,7 +145,7 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.epayBri} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -166,7 +161,7 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.doku} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
@@ -174,7 +169,7 @@ class Pembayaran extends React.Component {
 
   renderAlfaMart () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={[styles.totalContainerBank, { marginBottom: 15 }]}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>AlfaMart</Text>
@@ -182,10 +177,29 @@ class Pembayaran extends React.Component {
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
+          <Image source={Images.alfamart} style={styles.imageBank} />
+          <Image source={Images.alfamidi} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
+  }
+
+  transferBank () {
+    NavigationActions.pembayarantransferbank({
+      type: ActionConst.PUSH
+    })
+  }
+
+  kartuKredit () {
+    NavigationActions.pembayarankartukredit({
+      type: ActionConst.PUSH
+    })
+  }
+
+  saldo () {
+    NavigationActions.pembayaransaldo({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {

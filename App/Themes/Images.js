@@ -82,7 +82,24 @@ const images = {
   threeDotSilver: require('../Images/Icons/3-dots-silver.png'),
   waktu: require('../Images/Icons/icon-waktu.png'),
   arrowUp: require('../Images/Icons/icon-arrow-up.png'),
-  arrowDown: require('../Images/Icons/icon-arrow-down.png')
+  arrowDown: require('../Images/Icons/icon-arrow-down.png'),
+  alfamart: require('../Images/Banks/icon-alfamart.png'),
+  alfamidi: require('../Images/Banks/icon-alfamidi.png'),
+  alto: require('../Images/Banks/icon-alto.png'),
+  atmBersama: require('../Images/Banks/icon-atm-bersama.png'),
+  bca: require('../Images/Banks/icon-bca.png'),
+  bni: require('../Images/Banks/icon-bni.png'),
+  bri: require('../Images/Banks/icon-bri.png'),
+  doku: require('../Images/Banks/icon-doku.png'),
+  epayBri: require('../Images/Banks/icon-epay-bri.png'),
+  mandiri: require('../Images/Banks/icon-mandiri.png'),
+  mandiriClickPay: require('../Images/Banks/icon-mandiri-clickpay.png'),
+  masterCard: require('../Images/Banks/icon-mastercard.png'),
+  prima: require('../Images/Banks/icon-prima.png'),
+  visa: require('../Images/Banks/icon-visa.png'),
+  verifiedMaster: require('../Images/Banks/icon-verified-master.png'),
+  verifiedVisa: require('../Images/Banks/icon-verified-visa.png'),
+  norton: require('../Images/Banks/icon-norton.png')
 }
 
 export default images

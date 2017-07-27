@@ -11,7 +11,7 @@ export default class CustomRadio extends React.Component {
       data: this.props.data,
       horizontal: this.props.horizontal || false,
       vertical: this.props.vertical || false,
-      index: 0,
+      index: this.props.index || 0,
       label: 0
     }
   }

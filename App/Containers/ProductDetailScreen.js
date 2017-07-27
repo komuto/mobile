@@ -1318,7 +1318,7 @@ class ProductDetailScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonOke} onPress={() => this.beliSekarang()}>
             <Text style={styles.labelButtonOke}>
-              Beli Sekarang JUGAAA
+              Beli Sekarang
             </Text>
           </TouchableOpacity>
         </View>

@@ -39,7 +39,8 @@ class PembelianKeranjangBelanja extends React.Component {
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
       idProduct: this.props.dataDetailProduk.detail.product.id,
-      price: this.props.dataDetailProduk.detail.product.price,
+      price: this.props.dataDetailProduk.detail.product.price -
+        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price),
       foto: this.props.dataDetailProduk.detail.images[0].file,
       namaProduk: this.props.dataDetailProduk.detail.product.name,
       countProduct: this.props.countProduct,
@@ -62,8 +63,9 @@ class PembelianKeranjangBelanja extends React.Component {
       tipeKurir: this.props.tipeKurir,
       asuransi: this.props.asuransi,
       catatan: this.props.catatan,
-      subtotal: parseInt(this.props.dataDetailProduk.detail.product.price) * parseInt(this.props.countProduct),
-      biayaAsuransi: (parseInt(this.props.expeditionFee) * parseInt(this.props.countProduct) * parseInt(this.props.dataDetailProduk.detail.product.price)) / 100,
+      subtotal: this.props.dataDetailProduk.detail.product.price -
+        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price) * parseInt(this.props.countProduct),
+      biayaAsuransi: this.props.biayaAsuransi,
       expeditionFee: this.props.expeditionFee,
       ongkir: this.props.ongkir,
       diskon: '0',
@@ -94,7 +96,8 @@ class PembelianKeranjangBelanja extends React.Component {
       kodeVoucher: '',
       modalAlamat: false,
       loadingAlamat: false,
-      dataAlamat: []
+      dataAlamat: [],
+      statusDiskon: false
     }
     this.props.getServices(
       this.props.dataDetailProduk.detail.product.id,
@@ -117,6 +120,26 @@ class PembelianKeranjangBelanja extends React.Component {
     } else if (nextProps.dataAddressList.status > 200) {
       this.setState({ loadingCart: false, loadingAlamat: false })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataPromo.status === 200) {
+      if (nextProps.dataPromo.promo.type === 0) {
+        this.setState({
+          statusDiskon: true,
+          modalPromo: false,
+          diskon: parseInt(nextProps.dataPromo.promo.percentage) * parseInt(this.state.price) * parseInt(this.state.countProduct) / 100
+        })
+      } else {
+        this.setState({
+          statusDiskon: true,
+          modalPromo: false,
+          diskon: nextProps.dataPromo.promo.nominal
+        })
+      }
+    } else if (nextProps.dataPromo.status > 200) {
+      this.setState({
+        modalPromo: false
+      })
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
     }
   }
 
@@ -353,7 +376,7 @@ class PembelianKeranjangBelanja extends React.Component {
           <Text style={styles.hargaTotal}>{hargaTotal}</Text>
         </View>
         <View style={styles.total}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={() => this.pembayaran()}>
             <Text style={styles.textButton}>Bayar Sekarang</Text>
           </TouchableOpacity>
         </View>
@@ -682,6 +705,10 @@ class PembelianKeranjangBelanja extends React.Component {
     this.props.getPromo(kodeVoucher)
   }
 
+  pembayaran () {
+    NavigationActions.pembayaran({type: ActionConst.PUSH})
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -712,7 +739,8 @@ const mapStateToProps = (state) => {
     dataDetailProduk: state.productDetail,
     dataServices: state.estimatedCharges,
     dataAddress: state.primaryAddress,
-    dataAddressList: state.listAddress
+    dataAddressList: state.listAddress,
+    dataPromo: state.promo
   }
 }
 
@@ -722,7 +750,7 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     getListAlamat: () => dispatch(addressAction.getListAddress()),
-    getPromo: (kodepromo) => dispatch(cartAction.getPromo(kodepromo))
+    getPromo: (code) => dispatch(cartAction.getPromo({code}))
   }
 }
 

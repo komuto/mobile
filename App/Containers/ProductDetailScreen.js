@@ -1279,10 +1279,14 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   beliSekarang () {
-    NavigationActions.pembeliantambahkekeranjang({
-      type: ActionConst.PUSH
-    })
-    this.props.getDetailProduk(this.state.id)
+    if (this.state.isLogin) {
+      NavigationActions.pembeliantambahkekeranjang({
+        type: ActionConst.PUSH
+      })
+      this.props.getDetailProduk(this.state.id)
+    } else {
+      Alert.alert('Pesan', 'Mohon login terlebih dahulu untuk membeli produk ini')
+    }
   }
 
   render () {

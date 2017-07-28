@@ -40,7 +40,8 @@ class PembelianTambahKeKeranjang extends React.Component {
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
       idProduct: this.props.dataDetailProduk.detail.product.id,
-      price: this.props.dataDetailProduk.detail.product.price,
+      price: this.props.dataDetailProduk.detail.product.price -
+        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price),
       foto: this.props.dataDetailProduk.detail.images[0].file,
       namaProduk: this.props.dataDetailProduk.detail.product.name,
       countProduct: 1,
@@ -63,7 +64,8 @@ class PembelianTambahKeKeranjang extends React.Component {
       asuransi: 'Tidak',
       boolAsuransi: false,
       catatan: '',
-      subtotal: this.props.dataDetailProduk.detail.product.price * 1,
+      subtotal: this.props.dataDetailProduk.detail.product.price -
+        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
       ongkir: '0',
       diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
       total: '0',
@@ -86,6 +88,7 @@ class PembelianTambahKeKeranjang extends React.Component {
       activeAsuransi: 0,
       idKurir: '',
       idSubKurir: '',
+      biayaAsuransi: 0,
       idAsuransi: 0,
       modalKurir: false,
       modalSubkurir: false,
@@ -257,12 +260,24 @@ class PembelianTambahKeKeranjang extends React.Component {
 
   renderAlamat () {
     const { jalan, nama, provinsi, telepon, statusAlamat, kodepos, kabupaten, district, email, dataKosong, dataAlamat } = this.state
-    if (dataKosong) {
+    if (dataKosong && dataAlamat.length === 0) {
       return (
         <View style={{ flexDirection: 'column' }}>
           <TouchableOpacity
             style={styles.containerIsiInfo}
             onPress={() => NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})}
+          >
+            <Text style={styles.buttonIsiInfoError}>Isi Informasi Data Pengiriman</Text>
+            <Image source={Images.rightArrow} style={styles.imagePicker} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (dataKosong && dataAlamat.length > 0) {
+      return (
+        <View style={{ flexDirection: 'column' }}>
+          <TouchableOpacity
+            style={styles.containerIsiInfo}
+            onPress={() => this.getListAlamat()}
           >
             <Text style={styles.buttonIsiInfoError}>Isi Informasi Data Pengiriman</Text>
             <Image source={Images.rightArrow} style={styles.imagePicker} />
@@ -596,7 +611,7 @@ class PembelianTambahKeKeranjang extends React.Component {
     } else if (asuransi === 'Tidak') {
       boolAsuransi = false
     }
-    if (jalan === '' && nama === '' && provinsi === '' && telepon === '' && statusAlamat === '' && kodepos === '' && kabupaten === '' && district === '' && email === '') {
+    if (jalan === '' || nama === '' || provinsi === '' || telepon === '' || statusAlamat === '' || kodepos === '' || kabupaten === '' || district === '' || email === '') {
       this.setState({ dataKosong: true })
     } else if (jalan !== '' && nama !== '' && provinsi !== '' && telepon !== '' && statusAlamat !== '' && kodepos !== '' && kabupaten !== '' && district !== '' && email !== '') {
       this.setState({ dataKosong: false, statusAlamat: true })
@@ -637,6 +652,7 @@ class PembelianTambahKeKeranjang extends React.Component {
       catatan,
       asuransi,
       countProduct,
+      biayaAsuransi,
       kurir,
       tipeKurir,
       idKurir,
@@ -661,6 +677,7 @@ class PembelianTambahKeKeranjang extends React.Component {
       catatan: catatan,
       ongkir: ongkir,
       idKurir: idKurir,
+      biayaAsuransi: biayaAsuransi,
       countProduct: countProduct,
       asuransi: asuransi,
       kurir: kurir,
@@ -857,7 +874,8 @@ class PembelianTambahKeKeranjang extends React.Component {
       idKabupaten: dataAlamat[row].subDistrict.id,
       kodepos: dataAlamat[row].postal_code,
       email: dataAlamat[row].email,
-      telepon: 'Telp: ' + dataAlamat[row].phone_number
+      telepon: 'Telp: ' + dataAlamat[row].phone_number,
+      dataKosong: false
     })
   }
 
@@ -946,7 +964,7 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   onPressAsuransi (row) {
-    const {dataAsuransi, activeAsuransi, dataSourceAsuransi} = this.state
+    const {dataAsuransi, activeAsuransi, dataSourceAsuransi, price, countProduct, expeditionFee} = this.state
     if (activeAsuransi !== row) {
       const newDataSource = dataAsuransi.map(data => {
         return {...data, activeKurir: row === data.id}
@@ -954,6 +972,15 @@ class PembelianTambahKeKeranjang extends React.Component {
       this.setState({
         dataSourceAsuransi: dataSourceAsuransi.cloneWithRows(newDataSource),
         activeAsuransi: row
+      })
+    }
+    if (dataAsuransi[row].title === 'Ya') {
+      this.setState({
+        biayaAsuransi: price * expeditionFee * parseInt(countProduct) / 100
+      })
+    } else {
+      this.setState({
+        biayaAsuransi: 0
       })
     }
     this.setState({

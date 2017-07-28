@@ -55,6 +55,13 @@ import PembayaranTransferBankDetail from '../Containers/PembayaranTransferBankDe
 import PembayaranDetailBarang from '../Containers/PembayaranDetailBarang'
 import PembayaranKartuKredit from '../Containers/PembayaranKartuKredit'
 import PembayaranSaldo from '../Containers/PembayaranSaldo'
+import DaftarProduk from '../Containers/DaftarProdukScreen'
+import TambahProduk from '../Containers/TambahProdukScreen'
+import UploadPhotoProduk from '../Containers/UploadPhotoProdukScreen'
+import InfoNamaDanKategoriProdukScreen from '../Containers/InfoNamaDanKategoriProdukScreen'
+import TentangDropshipping from '../Containers/TentangDropshippingScreen'
+import EkspedisiPengirimanProduk from '../Containers/EkspedisiPengirimanProdukScreen'
+import InfoHargaDanSpesifikasiProduk from '../Containers//InfoHargaDanSpesifikasiProdukScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -471,6 +478,76 @@ class NavigationRouter extends Component {
             key='pembayaransaldo'
             component={PembayaranSaldo}
             title='Bayar Dengan Saldo'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambahrekening'
+            component={TambahRekening}
+            title='Tambah Rekening'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='datarekening'
+            component={DataRekening}
+            title='Data Rekening'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pengarutannotif'
+            component={PengaturanNotifikasi}
+            title='Pengaturan Notifikasi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='daftarproduk'
+            component={DaftarProduk}
+            title='Daftar Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambahproduk'
+            component={TambahProduk}
+            title='Tambah Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='uploadphotoproduk'
+            component={UploadPhotoProduk}
+            title='Upload Photo'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='infonamadankategori'
+            component={InfoNamaDanKategoriProdukScreen}
+            title='Nama dan Kategori Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tentangdropshipping'
+            component={TentangDropshipping}
+            title='Tentang Dropshipping'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='ekspedisipengirimanproduk'
+            component={EkspedisiPengirimanProduk}
+            title='Ekspedisi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='infohargaspesifikasi'
+            component={InfoHargaDanSpesifikasiProduk}
+            title='Harga dan Spesifikasi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

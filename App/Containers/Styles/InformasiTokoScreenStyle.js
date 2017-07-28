@@ -21,14 +21,14 @@ export default StyleSheet.create({
     height: 25,
     width: 25,
     borderWidth: 1,
-    borderColor: Colors.silver
+    borderColor: Colors.silver,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   textState: {
     fontSize: Fonts.size.smallMed,
-    color: Colors.steel,
-    textAlign: 'center',
-    letterSpacing: 0.22,
-    padding: 2.5
+    color: Colors.silver,
+    letterSpacing: 0.22
   },
   line: {
     width: 25,
@@ -42,8 +42,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.background
   },
   foto: {
-    height: 104.5,
-    width: 104.5,
+    height: 110,
+    width: 110,
     backgroundColor: Colors.paleGrey,
     alignSelf: 'center',
     alignItems: 'center',
@@ -51,14 +51,10 @@ export default StyleSheet.create({
     borderRadius: 200,
     marginBottom: 21.1
   },
-  foto2: {
-    height: 104.5,
-    width: 104.5,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 200,
-    marginBottom: 21.1
+  fotoStyle: {
+    height: 99,
+    width: 99,
+    borderRadius: 200
   },
   uploadText: {
     color: Colors.bluesky,
@@ -83,16 +79,16 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     color: Colors.labelgrey
   },
+  inputContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver
+  },
   textInfoPemilik: {
     paddingTop: 8,
     paddingBottom: 30,
     fontFamily: Fonts.type.semiBolds,
     fontSize: Fonts.size.smallMed,
     color: Colors.darkgrey
-  },
-  inputContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.silver
   },
   inputText: {
     marginLeft: -4,
@@ -281,5 +277,15 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

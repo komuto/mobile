@@ -4,9 +4,8 @@ import { connect } from 'react-redux'
 import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import DatePicker from 'react-native-datepicker'
+import moment from 'moment'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 import * as locationAction from '../actions/location'
 import * as storeAction from '../actions/stores'
 import * as userAction from '../actions/user'
@@ -14,7 +13,6 @@ import * as userAction from '../actions/user'
 import { Images, Colors, Fonts, Metrics } from '../Themes'
 import CustomRadio from '../Components/CustomRadio'
 
-// Styles
 import styles from './Styles/BiodataScreenStyle'
 import stylesLokasi from './Styles/ProductDetailScreenStyle'
 
@@ -23,14 +21,15 @@ class BiodataScreenScreen extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    var day = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD-MMMM-YYYY').toString()
     this.state = {
-      fotoProfil: null,
+      fotoProfil: null || this.props.dataProfile.user.user.photo,
       showModalCamera: false,
-      gender: 'female',
-      index: 1,
+      gender: this.props.dataProfile.user.user.gender,
+      index: '',
       dataGender: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
       loading: false,
-      namaPemilik: '',
+      namaPemilik: '' || this.props.dataProfile.user.user.name,
       tambahanKota: [
         {
           'id': 0,
@@ -39,37 +38,36 @@ class BiodataScreenScreen extends React.Component {
         }
       ],
       modalKabupaten: false,
-      kabTerpilih: 'Tempat Lahir Anda',
+      kabTerpilih: this.props.dataProfile.user.user.place_of_birth || 'Tempat Lahir Anda',
       idKabTerpilih: 0,
       kabupaten: [],
-      colorPicker: Colors.labelgrey,
-      date: '',
+      colorPicker: Colors.darkgrey,
+      date: day,
       notif: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProfil.status === 200) {
-      this.setState({
-        fotoProfil: nextProps.dataProfil.user.user.photo,
-        namaPemilik: nextProps.dataProfil.user.user.name,
-        gender: nextProps.dataProfil.user.user.gender,
-        kabTerpilih: nextProps.dataProfil.user.user.place_of_birth,
-        date: String(nextProps.dataProfil.user.user.date_of_birth),
-        colorPicker: Colors.darkgrey
-      })
-    }
     if (nextProps.dataKota.status === 200) {
-      this.setState({
-        kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
-      })
+      this.setState({kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)})
+    }
+    if (nextProps.dataPhoto.status === 200) {
+      this.setState({fotoProfil: nextProps.dataPhoto.payload.name})
     }
     if (nextProps.dataUpdate.status === 200) {
+      this.props.getProfil()
       this.setState({notif: true})
+      nextProps.dataUpdate.status = 0
     }
   }
 
   componentDidMount () {
+    if (this.props.dataProfile.user.user.gender === 'female') {
+      this.setState({index: 1})
+    } else {
+      this.setState({index: 0})
+    }
+    this.props.getKota()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -197,20 +195,27 @@ class BiodataScreenScreen extends React.Component {
   }
 
   handlingRadio (index, value) {
+    console.log(index, value)
     if (value.toLowerCase() === 'pria') {
       this.setState({
-        gender: 'male'
+        gender: 'male',
+        index: index
       })
     } else {
       this.setState({
-        gender: 'female'
+        gender: 'female',
+        index: index
       })
     }
   }
 
   handleUpdateProfil () {
-    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.date)
-    this.props.getProfil()
+    let tempDate = moment(this.state.date, 'DD-MMMM-YYYY').format('MM-DD-YYYY')
+    tempDate = tempDate.split('-')
+    let dayMod = parseInt(tempDate[1]) + 2
+    tempDate[1] = String(dayMod)
+    let dob = new Date(tempDate).getTime() / 1000
+    this.props.updateProfile(this.state.fotoProfil, this.state.namaPemilik, this.state.idKabTerpilih, dob)
   }
 
   renderFoto () {
@@ -249,6 +254,7 @@ class BiodataScreenScreen extends React.Component {
           <View style={{marginLeft: -10}}>
             <CustomRadio
               data={this.state.dataGender}
+              index={this.state.index}
               handlingRadio={(index1, value1) =>
                 this.handlingRadio(index1, value1)}
               horizontal
@@ -271,8 +277,8 @@ class BiodataScreenScreen extends React.Component {
                   mode='date'
                   androidMode='spinner'
                   placeholder='Tanggal Lahir Anda'
-                  format='MM/DD/YYYY'
-                  minDate='01-01-1970'
+                  format='DD-MMMM-YYYY'
+                  minDate='02-01-1970'
                   maxDate='01-01-2019'
                   showIcon={false}
                   confirmBtnText='Confirm'
@@ -327,10 +333,9 @@ class BiodataScreenScreen extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.profile)
   return {
     dataKota: state.districts,
-    dataProfil: state.profile,
+    dataProfile: state.profile,
     dataPhoto: state.upload,
     dataUpdate: state.updateProfile
   }
@@ -339,10 +344,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data})),
-    getKota: dispatch(locationAction.getDistrict()),
-    getProfils: dispatch(userAction.getProfile()),
     getProfil: () => dispatch(userAction.getProfile()),
-    updateProfile: (namaLengkap, gender, tempatLahir, tanggalLahir) => dispatch(userAction.updateProfile({name: namaLengkap, gender: gender, place_of_birth: tempatLahir, date_of_birth: tanggalLahir}))
+    getKota: () => dispatch(locationAction.getDistrict()),
+    updateProfile: (foto, namaLengkap, idKabTerpilih, tanggalLahir) => dispatch(userAction.updateProfile({photo: foto, name: namaLengkap, place_of_birth_id: idKabTerpilih, date_of_birth: tanggalLahir}))
   }
 }
 

@@ -99,7 +99,14 @@ const images = {
   visa: require('../Images/Banks/icon-visa.png'),
   verifiedMaster: require('../Images/Banks/icon-verified-master.png'),
   verifiedVisa: require('../Images/Banks/icon-verified-visa.png'),
-  norton: require('../Images/Banks/icon-norton.png')
+  norton: require('../Images/Banks/icon-norton.png'),
+  uploadPhotoProduk: require('../Images/Icons/icon-upload-produk-baru.png'),
+  closeCircleBack: require('../Images/Icons/icon-cross-circle-black.png'),
+  tambahWhite: require('../Images/Icons/icon-add-big-white.png'),
+  up: require('../Images/Icons/icon-arrow-up.png'),
+  diskon: require('../Images/Icons/icon-discount.png'),
+  grosir: require('../Images/Icons/icon-grosir.png'),
+  centangBiru: require('../Images/Icons/icon-centang-biru.png')
 }
 
 export default images

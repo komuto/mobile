@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, Modal, Image } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, Modal, ActivityIndicator, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
@@ -35,24 +35,30 @@ class OTPCodeScreen extends React.Component {
       namaPemilik: this.props.name,
       nomerRek: this.props.nomerRek,
       idBank: this.props.idBank,
-      namaCabang: this.props.cabangBank
+      namaCabang: this.props.cabangBank,
+      loading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasiKelolatelepon') {
+      this.setState({loading: false})
       NavigationActions.nomerhape({
-        type: ActionConst.PUSH,
+        type: ActionConst.REPLACE,
         statusVerifikasi: 'true',
         gantiNoHape: 'false',
         nomerHape: this.state.fieldPass
       })
-    } else if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasitelepon') {
-      this.setState({vefifikasiModal: true})
-    } else if (nextProps.createRek.state === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
-      NavigationActions.account({
-        type: ActionConst.PUSH
+      nextProps.dataOTP.status = 0
+    } if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasitelepon') {
+      this.setState({loading: false, vefifikasiModal: true})
+      nextProps.dataOTP.status = 0
+    } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
+      this.setState({loading: false})
+      NavigationActions.backtab({
+        type: ActionConst.RESET
       })
+      nextProps.createRek.status = 0
     }
   }
 
@@ -63,11 +69,13 @@ class OTPCodeScreen extends React.Component {
   }
 
   verifikaksi () {
+    this.setState({loading: true})
     let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
     this.props.verifyOtp(tempOTp)
   }
 
   verifikaksiKelola () {
+    this.setState({loading: true})
     let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
     this.props.verifyOtp(tempOTp)
   }
@@ -80,6 +88,7 @@ class OTPCodeScreen extends React.Component {
   }
 
   verifikasiCodeOtpEmail () {
+    this.setState({loading: true})
     let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
     this.props.createRekening(
       tempOTp,
@@ -88,6 +97,11 @@ class OTPCodeScreen extends React.Component {
       this.state.nomerRek,
       this.state.namaCabang
     )
+  }
+
+  verifikasiOTP () {
+    this.setState({loading: true})
+    this.props.sentOTPCode()
   }
 
   modalVerifikasiSukses () {
@@ -223,7 +237,7 @@ class OTPCodeScreen extends React.Component {
             <Text style={styles.textBanner}>
               Belum menerima kode aktifasi
             </Text>
-            <TouchableOpacity onPress={() => this.props.sentOTPCode()}>
+            <TouchableOpacity onPress={() => this.verifikasiOTP()}>
               <Text style={styles.textLogin}> Klik Disini</Text>
             </TouchableOpacity>
           </View>
@@ -459,10 +473,15 @@ class OTPCodeScreen extends React.Component {
   }
 
   render () {
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         {this.renderOTP()}
         {this.modalVerifikasiSukses()}
+        {spinner}
       </View>
     )
   }
@@ -470,7 +489,6 @@ class OTPCodeScreen extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.bankAccount)
   return {
     dataOTP: state.verifyPhone,
     createRek: state.bankAccount

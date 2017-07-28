@@ -56,11 +56,11 @@ export default StyleSheet.create({
     marginTop: 5.5
   },
   notif: {
-    position: 'relative',
     flexDirection: 'row',
     backgroundColor: Colors.duckEggBlue,
     alignItems: 'center',
-    paddingRight: 19
+    paddingRight: 19,
+    position: 'relative'
   },
   textNotif: {
     flex: 1,

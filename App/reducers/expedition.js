@@ -28,7 +28,7 @@ function expedition (state = initExpedition, action) {
 function expeditionServices (state = initExpedition, action) {
   const type = buildType(action.type)
   switch (type) {
-    case actions.GET_EXPEDITION:
+    case actions.GET_EXPEDITION_SERVICES:
       return buildReducer(state, action, type, 'expeditions')
     default:
       return state

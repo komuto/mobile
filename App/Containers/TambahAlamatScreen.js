@@ -103,39 +103,59 @@ class TambahAlamatScreenScreen extends React.Component {
       })
     }
     if (nextProps.dataAddress.status === 200) {
-      console.log('masuk')
       this.setState({
         loading: false
       })
+      this.props.getAlamat()
       NavigationActions.dataalamat({
         type: ActionConst.PUSH,
-        notif: true
+        notif: true,
+        pesanNotif: 'menambahkan alamat baru'
       })
+      nextProps.dataAddress.status = 0
     } if (nextProps.dataAddress.status > 200) {
       this.setState({
         loading: false
       })
-      window.alert('Internal Error')
     }
-    // if (nextProps.edit === true) {
-    //   console.log('masuk')
-    //   this.setState({
-    //     colorPickerProv: Colors.lightblack,
-    //     provinsiTerpilih: this.props.province,
-    //     colorPickerKab: Colors.lightblack,
-    //     kabTerpilih: this.props.district,
-    //     colorPickerKec: Colors.lightblack,
-    //     kecTerpilih: this.props.subDistrict,
-    //     colorPickerKel: Colors.lightblack,
-    //     kelurahanterpilih: this.props.village,
-    //     idProvinsiTerpilih: this.props.idProv,
-    //     idKabTerpilih: this.props.Idkab,
-    //     idKecTerpilih: this.props.idKec,
-    //     idkelTerpilih: this.props.idkel
-    //   })
-    // }
+    if (nextProps.edit) {
+      if (nextProps.detailAddress.status === 200) {
+        this.setState({
+          loading: false,
+          namaAlias: nextProps.detailAddress.address.alias_address,
+          namaPenerima: nextProps.detailAddress.address.name,
+          nomerHape: nextProps.detailAddress.address.phone_number,
+          alamatLengkap: nextProps.detailAddress.address.address,
+          kodePos: nextProps.detailAddress.address.postal_code,
+          colorPickerProv: Colors.lightblack,
+          colorPickerKab: Colors.lightblack,
+          colorPickerKec: Colors.lightblack,
+          colorPickerKel: Colors.lightblack,
+          provinsiTerpilih: nextProps.detailAddress.address.province.name,
+          kabTerpilih: nextProps.detailAddress.address.district.name,
+          kecTerpilih: nextProps.detailAddress.address.subDistrict.name,
+          kelurahanterpilih: nextProps.detailAddress.address.village.name,
+          idProvinsiTerpilih: nextProps.detailAddress.address.province.id,
+          idKabTerpilih: nextProps.detailAddress.address.district.id,
+          idKecTerpilih: nextProps.detailAddress.address.subDistrict.id,
+          idkelTerpilih: nextProps.detailAddress.address.village.id
+        })
+        nextProps.detailAddress.status = 0
+      }
+    }
+    if (nextProps.updateAddress.status === 200) {
+      this.setState({
+        loading: false
+      })
+      this.props.getAlamat()
+      NavigationActions.dataalamat({
+        type: ActionConst.PUSH,
+        notif: true,
+        pesanNotif: 'mengubah alamat'
+      })
+      nextProps.updateAddress.status = 0
+    }
   }
-
   componentDidMount () {
     this.props.getProvinsi()
     this.props.getKota(11)
@@ -552,14 +572,20 @@ class TambahAlamatScreenScreen extends React.Component {
   createAlamat () {
     const {namaAlias, namaPenerima, nomerHape,
       alamatLengkap, kodePos, email, namaPemilik, IsPrimary,
-      idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih} = this.state
-    if (namaAlias === '' && namaPenerima === '' && nomerHape === '') {
-      this.onError('empty')
-    } else {
+      idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
+    if (this.state.edit) {
       this.setState({loading: true})
-      this.props.createAddress(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
+      this.props.editAddress(idAlamat, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
         idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary)
-      this.props.getAlamat()
+      this.setState({edit: false})
+    } else {
+      if (namaAlias === '' && namaPenerima === '' && nomerHape === '') {
+        this.onError('empty')
+      } else {
+        this.setState({loading: true})
+        this.props.createAddress(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
+          idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary)
+      }
     }
   }
 
@@ -598,7 +624,9 @@ const mapStateToProps = (state) => {
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
     dataVilage: state.villages,
-    dataAddress: state.addAddress
+    dataAddress: state.addAddress,
+    detailAddress: state.address,
+    updateAddress: state.updateAddress
   }
 }
 
@@ -624,9 +652,10 @@ const mapDispatchToProps = (dispatch) => {
           is_primary: IsPrimary
         })),
     getAlamat: () => dispatch(addressAction.getListAddress()),
-    editAddress: (idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
+    editAddress: (id, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
         idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary) =>
         dispatch(addressAction.updateAddress({
+          id: id,
           province_id: idProvinsiTerpilih,
           district_id: idKabTerpilih,
           sub_district_id: idKecTerpilih,

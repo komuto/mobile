@@ -22,17 +22,19 @@ class TambahDataRekeningScreenScreen extends React.Component {
       pemilikAkun: '',
       nomerRekening: '',
       cabangBank: '',
+      namaBankTerpilih: 'Nama Bank',
+      idnamaBankTerpilih: 0,
       email: this.props.email,
+      nomerHape: this.props.nomerHape,
       colorPemilik: Colors.snow,
       colorNomerRek: Colors.snow,
       colorNamaBank: Colors.snow,
       colorCabangBank: Colors.snow,
       colorPickerNamaBank: Colors.labelgrey,
-      loading: false,
-      namaBankTerpilih: 'Nama Bank',
-      idnamaBankTerpilih: 0,
+      loading: this.props.loading || false,
       listNamaBanks: [],
       modalNamaBank: false,
+      edit: this.props.edit,
       tambahBank: [
         {
           'id': 0,
@@ -43,12 +45,12 @@ class TambahDataRekeningScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataList.status === true) {
+    if (nextProps.dataList.status === 200) {
       this.setState({
         listNamaBanks: this.state.tambahBank.concat(nextProps.dataList.banks)
       })
     }
-    if (nextProps.codeOtp.state === 200) {
+    if (nextProps.codeOtp.status === 200) {
       console.log(nextProps.codeOtp)
       this.setState({
         loading: false
@@ -56,14 +58,32 @@ class TambahDataRekeningScreenScreen extends React.Component {
       NavigationActions.otpcode({
         type: ActionConst.PUSH,
         typeVerifikasi: 'otptambahrekening',
-        fieldPass: this.state.email,
+        fieldPass: this.state.nomerHape,
         email: this.state.email,
         name: this.state.pemilikAkun,
         nomerRek: this.state.nomerRekening,
         idBank: this.state.idnamaBankTerpilih,
-        cabangBank: this.state.cabangBank
+        cabangBank: this.state.cabangBank,
+        title: 'Tambah Data Rekening'
       })
+    } if (nextProps.edit) {
+      if (nextProps.detailRekening.status === 200) {
+        console.log('edit', nextProps.detailRekening)
+        this.setState({
+          pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
+          nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
+          namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
+          idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
+          colorPickerNamaBank: Colors.darkgrey,
+          cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
+          loading: false
+        })
+      }
     }
+  }
+
+  componentDidMount () {
+    this.props.getListBank()
   }
 
   handleChangePemilikAkun = (text) => {
@@ -200,10 +220,11 @@ class TambahDataRekeningScreenScreen extends React.Component {
       this.onError('namabank')
     } if (cabangBank === '') {
       this.onError('cabanagbank')
+    } if (this.state.edit) {
+      console.log('edit not availab')
     } else {
       this.setState({loading: true})
       this.props.sendOtp()
-      // this.props.createBank(47988, idnamaBankTerpilih, pemilikAkun, nomerRekening, cabangBank)
     }
   }
 
@@ -226,7 +247,7 @@ class TambahDataRekeningScreenScreen extends React.Component {
     )
   }
 
-  renderModalKelurahan () {
+  renderModalBank () {
     return (
       <Modal
         animationType={'slide'}
@@ -262,11 +283,10 @@ class TambahDataRekeningScreenScreen extends React.Component {
               ref='pemilikakun'
               style={styles.inputText}
               value={this.state.pemilikAkun}
-              keyboardType='email-address'
+              keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('pemilikAkun')}
               onBlur={() => this.onBlur('pemilikAkun')}
-              onSubmitEditing={() => this.refs.norek.focus()}
               autoCapitalize='none'
               autoCorrect
               onChangeText={this.handleChangePemilikAkun}
@@ -280,8 +300,8 @@ class TambahDataRekeningScreenScreen extends React.Component {
               value={this.state.nomerRekening}
               keyboardType='numeric'
               returnKeyType='done'
-              onFocus={() => this.onFocus('namabank')}
-              onBlur={() => this.onBlur('namabank')}
+              onFocus={() => this.onFocus('norek')}
+              onBlur={() => this.onBlur('norek')}
               autoCapitalize='none'
               autoCorrect
               onChangeText={this.handleChangeNoRek}
@@ -304,7 +324,6 @@ class TambahDataRekeningScreenScreen extends React.Component {
               returnKeyType='done'
               onFocus={() => this.onFocus('cabanagbank')}
               onBlur={() => this.onBlur('cabanagbank')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
               autoCapitalize='none'
               autoCorrect
               onChangeText={this.handleChangeCabangBank}
@@ -319,7 +338,7 @@ class TambahDataRekeningScreenScreen extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        {this.renderModalKelurahan()}
+        {this.renderModalBank()}
         {spinner}
       </View>
     )
@@ -329,13 +348,14 @@ class TambahDataRekeningScreenScreen extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataList: state.banks,
-    codeOtp: state.sendOTPBank
+    codeOtp: state.sendOTPBank,
+    detailRekening: state.detailBankAccounts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListBank: dispatch(bankAction.listBank()),
+    getListBank: () => dispatch(bankAction.listBank()),
     sendOtp: () => dispatch(accountAction.sendOTPBank())
   }
 }

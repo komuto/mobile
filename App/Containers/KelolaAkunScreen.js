@@ -7,6 +7,8 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as addressAction from '../actions/address'
+import * as bankAction from '../actions/bank'
 
 // Styles
 import styles from './Styles/KelolaAkunScreenStyle'
@@ -19,32 +21,20 @@ class KelolaAkunScreenScreen extends React.Component {
     super(props)
     this.state = {
       token: '',
-      name: '',
-      email: '',
-      statusNoHp: '',
-      nomerHape: '',
+      name: '' || this.props.dataProfile.user.user.name,
+      email: '' || this.props.dataProfile.user.user.email,
+      statusNoHp: '' || this.props.dataProfile.user.user.is_phone_verified,
+      nomerHape: '' || this.props.dataProfile.user.user.phone_number,
       textStatusNoHP: 'Belum terverifikasi',
-      notif: this.props.notif
+      notif: this.props.notif,
+      pesanNotif: this.props.pesanNotif
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProfile.status === 200) {
-      this.setState({
-        name: nextProps.dataProfile.user.user.name,
-        email: nextProps.dataProfile.user.user.email,
-        statusNoHp: nextProps.dataProfile.user.user.is_phone_verified,
-        nomerHape: nextProps.dataProfile.user.user.phone_number
-      })
-    } else if (nextProps.dataProfile.status > 200) {
-      this.setState({
-        loading: false
-      })
-    }
   }
 
   componentDidMount () {
-    this.props.getProfile()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -91,9 +81,11 @@ class KelolaAkunScreenScreen extends React.Component {
   }
 
   handleDataRekening () {
-    NavigationActions.tambahrekening({
+    this.props.getListRekening()
+    NavigationActions.datarekening({
       type: ActionConst.PUSH,
-      email: this.state.email
+      email: this.state.email,
+      nomerHape: this.state.nomerHape
     })
   }
 
@@ -118,6 +110,7 @@ class KelolaAkunScreenScreen extends React.Component {
   }
 
   handleDataAlamat () {
+    this.props.getAlamat()
     NavigationActions.dataalamat({
       type: ActionConst.PUSH,
       name: this.state.name,
@@ -129,7 +122,7 @@ class KelolaAkunScreenScreen extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses mengubah password anda</Text>
+          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -257,8 +250,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
-    getProfile: (login) => dispatch(loginaction.getProfile()),
-    logout: (login) => dispatch(loginaction.logout())
+    logout: (login) => dispatch(loginaction.logout()),
+    getAlamat: () => dispatch(addressAction.getListAddress()),
+    getListRekening: () => dispatch(bankAction.getBankAccounts())
   }
 }
 

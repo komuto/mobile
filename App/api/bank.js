@@ -32,9 +32,15 @@ export const addBankAccount = async (action) => {
     .catch((err) => { throw err })
 }
 
+export const getDetailBankAccounts = async (id = '') => {
+  const axios = authApiKomuto()
+  return await axios.get(`accounts/banks/${id}`)
+    .catch((err) => { throw err })
+}
+
 export const getBankAccounts = async () => {
   const axios = authApiKomuto()
-  return await axios.get('accounts/banks')
+  return await axios.get('accounts/banks/')
     .catch((err) => { throw err })
 }
 

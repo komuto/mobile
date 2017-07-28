@@ -21,14 +21,14 @@ export default StyleSheet.create({
     height: 25,
     width: 25,
     borderWidth: 1,
-    borderColor: Colors.silver
+    borderColor: Colors.silver,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   textState: {
     fontSize: Fonts.size.smallMed,
-    color: Colors.steel,
-    textAlign: 'center',
-    letterSpacing: 0.22,
-    padding: 2.5
+    color: Colors.silver,
+    letterSpacing: 0.22
   },
   line: {
     width: 25,
@@ -272,5 +272,27 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  errorLabel: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.red,
+    textAlign: 'center'
+  },
+  errorLabelWhite: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.snow,
+    textAlign: 'center'
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

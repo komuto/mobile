@@ -5,10 +5,12 @@ export const CREATE_BANK = 'CREATE_BANK'
 export const GET_BANK = 'GET_BANK'
 export const ADD_BANK_ACCOUNT = 'ADD_BANK_ACCOUNT'
 export const GET_BANK_ACCOUNTS = 'GET_BANK_ACCOUNTS'
+export const GET_DETAIL_BANK_ACCOUNTS = 'GET_DETAIL_BANK_ACCOUNTS'
 
 // function newBank ()
 export const listBank = params => buildAction(typeReq(LIST_BANK), params)
 export const getBank = params => buildAction(typeReq(GET_BANK), params)
 export const addBankAccount = params => buildAction(typeReq(ADD_BANK_ACCOUNT), params)
-export const getBankAccounts = () => buildAction(typeReq(GET_BANK_ACCOUNTS))
+export const getBankAccounts = params => buildAction(typeReq(GET_BANK_ACCOUNTS), params)
+export const getDetailBankAccounts = params => buildAction(typeReq(GET_DETAIL_BANK_ACCOUNTS), params)
 

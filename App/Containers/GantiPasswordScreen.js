@@ -35,7 +35,9 @@ class GantiPasswordScreenScreen extends React.Component {
     if (nextProps.dataPassword.status === 200) {
       this.setState({loading: false})
       NavigationActions.kelolaakun({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        notif: true,
+        pesanNotif: 'Sukses mengganti password Anda'
       })
     }
   }

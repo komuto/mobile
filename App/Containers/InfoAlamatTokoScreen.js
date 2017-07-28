@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Modal, Text, ListView, View, TouchableOpacity, Image, TextInput, Alert } from 'react-native'
+import { ScrollView, Modal, ActivityIndicator, Text, ListView, View, TouchableOpacity, Image, TextInput } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as cekAlamat from '../actions/address'
@@ -22,11 +22,10 @@ class InfoAlamatTokoScreenScreen extends React.Component {
     this.state = {
       namaPelimilik: this.props.namaPelimilik,
       email: this.props.email,
-      noHP: this.props.noHP,
-      alamatPemilik: '',
-      kodePos: '',
+      noHp: this.props.noHp,
+      alamatPemilik: 'jogja',
+      kodePos: '12345',
       alamatLain: [],
-      dataListEkspedisi: [],
       provinsiTerpilih: 'Semua Wilayah',
       kabTerpilih: 'Semua Wilayah',
       kecTerpilih: 'Semua Wilayah',
@@ -69,8 +68,9 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           'name': 'Pilih Kelurahan'
         }
       ],
-      alamatToko: this.props.dataToko,
-      addressTemp: []
+      dataStoreFinal: this.props.dataStore,
+      addressTemp: [],
+      loading: false
     }
   }
 
@@ -80,23 +80,35 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         alamatLain: nextProps.dataAlamats.address
       })
     } if (nextProps.dataProvinsi.status === 200) {
+      // console.log(nextProps.dataProvinsi)
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
     } if (nextProps.dataKota.status === 200) {
+      // console.log(nextProps.dataKota)
       this.setState({
         kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
     } if (nextProps.dataSubDistrict.status === 200) {
+      // console.log(nextProps.dataSubDistrict)
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
     } if (nextProps.dataVilage.status === 200) {
+      // console.log(nextProps.dataVilage)
       this.setState({
         kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVilage.villages)
       })
-    } if (nextProps.dataStore.status > 200) {
-      Alert.alert('Maaf..', nextProps.dataStore.message)
+    } if (nextProps.dataStores.status === 200) {
+      this.setState({
+        loading: false
+      })
+      NavigationActions.notifikasi({
+        type: ActionConst.PUSH,
+        tipeNotikasi: 'successBukaToko'
+      })
+    } else if (nextProps.dataStores.status > 200) {
+      window.alert('Sudah Buka Toko')
     }
   }
 
@@ -441,26 +453,31 @@ class InfoAlamatTokoScreenScreen extends React.Component {
   }
 
   handlecreateStore () {
-    const {alamatToko, addressTemp, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, namaPelimilik, email, noHP, kodePos, alamatPemilik} = this.state
-    addressTemp[0] = idProvinsiTerpilih
-    addressTemp[1] = idKabTerpilih
-    addressTemp[2] = idKecTerpilih
-    addressTemp[3] = idkelTerpilih
-    addressTemp[4] = namaPelimilik
-    addressTemp[5] = email
-    addressTemp[6] = noHP
-    addressTemp[7] = kodePos
-    addressTemp[8] = alamatPemilik
-    alamatToko[3] = addressTemp
-    console.log(alamatToko)
-    this.props.createStores(alamatToko)
-    NavigationActions.notifikasi({
-      type: ActionConst.PUSH,
-      tipeNotikasi: 'successBukaToko'
-    })
+    const {dataStoreFinal, addressTemp, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, namaPelimilik, email, noHp, kodePos, alamatPemilik} = this.state
+    if (alamatPemilik === '' || kodePos === '' || idProvinsiTerpilih === 0 || idKabTerpilih === 0 || idKecTerpilih === 0 || idkelTerpilih === 0) {
+      window.alert('Informasi Alamat harus diisi lengkap')
+    } else {
+      this.setState({loading: true})
+      addressTemp[0] = idProvinsiTerpilih
+      addressTemp[1] = idKabTerpilih
+      addressTemp[2] = idKecTerpilih
+      addressTemp[3] = idkelTerpilih
+      addressTemp[4] = namaPelimilik
+      addressTemp[5] = email
+      addressTemp[6] = noHp
+      addressTemp[7] = kodePos
+      addressTemp[8] = alamatPemilik
+      dataStoreFinal[3] = addressTemp
+      this.props.createStores(dataStoreFinal)
+      console.log('dataStore', dataStoreFinal)
+    }
   }
 
   render () {
+    const spinner = this.state.loadign
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='#ef5656' size='small' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -486,6 +503,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         {this.renderModalKabupaten()}
         {this.renderModalKecamatan()}
         {this.renderModalKelurahan()}
+        {spinner}
       </View>
     )
   }
@@ -499,7 +517,7 @@ const mapStateToProps = (state) => {
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
     dataVilage: state.villages,
-    dataStore: state.createStore
+    dataStores: state.createStore
   }
 }
 
@@ -507,9 +525,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getAlamat: () => dispatch(cekAlamat.getListAddress()),
     getProvinsi: () => dispatch(locationAction.getProvince()),
-    getKota: (id) => dispatch(locationAction.getDistrict({ province_id: id })),
-    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ district_id: id })),
-    getVillage: (id) => dispatch(locationAction.getVillage({ sub_district_id: id })),
+    getKota: (id) => dispatch(locationAction.getDistrict({ id })),
+    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ id })),
+    getVillage: (id) => dispatch(locationAction.getVillage({ id })),
     createStores: (stores) => dispatch(storeAction.createStore({store: stores[0], expedition_services: stores[1], user: stores[2], address: stores[3]}))
   }
 }

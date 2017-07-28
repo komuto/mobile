@@ -30,6 +30,12 @@ class Notifikasi extends React.Component {
     })
   }
 
+  handleDaftarProduk () {
+    NavigationActions.daftarproduk({
+      type: ActionConst.RESET
+    })
+  }
+
   renderNotifikasi () {
     if (this.state.type === 'resetpassword') {
       return (
@@ -169,6 +175,32 @@ class Notifikasi extends React.Component {
             >
               <Text style={styles.textButtonLogin}>
                 Kembali ke Halaman Profil
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    } else if (this.state.type === 'succestambahproduk') {
+      return (
+        <View>
+          <Image source={Images.hpVerify} style={[styles.imagestyle, {height: 206.9, width: 206.9, marginTop: 30}]} />
+          <View style={[styles.welcomeContainer, {marginTop: 11}]}>
+            <Text style={styles.welcomeText}>
+              Berhasil Menambahkan Produk
+            </Text>
+          </View>
+          <View style={[styles.welcome2Container, {marginTop: 10}]}>
+            <Text style={[styles.welcome2Text, {fontSize: 13}]}>
+              Anda telah berhasil menambahkan produk{'\n'}baru ke dalam toko Anda.
+            </Text>
+          </View>
+          <View style={styles.containerButton}>
+            <TouchableOpacity
+              style={styles.buttonLogin}
+              onPress={() => this.handleDaftarProduk()}
+            >
+              <Text style={styles.textButtonLogin}>
+                Lihat Daftar Produk
               </Text>
             </TouchableOpacity>
           </View>

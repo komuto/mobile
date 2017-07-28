@@ -28,6 +28,7 @@
     "email-validator": "^1.0.7",
     "format-json": "1.0.3",
     "lodash": "4.17.4",
+    "moment": "^2.18.1",
     "querystringify": "1.0.0",
     "ramda": "0.23.0",
     "react": "15.4.1",

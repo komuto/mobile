@@ -23,28 +23,37 @@ class DataAlamatScreenScreen extends React.Component {
       email: this.props.email,
       rowTerpilih: '',
       idDelete: '',
-      notif: this.props.notif
+      notif: this.props.notif,
+      pesanNotif: this.props.pesanNotif
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataAlamats.status === 200) {
-      console.log(nextProps.dataAlamats)
+    console.log(nextProps.dataAlamats)
+    if (nextProps.dataAlamats.status === 200 || nextProps.dataAlamats.status === 0) {
       this.setState({
         listAlamat: nextProps.dataAlamats.address
       })
+      nextProps.dataAlamats.status = 0
+    }
+    if (nextProps.dataDeletAlamat.status === 200) {
+      this.props.getAlamat()
+      this.setState({
+        notif: true,
+        pesanNotif: 'Berhasil menghapus Alamat'
+      })
+      nextProps.dataDeletAlamat.status = 0
     }
   }
 
   componentDidMount () {
-    this.props.getAlamat()
   }
 
   notif () {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses mengubah alamat</Text>
+          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -68,7 +77,8 @@ class DataAlamatScreenScreen extends React.Component {
 
   handlleEditAlamat (idAlamat) {
     this.setState({statusDot: false})
-    NavigationActions.editalamat({
+    this.props.getDetailAlamat(idAlamat)
+    NavigationActions.tambahalamat({
       type: ActionConst.PUSH,
       edit: true,
       idAlamat: idAlamat,
@@ -81,7 +91,6 @@ class DataAlamatScreenScreen extends React.Component {
   handleDeleteAlamat () {
     this.setState({deletAlamat: false})
     this.props.deleteAddress(this.state.idDelete)
-    this.props.getAlamat()
   }
 
   modalConfrimDeletAlamat () {
@@ -144,7 +153,7 @@ class DataAlamatScreenScreen extends React.Component {
         <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
         <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
         <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
-        <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100, lineHeight: 23}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
+        <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
       </View>
       <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
     </View>
@@ -168,7 +177,7 @@ class DataAlamatScreenScreen extends React.Component {
         </ScrollView>
         <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAlamat()}>
           <View elevation={9}>
-            <Image source={Images.tambah} style={styles.imageTambah} />
+            <Image source={Images.tambahWhite} style={styles.imageTambah} />
           </View>
         </TouchableOpacity>
       </View>
@@ -186,8 +195,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    deleteAddress: (id) => dispatch(addressAction.deleteAddress({id})),
     getAlamat: () => dispatch(addressAction.getListAddress()),
-    deleteAddress: (id) => dispatch(addressAction.deleteAddress({id}))
+    getDetailAlamat: (id) => dispatch(addressAction.getAddressDetail({id}))
   }
 }
 

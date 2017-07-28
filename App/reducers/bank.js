@@ -21,6 +21,11 @@ const initBankAccounts = {
   ...initState()
 }
 
+const initDetailBankAccounts = {
+  detailBankAccounts: [],
+  ...initState()
+}
+
 function listBank (state = initListBank, action) {
   const type = buildType(action.type)
   switch (type) {
@@ -56,6 +61,16 @@ export const getBankAccounts = (state = initBankAccounts, action) => {
   switch (type) {
     case actions.GET_BANK_ACCOUNTS:
       return buildReducer(state, action, type, 'listBankAccounts')
+    default:
+      return state
+  }
+}
+
+export const getDetailBankAccounts = (state = initDetailBankAccounts, action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_DETAIL_BANK_ACCOUNTS:
+      return buildReducer(state, action, type, 'detailBankAccounts')
     default:
       return state
   }

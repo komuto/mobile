@@ -7,19 +7,9 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
-  spinner: {
-    position: 'absolute',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'black',
-    width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
-    opacity: 0.5
-  },
   header: {
     flexDirection: 'row',
-    height: 60,
+    height: 50,
     backgroundColor: Colors.background,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver,
@@ -28,20 +18,20 @@ export default StyleSheet.create({
   },
   state: {
     borderRadius: 21,
-    height: 25,
-    width: 25,
-    borderWidth: 1,
+    height: 21,
+    width: 21,
+    borderWidth: 0.8,
     borderColor: Colors.silver,
     justifyContent: 'center',
     alignItems: 'center'
   },
   textState: {
-    fontSize: Fonts.size.smallMed,
-    color: Colors.silver,
-    letterSpacing: 0.22
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.tiny,
+    color: Colors.labelgrey
   },
   line: {
-    width: 25,
+    width: 21,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
   },
@@ -51,10 +41,45 @@ export default StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.background
   },
+  foto: {
+    height: 104.5,
+    width: 104.5,
+    backgroundColor: Colors.paleGrey,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 200,
+    marginBottom: 21.1
+  },
+  uploadText: {
+    color: Colors.bluesky,
+    fontSize: Fonts.size.smallMed,
+    fontFamily: Fonts.type.bold
+  },
+  infoPemilikContainer: {
+    paddingLeft: 22,
+    paddingRight: 22,
+    paddingTop: 26.8,
+    paddingBottom: 10.8,
+    backgroundColor: Colors.background
+  },
+  infoContainer: {
+    paddingLeft: 22,
+    paddingRight: 22,
+    paddingTop: 45.5,
+    backgroundColor: Colors.background
+  },
   textLabel: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     color: Colors.labelgrey
+  },
+  textInfoPemilik: {
+    paddingTop: 8,
+    paddingBottom: 30,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
   },
   inputContainer: {
     borderBottomWidth: 1,
@@ -75,13 +100,87 @@ export default StyleSheet.create({
     borderRadius: 5,
     marginLeft: 20.3,
     marginRight: 20.3,
-    marginTop: 20.8,
     marginBottom: 54
   },
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.regular
+  },
+  titleEkspedisi: {
+    backgroundColor: Colors.paleGrey,
+    paddingLeft: 20,
+    paddingBottom: 15,
+    paddingTop: 20,
+    paddingRight: 62
+  },
+  textTitle: {
+    lineHeight: 21,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
+  },
+  containerEkspedisi: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
+    paddingBottom: 16.7
+  },
+  box: {
+    width: 25,
+    height: 25,
+    borderWidth: 1,
+    borderColor: Colors.silver,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  gambarCentangBox: {
+    height: 25,
+    width: 25
+  },
+  title: {
+    flex: 1,
+    marginLeft: 11,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
+  },
+  name: {
+    marginLeft: 0,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
+  },
+  containerSinge: {
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.background,
+    paddingLeft: 20,
+    paddingRight: 14.5,
+    paddingTop: 16.7,
+    paddingBottom: 20.7
+  },
+  separator: {
+    backgroundColor: Colors.paleGrey,
+    height: 20.7
+  },
+  childEkspedisi: {
+    paddingTop: 19.8,
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  inputContainerMod: {
+    marginTop: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    backgroundColor: 'red'
+  },
+  inputTextMod: {
+    height: 40,
+    flex: 1,
+    color: Colors.grey,
+    fontSize: Fonts.size.medium
   },
   infoAlamatContainer: {
     paddingLeft: 20.8,
@@ -151,6 +250,10 @@ export default StyleSheet.create({
     lineHeight: 23,
     color: Colors.lightgrey
   },
+  scrollView: {
+    height: Metrics.screenHeight,
+    paddingBottom: 21.5
+  },
   pilihDestinasi: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -168,5 +271,15 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
   }
 })

@@ -30,12 +30,21 @@ export const addBankAccount = function* (action) {
   }
 }
 
-export const getBankAccounts = function* () {
+export const getBankAccounts = function* (action) {
   try {
-    const { data } = yield apis.getBankAccounts()
+    const { data } = yield apis.getBankAccounts(action)
     yield put({ type: typeSucc(actions.GET_BANK_ACCOUNTS), ...data })
   } catch (e) {
     yield errorHandling(typeFail(actions.GET_BANK_ACCOUNTS), e)
+  }
+}
+
+export const getDetailBankAccounts = function* ({ id }) {
+  try {
+    const { data } = yield apis.getDetailBankAccounts(id)
+    yield put({ type: typeSucc(actions.GET_DETAIL_BANK_ACCOUNTS), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(actions.GET_DETAIL_BANK_ACCOUNTS), e)
   }
 }
 

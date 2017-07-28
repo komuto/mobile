@@ -33,6 +33,12 @@ class TokoDashboardScreenScreen extends React.Component {
     })
   }
 
+  handleDaftarProduk () {
+    NavigationActions.daftarproduk({
+      type: ActionConst.PUSH
+    })
+  }
+
   renderNotifAktivasi () {
     if (this.state.statusVerifikasi) {
       return (
@@ -106,7 +112,7 @@ class TokoDashboardScreenScreen extends React.Component {
             Menu Toko
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.handleDaftarProduk()}>
               <View style={styles.profile}>
                 <Image source={Images.listProduk} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>

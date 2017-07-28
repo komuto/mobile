@@ -6,9 +6,10 @@ import * as expeditionAction from '../actions/expedition'
 
 import { Images, Colors, Fonts } from '../Themes'
 
-import styles from './Styles/EkspedisiPengirimanTokoScreenStyle'
+// Styles
+import styles from './Styles/EkspedisiPengirimanProdukScreenStyle'
 
-class EkspedisiPengirimanTokoScreenScreen extends React.Component {
+class EkspedisiPengirimanProdukScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
@@ -18,9 +19,11 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
       filterPengiriman: [],
       expeditionServices: [],
       dataStore: this.props.dataStore,
-      loading: true,
+      loading: false,
       imageCentang: false,
-      idTerpilih: ''
+      idTerpilih: '',
+      dataProduk: this.props.dataProduk,
+      image: this.props.image
     }
   }
 
@@ -55,13 +58,17 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
   }
 
   nextState () {
-    const {expeditionServices, dataStore} = this.state
-    dataStore[1] = expeditionServices
-    NavigationActions.infopemilik({
+    const {expeditionServices, dataProduk, image} = this.state
+    dataProduk[12] = expeditionServices
+    dataProduk[13] = image
+
+    NavigationActions.notifikasi({
       type: ActionConst.PUSH,
-      dataStore: dataStore
+      tipeNotikasi: 'succestambahproduk',
+      hideNavBar: true,
+      hideBackImage: true
     })
-    console.log(dataStore)
+    console.log(dataProduk)
   }
 
   checkParent (title) {
@@ -145,6 +152,7 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
         filterPengiriman: dummy,
         expeditionServices: temp
       })
+      console.log('expeditionServices False', this.state.expeditionServices)
     } else {
       dummy[selected].status = 1
       temp[selected].status = 1
@@ -157,6 +165,7 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
         filterPengiriman: dummy,
         expeditionServices: temp
       })
+      console.log('expeditionServices true', this.state.expeditionServices)
     }
   }
 
@@ -177,6 +186,7 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
         }
       })
       this.setState({dataListEkspedisi: dataListEkspedisi})
+      console.log(this.state.dataListEkspedisi)
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
           console.log('in')
@@ -217,6 +227,8 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
   }
 
   render () {
+    console.log(this.state.expeditionServices)
+    // console.log(this.state.filterPengiriman)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -232,12 +244,12 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
             <Text style={[styles.textState, {color: Colors.background}]}>2</Text>
           </View>
           <View style={styles.line} />
-          <View style={styles.state}>
-            <Text style={styles.textState}>3</Text>
+          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+            <Text style={[styles.textState, {color: Colors.background}]}>3</Text>
           </View>
           <View style={styles.line} />
-          <View style={styles.state}>
-            <Text style={styles.textState}>4</Text>
+          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+            <Text style={[styles.textState, {color: Colors.background}]}>4</Text>
           </View>
         </View>
         {this.renderStateTwo()}
@@ -261,4 +273,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EkspedisiPengirimanTokoScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(EkspedisiPengirimanProdukScreenScreen)

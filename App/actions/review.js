@@ -1,12 +1,10 @@
 import { buildAction, typeReq } from '../config'
 
-export const GET_REVIEW = 'GET_REVIEW'
-export const LIST_REVIEW = 'LIST_REVIEW'
+export const GET_REVIEWS = 'GET_REVIEWS'
 export const ADD_REVIEW = 'ADD_REVIEW'
 export const ADD_REVIEW_RESET = 'ADD_REVIEW_RESET'
 
-export const getReview = params => buildAction(typeReq(GET_REVIEW), params)
-export const listReviewPagination = params => buildAction(typeReq(LIST_REVIEW), params)
+export const listReviews = params => buildAction(typeReq(GET_REVIEWS), params)
 export const addReview = params => buildAction(typeReq(ADD_REVIEW), params)
 export const resetAddReview = () => buildAction(ADD_REVIEW_RESET)
 

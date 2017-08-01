@@ -25,6 +25,11 @@ const initOwnStore = {
   ...initState()
 }
 
+const initStoreProducts = {
+  storeProducts: {},
+  ...initState()
+}
+
 function stores (state = initStore, action) {
   const type = buildType(action.type)
   switch (type) {
@@ -102,6 +107,16 @@ export const getOwnStore = (state = initOwnStore, action) => {
   switch (type) {
     case actions.GET_OWN_STORE:
       return buildReducer(state, action, type, 'ownStore')
+    default:
+      return state
+  }
+}
+
+export const getStoreProducts = (state = initStoreProducts, action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_STORE_PRODUCTS:
+      return buildReducer(state, action, type, 'storeProducts')
     default:
       return state
   }

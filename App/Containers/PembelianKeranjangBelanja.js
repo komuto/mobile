@@ -97,7 +97,8 @@ class PembelianKeranjangBelanja extends React.Component {
       modalAlamat: false,
       loadingAlamat: false,
       dataAlamat: [],
-      statusDiskon: false
+      statusDiskon: false,
+      requestPromo: false
     }
     this.props.getServices(
       this.props.dataDetailProduk.detail.product.id,
@@ -124,12 +125,14 @@ class PembelianKeranjangBelanja extends React.Component {
     if (nextProps.dataPromo.status === 200) {
       if (nextProps.dataPromo.promo.type === 0) {
         this.setState({
+          requestPromo: true,
           statusDiskon: true,
           modalPromo: false,
           diskon: parseInt(nextProps.dataPromo.promo.percentage) * parseInt(this.state.price) * parseInt(this.state.countProduct) / 100
         })
       } else {
         this.setState({
+          requestPromo: true,
           statusDiskon: true,
           modalPromo: false,
           diskon: nextProps.dataPromo.promo.nominal
@@ -140,6 +143,17 @@ class PembelianKeranjangBelanja extends React.Component {
         modalPromo: false
       })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
+      ToastAndroid.show('Penggunaan kode promo dibatalkan..', ToastAndroid.LONG)
+      this.setState({
+        diskon: 0,
+        statusDiskon: false,
+        requestPromo: false
+      })
+    } else if (nextProps.dataCancelPromo.status > 200) {
+      this.setState({ requestPromo: false })
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
   }
 
@@ -348,7 +362,7 @@ class PembelianKeranjangBelanja extends React.Component {
         <View style={styles.rincianContainer}>
           <View style={styles.rincianDiskon}>
             <Text style={[styles.teksPicker, { flex: 1, marginTop: 0 }]}>Belanja Enak</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.cancelPromo()}>
               <Text style={styles.textHapus}>Batal</Text>
             </TouchableOpacity>
           </View>
@@ -705,6 +719,10 @@ class PembelianKeranjangBelanja extends React.Component {
     this.props.getPromo(kodeVoucher)
   }
 
+  cancelPromo () {
+    this.props.cancelPromo()
+  }
+
   pembayaran () {
     NavigationActions.pembayaran({type: ActionConst.PUSH})
   }
@@ -740,7 +758,8 @@ const mapStateToProps = (state) => {
     dataServices: state.estimatedCharges,
     dataAddress: state.primaryAddress,
     dataAddressList: state.listAddress,
-    dataPromo: state.promo
+    dataPromo: state.promo,
+    dataCancelPromo: state.cancelPromo
   }
 }
 
@@ -750,7 +769,8 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     getListAlamat: () => dispatch(addressAction.getListAddress()),
-    getPromo: (code) => dispatch(cartAction.getPromo({code}))
+    getPromo: (code) => dispatch(cartAction.getPromo({code})),
+    cancelPromo: () => dispatch(cartAction.cancelPromo())
   }
 }
 

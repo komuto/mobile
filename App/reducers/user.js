@@ -19,20 +19,6 @@ const initFavoriteStore = {
   ...initState()
 }
 
-const initUpdate = {
-  ...initState()
-}
-
-const initBucket = {
-  count: 0,
-  ...initState()
-}
-
-const initGetBucket = {
-  buckets: [],
-  ...initState()
-}
-
 const initGetBalance = {
   balance: 0,
   ...initState()
@@ -40,10 +26,6 @@ const initGetBalance = {
 
 const initGetPhone = {
   phone: '',
-  ...initState()
-}
-
-const initValidate = {
   ...initState()
 }
 
@@ -58,7 +40,8 @@ const initForgetPass = {
   ...initState()
 }
 
-const initVerify = {
+const initWishlist = {
+  wishlist: [],
   ...initState()
 }
 
@@ -125,7 +108,7 @@ function auth (state = initUser, action) {
   }
 }
 
-function newPassword (state = initVerify, action) {
+function newPassword (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.USER_NEW_PASSWORD:
@@ -135,7 +118,7 @@ function newPassword (state = initVerify, action) {
   }
 }
 
-function verify (state = initVerify, action) {
+function verify (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.USER_VERIFICATION:
@@ -178,7 +161,7 @@ function getProfile (state = initProfile, action) {
   }
 }
 
-function updateProfile (state = initUpdate, action) {
+function updateProfile (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.UPDATE_PROFILE:
@@ -214,7 +197,7 @@ function register (state = initUser, action) {
   }
 }
 
-function validateToken (state = initValidate, action) {
+function validateToken (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.VALIDATE_TOKEN_FORGET_PASSWORD:
@@ -269,7 +252,7 @@ function getBalance (state = initGetBalance, action) {
   }
 }
 
-function changePassword (state = initUpdate, action) {
+function changePassword (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.CHANGE_PASSWORD:
@@ -279,40 +262,11 @@ function changePassword (state = initUpdate, action) {
   }
 }
 
-function favoriteStore (state = initUpdate, action) {
+function favoriteStore (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.FAVORITE_STORE:
       return buildReducer(state, action, type)
-    default:
-      return state
-  }
-}
-
-function addToBucket (state = initUpdate, action) {
-  const type = buildType(action.type)
-  switch (type) {
-    case actions.ADD_TO_BUCKET:
-      return buildReducer(state, action, type)
-    default:
-      return state
-  }
-}
-
-function countBucket (state = initBucket, action) {
-  switch (action.type) {
-    case typeReq(actions.COUNT_BUCKET):
-      return reqState(state)
-    case typeSucc(actions.COUNT_BUCKET):
-      return {
-        count: action.data.count,
-        ...succState(action)
-      }
-    case typeFail(actions.COUNT_BUCKET):
-      return {
-        ...state,
-        ...failState(action)
-      }
     default:
       return state
   }
@@ -337,17 +291,7 @@ function getPhone (state = initGetPhone, action) {
   }
 }
 
-function getBucket (state = initGetBucket, action) {
-  const type = buildType(action.type)
-  switch (type) {
-    case actions.GET_BUCKET:
-      return buildReducer(state, action, type, 'buckets')
-    default:
-      return state
-  }
-}
-
-function updatePhone (state = initUpdate, action) {
+function updatePhone (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.UPDATE_PHONE:
@@ -367,7 +311,7 @@ function getDiscussion (state = initDiscussion, action) {
   }
 }
 
-function sendOTPPhone (state = initValidate, action) {
+function sendOTPPhone (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.SEND_PHONE_OTP:
@@ -377,7 +321,7 @@ function sendOTPPhone (state = initValidate, action) {
   }
 }
 
-function verifyPhone (state = initValidate, action) {
+function verifyPhone (state = initState(), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.VERIFIY_PHONE:
@@ -387,7 +331,17 @@ function verifyPhone (state = initValidate, action) {
   }
 }
 
-export const sendOTPBank = (state = initValidate, action) => {
+function wishlist (state = initWishlist, action) {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_WISHLIST:
+      return buildReducer(state, action, type, 'wishlist')
+    default:
+      return state
+  }
+}
+
+export const sendOTPBank = (state = initState(), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.SEND_BANK_OTP:
@@ -420,13 +374,11 @@ export {
   getBalance,
   updateProfile,
   favoriteStore,
-  addToBucket,
-  countBucket,
-  getBucket,
   getPhone,
   updatePhone,
   getDiscussion,
   listFavoriteStore,
   sendOTPPhone,
-  verifyPhone
+  verifyPhone,
+  wishlist
 }

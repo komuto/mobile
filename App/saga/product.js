@@ -1,97 +1,105 @@
 import { put } from 'redux-saga/effects'
-import * as productActions from '../actions/product'
-import * as productApi from '../api/product'
-import { errorHandling, typeSucc, typeFail } from '../config'
+import * as actions from '../actions/product'
+import * as apis from '../api/product'
+import { errorHandling, typeSucc, typeFail, buildSaga } from '../config'
 
 function * getProduct (action) {
   try {
-    const {data} = yield productApi.getProduct(action)
-    yield put({ type: typeSucc(productActions.GET_PRODUCT), ...data })
+    const {data} = yield apis.getProduct(action)
+    yield put({ type: typeSucc(actions.GET_PRODUCT), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.GET_PRODUCT), e)
+    yield errorHandling(typeFail(actions.GET_PRODUCT), e)
   }
 }
 
 function * productByCategory (action) {
   try {
-    const {data} = yield productApi.productBy(action)
-    yield put({ type: typeSucc(productActions.LIST_PRODUCT_BY_CATEGORY), ...data })
+    const {data} = yield apis.getProductBy(action)
+    yield put({ type: typeSucc(actions.LIST_PRODUCT_BY_CATEGORY), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.LIST_PRODUCT_BY_CATEGORY), e)
+    yield errorHandling(typeFail(actions.LIST_PRODUCT_BY_CATEGORY), e)
   }
 }
 
 function * productBySearch (action) {
   try {
-    const {data} = yield productApi.productBy(action)
-    yield put({ type: typeSucc(productActions.LIST_PRODUCT_BY_SEARCH), ...data })
+    const {data} = yield apis.getProductBy(action)
+    yield put({ type: typeSucc(actions.LIST_PRODUCT_BY_SEARCH), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.LIST_PRODUCT_BY_SEARCH), e)
+    yield errorHandling(typeFail(actions.LIST_PRODUCT_BY_SEARCH), e)
   }
 }
 
 function * addToWishlist (action) {
   try {
-    const {data} = yield productApi.addToWishlist(action)
-    yield put({ type: typeSucc(productActions.ADD_TO_WISHLIST), ...data })
+    const {data} = yield apis.addToWishlist(action)
+    yield put({ type: typeSucc(actions.ADD_TO_WISHLIST), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.ADD_TO_WISHLIST), e)
+    yield errorHandling(typeFail(actions.ADD_TO_WISHLIST), e)
   }
 }
 
 function * addToWishlistHome (action) {
   try {
-    const {data} = yield productApi.addToWishlistHome(action)
-    yield put({ type: typeSucc(productActions.ADD_TO_WISHLIST_HOME), ...data })
+    const {data} = yield apis.addToWishlistHome(action)
+    yield put({ type: typeSucc(actions.ADD_TO_WISHLIST_HOME), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.ADD_TO_WISHLIST_HOME), e)
+    yield errorHandling(typeFail(actions.ADD_TO_WISHLIST_HOME), e)
   }
 }
 
 function * getDiscussion (action) {
   try {
-    const {data} = yield productApi.getDiscussion(action)
-    yield put({ type: typeSucc(productActions.GET_DISCUSSION), ...data })
+    const {data} = yield apis.getDiscussion(action)
+    yield put({ type: typeSucc(actions.GET_DISCUSSION), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.GET_DISCUSSION), e)
+    yield errorHandling(typeFail(actions.GET_DISCUSSION), e)
   }
 }
 
 function * newDiscussion (action) {
   try {
-    const {data} = yield productApi.newDiscussion(action)
-    yield put({ type: typeSucc(productActions.NEW_DISCUSSION), ...data })
+    const {data} = yield apis.newDiscussion(action)
+    yield put({ type: typeSucc(actions.NEW_DISCUSSION), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.NEW_DISCUSSION), e)
+    yield errorHandling(typeFail(actions.NEW_DISCUSSION), e)
   }
 }
 
 function * newComment (action) {
   try {
-    const {data} = yield productApi.newComment(action)
-    yield put({ type: typeSucc(productActions.NEW_COMMENT), ...data })
+    const {data} = yield apis.newComment(action)
+    yield put({ type: typeSucc(actions.NEW_COMMENT), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.NEW_COMMENT), e)
+    yield errorHandling(typeFail(actions.NEW_COMMENT), e)
   }
 }
 
 function * getComment (action) {
   try {
-    const {data} = yield productApi.getComment(action)
-    yield put({ type: typeSucc(productActions.GET_COMMENT), ...data })
+    const {data} = yield apis.getComment(action)
+    yield put({ type: typeSucc(actions.GET_COMMENT), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.GET_COMMENT), e)
+    yield errorHandling(typeFail(actions.GET_COMMENT), e)
   }
 }
 
 function * reportProduct (action) {
   try {
-    const {data} = yield productApi.reportProduct(action)
-    yield put({ type: typeSucc(productActions.REPORT_PRODUCT), ...data })
+    const {data} = yield apis.reportProduct(action)
+    yield put({ type: typeSucc(actions.REPORT_PRODUCT), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(productActions.REPORT_PRODUCT), e)
+    yield errorHandling(typeFail(actions.REPORT_PRODUCT), e)
   }
 }
+
+export const createProduct = buildSaga([], apis.createProduct, actions.CREATE_PRODUCT)
+
+export const hideProducts = buildSaga(['product_ids'], apis.hideProducts, actions.HIDE_PRODUCTS)
+
+export const deleteProducts = buildSaga(['product_ids'], apis.deleteProducts, actions.DELETE_PRODUCTS)
+
+export const changeCatalogProducts = buildSaga(['catalog_id', 'product_ids'], apis.changeCatalogProducts, actions.CHANGE_CATALOG)
 
 export {
     getProduct,

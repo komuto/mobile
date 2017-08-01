@@ -10,6 +10,7 @@ export const VERIFY_STORE = 'VERIFY_STORE'
 export const MESSAGE_STORE = 'MESSAGE_STORE'
 export const MESSAGE_STORE_RESET = 'MESSAGE_STORE_RESET'
 export const GET_OWN_STORE = 'GET_OWN_STORE'
+export const GET_STORE_PRODUCTS = 'GET_STORE_PRODUCTS'
 
 export const getStores = params => buildAction(typeReq(GET_STORE), params)
 export const photoUpload = params => buildAction(typeReq(PHOTO_UPLOAD), params)
@@ -21,4 +22,5 @@ export const verifyStore = params => buildAction(typeReq(VERIFY_STORE), params)
 export const sendMessageStore = params => buildAction(typeReq(MESSAGE_STORE), params)
 export const sendMessageStoreReset = () => buildAction(MESSAGE_STORE_RESET)
 export const getOwnStore = () => buildAction(typeReq(GET_OWN_STORE))
+export const getStoreProducts = (params) => buildAction(typeReq(GET_STORE_PRODUCTS), params)
 

@@ -1,11 +1,12 @@
 import { put } from 'redux-saga/effects'
 import * as homeActions from '../actions/home'
 import * as homeApi from '../api/home'
+import { getProductBy } from '../api/product'
 import { errorHandling, typeSucc, typeFail } from '../config'
 
 function * product (action) {
   try {
-    const {data} = yield homeApi.product(action)
+    const {data} = yield getProductBy(action)
     yield put({ type: typeSucc(homeActions.HOME_PRODUCT), ...data })
   } catch (e) {
     yield errorHandling(typeFail(homeActions.HOME_PRODUCT), e)

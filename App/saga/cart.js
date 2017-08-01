@@ -1,22 +1,9 @@
-import { put } from 'redux-saga/effects'
 import * as actions from '../actions/cart'
 import * as apis from '../api/cart'
-import { errorHandling, typeSucc, typeFail } from '../config'
+import { buildSaga } from '../config'
 
-export const addToCart = function* (action) {
-  try {
-    const { data } = yield apis.addToCart(action)
-    yield put({ type: typeSucc(actions.ADD_TO_CART), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(actions.ADD_TO_CART), e)
-  }
-}
-
-export const getPromo = function* (action) {
-  try {
-    const { data } = yield apis.getPromo(action)
-    yield put({ type: typeSucc(actions.GET_PROMO), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(actions.GET_PROMO), e)
-  }
-}
+export const addToCart = buildSaga([], apis.addToCart, actions.ADD_TO_CART)
+export const getCart = buildSaga([], apis.getCart, actions.GET_CART)
+export const countCart = buildSaga([], apis.countCart, actions.COUNT_CART, ['count'])
+export const getPromo = buildSaga(['code'], apis.getPromo, actions.GET_PROMO)
+export const cancelPromo = buildSaga([], apis.cancelPromo, actions.CANCEL_PROMO)

@@ -14,9 +14,6 @@ export const UPDATE_PROFILE = 'UPDATE_PROFILE'
 export const VALIDATE_TOKEN_FORGET_PASSWORD = 'VALIDATE_TOKEN_FORGET_PASSWORD'
 export const USER_BALANCE = 'USER_BALANCE'
 export const FAVORITE_STORE = 'FAVORITE_STORE'
-export const COUNT_BUCKET = 'COUNT_BUCKET'
-export const GET_BUCKET = 'GET_BUCKET'
-export const ADD_TO_BUCKET = 'ADDTO_BUCKET'
 export const GET_PHONE = 'GET_PHONE'
 export const UPDATE_PHONE = 'UPDATE_PHONE'
 export const GET_USER_DISCUSSION = 'GET_USER_DISCUSSION'
@@ -25,6 +22,7 @@ export const SEND_PHONE_OTP = 'SEND_PHONE_OTP'
 export const VERIFIY_PHONE = 'VERIFIY_PHONE'
 export const SEND_BANK_OTP = 'SEND_BANK_OTP'
 export const IS_LOGIN = 'IS_LOGIN'
+export const GET_WISHLIST = 'GET_WISHLIST'
 
 export const register = params => buildAction(typeReq(USER_REGISTER), params)
 export const verification = params => buildAction(typeReq(USER_VERIFICATION), params)
@@ -41,9 +39,6 @@ export const validateToken = params => buildAction(typeReq(VALIDATE_TOKEN_FORGET
 export const getBalance = () => buildAction(typeReq(USER_BALANCE))
 export const updateProfile = params => buildAction(typeReq(UPDATE_PROFILE), params)
 export const favoriteStore = params => buildAction(typeReq(FAVORITE_STORE), params)
-export const addToBucket = params => buildAction(typeReq(ADD_TO_BUCKET), params)
-export const countBucket = () => buildAction(typeReq(COUNT_BUCKET))
-export const getBucket = () => buildAction(typeReq(GET_BUCKET))
 export const getPhone = () => buildAction(typeReq(GET_PHONE))
 export const updatePhone = params => buildAction(typeReq(UPDATE_PHONE), params)
 export const getDiscussion = () => buildAction(typeReq(GET_USER_DISCUSSION))
@@ -51,3 +46,4 @@ export const listFavorite = params => buildAction(typeReq(LIST_FAVORIT_STORE), p
 export const sendOTPPhone = params => buildAction(typeReq(SEND_PHONE_OTP), params)
 export const verifyPhone = params => buildAction(typeReq(VERIFIY_PHONE), params)
 export const sendOTPBank = () => buildAction(typeReq(SEND_BANK_OTP))
+export const wishlist = () => buildAction(typeReq(GET_WISHLIST))

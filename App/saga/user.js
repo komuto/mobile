@@ -156,33 +156,6 @@ function * favoriteStore (action) {
   }
 }
 
-function * addToBucket (action) {
-  try {
-    const {data} = yield userApi.addToBucket(action)
-    yield put({ type: typeSucc(userActions.ADD_TO_BUCKET), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(userActions.ADD_TO_BUCKET), e)
-  }
-}
-
-function * countBucket (action) {
-  try {
-    const {data} = yield userApi.countBucket(action)
-    yield put({ type: typeSucc(userActions.COUNT_BUCKET), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(userActions.COUNT_BUCKET), e)
-  }
-}
-
-function * getBucket (action) {
-  try {
-    const {data} = yield userApi.getBucket(action)
-    yield put({ type: typeSucc(userActions.GET_BUCKET), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(userActions.GET_BUCKET), e)
-  }
-}
-
 function * getDiscussion (action) {
   try {
     const {data} = yield userApi.getDiscussion(action)
@@ -219,6 +192,15 @@ function * verifyPhone (action) {
   }
 }
 
+function* wishlist (action) {
+  try {
+    const {data} = yield userApi.wishlist(action)
+    yield put({ type: typeSucc(userActions.GET_WISHLIST), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(userActions.GET_WISHLIST), e)
+  }
+}
+
 export const sendOTPBank = function* () {
   try {
     const { data } = yield userApi.sendOTPBank()
@@ -245,11 +227,9 @@ export {
   updatePhone,
   updateProfile,
   favoriteStore,
-  addToBucket,
-  countBucket,
-  getBucket,
   getDiscussion,
   listFavoriteStore,
   verifyPhone,
-  sendOTPPhone
+  sendOTPPhone,
+  wishlist
 }

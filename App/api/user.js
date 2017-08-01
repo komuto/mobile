@@ -1,4 +1,5 @@
 import { authApiKomuto, publicApiKomuto } from './api'
+import { buildQuery } from '../config'
 
 function register (action) {
   let axios = publicApiKomuto()
@@ -154,7 +155,6 @@ function updateProfile (action) {
     let timeStamp = new Date(tempDate).getTime() / 1000
     action.date_of_birth = timeStamp
   }
-  // console.log(action.date_of_birth)
   return axios.put('accounts/profile', {
     ...action
   })
@@ -169,45 +169,6 @@ function updateProfile (action) {
 function favoriteStore (action) {
   let axios = authApiKomuto()
   return axios.post('stores/' + action.id + '/favorite', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
-}
-
-function addToBucket (action) {
-  let axios = authApiKomuto()
-  return axios.post('buckets', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
-}
-
-function countBucket (action) {
-  let axios = authApiKomuto()
-  return axios.get('buckets/count', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
-}
-
-function getBucket (action) {
-  let axios = authApiKomuto()
-  return axios.get('users/bucket', {
     ...action
   })
   .then(function (data) {
@@ -257,40 +218,11 @@ function getDiscussion (action) {
   })
 }
 
-function listFavoriteStore (action) {
-  let axios = authApiKomuto()
-  let params = ''
-  let check = [
-    {value: action.page, string: 'page'},
-    {value: action.limit, string: 'limit'}
-  ]
-  let indexCheck = []
-  check.map(function (obj, index) {
-    if (obj.value === undefined || obj.value === '') {
-      // do nothing
-    } else {
-      indexCheck.push(index)
-    }
-  })
-  if (indexCheck.length !== 0) {
-    params = '?'
-  }
-  indexCheck.map(function (obj, index) {
-    if (index !== indexCheck.length - 1) {
-      params = params + check[obj].string + '=' + check[obj].value + '&'
-    } else {
-      params = params + check[obj].string + '=' + check[obj].value
-    }
-  })
-  return axios.get('users/store/favorites' + params, {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
+async function listFavoriteStore ({ page, limit }) {
+  const axios = authApiKomuto()
+  const query = buildQuery({ page, limit })
+  return await axios.get(`users/store/favorites?${query}`)
+    .catch((err) => { throw err })
 }
 
 function sendOTPPhone (action) {
@@ -316,6 +248,13 @@ function verifyPhone (action) {
   })
   .catch(function (err) {
     throw (err)
+  })
+}
+
+function wishlist (action) {
+  let axios = authApiKomuto()
+  return axios.get('users/wishlist', {
+    ...action
   })
 }
 
@@ -347,14 +286,12 @@ export {
   getBalance,
   updateProfile,
   favoriteStore,
-  addToBucket,
-  countBucket,
-  getBucket,
   getProfileManage,
   getPhone,
   updatePhone,
   getDiscussion,
   listFavoriteStore,
   sendOTPPhone,
-  verifyPhone
+  verifyPhone,
+  wishlist
 }

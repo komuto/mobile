@@ -31,15 +31,19 @@ export function errorHandling (actionType, res) {
 
 /**
  * Build initial state
+ * @param props {object} additional fields
  */
-export const initState = () => {
-  return {
+export const initState = (props = {}) => {
+  const state = {
     message: '',
     status: 0,
     isLoading: false,
     isFound: false,
     isOnline: true
   }
+  return Object.keys(props).reduce((state, prop) => {
+    return { [prop]: props[prop], ...state }
+  }, state)
 }
 
 /**
@@ -67,6 +71,7 @@ export const succState = (action, data) => {
     isFound: true,
     isOnline: true
   }
+  if (action.meta) state.meta = action.meta
   if (data) state[data] = action.data
   return state
 }
@@ -148,3 +153,43 @@ export const buildType = (type) => {
 export const typeReq = type => `${type}_REQUEST`
 export const typeSucc = type => `${type}_SUCCESS`
 export const typeFail = type => `${type}_FAILURE`
+
+/**
+ * Build query string
+ * @param params {object}
+ * @param take {array} optional ===> array of prop names to take
+ */
+export const buildQuery = (params, take) => Object.keys(params)
+  .reduce((query, prop) => {
+    if (take && !take.includes(prop)) return query
+    if (Array.isArray(params[prop])) {
+      if (params[prop].length === 0) params[prop] = ''
+      // Change from array to string -> [1,2] -> '1,2'
+      params[prop] = String(params[prop])
+    }
+    if (params[prop]) query.push(`${prop}=${params[prop]}`)
+    return query
+  }, []).join('&')
+
+/**
+ * Build sagas
+ * @param args {[string]} arguments to api
+ * ['id', 'code'] take only action.id and action.id as arguments
+ * @param callApi {function}
+ * @param actionType {string}
+ * @param props {[string]} take specific prop for data from api
+ * ['user', 'province', 'id'] only take data.user.province.id for data
+ */
+export const buildSaga = (args, callApi, actionType, props = false) => function* (action) {
+  try {
+    const params = !args.length > 0 ? action
+      : args.reduce((params, prop) => ({ ...params, [prop]: action[prop] }), {})
+    const { data } = yield callApi(params)
+    if (props) {
+      data.data = props.reduce((data, prop) => data[prop] || {}, data.data)
+    }
+    yield put({ type: typeSucc(actionType), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(actionType), e)
+  }
+}

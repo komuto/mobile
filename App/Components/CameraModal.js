@@ -1,73 +1,29 @@
 import React from 'react'
-import { View, Text, Modal, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import styles from './Styles/CameraModalStyle'
-import Camera from 'react-native-camera'
+import ImagePicker from 'react-native-image-crop-picker'
 
 export default class CameraModal extends React.Component {
-
-  state = {
-    type: Camera.constants.Type.back
+  pickSingleWithCamera () {
+    ImagePicker.openCamera({
+      cropping: true,
+      width: 500,
+      height: 500
+    }).then(image => {
+      console.log('received image', image.path)
+      this.props.onPhotoCaptured(image.path)
+    }).catch(e => window.alert(e))
   }
 
-  capture () {
-    const options = {}
-    // this.camera.capture({
-    //   jpegQuality: config.camera.quality
-    // })
-    this.camera.capture({metadata: options})
-    .then(({ path }) => {
-      this.props.onPhotoCaptured(path)
-    }).catch(err => console.log('error capturing: ', err))
-  }
-
-  renderCamOrPic () {
-    if (this.props.showPreview) {
-      const { photo, type, onRetakePhoto, onSavePhoto } = this.props
-      return (
-        <View style={{ flex: 1 }}>
-          <View style={{ flex: 1, backgroundColor: '#000000' }}>
-            <Image
-              source={{ uri: photo }}
-              style={{ flex: 1, width: null, height: null }}
-            />
-          </View>
-          <View style={styles.footerWithPic}>
-            <Text style={styles.instructionTextStyle}>
-              Pastikan hasil foto {type} ini terbaca.
-            </Text>
-            <View style={styles.footerButtonAreaStyle}>
-              <View style={{ flex: 1 }}>
-                <Text onPress={onRetakePhoto}>AMBIL ULANG</Text>
-              </View>
-              <View style={{ width: 8 }} />
-              <View style={{ flex: 1 }}>
-                <Text onPress={onSavePhoto}>SIMPAN</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      )
-    }
-
-    const { CaptureTarget, CaptureQuality, Aspect } = Camera.constants
-    return (
-      <View style={{ flex: 1 }}>
-        <Camera
-          ref={(cam) => {
-            this.camera = cam
-          }}
-          style={styles.preview}
-          captureTarget={CaptureTarget.disk}
-          captureQuality={CaptureQuality.medium}
-          aspect={Aspect.fill}
-        />
-        <View style={styles.footer} >
-          <TouchableOpacity style={styles.capture} onPress={this.capture.bind(this)}>
-            <View style={styles.captureInside} />
-          </TouchableOpacity>
-        </View>
-      </View>
-    )
+  pickSingleBase64 () {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 300,
+      cropping: true
+    }).then(image => {
+      console.log('received base64 image', image.path)
+      this.props.onPhotoCaptured(image.path)
+    }).catch(e => window.alert(e))
   }
 
   render () {
@@ -79,8 +35,19 @@ export default class CameraModal extends React.Component {
         visible={visible}
         onRequestClose={onClose}
       >
-        <View style={{flex: 1, alignItems: 'stretch'}}>
-          {this.renderCamOrPic()}
+        <View style={styles.bgMdalContainer}>
+          <View style={styles.modalContainer}>
+            <TouchableOpacity onPress={() => this.pickSingleBase64()}>
+              <View style={styles.menuModal}>
+                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Pilih dari Koleksi Foto...</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => this.pickSingleWithCamera()}>
+              <View style={styles.menuModal}>
+                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Ambil Foto...</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     )

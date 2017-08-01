@@ -70,11 +70,7 @@ function storeExpeditionList (action) {
 
 function photoUpload (action) {
   let axios = authApiKomuto()
-  return axios({
-    method: 'POST',
-    url: 'images', // url alamat upload
-    data: action.data
-  })
+  return axios.post('images', action.data)
   .then(function (data) {
     return data
   })
@@ -138,6 +134,12 @@ function sendMessageStore (action) {
 export const getOwnStore = async () => {
   const axios = authApiKomuto()
   return await axios.get('users/profile')
+    .catch((err) => { throw err })
+}
+
+export const getStoreProducts = async ({ hidden = false } = {}) => {
+  const axios = authApiKomuto()
+  return await axios.get(`users/store/products?hidden=${hidden}`)
     .catch((err) => { throw err })
 }
 

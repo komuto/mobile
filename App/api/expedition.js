@@ -67,6 +67,11 @@ function updateExpedition (action) {
   })
 }
 
+export const getStoreExpeditions = async () => {
+  const axios = authApiKomuto()
+  return await axios.get('users/store/expeditions').catch((err) => { throw err })
+}
+
 export {
   getExpedition,
   getServices,

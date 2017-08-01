@@ -10,20 +10,10 @@ const initAdd = {
   ...initState()
 }
 
-function getReview (state = initReview, action) {
+function getReviews (state = initReview, action) {
   const type = buildType(action.type)
   switch (type) {
-    case actions.GET_REVIEW:
-      return buildReducer(state, action, type, 'reviews')
-    default:
-      return state
-  }
-}
-
-function listReviewPagination (state = initReview, action) {
-  const type = buildType(action.type)
-  switch (type) {
-    case actions.LIST_REVIEW:
+    case actions.GET_REVIEWS:
       return buildReducer(state, action, type, 'reviews')
     default:
       return state
@@ -43,7 +33,6 @@ function addReview (state = initAdd, action) {
 }
 
 export {
-    getReview,
-    listReviewPagination,
+    getReviews,
     addReview
 }

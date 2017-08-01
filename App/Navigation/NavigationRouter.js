@@ -61,7 +61,11 @@ import UploadPhotoProduk from '../Containers/UploadPhotoProdukScreen'
 import InfoNamaDanKategoriProdukScreen from '../Containers/InfoNamaDanKategoriProdukScreen'
 import TentangDropshipping from '../Containers/TentangDropshippingScreen'
 import EkspedisiPengirimanProduk from '../Containers/EkspedisiPengirimanProdukScreen'
-import InfoHargaDanSpesifikasiProduk from '../Containers//InfoHargaDanSpesifikasiProdukScreen'
+import InfoHargaDanSpesifikasiProduk from '../Containers/InfoHargaDanSpesifikasiProdukScreen'
+import PembayaranMandiriPay from '../Containers/PembayaranMandiriPay'
+import PembayaranVirtualAccount from '../Containers/PembayaranVirtualAccount'
+import PembayaranBri from '../Containers/PembayaranBri'
+import PembayaranDoku from '../Containers/PembayaranDoku'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -548,6 +552,34 @@ class NavigationRouter extends Component {
             key='infohargaspesifikasi'
             component={InfoHargaDanSpesifikasiProduk}
             title='Harga dan Spesifikasi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranmandiripay'
+            component={PembayaranMandiriPay}
+            title='Mandiri Click Pay'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranvirtualaccount'
+            component={PembayaranVirtualAccount}
+            title='Virtual Account (ATM)'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranbri'
+            component={PembayaranBri}
+            title='E-Pay BRI'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayarandoku'
+            component={PembayaranDoku}
+            title='Doku Wallet'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

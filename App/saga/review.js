@@ -3,12 +3,12 @@ import * as reviewActions from '../actions/review'
 import * as reviewApi from '../api/review'
 import { errorHandling, typeSucc, typeFail } from '../config'
 
-function * getReview (action) {
+function * getReviews (action) {
   try {
-    const {data} = yield reviewApi.getReview(action)
-    yield put({ type: typeSucc(reviewActions.GET_REVIEW), ...data })
+    const {data} = yield reviewApi.getReviews(action)
+    yield put({ type: typeSucc(reviewActions.GET_REVIEWS), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(reviewActions.GET_REVIEW), e)
+    yield errorHandling(typeFail(reviewActions.GET_REVIEWS), e)
   }
 }
 
@@ -21,17 +21,7 @@ function * addReview (action) {
   }
 }
 
-function * listReviewPagination (action) {
-  try {
-    const {data} = yield reviewApi.listReviewPagination(action)
-    yield put({ type: typeSucc(reviewActions.LIST_REVIEW), ...data })
-  } catch (e) {
-    yield errorHandling(typeFail(reviewActions.LIST_REVIEW), e)
-  }
-}
-
 export {
-  getReview,
-  addReview,
-  listReviewPagination
+  getReviews,
+  addReview
 }

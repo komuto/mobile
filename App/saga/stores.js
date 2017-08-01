@@ -24,18 +24,18 @@ function * createStore (action) {
 function * storeExpeditionList (action) {
   try {
     const {data} = yield storeApi.storeExpeditionList()
-    yield put({ type: typeSucc(storeActions.STORE_EXPEDITIONLIST), ...data })
+    yield put({ type: typeSucc(storeActions.STORE_EXPEDITION_LIST), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.STORE_EXPEDITIONLIST), e)
+    yield errorHandling(typeFail(storeActions.STORE_EXPEDITION_LIST), e)
   }
 }
 
 function * storeExpeditionManage (action) {
   try {
     const {data} = yield storeApi.storeExpeditionManage()
-    yield put({ type: typeSucc(storeActions.STORE_EXPEDITIONMANAGE), ...data })
+    yield put({ type: typeSucc(storeActions.STORE_EXPEDITION_MANAGE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.STORE_EXPEDITIONMANAGE), e)
+    yield errorHandling(typeFail(storeActions.STORE_EXPEDITION_MANAGE), e)
   }
 }
 
@@ -73,6 +73,15 @@ export const getOwnStore = function* () {
     yield put({ type: typeSucc(storeActions.GET_OWN_STORE), ...data })
   } catch (e) {
     yield errorHandling(typeFail(storeActions.GET_OWN_STORE), e)
+  }
+}
+
+export const getStoreProducts = function* ({ hidden }) {
+  try {
+    const { data } = yield storeApi.getStoreProducts({ hidden })
+    yield put({ type: typeSucc(storeActions.GET_STORE_PRODUCTS), ...data })
+  } catch (e) {
+    yield errorHandling(typeFail(storeActions.GET_STORE_PRODUCTS), e)
   }
 }
 

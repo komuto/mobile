@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native'
+import { Colors, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   preview: {
@@ -75,5 +76,33 @@ export default StyleSheet.create({
     lineHeight: 14,
     color: '#ffffff',
     marginLeft: 8
+  },
+  bgMdalContainer: {
+    backgroundColor: 'rgba(0,0,0, 0.3)',
+    flex: 1
+  },
+  modalContainer: {
+    marginLeft: 80,
+    marginRight: 80,
+    marginTop: 270,
+    marginBottom: 270,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    padding: 10
+  },
+  menuModal: {
+    alignItems: 'stretch',
+    justifyContent: 'space-around',
+    flexDirection: 'row',
+    padding: 10
+  },
+  textMenu: {
+    flex: 1,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed
+  },
+  icon: {
+    height: 24,
+    width: 24
   }
 })

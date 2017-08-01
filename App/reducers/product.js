@@ -41,13 +41,18 @@ const initReport = {
   ...initState()
 }
 
+const initAlterProduct = {
+  product: {},
+  ...initState()
+}
+
 function getProduct (state = initDetailProduct, action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_PRODUCT:
       return buildReducer(state, action, type, 'detail')
     case actions.GET_PRODUCT_RESET:
-      return {...state, status: 0}
+      return { ...state, status: 0 }
     default:
       return state
   }
@@ -146,6 +151,22 @@ function reportProduct (state = initReport, action) {
   switch (type) {
     case actions.REPORT_PRODUCT:
       return buildReducer(state, action, type, 'report')
+    default:
+      return state
+  }
+}
+
+export const alterProducts = (state = initAlterProduct, action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.CREATE_PRODUCT:
+      return buildReducer(state, action, type, 'product')
+    case actions.HIDE_PRODUCTS:
+      return buildReducer(state, action, type)
+    case actions.DELETE_PRODUCTS:
+      return buildReducer(state, action, type)
+    case actions.CHANGE_CATALOG:
+      return buildReducer(state, action, type)
     default:
       return state
   }

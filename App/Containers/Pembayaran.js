@@ -34,7 +34,7 @@ class Pembayaran extends React.Component {
             <Text style={[styles.textLabel, { marginBottom: 7 }]}>Total Pembayaran</Text>
             <Text style={styles.textTotal}>{totalHarga}</Text>
           </View>
-          <TouchableOpacity style={styles.buttonDetail}>
+          <TouchableOpacity style={styles.buttonDetail} onPress={() => this.detail()}>
             <Text style={styles.textBiru}>Detail</Text>
           </TouchableOpacity>
         </View>
@@ -103,7 +103,7 @@ class Pembayaran extends React.Component {
 
   renderATM () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.atm()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Virtual Account (ATM)</Text>
@@ -121,7 +121,7 @@ class Pembayaran extends React.Component {
 
   renderMandiri () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.mandiri()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Mandiri ClickPlay</Text>
@@ -137,7 +137,7 @@ class Pembayaran extends React.Component {
 
   renderBRI () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.bri()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>E-Pay BRI</Text>
@@ -153,7 +153,7 @@ class Pembayaran extends React.Component {
 
   renderDoku () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.doku()}>
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>Doku Wallet</Text>
@@ -169,7 +169,11 @@ class Pembayaran extends React.Component {
 
   renderAlfaMart () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={[styles.totalContainerBank, { marginBottom: 15 }]}>
+      <TouchableOpacity
+        activeOpacity={0.5}
+        style={[styles.totalContainerBank, { marginBottom: 15 }]}
+        onPress={() => this.alfamart()}
+      >
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
             <Text style={styles.textLabel}>AlfaMart</Text>
@@ -182,6 +186,12 @@ class Pembayaran extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  detail () {
+    NavigationActions.pembayarankeranjangbelanja({
+      type: ActionConst.PUSH
+    })
   }
 
   transferBank () {
@@ -198,6 +208,36 @@ class Pembayaran extends React.Component {
 
   saldo () {
     NavigationActions.pembayaransaldo({
+      type: ActionConst.PUSH
+    })
+  }
+
+  atm () {
+    NavigationActions.pembayaranvirtualaccount({
+      type: ActionConst.PUSH
+    })
+  }
+
+  mandiri () {
+    NavigationActions.pembayaranmandiripay({
+      type: ActionConst.PUSH
+    })
+  }
+
+  bri () {
+    NavigationActions.pembayaranbri({
+      type: ActionConst.PUSH
+    })
+  }
+
+  doku () {
+    NavigationActions.pembayarandoku({
+      type: ActionConst.PUSH
+    })
+  }
+
+  alfamart () {
+    NavigationActions.pembayaranalfamart({
       type: ActionConst.PUSH
     })
   }

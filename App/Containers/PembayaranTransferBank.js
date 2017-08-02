@@ -128,7 +128,7 @@ class PembayaranTransferBank extends React.Component {
 
   transferBank () {
     NavigationActions.pembayarantransferbankdetail({
-      type: ActionConst.PUSH
+      type: ActionConst.RESET
     })
   }
 

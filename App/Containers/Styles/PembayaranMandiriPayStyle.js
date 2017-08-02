@@ -155,6 +155,7 @@ export default StyleSheet.create({
   },
   button: {
     marginTop: 20,
+    flex: 1,
     height: 56,
     borderRadius: 5,
     backgroundColor: Colors.bluesky,
@@ -221,5 +222,52 @@ export default StyleSheet.create({
     flexDirection: 'row',
     borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.7)'
+  },
+  containerNotifikasi: {
+    marginTop: 110,
+    marginBottom: 110,
+    marginLeft: 30,
+    marginRight: 30,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    padding: 20,
+    flex: 1,
+    alignItems: 'center'
+  },
+  empty: {
+    height: 160
+  },
+  textGagal: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    marginLeft: 30,
+    marginRight: 30,
+    marginTop: 10,
+    lineHeight: 22,
+    letterSpacing: 0.4,
+    textAlign: 'center',
+    color: Colors.brownishGrey
+  },
+  metode: {
+    marginTop: 10,
+    flex: 1,
+    height: 56,
+    borderRadius: 5,
+    backgroundColor: Colors.snow,
+    borderColor: Colors.bluesky,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textBlue: {
+    color: Colors.bluesky,
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.bold
   }
 })

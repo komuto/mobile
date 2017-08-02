@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -92,14 +93,17 @@ class PembayaranKartuKredit extends React.Component {
         <Text style={[styles.time, { fontSize: 12 }]}>
           Dengan menekan tombol "Lanjutkan" Anda telah menyetujui Syarat dan Ketentuan dari Komuto
         </Text>
-        <TouchableOpacity style={styles.button} onPress={() => this.bayarKartuKredit()}>
+        <TouchableOpacity style={styles.button} onPress={() => this.notifikasi()}>
           <Text style={styles.textI}>Bayar dengan Saldo</Text>
         </TouchableOpacity>
       </View>
     )
   }
 
-  bayarKartuKredit () {
+  notifikasi () {
+    NavigationActions.pembayaranberhasil({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {

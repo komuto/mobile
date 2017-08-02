@@ -66,6 +66,9 @@ import PembayaranMandiriPay from '../Containers/PembayaranMandiriPay'
 import PembayaranVirtualAccount from '../Containers/PembayaranVirtualAccount'
 import PembayaranBri from '../Containers/PembayaranBri'
 import PembayaranDoku from '../Containers/PembayaranDoku'
+import PembayaranAlfamart from '../Containers/PembayaranAlfamart'
+import PembayaranBerhasil from '../Containers/PembayaranBerhasil'
+import PembayaranAlfamartDetail from '../Containers/PembayaranAlfamartDetail'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -462,7 +465,7 @@ class NavigationRouter extends Component {
             component={PembayaranTransferBankDetail}
             title='Detail Transaksi'
             navBar={CustomNavBar}
-            hideNavBar={false}
+            hideNavBar
             hideBackImage={false} />
           <Scene
             key='pembayarandetailbarang'
@@ -582,6 +585,27 @@ class NavigationRouter extends Component {
             title='Doku Wallet'
             navBar={CustomNavBar}
             hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranalfamart'
+            component={PembayaranAlfamart}
+            title='Alfamart'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranberhasil'
+            component={PembayaranBerhasil}
+            title='Notifikasi'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='pembayaranalfamartdetail'
+            component={PembayaranAlfamartDetail}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar
             hideBackImage={false} />
         </Scene>
       </Router>

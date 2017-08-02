@@ -1,5 +1,6 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, TextInput } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal } from 'react-native'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -20,7 +21,8 @@ class PembayaranKartuKredit extends React.Component {
       nomor: '',
       masaBerlaku: '',
       cvv: '',
-      nama: ''
+      nama: '',
+      modalGagal: false
     }
   }
 
@@ -162,14 +164,62 @@ class PembayaranKartuKredit extends React.Component {
         <Text style={[styles.time, { fontSize: 12 }]}>
           Dengan menekan tombol "Lanjutkan" Anda telah menyetujui Syarat dan Ketentuan dari Komuto
         </Text>
-        <TouchableOpacity style={styles.button} onPress={() => this.bayarKartuKredit()}>
+        <TouchableOpacity style={styles.button} onPress={() => this.notifikasi()}>
           <Text style={styles.textI}>Proses Pembayaran</Text>
         </TouchableOpacity>
       </View>
     )
   }
 
-  bayarKartuKredit () {
+  renderModalGagal () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalGagal}
+        onRequestClose={() => this.setState({ modalGagal: false })}
+        >
+        <View style={styles.modalContainer}>
+          <View style={styles.containerNotifikasi}>
+            <View style={styles.empty} />
+            <Text style={styles.textBold}>Pembayaran Gagal</Text>
+            <Text style={styles.textGagal}>
+              Mohon maaf kami tidak berhasil
+              melakukan pembayaran Anda
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity style={styles.button} onPress={() => this.cobaLagi()}>
+                <Text style={styles.textI}>Coba Lagi</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity style={styles.metode} onPress={() => this.pembayaran()}>
+                <Text style={styles.textBlue}>Pilih Metode Pembayaran Lain</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View >
+      </Modal>
+    )
+  }
+
+  notifikasi () {
+    NavigationActions.pembayaranberhasil({
+      type: ActionConst.PUSH
+    })
+  }
+
+  cobaLagi () {
+    this.setState({
+      modalGagal: false
+    })
+  }
+
+  pembayaran () {
+    this.setState({
+      modalGagal: false
+    })
+    NavigationActions.pop()
   }
 
   render () {
@@ -180,6 +230,7 @@ class PembayaranKartuKredit extends React.Component {
           {this.renderRincian()}
           {this.renderButton()}
         </ScrollView>
+        {this.renderModalGagal()}
       </View>
     )
   }

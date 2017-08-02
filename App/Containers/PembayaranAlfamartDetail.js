@@ -7,7 +7,7 @@ import { MaskService } from 'react-native-masked-text'
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
 // Styles
-import styles from './Styles/PembayaranTransferBankDetailStyle'
+import styles from './Styles/PembayaranAlfamartDetailStyle'
 
 class PembayaranTransferBankDetail extends React.Component {
 
@@ -19,6 +19,7 @@ class PembayaranTransferBankDetail extends React.Component {
       sisaPembayaran: 308582,
       total: 320000,
       kode: 'BELANJAENAK',
+      kodePembayaran: 123321212,
       diskon: 10000,
       kodeUnik: 2000,
       expand: false,
@@ -185,113 +186,101 @@ class PembayaranTransferBankDetail extends React.Component {
     )
   }
 
-  renderDaftarBank () {
-    const { data } = this.state
+  renderKodePembayaran () {
+    const { kodePembayaran } = this.state
     return (
-      <View style={styles.listViewContainer}>
-        <View style={styles.numberContainer}>
-          <Text style={styles.number}>1</Text>
-        </View>
-        <View style={styles.listView}>
-          <Text style={styles.textTitle}>
-            Lakukan Transfer ke salah satu rekening dibawah ini:
-          </Text>
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(data)}
-            renderRow={this.renderRow.bind(this)}
-            enableEmptySections
-          />
-        </View>
-      </View>
-    )
-  }
-
-  renderRow (rowData) {
-    return (
-      <View style={styles.bankContainer}>
-        <View style={styles.namaBankContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>{rowData.nameBank}</Text>
-          <Image source={{ uri: rowData.image }} style={styles.imageBank} />
-        </View>
-        <View style={styles.rekeningContainerRow}>
-          <View style={[styles.rekeningContainerColumn, { marginRight: 20 }]}>
-            <Text style={[styles.textTitle, { marginBottom: 5 }]}>No Rek</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>Atas Nama</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>Cabang</Text>
-          </View>
-          <View style={styles.rekeningContainerColumn}>
-            <Text style={[styles.textTitle, { marginBottom: 5 }]}>:{'   '}{rowData.rekening}</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.name}</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.cabang}</Text>
-          </View>
-        </View>
-      </View>
-    )
-  }
-
-  renderPembayaran () {
-    const { sisaPembayaran } = this.state
-    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
-    const leng = hargaSisaBayar.length
-
-    const teks1 = hargaSisaBayar.substr(0, (leng - 3))
-    const teks2 = hargaSisaBayar.substr(leng - 3)
-
-    return (
-      <View style={styles.separator}>
-        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
-          <View style={styles.numberContainer}>
-            <Text style={styles.number}>2</Text>
-          </View>
-          <View style={styles.listView}>
-            <Text style={[styles.textTitle, { marginBottom: 8 }]}>
-              Lakukan Pembayaran sampai 3 digit terakhir
-            </Text>
-            <View style={styles.rekeningContainerRow}>
-              <Text style={styles.nominalBlack}>
-                {teks1}
-              </Text>
-              <Text style={styles.nominalOrange}>
-                {teks2}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.boxOrange}>
-          <Text style={styles.textPembayaran}>
-            Lakukan pembayaran sampai 3 digit terakhir agar
-            pembayaran bisa diproses
-          </Text>
+      <View style={styles.tagihanContainer}>
+        <View style={styles.rowContainer}>
+          <Text style={[styles.bold, { flex: 1 }]}>Kode Pembayaran</Text>
+          <Text style={styles.textCode}>{kodePembayaran}</Text>
         </View>
       </View>
     )
   }
 
   renderKonfirmasi () {
+    const { kodePembayaran } = this.state
     return (
       <View style={styles.separator}>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.listView}>
+            <Text style={styles.textTitle}>
+              Cara Pembayaran
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>1</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Catat Kode Pembayaran Anda dan pergilah ke Indomaret terdekat
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>2</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Bilang pada Kasir bahwa anda ingin melakukan pembayaran DOKU
+            </Text>
+          </View>
+        </View>
         <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
           <View style={styles.numberContainer}>
             <Text style={styles.number}>3</Text>
           </View>
           <View style={styles.listView}>
-            <Text style={[styles.textTitle, { marginBottom: 8 }]}>
-              Lakukan konfirmasi agar pembayaran Anda
-              dapat diproses.
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Jika Kasir belum familiar dengan  DOKU, maka beritahu bahwa kode transaksinya
+              adalah 2 lalu 2 lalu 2
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.textButton}>
-            Konfirmasikan Pembayaran
-          </Text>
-        </TouchableOpacity>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>4</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Kasir akan meminta kode pembayaran Anda. Sebutkan kode pembayaran Anda {kodePembayaran}
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>5</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Lakukan pembayaran sesuai dengan total bayar Anda ditambah dengan biaya transaksi dari Indomaret
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>6</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Dapatkan bukti pembayaran dari kasir. Dan Merchant akan diberikan notifikasi mengenai
+              status pembayaran Anda
+            </Text>
+          </View>
+        </View>
+        <View style={[styles.listViewContainer, { marginBottom: 0 }]}>
+          <View style={styles.numberContainer}>
+            <Text style={styles.number}>7</Text>
+          </View>
+          <View style={styles.listView}>
+            <Text style={[styles.textTitle, { marginBottom: 8, marginRight: 15 }]}>
+              Selesai
+            </Text>
+          </View>
+        </View>
       </View>
     )
   }
@@ -381,12 +370,11 @@ class PembayaranTransferBankDetail extends React.Component {
         {this.renderInfo()}
         <ScrollView>
           {this.renderTagihan()}
-          <View style={styles.caraBayarContainer}>
-            <Text style={styles.textTitle}>Cara Pembayaran</Text>
-          </View>
-          {this.renderDaftarBank()}
-          {this.renderPembayaran()}
+          <View style={styles.caraBayarContainer} />
+          {this.renderKodePembayaran()}
+          <View style={styles.caraBayarContainer} />
           {this.renderKonfirmasi()}
+          <View style={styles.caraBayarContainer} />
           {this.renderBarang()}
         </ScrollView>
         {this.renderModalTransaksi()}

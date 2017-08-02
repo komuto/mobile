@@ -121,8 +121,7 @@ export default StyleSheet.create({
     color: Colors.green
   },
   caraBayarContainer: {
-    marginTop: 10,
-    padding: 20
+    height: 20
   },
   listViewContainer: {
     backgroundColor: Colors.snow,
@@ -274,5 +273,12 @@ export default StyleSheet.create({
     color: Colors.snow,
     fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.bold
+  },
+  textCode: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.25,
+    textAlign: 'right',
+    color: Colors.darkMint
   }
 })

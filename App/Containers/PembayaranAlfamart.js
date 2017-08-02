@@ -1,15 +1,15 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
-// Styles
-import styles from './Styles/PembayaranBriStyle'
 
-class PembayaranBri extends React.Component {
+// Styles
+import styles from './Styles/PembayaranAlfamartStyle'
+
+class PembayaranAlfamart extends React.Component {
 
   constructor (props) {
     super(props)
@@ -17,50 +17,42 @@ class PembayaranBri extends React.Component {
       kode: 'BELANJAENAK',
       total: 320000,
       diskon: 10000,
-      kodeUnik: 2000,
-      id: '',
-      pass: '',
-      modalGagal: false
+      kodeUnik: 2000
     }
   }
 
-  handleID = (text) => {
-    this.setState({ id: text })
-  }
-
-  handlePass = (text) => {
-    this.setState({ pass: text })
+  renderBatasPembayaran () {
+    return (
+      <View style={styles.batasPembayaran}>
+        <Text style={styles.textLabel}>Batas Pembayaran</Text>
+        <Text style={styles.time}>1 hari : 20 jam : 30 menit</Text>
+      </View>
+    )
   }
 
   renderInfo () {
-    const { id, pass } = this.state
     return (
       <View style={styles.infoContainer}>
         <View style={styles.titleContainer}>
-          <Text style={[styles.textBold, { flex: 1 }]}>Data Kartu Debet</Text>
-          <Image source={Images.norton} style={styles.image} />
-          <Image source={Images.epayBri} style={styles.image} />
+          <View style={styles.info}>
+            <Text style={styles.textI}>i</Text>
+          </View>
+          <Text style={styles.textTitle}>Informasi Penting</Text>
         </View>
         <View style={styles.bodyContainer}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={id}
-              keyboardType='default'
-              onChangeText={this.handleID}
-              placeholder='User ID'
-              underlineColorAndroid='transparent'
-            />
+          <View style={styles.listInfo}>
+            <View style={styles.dot} />
+            <Text style={styles.textLabel}>
+              Transaksi di Alfamart akan dikenakan biaya Rp 2.500.
+            </Text>
           </View>
-          <View style={[styles.inputContainer, { marginTop: 30 }]}>
-            <TextInput
-              style={styles.input}
-              value={pass}
-              keyboardType='default'
-              onChangeText={this.handlePass}
-              placeholder='Password'
-              underlineColorAndroid='transparent'
-            />
+          <View style={styles.listInfo}>
+            <View style={styles.dot} />
+            <Text style={styles.textLabel}>
+              Setelah menekan tombol "Bayar", Anda
+              tidak bisa mengubah metode pembayaran
+              untuk transaksi ini
+            </Text>
           </View>
         </View>
       </View>
@@ -129,73 +121,28 @@ class PembayaranBri extends React.Component {
         <Text style={[styles.time, { fontSize: 12 }]}>
           Dengan menekan tombol "Lanjutkan" Anda telah menyetujui Syarat dan Ketentuan dari Komuto
         </Text>
-        <TouchableOpacity style={styles.button} onPress={() => this.notifikasi()}>
-          <Text style={styles.textI}>Proses Pembayaran</Text>
+        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
+          <Text style={styles.textI}>Bayar dengan Alfamart</Text>
         </TouchableOpacity>
       </View>
     )
   }
 
-  renderModalGagal () {
-    return (
-      <Modal
-        animationType={'slide'}
-        transparent
-        visible={this.state.modalGagal}
-        onRequestClose={() => this.setState({ modalGagal: false })}
-        >
-        <View style={styles.modalContainer}>
-          <View style={styles.containerNotifikasi}>
-            <View style={styles.empty} />
-            <Text style={styles.textBold}>Pembayaran Gagal</Text>
-            <Text style={styles.textGagal}>
-              Mohon maaf kami tidak berhasil
-              melakukan pembayaran Anda
-            </Text>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={styles.button} onPress={() => this.cobaLagi()}>
-                <Text style={styles.textI}>Coba Lagi</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={styles.metode} onPress={() => this.pembayaran()}>
-                <Text style={styles.textBlue}>Pilih Metode Pembayaran Lain</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View >
-      </Modal>
-    )
-  }
-
-  notifikasi () {
-    NavigationActions.pembayaranberhasil({
+  transferBank () {
+    NavigationActions.pembayarantransferbankdetail({
       type: ActionConst.PUSH
     })
-  }
-
-  cobaLagi () {
-    this.setState({
-      modalGagal: false
-    })
-  }
-
-  pembayaran () {
-    this.setState({
-      modalGagal: false
-    })
-    NavigationActions.pop()
   }
 
   render () {
     return (
       <View style={styles.container}>
+        {this.renderBatasPembayaran()}
         <ScrollView>
           {this.renderInfo()}
           {this.renderRincian()}
           {this.renderButton()}
         </ScrollView>
-        {this.renderModalGagal()}
       </View>
     )
   }
@@ -211,4 +158,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PembayaranBri)
+export default connect(mapStateToProps, mapDispatchToProps)(PembayaranAlfamart)

@@ -21,11 +21,6 @@ const initNewComment = {
   ...initState()
 }
 
-const initProduct = {
-  products: [],
-  ...initState()
-}
-
 const initDiscussion = {
   discussions: [],
   ...initState()
@@ -58,21 +53,21 @@ function getProduct (state = initDetailProduct, action) {
   }
 }
 
-function productByCategory (state = initProduct, action) {
+function productByCategory (state = initState({ products: [] }, true), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.LIST_PRODUCT_BY_CATEGORY:
-      return buildReducer(state, action, type, 'products')
+      return buildReducer(state, action, type, 'products', false, true)
     default:
       return state
   }
 }
 
-function productBySearch (state = initProduct, action) {
+function productBySearch (state = initState({ products: [] }, true), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.LIST_PRODUCT_BY_SEARCH:
-      return buildReducer(state, action, type, 'products')
+      return buildReducer(state, action, type, 'products', false, true)
     default:
       return state
   }
@@ -106,7 +101,7 @@ function getDiscussion (state = initDiscussion, action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_DISCUSSION:
-      return buildReducer(state, action, type, 'discussions')
+      return buildReducer(state, action, type, 'discussions', false, true)
     default:
       return state
   }
@@ -128,7 +123,7 @@ function getComment (state = initComment, action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_COMMENT:
-      return buildReducer(state, action, type, 'comments')
+      return buildReducer(state, action, type, 'comments', false, true)
     default:
       return state
   }

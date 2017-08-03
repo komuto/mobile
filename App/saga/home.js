@@ -1,4 +1,5 @@
-import { put } from 'redux-saga/effects'
+import { delay } from 'redux-saga'
+import { put, call } from 'redux-saga/effects'
 import * as homeActions from '../actions/home'
 import * as homeApi from '../api/home'
 import { getProductBy } from '../api/product'
@@ -15,7 +16,7 @@ function * product (action) {
 
 function * filterProduct (action) {
   try {
-    const {data} = yield homeApi.product(action)
+    const {data} = yield getProductBy(action)
     yield put({ type: typeSucc(homeActions.FILTER_PRODUCT), ...data })
   } catch (e) {
     yield errorHandling(typeFail(homeActions.FILTER_PRODUCT), e)
@@ -24,6 +25,7 @@ function * filterProduct (action) {
 
 function * search (action) {
   try {
+    yield call(delay, 200)
     const {data} = yield homeApi.search(action)
     yield put({ type: typeSucc(homeActions.SEARCH_PRODUCT), ...data })
   } catch (e) {

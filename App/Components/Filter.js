@@ -44,7 +44,8 @@ class Filter extends React.Component {
           'name': 'Semua Jasa Pengiriman',
           'description': 'semua',
           'logo': null,
-          'full_name': 'Semua Ekspedisi'
+          'full_name': 'Semua Ekspedisi',
+          'is_checked': false
         }
       ],
       dataBrand: [],
@@ -98,8 +99,9 @@ class Filter extends React.Component {
       })
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
+      console.log(nextProps.dataPengirimanReducer.expeditionServices)
       this.setState({
-        dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditions)
+        dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
       })
     }
     if (nextProps.dataBrandReducer.status === 200) {

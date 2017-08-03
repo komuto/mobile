@@ -13,9 +13,10 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
 import * as produkAction from '../actions/product'
+import * as homeAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -40,6 +41,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
+      query: this.props.querys,
       search: '',
       listDataSource: [],
       rowDataSource: [],
@@ -61,7 +63,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getSearch(this.props.querys)
+    this.props.getFilterProduk(this.props.querys)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -70,6 +72,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.state.query !== nextProps.querys) {
+      this.props.getSearch(this.props.querys)
+    }
     if (nextProps.dataProduk.status === 200) {
       this.setState({
         listDataSource: nextProps.dataProduk.products,
@@ -170,7 +175,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
+        <TouchableOpacity onPress={() => this.backButton()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -351,8 +356,12 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
+      <TouchableOpacity
+        style={styles.rowDataContainer}
+        activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.product.id)}
+      >
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount} %
@@ -403,8 +412,12 @@ class ProdukTerbaruScreenScreen extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
+      <TouchableOpacity
+        style={stylesHome.rowDataContainer}
+        activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.product.id)}
+      >
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
             {rowData.product.discount} %
@@ -468,6 +481,14 @@ class ProdukTerbaruScreenScreen extends React.Component {
         />
       </View>
     )
+  }
+
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
   }
 
   render () {
@@ -535,7 +556,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state.productBySearch)
   return {
     dataProduk: state.productBySearch,
     dataFilter: state.filterProduct
@@ -544,15 +564,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getSearch: (query) => dispatch(produkAction.listProductBySearch({query})),
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(produkAction.filter({
+    getFilterProduk: (q, condition, services, price, address, brands, other) => dispatch(homeAction.filter({
+      q: q,
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
       other: other
-    }))
+    })),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

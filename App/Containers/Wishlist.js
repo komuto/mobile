@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors } from '../Themes'
-import * as wishlistAction from '../actions/wishlist'
+import * as wishlistAction from '../actions/user'
 import * as produkAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'

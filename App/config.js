@@ -32,8 +32,9 @@ export function errorHandling (actionType, res) {
 /**
  * Build initial state
  * @param props {object} additional fields
+ * @param meta {boolean}
  */
-export const initState = (props = {}) => {
+export const initState = (props = {}, meta = false) => {
   const state = {
     message: '',
     status: 0,
@@ -41,6 +42,7 @@ export const initState = (props = {}) => {
     isFound: false,
     isOnline: true
   }
+  if (meta) state['meta'] = { page: 0, limit: 10 }
   return Object.keys(props).reduce((state, prop) => {
     return { [prop]: props[prop], ...state }
   }, state)
@@ -49,13 +51,16 @@ export const initState = (props = {}) => {
 /**
  * Build request state
  * @param state {object} current state
+ * @param meta {boolean}
  */
-export const reqState = (state) => {
-  return {
+export const reqState = (state, meta) => {
+  const res = {
     ...state,
     status: 0,
     isLoading: true
   }
+  if (meta) res['meta'] = { page: 0, limit: 10 }
+  return res
 }
 
 /**
@@ -123,12 +128,13 @@ export const buildAction = (type, params = false) => {
  * @param action {object}
  * @param type {string}
  * @param name {string} additional field name
- * @param keep {bool} Keep previous state
+ * @param keep {boolean} Keep previous state
+ * @param meta {boolean}
  */
-export const buildReducer = (state, action, type, name, keep = false) => {
+export const buildReducer = (state, action, type, name, keep = false, meta = false) => {
   switch (action.type) {
     case typeReq(type):
-      return reqState(state)
+      return reqState(state, meta)
     case typeSucc(type):
       return !keep ? succState(action, name) : succKeepState(action, name, state[name])
     case typeFail(type):

@@ -45,7 +45,11 @@ export const bankAccount = (state = initBankAccount, action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.ADD_BANK_ACCOUNT:
-      return buildReducer(state, action, type, 'bankAccount')
+      return { ...buildReducer(state, action, type, 'bankAccount'), type: 'add' }
+    case actions.UPDATE_BANK_ACCOUNT:
+      return { ...buildReducer(state, action, type, 'bankAccount'), type: 'update' }
+    case actions.DELETE_BANK_ACCOUNT:
+      return { ...buildReducer(state, action, type), type: 'delete' }
     default:
       return state
   }

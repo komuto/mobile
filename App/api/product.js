@@ -2,20 +2,14 @@ import { publicApiKomuto, authApiKomuto } from './api'
 import {AsyncStorage} from 'react-native'
 import { buildQuery } from '../config'
 
-function getProduct (action) {
-  let token = AsyncStorage.getItem('token')
-  let axios
-  if (token) {
-    axios = authApiKomuto()
-  } else {
-    axios = publicApiKomuto()
-  }
-  return axios.get('products/' + action.id, {
-    ...action
-  })
+export const getProduct = ({ id }) => {
+  const token = AsyncStorage.getItem('token')
+  let axios = publicApiKomuto()
+  if (token) axios = authApiKomuto()
+  return axios.get(`products/${id}`).catch((err) => { throw err })
 }
 
-async function getProductBy (action) {
+export const getProductBy = (action) => {
   const token = AsyncStorage.getItem('token')
   let axios = publicApiKomuto()
   if (token) axios = authApiKomuto()
@@ -30,117 +24,62 @@ async function getProductBy (action) {
   }
   const take = ['q', 'page', 'limit', 'sort', 'price', 'condition', 'other', 'brands', 'services', 'address', 'category_id']
   const query = buildQuery(action, take)
-  return await axios.get(`products?${query}`)
-    .catch((err) => { throw err })
+  return axios.get(`products?${query}`).catch((err) => { throw err })
 }
 
-function addToWishlist (action) {
-  let axios = authApiKomuto()
-  return axios.get('products/' + action.id + '/wishlist', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
+export const addToWishlist = ({ id }) => {
+  const axios = authApiKomuto()
+  return axios.get(`products/${id}/wishlist`).catch((err) => { throw err })
 }
 
-function addToWishlistHome (action) {
-  let axios = authApiKomuto()
-  return axios.get('products/' + action.id + '/wishlist', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
+export const addToWishlistHome = ({ id }) => {
+  const axios = authApiKomuto()
+  return axios.get(`products/${id}/wishlist`).catch((err) => { throw err })
 }
 
-async function getDiscussion ({ id, page, limit }) {
+export const getDiscussion = ({ id, page, limit }) => {
   const axios = publicApiKomuto()
   const query = buildQuery({ page, limit })
-  return await axios.get(`products/${id}/discussions?${query}`)
-  .catch((err) => { throw err })
+  return axios.get(`products/${id}/discussions?${query}`).catch((err) => { throw err })
 }
 
-function newDiscussion (action) {
-  let axios = authApiKomuto()
-  return axios.post('products/' + action.id + '/discussions', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
+export const newDiscussion = (action) => {
+  const axios = authApiKomuto()
+  return axios.post(`products/${action.id}/discussions`, action).catch((err) => { throw err })
 }
 
-async function getComment ({ productId, id, page, limit }) {
+export const getComment = ({ productId, id, page, limit }) => {
   const axios = publicApiKomuto()
   const query = buildQuery({ page, limit })
-  return await axios.get(`products/${productId}/discussions/${id}/comments?${query}`)
-    .catch((err) => { throw err })
+  return axios.get(`products/${productId}/discussions/${id}/comments?${query}`).catch((err) => { throw err })
 }
 
-function newComment (action) {
-  let axios = authApiKomuto()
-  return axios.post('products/' + action.productId + '/discussions/' + action.id + '/comments', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
-}
-
-function reportProduct (action) {
-  let axios = authApiKomuto()
-  return axios.post('products/' + action.id + '/report', {
-    ...action
-  })
-  .then(function (data) {
-    return data
-  })
-  .catch(function (err) {
-    throw (err)
-  })
-}
-
-export const createProduct = async (action) => {
+export const newComment = (action) => {
   const axios = authApiKomuto()
-  return await axios.post('products', action).catch((err) => { throw err })
+  return axios.post(`products/${action.productId}/discussions/${action.id}/comments`, action).catch((err) => { throw err })
 }
 
-export const hideProducts = async ({ product_ids }) => {
+export const reportProduct = (action) => {
   const axios = authApiKomuto()
-  return await axios.post('users/store/products/hides', { product_ids }).catch((err) => { throw err })
+  return axios.post(`products/${action.id}/report`, action).catch((err) => { throw err })
 }
 
-export const deleteProducts = async ({ product_ids }) => {
+export const createProduct = (action) => {
   const axios = authApiKomuto()
-  return await axios.post('users/store/products', { product_ids }).catch((err) => { throw err })
+  return axios.post('products', action).catch((err) => { throw err })
 }
 
-export const changeCatalogProducts = async (action) => {
+export const hideProducts = ({ product_ids }) => {
   const axios = authApiKomuto()
-  return await axios.post('users/store/products/move-catalog', action).catch((err) => { throw err })
+  return axios.post('users/store/products/hides', { product_ids }).catch((err) => { throw err })
 }
 
-export {
-    getProduct,
-    getProductBy,
-    addToWishlist,
-    addToWishlistHome,
-    getDiscussion,
-    newDiscussion,
-    getComment,
-    newComment,
-    reportProduct
+export const deleteProducts = ({ product_ids }) => {
+  const axios = authApiKomuto()
+  return axios.post('users/store/products', { product_ids }).catch((err) => { throw err })
+}
+
+export const changeCatalogProducts = (action) => {
+  const axios = authApiKomuto()
+  return axios.post('users/store/products/move-catalog', action).catch((err) => { throw err })
 }

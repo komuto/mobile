@@ -9,16 +9,6 @@ const initUser = {
   ...initState()
 }
 
-const initDiscussion = {
-  discussions: [],
-  ...initState()
-}
-
-const initFavoriteStore = {
-  stores: [],
-  ...initState()
-}
-
 const initGetBalance = {
   balance: 0,
   ...initState()
@@ -301,11 +291,11 @@ function updatePhone (state = initState(), action) {
   }
 }
 
-function getDiscussion (state = initDiscussion, action) {
+function getDiscussion (state = initState({ discussions: [] }, true), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_USER_DISCUSSION:
-      return buildReducer(state, action, type, 'discussions')
+      return buildReducer(state, action, type, 'discussions', false, true)
     default:
       return state
   }
@@ -351,11 +341,11 @@ export const sendOTPBank = (state = initState(), action) => {
   }
 }
 
-function listFavoriteStore (state = initFavoriteStore, action) {
+function listFavoriteStore (state = initState({ stores: [] }, true), action) {
   const type = buildType(action.type)
   switch (type) {
     case actions.LIST_FAVORIT_STORE:
-      return buildReducer(state, action, type, 'stores')
+      return buildReducer(state, action, type, 'stores', false, true)
     default:
       return state
   }

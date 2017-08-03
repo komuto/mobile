@@ -1,32 +1,25 @@
 import { publicApiKomuto } from './api'
 import { buildQuery } from '../config'
 
-async function getProvince (action) {
+export const getProvince = (action) => {
   const axios = publicApiKomuto()
-  return await axios.get('locations/provinces').catch((err) => { throw err })
+  return axios.get('locations/provinces').catch((err) => { throw err })
 }
 
-async function getDistrict (action) {
-  const axios = publicApiKomuto()
-  const query = buildQuery(action)
-  return await axios.get(`locations/districts?${query}`).catch((err) => { throw err })
-}
-
-async function getSubDistrict (action) {
+export const getDistrict = (action) => {
   const axios = publicApiKomuto()
   const query = buildQuery(action)
-  return await axios.get(`locations/sub-districts?${query}`).catch((err) => { throw err })
+  return axios.get(`locations/districts?${query}`).catch((err) => { throw err })
 }
 
-async function getVillage (action) {
+export const getSubDistrict = (action) => {
   const axios = publicApiKomuto()
   const query = buildQuery(action)
-  return await axios.get(`locations/villages?${query}`).catch((err) => { throw err })
+  return axios.get(`locations/sub-districts?${query}`).catch((err) => { throw err })
 }
 
-export {
-  getProvince,
-  getDistrict,
-  getSubDistrict,
-  getVillage
+export const getVillage = (action) => {
+  const axios = publicApiKomuto()
+  const query = buildQuery(action)
+  return axios.get(`locations/villages?${query}`).catch((err) => { throw err })
 }

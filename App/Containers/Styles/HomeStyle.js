@@ -71,10 +71,11 @@ export default StyleSheet.create({
     width: 24
   },
   textInputContainer: {
-    flex: 1
+    flex: 1,
+    paddingLeft: 5,
+    marginTop: -2
   },
   inputText: {
-    flex: 1,
     fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.regular
   },

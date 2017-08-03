@@ -24,7 +24,7 @@ import * as addressSaga from './address'
 import * as bankSaga from './bank'
 import * as catalogSaga from './catalog'
 import * as cartSaga from './cart'
-import { takeEvery } from 'redux-saga/effects'
+import { takeEvery, takeLatest } from 'redux-saga/effects'
 import { typeReq } from '../config'
 
 function* dataSaga () {
@@ -70,7 +70,7 @@ const user = function* () {
 
 const home = function* () {
   yield takeEvery(typeReq(homeActions.HOME_PRODUCT), homeSaga.product)
-  yield takeEvery(typeReq(homeActions.SEARCH_PRODUCT), homeSaga.search)
+  yield takeLatest(typeReq(homeActions.SEARCH_PRODUCT), homeSaga.search)
   yield takeEvery(typeReq(homeActions.FILTER_PRODUCT), homeSaga.filterProduct)
   yield takeEvery(typeReq(homeActions.ALL_CATEGORY), homeSaga.allCategory)
   yield takeEvery(typeReq(homeActions.HOME_CATEGORY), homeSaga.categoryList)
@@ -104,6 +104,7 @@ const store = function* () {
   yield takeEvery(typeReq(storeActions.STORE_EXPEDITION_MANAGE), storeSaga.storeExpeditionManage)
   yield takeEvery(typeReq(storeActions.GET_OWN_STORE), storeSaga.getOwnStore)
   yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS), storeSaga.getStoreProducts)
+  yield takeEvery(typeReq(storeActions.GET_STORE_CATALOG_PRODUCTS), storeSaga.getStoreCatalogProducts)
 }
 
 const address = function* () {
@@ -120,6 +121,8 @@ const bank = function* () {
   yield takeEvery(typeReq(bankActions.GET_BANK), bankSaga.getBank)
   yield takeEvery(typeReq(bankActions.ADD_BANK_ACCOUNT), bankSaga.addBankAccount)
   yield takeEvery(typeReq(bankActions.GET_BANK_ACCOUNTS), bankSaga.getBankAccounts)
+  yield takeEvery(typeReq(bankActions.UPDATE_BANK_ACCOUNT), bankSaga.updateBankAccount)
+  yield takeEvery(typeReq(bankActions.DELETE_BANK_ACCOUNT), bankSaga.deleteBankAccount)
 }
 
 const brand = function* () {

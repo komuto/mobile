@@ -34,6 +34,13 @@ class Search extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.search !== this.state.query) {
+      this.props.getSearch(nextProps.search)
+      this.setState({
+        query: nextProps.search,
+        search: nextProps.query
+      })
+    }
     if (nextProps.dataSearch.status === 200) {
       const result = nextProps.dataSearch.products
       this.setState({
@@ -59,6 +66,13 @@ class Search extends React.Component {
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.props.getSearch(text)
+    }
   }
 
   detailResult (name) {
@@ -82,10 +96,6 @@ class Search extends React.Component {
     NavigationActions.pop()
   }
 
-  search () {
-    this.props.getSearch(this.state.search)
-  }
-
   render () {
     const spinner = this.state.loadingSearch
     ? (<View style={styles.spinner}>
@@ -105,7 +115,6 @@ class Search extends React.Component {
             <TextInput
               ref='search'
               autoFocus
-              onSubmitEditing={() => this.search()}
               style={styles.inputText}
               value={search}
               keyboardType='default'

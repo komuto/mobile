@@ -4,7 +4,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TextInput,
   ListView,
   BackAndroid,
   ActivityIndicator,
@@ -279,7 +278,7 @@ class Home extends React.Component {
   }
 
   search () {
-    NavigationActions.search({ type: ActionConst.PUSH, search: this.state.search })
+    NavigationActions.search({ type: ActionConst.PUSH })
   }
 
   produkTerbaru () {
@@ -335,46 +334,28 @@ class Home extends React.Component {
                   </View>
                 </TouchableOpacity>
               </View>
-              <View style={styles.searchContainer}>
+              <TouchableOpacity style={styles.searchContainer} onPress={() => this.search()}>
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
-                  <TextInput
-                    ref='search'
-                    style={styles.inputText}
-                    value={this.state.search}
-                    onSubmitEditing={() => this.search()}
-                    keyboardType='default'
-                    autoCapitalize='none'
-                    autoCorrect
-                    onChangeText={this.handleTextSearch}
-                    underlineColorAndroid='transparent'
-                    placeholder='Cari barang atau toko'
-                  />
+                  <Text style={styles.inputText}>
+                    Cari barang atau toko
+                  </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         )}
 
         renderStickyHeader={() => (
           <View key='sticky-header' style={{ backgroundColor: Colors.snow }}>
-            <View style={styles.floatingSearch}>
+            <TouchableOpacity style={styles.floatingSearch} onPress={() => this.search()}>
               <Image source={Images.searchGrey} style={styles.searchImage} />
               <View style={styles.textInputContainer}>
-                <TextInput
-                  ref='search'
-                  onSubmitEditing={() => this.search()}
-                  style={styles.inputText}
-                  value={this.state.search}
-                  keyboardType='default'
-                  autoCapitalize='none'
-                  autoCorrect
-                  onChangeText={this.handleTextSearch}
-                  underlineColorAndroid='transparent'
-                  placeholder='Cari barang atau toko'
-                />
+                <Text style={styles.inputText}>
+                  Cari barang atau toko
+                </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         )}
       >

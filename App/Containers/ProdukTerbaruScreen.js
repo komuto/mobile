@@ -70,19 +70,16 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
+      console.log(nextProps.dataProduk.products)
       this.setState({
         listDataSource: nextProps.dataProduk.products,
         rowDataSource: nextProps.dataProduk.products,
         loadingKategori: false,
         loadingProduk: false
       })
-    } else if (nextProps.dataKategori.status > 200) {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
+    } else if (nextProps.dataProduk.status > 200) {
       Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataKategori.status === 'ENOENT') {
+    } else if (nextProps.dataProduk.status === 'ENOENT') {
       this.setState({
         loadingKategori: true,
         loadingProduk: true
@@ -90,6 +87,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
       Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
     }
     if (nextProps.dataFilter.status === 200) {
+      console.log(nextProps.dataFilter)
       this.setState({
         listDataSource: nextProps.dataFilter.products,
         rowDataSource: nextProps.dataFilter.products
@@ -357,7 +355,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.images[0].file }} style={styles.imageProduct} />
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount} %
@@ -409,7 +407,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
             {rowData.product.discount} %

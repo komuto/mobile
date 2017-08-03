@@ -1,89 +1,91 @@
 import { put } from 'redux-saga/effects'
-import * as storeActions from '../actions/stores'
-import * as storeApi from '../api/stores'
-import { errorHandling, typeSucc, typeFail } from '../config'
+import * as actions from '../actions/stores'
+import * as apis from '../api/stores'
+import { errorHandling, typeSucc, typeFail, buildSaga } from '../config'
 
 function * getStores (action) {
   try {
-    const {data} = yield storeApi.getStores(action)
-    yield put({ type: typeSucc(storeActions.GET_STORE), ...data })
+    const {data} = yield apis.getStores(action)
+    yield put({ type: typeSucc(actions.GET_STORE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.GET_STORE), e)
+    yield errorHandling(typeFail(actions.GET_STORE), e)
   }
 }
 
 function * createStore (action) {
   try {
-    const {data} = yield storeApi.createStore(action)
-    yield put({ type: typeSucc(storeActions.CREATE_STORE), ...data })
+    const {data} = yield apis.createStore(action)
+    yield put({ type: typeSucc(actions.CREATE_STORE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.CREATE_STORE), e)
+    yield errorHandling(typeFail(actions.CREATE_STORE), e)
   }
 }
 
 function * storeExpeditionList (action) {
   try {
-    const {data} = yield storeApi.storeExpeditionList()
-    yield put({ type: typeSucc(storeActions.STORE_EXPEDITION_LIST), ...data })
+    const {data} = yield apis.storeExpeditionList()
+    yield put({ type: typeSucc(actions.STORE_EXPEDITION_LIST), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.STORE_EXPEDITION_LIST), e)
+    yield errorHandling(typeFail(actions.STORE_EXPEDITION_LIST), e)
   }
 }
 
 function * storeExpeditionManage (action) {
   try {
-    const {data} = yield storeApi.storeExpeditionManage()
-    yield put({ type: typeSucc(storeActions.STORE_EXPEDITION_MANAGE), ...data })
+    const {data} = yield apis.storeExpeditionManage()
+    yield put({ type: typeSucc(actions.STORE_EXPEDITION_MANAGE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.STORE_EXPEDITION_MANAGE), e)
+    yield errorHandling(typeFail(actions.STORE_EXPEDITION_MANAGE), e)
   }
 }
 
 function * photoUpload (action) {
   try {
-    const {data} = yield storeApi.photoUpload(action)
-    yield put({ type: typeSucc(storeActions.PHOTO_UPLOAD), ...data })
+    const {data} = yield apis.photoUpload(action)
+    yield put({ type: typeSucc(actions.PHOTO_UPLOAD), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.PHOTO_UPLOAD), e)
+    yield errorHandling(typeFail(actions.PHOTO_UPLOAD), e)
   }
 }
 
 function * verifyStore (action) {
   try {
-    const {data} = yield storeApi.verifyStore(action)
-    yield put({ type: typeSucc(storeActions.VERIFY_STORE), ...data })
+    const {data} = yield apis.verifyStore(action)
+    yield put({ type: typeSucc(actions.VERIFY_STORE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.VERIFY_STORE), e)
+    yield errorHandling(typeFail(actions.VERIFY_STORE), e)
   }
 }
 
 function * sendMessageStore (action) {
   try {
-    const {data} = yield storeApi.sendMessageStore(action)
-    yield put({ type: typeSucc(storeActions.MESSAGE_STORE), ...data })
+    const {data} = yield apis.sendMessageStore(action)
+    yield put({ type: typeSucc(actions.MESSAGE_STORE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.MESSAGE_STORE), e)
+    yield errorHandling(typeFail(actions.MESSAGE_STORE), e)
   }
 }
 
 export const getOwnStore = function* () {
   try {
-    const { data } = yield storeApi.getOwnStore()
+    const { data } = yield apis.getOwnStore()
     data.data = data.data.store
-    yield put({ type: typeSucc(storeActions.GET_OWN_STORE), ...data })
+    yield put({ type: typeSucc(actions.GET_OWN_STORE), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.GET_OWN_STORE), e)
+    yield errorHandling(typeFail(actions.GET_OWN_STORE), e)
   }
 }
 
 export const getStoreProducts = function* ({ hidden }) {
   try {
-    const { data } = yield storeApi.getStoreProducts({ hidden })
-    yield put({ type: typeSucc(storeActions.GET_STORE_PRODUCTS), ...data })
+    const { data } = yield apis.getStoreProducts({ hidden })
+    yield put({ type: typeSucc(actions.GET_STORE_PRODUCTS), ...data })
   } catch (e) {
-    yield errorHandling(typeFail(storeActions.GET_STORE_PRODUCTS), e)
+    yield errorHandling(typeFail(actions.GET_STORE_PRODUCTS), e)
   }
 }
+
+export const getStoreCatalogProducts = buildSaga(['id'], apis.getStoreCatalogProducts, actions.GET_STORE_CATALOG_PRODUCTS)
 
 export {
   getStores,

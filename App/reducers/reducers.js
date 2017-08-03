@@ -70,7 +70,8 @@ const store = {
   verifyStore: storeReducers.verifyStore,
   sendMessageStore: storeReducers.sendMessageStore,
   ownStore: storeReducers.getOwnStore,
-  storeProducts: storeReducers.getStoreProducts
+  storeProducts: storeReducers.getStoreProducts,
+  storeCatalogProducts: storeReducers.getStoreCatalogProducts
 }
 
 const address = {

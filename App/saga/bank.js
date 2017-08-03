@@ -1,7 +1,7 @@
 import { put } from 'redux-saga/effects'
 import * as actions from '../actions/bank'
 import * as apis from '../api/bank'
-import { errorHandling, typeSucc, typeFail } from '../config'
+import { errorHandling, typeSucc, typeFail, buildSaga } from '../config'
 
 function * listBank (action) {
   try {
@@ -38,6 +38,9 @@ export const getBankAccounts = function* ({ id }) {
     yield errorHandling(typeFail(actions.GET_BANK_ACCOUNTS), e)
   }
 }
+
+export const updateBankAccount = buildSaga([], apis.updateBankAccount, actions.UPDATE_BANK_ACCOUNT)
+export const deleteBankAccount = buildSaga(['id', 'code'], apis.deleteBankAccount, actions.DELETE_BANK_ACCOUNT)
 
 export {
   listBank,

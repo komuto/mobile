@@ -3,6 +3,7 @@ import { ScrollView, Text, View, Image, TouchableOpacity, ListView, Alert, Activ
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as homeAction from '../actions/home'
+import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -28,7 +29,6 @@ class KategoriScreenScreen extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataAllCategory.status === 200) {
-      console.log(nextProps.dataAllCategory.allCategory)
       this.setState({
         data: nextProps.dataAllCategory.allCategory,
         loadingKategori: false
@@ -46,6 +46,10 @@ class KategoriScreenScreen extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.props.getKategori()
+  }
+
   handleDetailKategori (rowId, title) {
     NavigationActions.kategoriduascreen({
       type: ActionConst.PUSH,
@@ -55,22 +59,23 @@ class KategoriScreenScreen extends React.Component {
     })
   }
 
-  handleAllKategori (rowId, title) {
-    this.setState({categoryTitle: title, id: rowId})
+  handleAllKategori (id, title) {
+    this.setState({categoryTitle: title, id: id})
     NavigationActions.kategoriempatscreen({
       type: ActionConst.PUSH,
-      id: rowId,
+      id: id,
       header: title,
       name: title
     })
+    this.props.getProduckKategori(id)
   }
 
   renderSubListView (subCategory) {
     if (subCategory.length <= 0) {
       return null
     } else {
-      const subCategoryView = subCategory.map((obj) =>
-        (<TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
+      const subCategoryView = subCategory.map((obj, i) =>
+        (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
           <Image source={Images.dapur} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
@@ -151,7 +156,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getKategori: dispatch(homeAction.allCategory())
+    getKategori: () => dispatch(homeAction.allCategory()),
+    getProduckKategori: (categoryId) => dispatch(produkAction.listProductByCategory({category_id: categoryId}))
   }
 }
 

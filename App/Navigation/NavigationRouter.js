@@ -69,6 +69,8 @@ import PembayaranDoku from '../Containers/PembayaranDoku'
 import PembayaranAlfamart from '../Containers/PembayaranAlfamart'
 import PembayaranBerhasil from '../Containers/PembayaranBerhasil'
 import PembayaranAlfamartDetail from '../Containers/PembayaranAlfamartDetail'
+import SearchByCategory from '../Containers/SearchByCategoryScreen'
+import SearchResultByCategory from '../Containers/SearchResultByCategoryScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -604,6 +606,20 @@ class NavigationRouter extends Component {
             key='pembayaranalfamartdetail'
             component={PembayaranAlfamartDetail}
             title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='searchresultbycategory'
+            component={SearchResultByCategory}
+            title='Search Result'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='searchbycategory'
+            component={SearchByCategory}
+            title='Search'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage={false} />

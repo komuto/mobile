@@ -15,8 +15,8 @@ import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as homeAction from '../actions/home'
 import * as produkAction from '../actions/product'
+import * as homeAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -41,6 +41,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
+      query: this.props.querys,
       search: '',
       listDataSource: [],
       rowDataSource: [],
@@ -58,11 +59,12 @@ class ProdukTerbaruScreenScreen extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      catalogId: this.props.id
+      from: this.props.from
     }
   }
 
   componentDidMount () {
+    this.props.getFilterProduk(this.props.querys)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -71,11 +73,14 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.state.query !== nextProps.querys) {
+      this.props.getSearch(this.props.querys)
+    }
     if (nextProps.dataProduk.status === 200) {
       this.setState({
         listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products
-        // loadingProduk: false
+        rowDataSource: nextProps.dataProduk.products,
+        loadingProduk: false
       })
     } else if (nextProps.dataProduk.status > 200) {
       this.setState({
@@ -109,6 +114,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
       })
       return true
     } else if (NavigationActions.pop()) {
+      if (this.state.from === 'home') {
+        NavigationActions.backtab({
+          type: ActionConst.RESET
+        })
+      } else {
+        NavigationActions.popTo('kategoriscreen')
+      }
       return true
     }
   }
@@ -117,7 +129,21 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.setState({ search: text })
   }
 
+  search () {
+    console.log('dispatch search')
+  }
+
   backButton () {
+    if (this.state.from === 'home') {
+      NavigationActions.backtab({
+        type: ActionConst.RESET
+      })
+    } else {
+      NavigationActions.popTo('produkterbaru')
+    }
+  }
+
+  popSearch () {
     NavigationActions.pop()
   }
 
@@ -125,17 +151,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.setState({
       tipe: 'data'
     })
-  }
-
-  renderImageTypeView () {
-    if (this.state.tipeView === 'grid') {
-      return (
-        <Image source={Images.grid} style={styles.searchImage} />
-      )
-    }
-    return (
-      <Image source={Images.list} style={styles.searchImage} />
-    )
   }
 
   renderHeader () {
@@ -178,7 +193,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
+        <TouchableOpacity onPress={() => this.popSearch()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -285,15 +300,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   openSearch () {
-    NavigationActions.searchbycategory({ type: ActionConst.PUSH, from: 'product', catalogId: this.state.catalogId })
-  }
-
-  produkDetail (id) {
-    NavigationActions.productdetail({
-      type: ActionConst.PUSH,
-      id: id
+    this.setState({
+      tipe: 'search'
     })
-    this.props.getDetailProduk(id)
   }
 
   renderVerified (status) {
@@ -349,9 +358,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   renderRowList (rowData) {
-    if (rowData.product.is_discount) {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
+      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -363,8 +374,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
+      <TouchableOpacity
+        style={styles.rowDataContainer}
+        activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.product.id)}
+      >
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -381,7 +395,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
             </Text>
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
-          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -401,9 +415,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.is_discount) {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
+      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -414,8 +430,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
+      <TouchableOpacity
+        style={stylesHome.rowDataContainer}
+        activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.product.id)}
+      >
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -431,7 +450,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </Text>
           {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
@@ -482,6 +501,14 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
+  }
+
   render () {
     let background
     if (this.state.tipe === 'search') {
@@ -512,7 +539,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              {this.renderImageTypeView()}
+              <Image style={styles.imageFooter} source={Images.grid} />
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>
@@ -555,7 +582,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
+    getFilterProduk: (q, condition, services, price, address, brands, other) => dispatch(homeAction.filter({
+      q: q,
       condition: condition,
       services: services,
       price: price,

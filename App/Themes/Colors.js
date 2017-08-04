@@ -57,7 +57,11 @@ const colors = {
   paleGreyFour: '#e3e7ea',
   paleGreyFive: '#edf3f8',
   blueBackground: '#ebf2fb',
-  blueText: '#6ca2e8'
+  blueText: '#6ca2e8',
+  veryLighBlue: '#ddf0ff',
+  darkBlueSky: '#3093e4',
+  lightBlueGrey: '#e4f6ec',
+  darkMintTwo: '#44b979'
 }
 
 export default colors

@@ -3,6 +3,8 @@ import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/TentangDropshippingScreenStyle'
@@ -117,10 +119,17 @@ class TentangDropshippingScreenScreen extends React.Component {
     }
   }
 
+  handleDropshipper () {
+    this.props.getDropshipper(false)
+    NavigationActions.pilihbarangdropshipping({
+      type: ActionConst.PUSH
+    })
+  }
+
   button () {
     if (this.state.buttonVisible) {
       return (
-        <TouchableOpacity style={[styles.buttonnext]} onPress={() => {}}>
+        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleDropshipper()}>
           <Text style={styles.textButtonNext}>
             Saya Mengerti, Lanjutkan Proses
           </Text>
@@ -151,6 +160,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDropshipper: (dropshipper) => dispatch(productAction.listProductByCategory({is_dropship: dropshipper}))
   }
 }
 

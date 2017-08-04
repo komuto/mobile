@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -34,6 +35,7 @@ class TokoDashboardScreenScreen extends React.Component {
   }
 
   handleDaftarProduk () {
+    this.props.getListProduk()
     NavigationActions.daftarproduk({
       type: ActionConst.PUSH
     })
@@ -210,6 +212,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getListProduk: () => dispatch(storeAction.getStoreProducts())
   }
 }
 

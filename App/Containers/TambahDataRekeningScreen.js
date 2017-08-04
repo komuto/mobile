@@ -1,7 +1,7 @@
 import React from 'react'
 import { ScrollView, Text, View, TextInput, Image, Modal, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+// import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as bankAction from '../actions/bank'
@@ -45,45 +45,47 @@ class TambahDataRekeningScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataList.status === 200) {
-      this.setState({
-        listNamaBanks: this.state.tambahBank.concat(nextProps.dataList.banks)
-      })
-    }
-    if (nextProps.codeOtp.status === 200) {
-      console.log(nextProps.codeOtp)
-      this.setState({
-        loading: false
-      })
-      NavigationActions.otpcode({
-        type: ActionConst.PUSH,
-        typeVerifikasi: 'otptambahrekening',
-        fieldPass: this.state.nomerHape,
-        email: this.state.email,
-        name: this.state.pemilikAkun,
-        nomerRek: this.state.nomerRekening,
-        idBank: this.state.idnamaBankTerpilih,
-        cabangBank: this.state.cabangBank,
-        title: 'Tambah Data Rekening'
-      })
-    } if (nextProps.edit) {
-      if (nextProps.detailRekening.status === 200) {
-        console.log('edit', nextProps.detailRekening)
-        this.setState({
-          pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
-          nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
-          namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
-          idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
-          colorPickerNamaBank: Colors.darkgrey,
-          cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
-          loading: false
-        })
-      }
-    }
+    console.log('tai2')
+    // if (nextProps.dataList.status === 200) {
+    //   this.setState({
+    //     listNamaBanks: this.state.tambahBank.concat(nextProps.dataList.banks)
+    //   })
+    // }
+    // if (nextProps.codeOtp.status === 200) {
+    //   console.log(nextProps.codeOtp)
+    //   this.setState({
+    //     loading: false
+    //   })
+    //   NavigationActions.otpcode({
+    //     type: ActionConst.PUSH,
+    //     typeVerifikasi: 'otptambahrekening',
+    //     fieldPass: this.state.nomerHape,
+    //     email: this.state.email,
+    //     name: this.state.pemilikAkun,
+    //     nomerRek: this.state.nomerRekening,
+    //     idBank: this.state.idnamaBankTerpilih,
+    //     cabangBank: this.state.cabangBank,
+    //     title: 'Tambah Data Rekening'
+    //   })
+    // } if (nextProps.edit) {
+    //   if (nextProps.detailRekening.status === 200) {
+    //     console.log('edit', nextProps.detailRekening)
+    //     this.setState({
+    //       pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
+    //       nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
+    //       namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
+    //       idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
+    //       colorPickerNamaBank: Colors.darkgrey,
+    //       cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
+    //       loading: false
+    //     })
+    //   }
+    // }
   }
 
   componentDidMount () {
-    this.props.getListBank()
+    // this.props.getListBank()
+    // this.props.getDetailRekening(this.props.idRekening)
   }
 
   handleChangePemilikAkun = (text) => {
@@ -270,6 +272,7 @@ class TambahDataRekeningScreenScreen extends React.Component {
   }
 
   render () {
+    console.log('tai')
     const {colorPemilik, colorNomerRek, colorNamaBank, colorCabangBank, colorPickerNamaBank} = this.state
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -349,14 +352,15 @@ const mapStateToProps = (state) => {
   return {
     dataList: state.banks,
     codeOtp: state.sendOTPBank,
-    detailRekening: state.detailBankAccounts
+    detailRekening: state.listBankAccounts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getListBank: () => dispatch(bankAction.listBank()),
-    sendOtp: () => dispatch(accountAction.sendOTPBank())
+    sendOtp: () => dispatch(accountAction.sendOTPBank()),
+    getDetailRekening: (id) => dispatch(bankAction.getBankAccounts({id}))
   }
 }
 

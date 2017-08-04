@@ -1,8 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, Modal } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as bankAction from '../actions/bank'
+// import * as bankAction from '../actions/bank'
 
 import { Colors, Fonts, Images } from '../Themes/'
 
@@ -12,9 +12,9 @@ class DataRekeningScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       listBank: [],
-      list: [],
       deletRekening: false,
       statusDot: false,
       name: this.props.name,
@@ -28,11 +28,11 @@ class DataRekeningScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataRekening.status === 200) {
+    if (nextProps.dataRekenings.status === 200) {
       this.setState({
-        list: nextProps.dataRekening.listBankAccounts,
-        listBank: nextProps.dataRekening.listBankAccounts
+        listBank: nextProps.dataRekenings.listBankAccounts
       })
+      nextProps.dataRekenings.status = 0
     }
   }
 
@@ -67,9 +67,7 @@ class DataRekeningScreenScreen extends React.Component {
   }
 
   handlleEditRekening (id) {
-    console.log(id)
     this.setState({statusDot: false})
-    this.props.getDetailRekening(id)
     NavigationActions.tambahrekening({
       type: ActionConst.PUSH,
       edit: true,
@@ -77,7 +75,7 @@ class DataRekeningScreenScreen extends React.Component {
       name: this.state.name,
       email: this.state.email,
       nomerHape: this.state.nomerHape,
-      titleButton: 'Simpan Alamat',
+      titleButton: 'Simpan Rekening',
       title: 'Edit Data Rekening',
       loading: true
     })
@@ -85,7 +83,6 @@ class DataRekeningScreenScreen extends React.Component {
 
   handleDeleteRekening () {
     this.setState({deletRekening: false})
-    // this.props.deleteAddress(this.state.idDelete)
   }
 
   modalConfrimdeletRekening () {
@@ -162,13 +159,42 @@ class DataRekeningScreenScreen extends React.Component {
     )
   }
 
+  renderRowBank (rowData, sectionId, rowId) {
+    return (
+      <View>
+        <View style={styles.headerInfoAlamat}>
+          <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} />
+          <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
+            <Image source={Images.threeDotSilver} style={styles.imageDot} />
+          </TouchableOpacity>
+        </View>
+        {this.containerEdit(rowId, rowData.id)}
+        <View style={styles.dataInfoAlamat}>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Pemilik Akun</Text>
+          <Text style={styles.textHeader2}>{rowData.holder_name}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nomor Rekening</Text>
+          <Text style={styles.textHeader2}>{rowData.holder_account_name}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Bank</Text>
+          <Text style={styles.textHeader2}>{rowData.bank.name}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Cabang Bank</Text>
+          <Text style={styles.textHeader2}>{rowData.bank_branch_office_name}</Text>
+        </View>
+        <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
+      </View>
+    )
+  }
+
   render () {
     return (
       <View style={styles.container}>
         {this.notif()}
         <ScrollView>
           <View style={styles.infoAlamat}>
-            {this.mapingRekening()}
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.listBank)}
+              renderRow={this.renderRowBank.bind(this)}
+              enableEmptySections
+            />
             {this.modalConfrimdeletRekening()}
           </View>
         </ScrollView>
@@ -185,15 +211,12 @@ class DataRekeningScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataRekening: state.listBankAccounts
+    dataRekenings: state.listBankAccounts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // deleteAddress: (id) => dispatch(addressAction.deleteAddress({id})),
-    // getAlamat: () => dispatch(addressAction.getListAddress()),
-    getDetailRekening: (id) => dispatch(bankAction.getDetailBankAccounts({id}))
   }
 }
 

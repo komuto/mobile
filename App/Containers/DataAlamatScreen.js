@@ -29,7 +29,6 @@ class DataAlamatScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(nextProps.dataAlamats)
     if (nextProps.dataAlamats.status === 200 || nextProps.dataAlamats.status === 0) {
       this.setState({
         listAlamat: nextProps.dataAlamats.address
@@ -76,6 +75,7 @@ class DataAlamatScreenScreen extends React.Component {
   }
 
   handlleEditAlamat (idAlamat) {
+    console.log(idAlamat)
     this.setState({statusDot: false})
     this.props.getDetailAlamat(idAlamat)
     NavigationActions.tambahalamat({

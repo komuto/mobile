@@ -71,6 +71,9 @@ import PembayaranBerhasil from '../Containers/PembayaranBerhasil'
 import PembayaranAlfamartDetail from '../Containers/PembayaranAlfamartDetail'
 import SearchByCategory from '../Containers/SearchByCategoryScreen'
 import SearchResultByCategory from '../Containers/SearchResultByCategoryScreen'
+import PilihBarangDropshipping from '../Containers/PilihBarangDropshippingScreen'
+import TempatkanDiKatalog from '../Containers/TempatkanDiKatalogScreen'
+import ListProdukByCatalogScreen from '../Containers/ListProdukByCatalogScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -622,6 +625,27 @@ class NavigationRouter extends Component {
             title='Search'
             navBar={CustomNavBar}
             hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='pilihbarangdropshipping'
+            component={PilihBarangDropshipping}
+            title='Pilih Barang dari Dropshipping'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tempatkandikatalog'
+            component={TempatkanDiKatalog}
+            title='Tempatkan di Katalog'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='listprodukbycatalog'
+            component={ListProdukByCatalogScreen}
+            title='Daftar Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
             hideBackImage={false} />
         </Scene>
       </Router>

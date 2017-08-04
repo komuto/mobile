@@ -303,6 +303,6 @@ export default StyleSheet.create({
   menuProvinsiContainer: {
     position: 'absolute',
     bottom: 20,
-    maxHeight: (Metrics.screenHeight * 3) / 4
+    maxHeight: (Metrics.screenHeight - 70)
   }
 })

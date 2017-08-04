@@ -111,8 +111,15 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)'
   },
   rowContainer: {
-    flexDirection: 'column',
-    flex: 1
+    flexDirection: 'column'
+  },
+  modalContainer: {
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    maxHeight: (Metrics.screenHeight - 20)
   },
   modalHeader: {
     backgroundColor: Colors.snow,

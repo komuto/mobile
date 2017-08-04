@@ -49,7 +49,7 @@ class BiodataScreenScreen extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataKota.status === 200) {
-      this.setState({kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)})
+      this.setState({kabupaten: nextProps.dataKota.districts})
     }
     if (nextProps.dataPhoto.status === 200) {
       this.setState({fotoProfil: nextProps.dataPhoto.payload.name})
@@ -129,36 +129,38 @@ class BiodataScreenScreen extends React.Component {
         visible={this.state.modalKabupaten}
         onRequestClose={() => this.setState({ modalKabupaten: false })}
         >
-        <View style={styles.rowContainer}>
-          <View style={styles.modalHeader} >
-            <Text style={styles.textModalTitle}>Pilih Kota Kelahiran</Text>
-            <TouchableOpacity onPress={() => this.setState({modalKabupaten: false})}>
-              <Image source={Images.close} style={styles.closeImage} />
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKabupaten: false })}>
+          <View style={styles.menuProvinsiContainer}>
+            <View style={styles.modalHeader} >
+              <Text style={styles.textModalTitle}>Pilih Kota Kelahiran</Text>
+              <TouchableOpacity onPress={() => this.setState({modalKabupaten: false})}>
+                <Image source={Images.close} style={styles.closeImage} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.modalSearch} >
+              <Image source={Images.searchGrey} style={styles.closeImage} />
+              <TextInput
+                style={styles.textSearch}
+                value={this.state.search}
+                keyboardType='default'
+                returnKeyType='done'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeSearch}
+                underlineColorAndroid='transparent'
+                placeholder='Cari kota kelahiran Anda'
+              />
+            </View>
+            <ScrollView>
+              <ListView
+                contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+                dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
+                renderRow={this.renderListKabupaten.bind(this)}
+                enableEmptySections
+              />
+            </ScrollView>
           </View>
-          <View style={styles.modalSearch} >
-            <Image source={Images.searchGrey} style={styles.closeImage} />
-            <TextInput
-              style={styles.textSearch}
-              value={this.state.search}
-              keyboardType='default'
-              returnKeyType='done'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangename}
-              underlineColorAndroid='transparent'
-              placeholder='Cari kota kelahiran Anda'
-            />
-          </View>
-          <ScrollView>
-            <ListView
-              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
-              renderRow={this.renderListKabupaten.bind(this)}
-              enableEmptySections
-            />
-          </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -192,6 +194,11 @@ class BiodataScreenScreen extends React.Component {
 
   handleChangename = (text) => {
     this.setState({ namaPemilik: text })
+  }
+
+  handleChangeSearch = (text) => {
+    this.setState({ search: text })
+    this.props.searchKabupaten(text)
   }
 
   handlingRadio (index, value) {
@@ -346,6 +353,7 @@ const mapDispatchToProps = (dispatch) => {
     postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data})),
     getProfil: () => dispatch(userAction.getProfile()),
     getKota: () => dispatch(locationAction.getDistrict()),
+    searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
     updateProfile: (foto, namaLengkap, idKabTerpilih, tanggalLahir) => dispatch(userAction.updateProfile({photo: foto, name: namaLengkap, place_of_birth_id: idKabTerpilih, date_of_birth: tanggalLahir}))
   }
 }

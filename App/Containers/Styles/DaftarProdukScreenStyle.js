@@ -151,5 +151,32 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.regular,
     marginLeft: 10
+  },
+  laberDropShipping: {
+    width: 180,
+    backgroundColor: Colors.veryLighBlue,
+    height: 30,
+    borderTopLeftRadius: 2,
+    borderBottomLeftRadius: 2,
+    justifyContent: 'center'
+  },
+  textDropShipping: {
+    fontSize: Fonts.size.smallMed,
+    fontFamily: Fonts.type.bold,
+    color: Colors.darkBlueSky,
+    marginLeft: 8,
+    paddingBottom: 2
+  },
+  triangleLabel: {
+    borderTopWidth: 30 / 2.0,
+    borderRightWidth: 5,
+    borderBottomWidth: 30 / 2.0,
+    borderLeftWidth: 0,
+    borderTopColor: 'transparent',
+    borderRightColor: Colors.snow,
+    borderBottomColor: 'transparent',
+    borderLeftColor: 'transparent',
+    backgroundColor: Colors.veryLighBlue,
+    width: 20
   }
 })

@@ -6,6 +6,8 @@ import { TextInputMask, MaskService } from 'react-native-masked-text'
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import TentangDropshipping from './TentangDropshippingScreen'
+import * as katalogAction from '../actions/catalog'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -22,7 +24,7 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
       images: this.props.images,
       loading: false,
       harga: '',
-      diskon: '',
+      diskon: 0,
       beratProduk: '',
       stokProduk: '',
       namaKatalog: '',
@@ -45,9 +47,10 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
       idKatalogTerpilih: '',
       dataProduk: this.props.dataProduk,
       numberPrice: 0,
-      minimalGrosir: '',
-      maksimalGrosir: '',
-      hargaGrosir: ''
+      minimalGrosir: '0',
+      maksimalGrosir: '0',
+      hargaGrosir: '0',
+      normalizePrice: 0
     }
   }
 
@@ -56,6 +59,9 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
       })
+    } if (nextProps.dataCreateCatalog.status === 200) {
+      nextProps.dataCreateCatalog.status = 0
+      this.props.getCatalog()
     }
   }
 
@@ -148,6 +154,7 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
 
   handleTambahKatalog () {
     this.setState({modalTambahKatalog: false})
+    this.props.createCatalog(this.state.namaKatalog)
   }
 
   modalDropshipping () {
@@ -584,22 +591,21 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
   }
 
   nextState () {
-    const {images, dataProduk, harga, beratProduk, stokProduk, indexKondisi, indexAsuransi, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
+    const {images, harga, dataProduk, beratProduk, stokProduk, indexKondisi, indexAsuransi, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
     let detailGrosir = []
     let tempGrosir = []
-    detailGrosir[0] = minimalGrosir
-    detailGrosir[1] = maksimalGrosir
-    detailGrosir[2] = hargaGrosir
+    detailGrosir[0] = parseInt(minimalGrosir)
+    detailGrosir[1] = parseInt(maksimalGrosir)
+    detailGrosir[2] = Number(hargaGrosir.replace(/[^0-9,]+/g, ''))
     tempGrosir[0] = detailGrosir
-    console.log(dataProduk)
-    dataProduk[4] = harga
-    dataProduk[5] = beratProduk
-    dataProduk[6] = stokProduk
-    dataProduk[7] = indexKondisi
-    dataProduk[8] = indexAsuransi
+    dataProduk[4] = Number(harga.replace(/[^0-9,]+/g, ''))
+    dataProduk[5] = parseInt(beratProduk)
+    dataProduk[6] = parseInt(stokProduk)
+    dataProduk[7] = parseInt(indexKondisi)
+    dataProduk[8] = parseInt(indexAsuransi)
     dataProduk[9] = dropShippingActive
     dataProduk[10] = idKatalogTerpilih
-    dataProduk[11] = tempGrosir
+    // dataProduk[11] = tempGrosir
     console.log(dataProduk)
     NavigationActions.ekspedisipengirimanproduk({
       type: ActionConst.PUSH,
@@ -609,7 +615,6 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
   }
 
   render () {
-    console.log(this.state.listKatalog)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -659,13 +664,15 @@ class InfoHargaDanSpesifikasiProdukScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataCatalog: state.getListCatalog
+    dataCatalog: state.getListCatalog,
+    dataCreateCatalog: state.createCatalog
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getCatalog: () => dispatch()
+    getCatalog: () => dispatch(katalogAction.getListCatalog()),
+    createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name}))
   }
 }
 

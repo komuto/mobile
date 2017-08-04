@@ -3,6 +3,7 @@ import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndi
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as expeditionAction from '../actions/expedition'
+import * as productAction from '../actions/product'
 
 import { Images, Colors, Fonts } from '../Themes'
 
@@ -35,10 +36,10 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
     } if (nextProps.dataServicesExpedition.status === 200) {
       let dataTemp = []
       let dataTempSec = []
-      nextProps.dataServicesExpedition.expeditions.map((data, i) => (
+      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
         dataTemp.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
       ))
-      nextProps.dataServicesExpedition.expeditions.map((data, i) => (
+      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
         dataTempSec.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
       ))
       this.setState({
@@ -49,6 +50,20 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
       this.setState({
         loading: false
       })
+    } if (nextProps.dataCreateProduk.status === 200) {
+      this.setState({
+        loading: false
+      })
+      NavigationActions.notifikasi({
+        type: ActionConst.PUSH,
+        tipeNotikasi: 'succestambahproduk',
+        hideNavBar: true,
+        hideBackImage: true
+      })
+    } if (nextProps.dataCreateProduk.status > 200) {
+      this.setState({
+        loading: true
+      })
     }
   }
 
@@ -58,16 +73,27 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
   }
 
   nextState () {
-    const {expeditionServices, dataProduk, image} = this.state
-    dataProduk[12] = expeditionServices
-    dataProduk[13] = image
-
-    NavigationActions.notifikasi({
-      type: ActionConst.PUSH,
-      tipeNotikasi: 'succestambahproduk',
-      hideNavBar: true,
-      hideBackImage: true
+    const {expeditionServices, image, dataProduk} = this.state
+    this.setState({
+      loading: false
     })
+    dataProduk[11] = expeditionServices
+    dataProduk[12] = image
+    this.props.createProduk(
+      dataProduk[0],
+      dataProduk[1],
+      dataProduk[2],
+      dataProduk[3],
+      dataProduk[4],
+      dataProduk[5],
+      dataProduk[6],
+      dataProduk[7],
+      dataProduk[8],
+      dataProduk[9],
+      dataProduk[10],
+      dataProduk[11],
+      dataProduk[12]
+    )
     console.log(dataProduk)
   }
 
@@ -227,8 +253,6 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
   }
 
   render () {
-    console.log(this.state.expeditionServices)
-    // console.log(this.state.filterPengiriman)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -262,14 +286,33 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataEkspedisiList: state.expeditions,
-    dataServicesExpedition: state.expeditionServices
+    dataServicesExpedition: state.expeditionServices,
+    dataCreateProduk: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getExpedition: () => dispatch(expeditionAction.getExpedition()),
-    getServicesExpedition: () => dispatch(expeditionAction.getServices())
+    getServicesExpedition: () => dispatch(expeditionAction.getServices()),
+    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, expeditions, images) =>
+    dispatch(productAction.createProduct(
+      {
+        name: name,
+        category_id: categoriId,
+        brand_id: brandId,
+        description: desc,
+        price: price,
+        weight: weight,
+        stock: stock,
+        condition: condition,
+        insurance: insurance,
+        is_dropship: isDropship,
+        catalog_id: catalogId,
+        expeditions: expeditions,
+        images: images
+      }
+    ))
   }
 }
 

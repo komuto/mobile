@@ -2,6 +2,8 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { Images } from '../Themes'
+import { connect } from 'react-redux'
+import * as storeAction from '../actions/stores'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -31,6 +33,7 @@ class Notifikasi extends React.Component {
   }
 
   handleDaftarProduk () {
+    this.props.getListProduk()
     NavigationActions.daftarproduk({
       type: ActionConst.RESET
     })
@@ -183,27 +186,25 @@ class Notifikasi extends React.Component {
     } else if (this.state.type === 'succestambahproduk') {
       return (
         <View>
-          <Image source={Images.hpVerify} style={[styles.imagestyle, {height: 206.9, width: 206.9, marginTop: 30}]} />
-          <View style={[styles.welcomeContainer, {marginTop: 11}]}>
+          <Image source={Images.susksesTambahProduk} style={[styles.imagestyle, {height: 200, width: 159, marginTop: 30}]} />
+          <View style={[styles.welcomeContainer, {marginTop: 50}]}>
             <Text style={styles.welcomeText}>
               Berhasil Menambahkan Produk
             </Text>
           </View>
-          <View style={[styles.welcome2Container, {marginTop: 10}]}>
+          <View style={[styles.welcome2Container, {marginTop: 10, marginBottom: 49}]}>
             <Text style={[styles.welcome2Text, {fontSize: 13}]}>
               Anda telah berhasil menambahkan produk{'\n'}baru ke dalam toko Anda.
             </Text>
           </View>
-          <View style={styles.containerButton}>
-            <TouchableOpacity
-              style={styles.buttonLogin}
-              onPress={() => this.handleDaftarProduk()}
-            >
-              <Text style={styles.textButtonLogin}>
-                Lihat Daftar Produk
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.buttonLogin, {marginRight: 40, marginLeft: 40}]}
+            onPress={() => this.handleDaftarProduk()}
+          >
+            <Text style={styles.textButtonLogin}>
+              Lihat Daftar Produk
+            </Text>
+          </TouchableOpacity>
         </View>
       )
     }
@@ -218,4 +219,15 @@ class Notifikasi extends React.Component {
   }
 }
 
-export default Notifikasi
+const mapStateToProps = (state) => {
+  return {
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getListProduk: () => dispatch(storeAction.getStoreProducts())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Notifikasi)

@@ -10,6 +10,7 @@ import {
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -24,62 +25,20 @@ class DaftarProdukScreenScreen extends React.Component {
     super(props)
     this.state = {
       loading: false,
-      katalog: [
-        { nama: 'sepatu',
-          produk: [
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            },
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            },
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            }
-          ]
-        },
-        { nama: 'baju',
-          produk: [
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            },
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            },
-            {
-              namaProduk: 'Sepatu Joging Nike Casual',
-              statusDropshiper: false,
-              stok: 54,
-              priceAfterDiscount: 1650000,
-              moneyToEarn: 1633000
-            }
-          ]
-        }
-      ],
+      katalog: [],
+      produk: [],
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
       search: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataProduk.status === 200) {
+      this.setState({
+        produk: nextProps.dataProduk.storeProducts
+      })
     }
   }
 
@@ -132,6 +91,14 @@ class DaftarProdukScreenScreen extends React.Component {
     )
   }
 
+  handleListProduk (id, name) {
+    this.props.getProductByCAtalog(id)
+    NavigationActions.listprodukbycatalog({
+      type: ActionConst.PUSH,
+      title: name
+    })
+  }
+
   containerEdit (i, idAlamat) {
     if (this.state.statusDot && this.state.rowTerpilih === i) {
       return (
@@ -153,21 +120,21 @@ class DaftarProdukScreenScreen extends React.Component {
   }
 
   mapingProduk () {
-    const { katalog } = this.state
-    const mapProduk = katalog.map((data, i) => {
+    const { produk } = this.state
+    const mapProduk = produk.map((data, i) => {
       return (
         <View key={i} style={styles.separaator}>
           <View style={styles.containerProduk}>
             <View style={styles.headerInfoAlamat}>
-              <Text style={styles.textHeader}>{data.nama} ({data.produk.length})</Text>
+              <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
               <TouchableOpacity onPress={() => this.setState({statusDot: true})}>
                 <Image source={Images.threeDotSilver} style={styles.imageDot} />
               </TouchableOpacity>
             </View>
             {this.containerEdit()}
-            {this.mapSingleProduk(data.produk, i)}
+            {this.mapSingleProduk(data.products, i)}
           </View>
-          <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]}>
+          <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(data.catalog.id, data.catalog.name)}>
             <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
             <Image source={Images.rightArrow} style={styles.imageDot} />
           </TouchableOpacity>
@@ -181,15 +148,42 @@ class DaftarProdukScreenScreen extends React.Component {
     )
   }
 
-  mapSingleProduk (data, i) {
+  labeldaridropshipper () {
+    return (
+      <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+        <View style={styles.laberDropShipping}>
+          <Text style={styles.textDropShipping}>
+            Dropship dari WorldSports
+          </Text>
+        </View>
+        <View style={styles.triangleLabel} />
+      </View>
+    )
+  }
+  labelDropshipping () {
+    return (
+      <View>
+        <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+          <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
+            <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
+              Terbuka untuk dropshipper
+            </Text>
+          </View>
+          <View style={[styles.triangleLabel, {backgroundColor: Colors.lightBlueGrey}]} />
+        </View>
+      </View>
+    )
+  }
+
+  mapSingleProduk (data, id) {
     const mapProduk = data.map((data, i) => {
       return (
         <View key={i} style={styles.dataListProduk}>
           <View style={styles.flexRow}>
-            <Image source={Images.contohproduct} style={styles.imageProduk} />
+            <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
               <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
-                <Text style={styles.textTitle}>{data.namaProduk}</Text>
+                <Text style={styles.textTitle}>{data.name}</Text>
                 <TouchableOpacity>
                   <Image source={Images.diskon} style={styles.imageDot} />
                 </TouchableOpacity>
@@ -197,10 +191,11 @@ class DaftarProdukScreenScreen extends React.Component {
                   <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
                 </TouchableOpacity>
               </View>
-              <Text style={styles.textDetail}>Komisi yang diterima : Rp {data.priceAfterDiscount}</Text>
-              <Text style={styles.textDetail}>Jumlah Stok : {data.stok}</Text>
-              <Text style={styles.textDetail}>Harga jual setelah diskon : Rp {data.priceAfterDiscount}</Text>
-              <Text style={styles.textDetail}>Uang yang diterima : Rp {data.moneyToEarn}</Text>
+              {this.labelDropshipping()}
+              <Text style={styles.textDetail}>Komisi yang diterima : Rp {data.price}</Text>
+              <Text style={styles.textDetail}>Jumlah Stok : {data.price}</Text>
+              <Text style={styles.textDetail}>Harga jual setelah diskon : Rp {data.price}</Text>
+              <Text style={styles.textDetail}>Uang yang diterima : Rp {data.price}</Text>
             </View>
           </View>
         </View>
@@ -228,7 +223,6 @@ class DaftarProdukScreenScreen extends React.Component {
   }
 
   render () {
-    console.log(this.state.katalog)
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -260,11 +254,14 @@ class DaftarProdukScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataProduk: state.storeProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    getListProduk: (hidden) => dispatch(storeAction.getStoreProducts({hidden: hidden}))
   }
 }
 

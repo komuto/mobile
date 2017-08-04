@@ -108,7 +108,8 @@ const images = {
   grosir: require('../Images/Icons/icon-grosir.png'),
   centangBiru: require('../Images/Icons/icon-centang-biru.png'),
   pembayaran: require('../Images/pembayaran.png'),
-  daftarTransaksi: require('../Images/transaksi.png')
+  daftarTransaksi: require('../Images/transaksi.png'),
+  susksesTambahProduk: require('../Images/sukses-tambah-produk.png')
 }
 
 export default images

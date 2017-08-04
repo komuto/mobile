@@ -501,6 +501,17 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
+  renderImage () {
+    if (this.state.tipeView === 'grid') {
+      return (
+        <Image source={Images.grid} style={styles.searchImage} />
+      )
+    }
+    return (
+      <Image source={Images.list} style={styles.searchImage} />
+    )
+  }
+
   produkDetail (id) {
     NavigationActions.productdetail({
       type: ActionConst.PUSH,
@@ -539,7 +550,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              <Image style={styles.imageFooter} source={Images.grid} />
+              {this.renderImage()}
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>

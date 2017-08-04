@@ -912,6 +912,8 @@ class ProductDetailScreenScreen extends React.Component {
         onPress={() => {
           this.setState({
             provinsiTerpilih: rowData.name,
+            kabTerpilih: 'Semua Wilayah',
+            kecTerpilih: 'Semua Wilayah',
             idProvinsiTerpilih: rowData.id,
             modalProvinsi: false })
           this.props.getKota(rowData.id)
@@ -931,6 +933,7 @@ class ProductDetailScreenScreen extends React.Component {
           this.setState({
             kabTerpilih: rowData.name,
             idKabTerpilih: rowData.id,
+            kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
         }}
@@ -1030,21 +1033,21 @@ class ProductDetailScreenScreen extends React.Component {
     return (
       <View style={styles.lokasiContainerKurir}>
         <View style={styles.pilihLokasiContainer}>
-          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Provinsi :</Text>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.4 }]}>Provinsi :</Text>
           <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalProvinsi: true })}>
             <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.provinsiTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <View style={styles.pilihLokasiContainer}>
-          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Kabupaten :</Text>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.4 }]}>Kabupaten :</Text>
           <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
             <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.kabTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <View style={styles.pilihLokasiContainer}>
-          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.25 }]}>Kecamatan :</Text>
+          <Text style={[styles.qualityText, { marginBottom: 0, flex: 0.4 }]}>Kecamatan :</Text>
           <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKecamatan: true })}>
             <Text style={[styles.qualityText, { marginBottom: 0, flex: 1 }]}>{this.state.kecTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
@@ -1357,7 +1360,7 @@ const mapDispatchToProps = (dispatch) => {
     getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
-    reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page })),
+    reviewAction: (id, page) => dispatch(reviewAction.listReviews({ id: id, page: page })),
     addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist()),
     getToko: (id) => dispatch(storeAction.getStores({ id: id })),

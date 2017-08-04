@@ -227,7 +227,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    reviewAction: (id, page) => dispatch(reviewAction.listReviewPagination({ id: id, page: page }))
+    reviewAction: (id, page) => dispatch(reviewAction.listReviews({ id: id, page: page }))
   }
 }
 

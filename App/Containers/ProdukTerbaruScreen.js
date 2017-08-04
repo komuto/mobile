@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
 import * as produkAction from '../actions/home'
 
@@ -280,9 +280,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   openSearch () {
-    this.setState({
-      tipe: 'search'
-    })
+    NavigationActions.search({ type: ActionConst.PUSH, from: 'product' })
   }
 
   renderVerified (status) {

@@ -29,7 +29,8 @@ class Search extends React.Component {
       search: this.props.search,
       query: this.props.search,
       loadingSearch: true,
-      dataSource: dataSource.cloneWithRows([])
+      dataSource: dataSource.cloneWithRows([]),
+      from: this.props.from
     }
   }
 
@@ -76,7 +77,7 @@ class Search extends React.Component {
   }
 
   detailResult (name) {
-    NavigationActions.searchresult({ type: ActionConst.PUSH, header: name, querys: name })
+    NavigationActions.searchresult({ type: ActionConst.PUSH, header: name, querys: name, from: this.state.from })
   }
 
   renderRow (rowData) {

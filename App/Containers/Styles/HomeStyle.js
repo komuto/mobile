@@ -158,7 +158,7 @@ export default StyleSheet.create({
     borderRightColor: Colors.silver,
     borderBottomColor: Colors.silver,
     width: Metrics.screenWidth / 2,
-    height: 354.5,
+    height: 370,
     flexDirection: 'column',
     padding: 20,
     backgroundColor: Colors.snow

@@ -278,7 +278,7 @@ class Home extends React.Component {
   }
 
   search () {
-    NavigationActions.search({ type: ActionConst.PUSH })
+    NavigationActions.search({ type: ActionConst.PUSH, from: 'home' })
   }
 
   produkTerbaru () {

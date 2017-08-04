@@ -58,7 +58,8 @@ class ProdukTerbaruScreenScreen extends React.Component {
       termahalCek: 0,
       terlarisCek: 0,
       sortData: menu,
-      filter: false
+      filter: false,
+      from: this.props.from
     }
   }
 
@@ -113,6 +114,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
       })
       return true
     } else if (NavigationActions.pop()) {
+      if (this.state.from === 'home') {
+        NavigationActions.backtab({
+          type: ActionConst.RESET
+        })
+      } else {
+        NavigationActions.popTo('produkterbaru')
+      }
       return true
     }
   }
@@ -126,6 +134,16 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   backButton () {
+    if (this.state.from === 'home') {
+      NavigationActions.backtab({
+        type: ActionConst.RESET
+      })
+    } else {
+      NavigationActions.popTo('produkterbaru')
+    }
+  }
+
+  popSearch () {
     NavigationActions.pop()
   }
 
@@ -175,7 +193,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => this.popSearch()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}

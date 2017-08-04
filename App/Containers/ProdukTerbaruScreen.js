@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   ListView,
   View,
@@ -9,7 +8,8 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -25,7 +25,7 @@ import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Metrics } from '../Themes'
 
 class ProdukTerbaruScreenScreen extends React.Component {
 
@@ -57,7 +57,16 @@ class ProdukTerbaruScreenScreen extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      page: 0
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false,
+      kondisi: '',
+      pengiriman: '',
+      price: '',
+      address: '',
+      brand: '',
+      other: ''
     }
   }
 
@@ -70,31 +79,31 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      console.log(nextProps.dataProduk.products)
-      this.setState({
-        listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products,
-        loadingKategori: false,
-        loadingProduk: false
-      })
-    } else if (nextProps.dataProduk.status > 200) {
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataProduk.status === 'ENOENT') {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    }
     if (nextProps.dataFilter.status === 200) {
-      console.log(nextProps.dataFilter)
-      this.setState({
-        listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products
-      })
+      if (nextProps.dataFilter.products.length > 0) {
+        let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
+        console.log(nextProps.dataFilter)
+        this.setState({
+          listDataSource: data,
+          rowDataSource: data,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          page: this.state.page + 1
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
     } else if (nextProps.dataFilter.status > 200) {
       console.log(nextProps.dataFilter.status)
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: true
+      })
     }
   }
 
@@ -102,7 +111,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0)
     this.setState({
       filter: false,
-      page: 0
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other
     })
   }
 
@@ -133,6 +148,21 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.setState({
       tipe: 'data'
     })
+  }
+
+  loadMore () {
+    const { page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, page)
+      }
+    }
+  }
+
+  refresh = () => {
+    const { kondisi, pengiriman, price, address, brand, other } = this.state
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1)
   }
 
   renderHeader () {
@@ -451,25 +481,71 @@ class ProdukTerbaruScreenScreen extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
-          <ListView
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            enableEmptySections
-            dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
-            renderRow={this.renderRowGrid.bind(this)}
-          />
-        </View>
+        <ListView
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          enableEmptySections
+          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          renderRow={this.renderRowGrid.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+        }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50, marginLeft: Metrics.screenWidth / 2 - 20 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          style={styles.listView}
+        />
       )
     }
     return (
-      <View style={styles.listViewContainer}>
-        <ListView
-          contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          enableEmptySections
-          dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
-          renderRow={this.renderRowList.bind(this)}
-        />
-      </View>
+      <ListView
+        contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
+        enableEmptySections
+        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        renderRow={this.renderRowList.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        style={styles.listView}
+      />
     )
   }
 
@@ -496,9 +572,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <View style={[styles.headerContainer, background]}>
           {this.renderHeader()}
         </View>
-        <ScrollView style={styles.listViewContainer}>
-          {this.viewProduk()}
-        </ScrollView>
+        {this.viewProduk()}
         <View style={styles.footerMenu}>
           <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>

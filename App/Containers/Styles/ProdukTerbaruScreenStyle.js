@@ -4,7 +4,7 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.paleGrey
+    backgroundColor: Colors.snow
   },
   headerContainer: {
     elevation: 2
@@ -222,5 +222,14 @@ export default StyleSheet.create({
     flexDirection: 'row',
     paddingBottom: 28.8,
     alignItems: 'center'
+  },
+  listView: {
+    flex: 1
+  },
+  loadingStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    marginTop: 10
   }
 })

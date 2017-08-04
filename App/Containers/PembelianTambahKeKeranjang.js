@@ -944,7 +944,7 @@ class PembelianTambahKeKeranjang extends React.Component {
     this.setState({
       tipeKurir: dataCost[row].full_name,
       idSubKurir: dataCost[row].id,
-      ongkir: dataCost[row].cost,
+      ongkir: dataCost[row].cost * Math.ceil(this.state.weight * this.state.countProduct),
       modalSubkurir: false
     })
   }

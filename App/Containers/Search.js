@@ -39,7 +39,7 @@ class Search extends React.Component {
       this.props.getSearch(nextProps.search)
       this.setState({
         query: nextProps.search,
-        search: nextProps.query
+        search: nextProps.search
       })
     }
     if (nextProps.dataSearch.status === 200) {

@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as produkAction from '../actions/home'
+import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -56,7 +56,8 @@ class ProdukTerbaruScreenScreen extends React.Component {
       termahalCek: 0,
       terlarisCek: 0,
       sortData: menu,
-      filter: false
+      filter: false,
+      page: 0
     }
   }
 
@@ -98,9 +99,10 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0)
     this.setState({
-      filter: false
+      filter: false,
+      page: 0
     })
   }
 
@@ -549,20 +551,21 @@ class ProdukTerbaruScreenScreen extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataProduk: state.products,
-    dataFilter: state.filterProduct
+    dataFilter: state.productBySearch
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: dispatch(produkAction.products()),
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(produkAction.filter({
+    getProdukTerbaru: dispatch(produkAction.listProductBySearch()),
+    getFilterProduk: (condition, services, price, address, brands, other, page) => dispatch(produkAction.listProductBySearch({
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
-      other: other
+      other: other,
+      page: page
     }))
   }
 }

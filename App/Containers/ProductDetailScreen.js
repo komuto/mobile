@@ -1113,7 +1113,7 @@ class ProductDetailScreenScreen extends React.Component {
     if (countProduct > 1) {
       this.setState({
         countProduct: countProduct - 1,
-        totalWeight: berat
+        totalWeight: Math.ceil(berat)
       })
     }
   }
@@ -1123,7 +1123,7 @@ class ProductDetailScreenScreen extends React.Component {
     const berat = (countProduct + 1) * this.state.weight
     this.setState({
       countProduct: countProduct + 1,
-      totalWeight: berat
+      totalWeight: Math.ceil(berat)
     })
   }
 

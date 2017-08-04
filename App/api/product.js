@@ -22,7 +22,7 @@ export const getProductBy = (action) => {
       return price
     }, '')
   }
-  const take = ['q', 'page', 'limit', 'sort', 'price', 'condition', 'other', 'brands', 'services', 'address', 'category_id']
+  const take = ['q', 'page', 'limit', 'sort', 'price', 'condition', 'other', 'brands', 'services', 'address', 'category_id', 'is_dropship']
   const query = buildQuery(action, take)
   return axios.get(`products?${query}`).catch((err) => { throw err })
 }

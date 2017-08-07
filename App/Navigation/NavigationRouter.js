@@ -74,6 +74,9 @@ import SearchResultByCategory from '../Containers/SearchResultByCategoryScreen'
 import PilihBarangDropshipping from '../Containers/PilihBarangDropshippingScreen'
 import TempatkanDiKatalog from '../Containers/TempatkanDiKatalogScreen'
 import ListProdukByCatalogScreen from '../Containers/ListProdukByCatalogScreen'
+import TransaksiVerifikasi from '../Containers/TransaksiVerifikasi'
+import TransaksiKadaluarsa from '../Containers/TransaksiKadaluarsa'
+import TransaksiDibayar from '../Containers/TransaksiDibayar'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -644,6 +647,27 @@ class NavigationRouter extends Component {
             key='listprodukbycatalog'
             component={ListProdukByCatalogScreen}
             title='Daftar Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transaksiverifikasi'
+            component={TransaksiVerifikasi}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transaksikadaluarsa'
+            component={TransaksiKadaluarsa}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transaksidibayar'
+            component={TransaksiDibayar}
+            title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

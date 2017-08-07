@@ -81,6 +81,8 @@ const images = {
   biodata: require('../Images/Icons/icon-biodata.png'),
   threeDotSilver: require('../Images/Icons/3-dots-silver.png'),
   waktu: require('../Images/Icons/icon-waktu.png'),
+  waktuBiru: require('../Images/Icons/icon-waktu-biru.png'),
+  waktuMerah: require('../Images/Icons/icon-waktu-merah.png'),
   arrowUp: require('../Images/Icons/icon-arrow-up.png'),
   arrowDown: require('../Images/Icons/icon-arrow-down.png'),
   alfamart: require('../Images/Banks/icon-alfamart.png'),

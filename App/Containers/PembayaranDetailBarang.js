@@ -1,5 +1,6 @@
 import React from 'react'
-import { ScrollView, Text, View, ListView, Image } from 'react-native'
+import { ScrollView, Text, View, ListView, Image, BackAndroid } from 'react-native'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -31,6 +32,20 @@ class PembayaranDetailBarang extends React.Component {
       total: 0,
       namaDiskon: 'BELANJAENAK',
       diskon: 20000
+    }
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    if (NavigationActions.pop()) {
+      return true
     }
   }
 

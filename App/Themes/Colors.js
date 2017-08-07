@@ -61,7 +61,10 @@ const colors = {
   veryLighBlue: '#ddf0ff',
   darkBlueSky: '#3093e4',
   lightBlueGrey: '#e4f6ec',
-  darkMintTwo: '#44b979'
+  darkMintTwo: '#44b979',
+  yellow: '#e29d13',
+  backgroundVerified: '#f1f5fa',
+  backgroundKadaluarsa: '#f3eced'
 }
 
 export default colors

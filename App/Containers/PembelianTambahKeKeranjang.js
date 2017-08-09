@@ -106,7 +106,8 @@ class PembelianTambahKeKeranjang extends React.Component {
       loadingAlamat: false,
       activeAlamat: 0,
       modalNotifikasi: false,
-      loadingCart: false
+      loadingCart: false,
+      statusSubKurir: false
     }
   }
 
@@ -164,8 +165,21 @@ class PembelianTambahKeKeranjang extends React.Component {
       }
     }
     if (nextProps.dataServices.status === 200) {
+      if (nextProps.dataServices.charges.length > 0) {
+        this.setState({
+          dataCost: nextProps.dataServices.charges,
+          statusSubKurir: false
+        })
+      } else {
+        this.setState({
+          dataCost: [],
+          statusSubKurir: false
+        })
+      }
+    } else if (nextProps.dataServices.status > 200) {
       this.setState({
-        dataCost: nextProps.dataServices.charges
+        dataCost: [],
+        statusSubKurir: false
       })
     }
     if (nextProps.dataCart.status === 200) {
@@ -835,14 +849,35 @@ class PembelianTambahKeKeranjang extends React.Component {
             <View style={styles.headerListView}>
               <Text style={styles.headerTextListView}>Pilih paket pengiriman dari {kurir}</Text>
             </View>
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.dataCost)}
-              renderRow={this.renderListSubKurir.bind(this)}
-              enableEmptySections
-            />
+            {this.renderListViewSubKurir()}
           </ScrollView>
         </TouchableOpacity>
       </Modal>
+    )
+  }
+
+  renderListViewSubKurir () {
+    const { dataCost, statusSubKurir } = this.state
+    if (dataCost.length > 0) {
+      return (
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.dataCost)}
+          renderRow={this.renderListSubKurir.bind(this)}
+          enableEmptySections
+        />
+      )
+    }
+    if (statusSubKurir) {
+      return (
+        <View style={[styles.menuLaporkan, { padding: 20 }]} >
+          <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>Loading Data...</Text>
+        </View>
+      )
+    }
+    return (
+      <View style={[styles.menuLaporkan, { padding: 20 }]} >
+        <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>Tidak ada Data</Text>
+      </View>
     )
   }
 
@@ -926,7 +961,7 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   onPressKurir (row) {
-    const {idProduct, dataKurir, originId, roIdDistrict, activeKurir, dataSourceKurir} = this.state
+    const {weight, dataKurir, originId, roIdDistrict, activeKurir, dataSourceKurir} = this.state
     if (activeKurir !== row) {
       const newDataSource = dataKurir.map(data => {
         return {...data, activeKurir: row === data.id}
@@ -940,9 +975,10 @@ class PembelianTambahKeKeranjang extends React.Component {
       kurir: dataKurir[row].name,
       idKurir: dataKurir[row].id,
       expeditionFee: dataKurir[row].insurance_fee,
-      modalKurir: false
+      modalKurir: false,
+      statusSubKurir: true
     })
-    this.props.getServices(idProduct, originId, roIdDistrict, 1)
+    this.props.getServices(dataKurir[row].id, originId, roIdDistrict, weight)
   }
 
   renderListSubKurir (rowData, section, row) {
@@ -975,8 +1011,8 @@ class PembelianTambahKeKeranjang extends React.Component {
     this.setState({
       tipeKurir: dataCost[row].full_name,
       idSubKurir: dataCost[row].id,
-      ongkirSatuan: dataCost[row].cost * Math.ceil(this.state.weight),
-      ongkir: dataCost[row].cost * Math.ceil(this.state.weight * this.state.countProduct),
+      ongkirSatuan: dataCost[row].cost,
+      ongkir: dataCost[row].cost * this.state.countProduct,
       modalSubkurir: false
     })
   }
@@ -1069,8 +1105,8 @@ const mapStateToProps = (state) => {
     dataDetailProduk: state.productDetail,
     dataAddress: state.primaryAddress,
     dataAddressList: state.listAddress,
-    dataServices: state.estimatedCharges,
-    dataCart: state.cart,
+    dataServices: state.shippingCharges,
+    dataCart: state.addToCart,
     dataCreateAlamat: state.addAddress
   }
 }
@@ -1078,8 +1114,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getAddress: dispatch(addressAction.getPrimaryAddress()),
-    resetStatusAddress: () => dispatch(addressAction.resetStatusAddress()),
-    getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.estimatedShipping({
+    resetStatusAddress: () => dispatch(addressAction.resetPrimaryAddress()),
+    getServices: (id, originId, destinationId, weight) => dispatch(serviceAction.getShippingCharge({
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     getListAlamat: () => dispatch(addressAction.getListAddress()),

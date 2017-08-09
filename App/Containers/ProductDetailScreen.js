@@ -646,7 +646,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderRowService (rowData) {
-    const money = MaskService.toMask('money', rowData.cost * parseInt(this.state.totalWeight), {
+    const money = MaskService.toMask('money', rowData.cost, {
       unit: '',
       separator: '.',
       delimiter: '.',
@@ -932,7 +932,7 @@ class ProductDetailScreenScreen extends React.Component {
         onPress={() => {
           this.setState({
             kabTerpilih: rowData.name,
-            idKabTerpilih: rowData.id,
+            idKabTerpilih: rowData.ro_id,
             kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
@@ -944,7 +944,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderListKecamatan (rowData) {
-    const { id, idLokasiPenjual, idKabTerpilih } = this.state
+    const { id, idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 15 }]}
@@ -956,7 +956,7 @@ class ProductDetailScreenScreen extends React.Component {
             modalKecamatan: false,
             showService: true
           })
-          this.listDataService(id, idLokasiPenjual, idKabTerpilih, 1)
+          this.listDataService(id, idLokasiPenjual, idKabTerpilih, totalWeight)
         }}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>

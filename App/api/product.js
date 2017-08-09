@@ -32,20 +32,15 @@ export const addToWishlist = ({ id }) => {
   return axios.get(`products/${id}/wishlist`).catch((err) => { throw err })
 }
 
-export const addToWishlistHome = ({ id }) => {
-  const axios = authApiKomuto()
-  return axios.get(`products/${id}/wishlist`).catch((err) => { throw err })
-}
-
 export const getDiscussion = ({ id, page, limit }) => {
   const axios = publicApiKomuto()
   const query = buildQuery({ page, limit })
   return axios.get(`products/${id}/discussions?${query}`).catch((err) => { throw err })
 }
 
-export const newDiscussion = (action) => {
+export const newDiscussion = ({ id, ...action }) => {
   const axios = authApiKomuto()
-  return axios.post(`products/${action.id}/discussions`, action).catch((err) => { throw err })
+  return axios.post(`products/${id}/discussions`, action).catch((err) => { throw err })
 }
 
 export const getComment = ({ productId, id, page, limit }) => {
@@ -54,14 +49,14 @@ export const getComment = ({ productId, id, page, limit }) => {
   return axios.get(`products/${productId}/discussions/${id}/comments?${query}`).catch((err) => { throw err })
 }
 
-export const newComment = (action) => {
+export const newComment = ({ productId, id, ...action }) => {
   const axios = authApiKomuto()
-  return axios.post(`products/${action.productId}/discussions/${action.id}/comments`, action).catch((err) => { throw err })
+  return axios.post(`products/${productId}/discussions/${id}/comments`, action).catch((err) => { throw err })
 }
 
-export const reportProduct = (action) => {
+export const reportProduct = ({ id, ...action }) => {
   const axios = authApiKomuto()
-  return axios.post(`products/${action.id}/report`, action).catch((err) => { throw err })
+  return axios.post(`products/${id}/report`, action).catch((err) => { throw err })
 }
 
 export const createProduct = (action) => {

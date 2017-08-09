@@ -64,7 +64,9 @@ const colors = {
   darkMintTwo: '#44b979',
   yellow: '#e29d13',
   backgroundVerified: '#f1f5fa',
-  backgroundKadaluarsa: '#f3eced'
+  backgroundKadaluarsa: '#f3eced',
+  fullOrange: '#f4bc50',
+  violet: '#c36ce8'
 }
 
 export default colors

@@ -77,6 +77,8 @@ import ListProdukByCatalogScreen from '../Containers/ListProdukByCatalogScreen'
 import TransaksiVerifikasi from '../Containers/TransaksiVerifikasi'
 import TransaksiKadaluarsa from '../Containers/TransaksiKadaluarsa'
 import TransaksiDibayar from '../Containers/TransaksiDibayar'
+import TransaksiDetailStatus from '../Containers/TransaksiDetailStatus'
+import TransaksiKonfirmasiPembayaran from '../Containers/TransaksiKonfirmasiPembayaran'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -668,6 +670,20 @@ class NavigationRouter extends Component {
             key='transaksidibayar'
             component={TransaksiDibayar}
             title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transaksidetailstatus'
+            component={TransaksiDetailStatus}
+            title='Detail Status Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transaksikonfirmasipembayaran'
+            component={TransaksiKonfirmasiPembayaran}
+            title='Konfirmasi Pembayaran'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

@@ -100,7 +100,7 @@ class TransaksiKadaluarsa extends React.Component {
   }
 
   renderTagihan () {
-    const { expand, invoice, sisaPembayaran } = this.state
+    const { expand, sisaPembayaran } = this.state
     const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
       unit: 'Rp ',
       separator: '.',
@@ -115,10 +115,6 @@ class TransaksiKadaluarsa extends React.Component {
     }
     return (
       <View style={styles.tagihanContainer}>
-        <View style={styles.rowContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>No Invoice</Text>
-          <Text style={styles.textTitle}>{invoice}</Text>
-        </View>
         <View style={styles.rowContainer}>
           <Text style={[styles.bold, { flex: 1 }]}>Total Tagihan</Text>
           <Text style={styles.textTitle}>{hargaSisaBayar}</Text>

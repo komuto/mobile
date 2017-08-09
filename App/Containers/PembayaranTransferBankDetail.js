@@ -153,7 +153,7 @@ class PembayaranTransferBankDetail extends React.Component {
   }
 
   renderTagihan () {
-    const { expand, invoice, sisaPembayaran } = this.state
+    const { expand, sisaPembayaran } = this.state
     const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
       unit: 'Rp ',
       separator: '.',
@@ -168,10 +168,6 @@ class PembayaranTransferBankDetail extends React.Component {
     }
     return (
       <View style={styles.tagihanContainer}>
-        <View style={styles.rowContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>No Invoice</Text>
-          <Text style={styles.textTitle}>{invoice}</Text>
-        </View>
         <View style={styles.rowContainer}>
           <Text style={[styles.bold, { flex: 1 }]}>Total Tagihan</Text>
           <Text style={styles.textTitle}>{hargaSisaBayar}</Text>
@@ -287,7 +283,7 @@ class PembayaranTransferBankDetail extends React.Component {
             </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => this.konfirmasi()}>
           <Text style={styles.textButton}>
             Konfirmasikan Pembayaran
           </Text>
@@ -370,6 +366,12 @@ class PembayaranTransferBankDetail extends React.Component {
 
   detailBarang () {
     NavigationActions.pembayarandetailbarang({
+      type: ActionConst.PUSH
+    })
+  }
+
+  konfirmasi () {
+    NavigationActions.transaksikonfirmasipembayaran({
       type: ActionConst.PUSH
     })
   }

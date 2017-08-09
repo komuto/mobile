@@ -44,6 +44,7 @@ class PembelianTambahKeKeranjang extends React.Component {
         ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price),
       foto: this.props.dataDetailProduk.detail.images[0].file,
       namaProduk: this.props.dataDetailProduk.detail.product.name,
+      namaToko: this.props.dataDetailProduk.detail.store.name,
       countProduct: 1,
       alamat: '',
       jalan: '',
@@ -66,7 +67,8 @@ class PembelianTambahKeKeranjang extends React.Component {
       catatan: '',
       subtotal: this.props.dataDetailProduk.detail.product.price -
         ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
-      ongkir: '0',
+      ongkir: 0,
+      ongkirSatuan: 0,
       diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
       total: '0',
       originId: this.props.dataDetailProduk.detail.store.district.ro_id,
@@ -184,12 +186,6 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -202,13 +198,25 @@ class PembelianTambahKeKeranjang extends React.Component {
               {this.state.namaProduk}
             </Text>
             <Text style={styles.textKelola}>
-              {totalHarga}
+              {this.state.namaToko}
             </Text>
           </View>
           <TouchableOpacity>
-            <Text style={styles.textHapus}>Hapus</Text>
+            <Text style={styles.textHapus} />
           </TouchableOpacity>
         </View>
+      </View>
+    )
+  }
+
+  renderHargaSatuan () {
+    const {price} = this.state
+    return (
+      <View style={[styles.qualityContainer, {paddingTop: 25}]}>
+        <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25, flex: 1}]}>
+          <Text style={[styles.qualityText, {marginBottom: 0, paddingLeft: 5}]}>Harga Satuan</Text>
+        </View>
+        <Text style={[styles.qualityText, {marginBottom: 0, marginRight: 20}]}>{price}</Text>
       </View>
     )
   }
@@ -234,23 +242,46 @@ class PembelianTambahKeKeranjang extends React.Component {
   }
 
   substract () {
-    const {countProduct, price} = this.state
+    const {countProduct, price, ongkirSatuan} = this.state
     if (countProduct > 1) {
       const temp = (countProduct - 1) * price
+      const temp2 = (countProduct - 1) * ongkirSatuan
       this.setState({
         countProduct: countProduct - 1,
-        subtotal: temp
+        subtotal: temp,
+        ongkir: temp2
       })
     }
   }
 
   add () {
-    const {countProduct, price} = this.state
+    const {countProduct, price, ongkirSatuan} = this.state
     const temp = (countProduct + 1) * price
+    const temp2 = (countProduct + 1) * ongkirSatuan
     this.setState({
       countProduct: countProduct + 1,
-      subtotal: temp
+      subtotal: temp,
+      ongkir: temp2
     })
+  }
+
+  renderSubtotal () {
+    const {price, countProduct} = this.state
+    const temp = parseInt(price) * countProduct
+    const totalHarga = MaskService.toMask('money', temp, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    return (
+      <View style={[styles.qualityContainer, {paddingTop: 25}]}>
+        <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25, flex: 1}]}>
+          <Text style={[styles.qualityText, {marginBottom: 0, paddingLeft: 5}]}>Subtotal Harga Barang</Text>
+        </View>
+        <Text style={[styles.qualityText, {marginBottom: 0, marginRight: 20}]}>{totalHarga}</Text>
+      </View>
+    )
   }
 
   getListAlamat () {
@@ -944,6 +975,7 @@ class PembelianTambahKeKeranjang extends React.Component {
     this.setState({
       tipeKurir: dataCost[row].full_name,
       idSubKurir: dataCost[row].id,
+      ongkirSatuan: dataCost[row].cost * Math.ceil(this.state.weight),
       ongkir: dataCost[row].cost * Math.ceil(this.state.weight * this.state.countProduct),
       modalSubkurir: false
     })
@@ -1009,7 +1041,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           {this.renderProduct()}
+          {this.renderHargaSatuan()}
           {this.renderJumlah()}
+          {this.renderSubtotal()}
           <View style={styles.separator} />
           {this.renderAlamat()}
           {this.renderErrorAlamat(dataKosong)}

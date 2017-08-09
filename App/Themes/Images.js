@@ -83,6 +83,7 @@ const images = {
   waktu: require('../Images/Icons/icon-waktu.png'),
   waktuBiru: require('../Images/Icons/icon-waktu-biru.png'),
   waktuMerah: require('../Images/Icons/icon-waktu-merah.png'),
+  waktuHijau: require('../Images/Icons/icon-waktu-hijau.png'),
   arrowUp: require('../Images/Icons/icon-arrow-up.png'),
   arrowDown: require('../Images/Icons/icon-arrow-down.png'),
   alfamart: require('../Images/Banks/icon-alfamart.png'),
@@ -111,7 +112,8 @@ const images = {
   centangBiru: require('../Images/Icons/icon-centang-biru.png'),
   pembayaran: require('../Images/pembayaran.png'),
   daftarTransaksi: require('../Images/transaksi.png'),
-  susksesTambahProduk: require('../Images/sukses-tambah-produk.png')
+  susksesTambahProduk: require('../Images/sukses-tambah-produk.png'),
+  plus: require('../Images/Icons/icon-plus-white.png')
 }
 
 export default images

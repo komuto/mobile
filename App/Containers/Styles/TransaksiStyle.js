@@ -19,7 +19,7 @@ export default StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver,
     borderLeftColor: Colors.bluesky,
-    borderLeftWidth: 2
+    borderLeftWidth: 3
   },
   dataSingle: {
     flexDirection: 'row',

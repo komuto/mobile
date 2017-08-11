@@ -19,6 +19,7 @@ import { Images, Colors } from '../Themes'
 import { connect } from 'react-redux'
 import * as homeAction from '../actions/home'
 import * as produkAction from '../actions/product'
+import * as cartAction from '../actions/cart'
 
 // Styles
 import styles from './Styles/HomeStyle'
@@ -305,6 +306,13 @@ class Home extends React.Component {
     })
   }
 
+  keranjang () {
+    NavigationActions.pembeliankeranjangbelanja({
+      type: ActionConst.PUSH
+    })
+    this.props.getCart()
+  }
+
   render () {
     return (
       <ParallaxScrollView
@@ -325,7 +333,7 @@ class Home extends React.Component {
                 <TouchableOpacity style={styles.buttonHeader} onPress={() => this.wishlist()}>
                   <Image source={Images.love} style={styles.imagestyle} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonHeader}>
+                <TouchableOpacity style={styles.buttonHeader} onPress={() => this.keranjang()}>
                   <Image source={Images.shoppingCart} style={styles.imagestyle} />
                   <View style={styles.containerNumber}>
                     <Text style={styles.number}>
@@ -412,7 +420,8 @@ const mapDispatchToProps = (dispatch) => {
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),
-    resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome())
+    resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
+    getCart: () => dispatch(cartAction.getCart())
   }
 }
 

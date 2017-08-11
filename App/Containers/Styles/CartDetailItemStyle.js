@@ -3,13 +3,12 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   container: {
+    flex: 1,
     marginTop: Metrics.navBarHeight,
-    marginBottom: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
   dataContainer: {
     backgroundColor: Colors.snow,
-    marginBottom: 20,
     elevation: 2
   },
   product: {
@@ -48,7 +47,8 @@ export default StyleSheet.create({
     justifyContent: 'center'
   },
   titleContainer: {
-    marginBottom: 4
+    marginBottom: 4,
+    flexDirection: 'row'
   },
   textAlamat: {
     fontFamily: Fonts.type.regular,
@@ -137,5 +137,126 @@ export default StyleSheet.create({
     marginBottom: 5,
     letterSpacing: 0.22,
     color: Colors.darkgrey
+  },
+  textGanti: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.type.smallMed,
+    letterSpacing: 0.22,
+    color: Colors.bluesky
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    backgroundColor: Colors.snow,
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
+  },
+  headerListView: {
+    height: 60,
+    backgroundColor: Colors.snow,
+    padding: 20,
+    justifyContent: 'center',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 1
+  },
+  headerTextListView: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
+  },
+  buttonAlamat: {
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderTopColor: Colors.silver,
+    backgroundColor: Colors.white
+  },
+  menuLaporkan: {
+    flex: 1,
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.snow,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.silver,
+    alignItems: 'center',
+    paddingLeft: 20,
+    flexDirection: 'row'
+  },
+  listAlamatContainer: {
+    flexDirection: 'column',
+    flex: 1,
+    marginRight: 10
+  },
+  textBagikan: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey,
+    marginLeft: 10
+  },
+  spinner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    backgroundColor: Colors.snow,
+    height: 50,
+    opacity: 0.5
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    margin: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  button: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    backgroundColor: Colors.bluesky,
+    height: 50
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.snow
+  },
+  imagePicker: {
+    height: 24,
+    width: 24,
+    marginTop: 3
+  },
+  logoEkspedisi: {
+    height: 15,
+    width: 50,
+    resizeMode: 'contain',
+    marginRight: 10,
+    marginLeft: -5,
+    marginTop: 3
+  },
+  gambarCentang: {
+    width: 24,
+    height: 24,
+    top: -2,
+    marginRight: 15
+  },
+  textInput: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    marginLeft: -3
+  },
+  spinnerCart: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1
   }
 })

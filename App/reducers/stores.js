@@ -143,9 +143,17 @@ export const getStoreAddress = (state = initState({ storeAddress: {} }), action)
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_ADDRESS:
-      return { ...buildReducer(state, action, type, 'storeAddress'), type: 'get' }
-    case actions.UPDATE_ADDRESS:
-      return { ...buildReducer(state, action, type, 'storeAddress'), type: 'update' }
+      return buildReducer(state, action, type, 'storeAddress')
+    default:
+      return state
+  }
+}
+
+export const updateStoreAddress = (state = initState({ updateStoreAddress: {} }), action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.UPDATE_STORE_ADDRESS:
+      return buildReducer(state, action, type, 'updateStoreAddress')
     default:
       return state
   }

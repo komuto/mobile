@@ -113,7 +113,9 @@ const images = {
   pembayaran: require('../Images/pembayaran.png'),
   daftarTransaksi: require('../Images/transaksi.png'),
   susksesTambahProduk: require('../Images/sukses-tambah-produk.png'),
-  plus: require('../Images/Icons/icon-plus-white.png')
+  plus: require('../Images/Icons/icon-plus-white.png'),
+  arrowRight: require('../Images/Icons/icon-arrow-right.png'),
+  ember: require('../Images/ember.png')
 }
 
 export default images

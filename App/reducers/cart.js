@@ -6,6 +6,8 @@ export const cart = (state = initState({ cart: [] }), action) => {
   switch (type) {
     case actions.GET_CART:
       return { ...buildReducer(state, action, type, 'cart'), type: 'get' }
+    case actions.GET_CART_RESET:
+      return { ...initState(), cart: state.cart, type: 'reset' }
     case actions.CHECKOUT:
       return { ...buildReducer(state, action, type), cart: state.cart, type: 'checkout' }
     case actions.DELETE_ITEM:
@@ -24,7 +26,7 @@ export const addToCart = (state = initState({ addToCart: {} }), action) => {
     case actions.ADD_TO_CART:
       return buildReducer(state, action, type, 'cart')
     case actions.ADD_TO_CART_RESET:
-      return { ...initState(), cart: state.cart, type: 'reset' }
+      return { ...initState(), addToCart: state.addToCart, type: 'reset' }
     default:
       return state
   }

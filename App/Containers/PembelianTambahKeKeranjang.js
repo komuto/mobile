@@ -107,7 +107,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       activeAlamat: 0,
       modalNotifikasi: false,
       loadingCart: false,
-      statusSubKurir: false
+      statusSubKurir: false,
+      service: '',
+      activeScene: true
     }
   }
 
@@ -183,7 +185,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       })
     }
     if (nextProps.dataCart.status === 200) {
-      this.setState({ loadingCart: false, modalNotifikasi: true })
+      if (this.state.activeScene) {
+        this.setState({ loadingCart: false, modalNotifikasi: true })
+      }
       this.props.resetCreateStatus()
     } else if (nextProps.dataCart.status > 200) {
       this.setState({ loadingCart: false })
@@ -192,9 +196,9 @@ class PembelianTambahKeKeranjang extends React.Component {
     }
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
-      this.setState({ loadingCart: false, dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
+      this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status > 200) {
-      this.setState({ loadingCart: false, loadingAlamat: false })
+      this.setState({ loadingAlamat: false })
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }
   }
@@ -259,7 +263,7 @@ class PembelianTambahKeKeranjang extends React.Component {
     const {countProduct, price, ongkirSatuan} = this.state
     if (countProduct > 1) {
       const temp = (countProduct - 1) * price
-      const temp2 = (countProduct - 1) * ongkirSatuan
+      const temp2 = Math.ceil((this.state.countProduct - 1) * this.state.weight / 1000) * ongkirSatuan
       this.setState({
         countProduct: countProduct - 1,
         subtotal: temp,
@@ -271,7 +275,7 @@ class PembelianTambahKeKeranjang extends React.Component {
   add () {
     const {countProduct, price, ongkirSatuan} = this.state
     const temp = (countProduct + 1) * price
-    const temp2 = (countProduct + 1) * ongkirSatuan
+    const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.weight / 1000) * ongkirSatuan
     this.setState({
       countProduct: countProduct + 1,
       subtotal: temp,
@@ -648,7 +652,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       catatan,
       idAlamat,
       asuransi,
-      ongkir
+      service,
+      originId,
+      roIdDistrict
     } = this.state
     let boolAsuransi
     if (asuransi === 'Ya') {
@@ -674,62 +680,21 @@ class PembelianTambahKeKeranjang extends React.Component {
     }
     if (tipeKurir !== '' && !dataKosong && !errorKurir && !errorSubKurir) {
       this.setState({ loadingCart: true })
-      this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, ongkir)
+      setTimeout(() => {
+        this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, service, originId, roIdDistrict)
+      }, 200)
     }
   }
 
   keranjang () {
-    const {
-      alamat,
-      jalan,
-      nama,
-      roIdDistrict,
-      idDistrict,
-      district,
-      provinsi,
-      idProvinsi,
-      kabupaten,
-      idKabupaten,
-      kodepos,
-      email,
-      expeditionFee,
-      ongkir,
-      catatan,
-      asuransi,
-      countProduct,
-      biayaAsuransi,
-      kurir,
-      tipeKurir,
-      idKurir,
-      telepon } = this.state
-    // this.props.getDetailProduk(this.state.id)
     this.setState({ modalNotifikasi: false })
     NavigationActions.pembeliankeranjangbelanja({
-      id: this.state.id,
-      type: ActionConst.PUSH,
-      alamat: alamat,
-      jalan: jalan,
-      nama: nama,
-      roIdDistrict: roIdDistrict,
-      idDistrict: idDistrict,
-      district: district,
-      provinsi: provinsi,
-      idProvinsi: idProvinsi,
-      kabupaten: kabupaten,
-      idKabupaten: idKabupaten,
-      kodepos: kodepos,
-      email: email,
-      catatan: catatan,
-      ongkir: ongkir,
-      idKurir: idKurir,
-      biayaAsuransi: biayaAsuransi,
-      countProduct: countProduct,
-      asuransi: asuransi,
-      kurir: kurir,
-      tipeKurir: tipeKurir,
-      expeditionFee: expeditionFee,
-      telepon: telepon
+      type: ActionConst.PUSH
     })
+    this.setState({
+      activeScene: false
+    })
+    this.props.getCart()
   }
 
   home () {
@@ -941,7 +906,9 @@ class PembelianTambahKeKeranjang extends React.Component {
       kodepos: dataAlamat[row].postal_code,
       email: dataAlamat[row].email,
       telepon: 'Telp: ' + dataAlamat[row].phone_number,
-      dataKosong: false
+      dataKosong: false,
+      kurir: '',
+      tipeKurir: ''
     })
   }
 
@@ -990,7 +957,7 @@ class PembelianTambahKeKeranjang extends React.Component {
         onPress={() => this.onPressSubKurir(row)}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.full_name}</Text>
-        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd}</Text>
+        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd} hari</Text>
         <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.cost}</Text>
         <Image source={centang} style={styles.gambarCentang} />
       </TouchableOpacity>
@@ -1009,10 +976,11 @@ class PembelianTambahKeKeranjang extends React.Component {
       })
     }
     this.setState({
+      service: dataCost[row].name,
       tipeKurir: dataCost[row].full_name,
       idSubKurir: dataCost[row].id,
       ongkirSatuan: dataCost[row].cost,
-      ongkir: dataCost[row].cost * this.state.countProduct,
+      ongkir: dataCost[row].cost * Math.ceil(this.state.countProduct * this.state.weight / 1000),
       modalSubkurir: false
     })
   }
@@ -1119,7 +1087,7 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     getListAlamat: () => dispatch(addressAction.getListAddress()),
-    addCart: (productId, expeditionId, expeditionServiceId, countProduct, catatan, idAlamat, asuransi, ongkir) =>
+    addCart: (productId, expeditionId, expeditionServiceId, countProduct, catatan, idAlamat, asuransi, service, originId, destinationId) =>
       dispatch(cartAction.addToCart({
         product_id: productId,
         expedition_id: expeditionId,
@@ -1128,10 +1096,13 @@ const mapDispatchToProps = (dispatch) => {
         note: catatan,
         address_id: idAlamat,
         is_insurance: asuransi,
-        delivery_cost: ongkir
+        service: service,
+        origin_ro_id: originId,
+        destination_ro_id: destinationId
       })),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    resetCreateStatus: () => dispatch(cartAction.addToCartReset())
+    resetCreateStatus: () => dispatch(cartAction.addToCartReset()),
+    getCart: () => dispatch(cartAction.getCart())
   }
 }
 

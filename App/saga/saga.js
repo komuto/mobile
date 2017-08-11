@@ -111,7 +111,7 @@ const store = function* () {
   yield takeEvery(typeReq(storeActions.UPDATE_INFORMATION), storeSaga.updateInformation)
   yield takeEvery(typeReq(storeActions.UPDATE_TERM), storeSaga.updateTerm)
   yield takeEvery(typeReq(storeActions.GET_ADDRESS), storeSaga.getStoreAddress)
-  yield takeEvery(typeReq(storeActions.UPDATE_ADDRESS), storeSaga.updateStoreAddress)
+  yield takeEvery(typeReq(storeActions.UPDATE_STORE_ADDRESS), storeSaga.updateStoreAddress)
 }
 
 const address = function* () {
@@ -164,6 +164,7 @@ const expedition = function* () {
   yield takeEvery(typeReq(expeditionActions.GET_SHIPPING_CHARGE), expeditionSaga.getShippingCharge)
   yield takeEvery(typeReq(expeditionActions.UPDATE_EXPEDITION), expeditionSaga.updateExpedition)
   yield takeEvery(typeReq(expeditionActions.GET_STORE_EXPEDITIONS), expeditionSaga.getStoreExpeditions)
+  yield takeEvery(typeReq(expeditionActions.MANAGE_STORE_EXPEDITIONS), expeditionSaga.manageStoreExpeditions)
 }
 
 const location = function* () {

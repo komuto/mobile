@@ -67,6 +67,11 @@ export default StyleSheet.create({
     color: Colors.darkgrey,
     marginBottom: 8
   },
+  qualityTextBlue: {
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.bold,
+    color: Colors.bluesky
+  },
   imageOperator: {
     width: 24,
     height: 24,
@@ -318,5 +323,37 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     marginRight: 10
+  },
+  arrow: {
+    width: 24,
+    height: 24,
+    marginRight: 20
+  },
+  bucketContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 50
+  },
+  bucket: {
+    width: 159,
+    height: 126,
+    marginBottom: 30
+  },
+  textBucket: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey,
+    marginBottom: 25
+  },
+  spinnerBucket: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.snow,
+    flex: 1
   }
 })

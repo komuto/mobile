@@ -8,4 +8,4 @@ export const estimatedCharge = buildSaga([], apis.estimatedShipping, actions.EST
 export const getShippingCharge = buildSaga([], apis.getShippingCharge, actions.GET_SHIPPING_CHARGE)
 export const updateExpedition = buildSaga([], apis.updateExpedition, actions.UPDATE_EXPEDITION)
 export const getStoreExpeditions = buildSaga([], apis.getStoreExpeditions, actions.GET_STORE_EXPEDITIONS)
-
+export const manageStoreExpeditions = buildSaga([], apis.manageStoreExpeditions, actions.MANAGE_STORE_EXPEDITIONS)

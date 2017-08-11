@@ -57,6 +57,21 @@ class PembelianKeranjangBelanja extends React.Component {
           isRefreshing: false,
           data: nextProps.dataCart.cart.items
         })
+        if (nextProps.dataCart.cart.promo !== null) {
+          if (nextProps.dataCart.cart.promo.type === 0) {
+            this.setState({
+              requestPromo: true,
+              statusDiskon: true,
+              diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
+            })
+          } else {
+            this.setState({
+              requestPromo: true,
+              statusDiskon: true,
+              diskon: nextProps.dataCart.cart.promo
+            })
+          }
+        }
       }
       this.props.getCartReset()
     } else if (nextProps.dataCart.status > 200) {
@@ -72,7 +87,7 @@ class PembelianKeranjangBelanja extends React.Component {
           requestPromo: true,
           statusDiskon: true,
           modalPromo: false,
-          diskon: parseInt(nextProps.dataPromo.promo.percentage) * parseInt(this.state.price) * parseInt(this.state.countProduct) / 100
+          diskon: parseInt(nextProps.dataPromo.promo.percentage) * parseInt(this.state.subtotal) / 100
         })
       } else {
         this.setState({
@@ -244,7 +259,7 @@ class PembelianKeranjangBelanja extends React.Component {
                 {rowData.product.store.name}
               </Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.props.deleteItem(rowData.id)}>
               <Text style={styles.textHapus}>Hapus</Text>
             </TouchableOpacity>
           </View>
@@ -464,7 +479,8 @@ const mapDispatchToProps = (dispatch) => {
     cancelPromo: () => dispatch(cartAction.cancelPromo()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getItem: (id) => dispatch(cartAction.getItem({id: id})),
-    getCart: () => dispatch(cartAction.getCart())
+    getCart: () => dispatch(cartAction.getCart()),
+    deleteItem: (id) => dispatch(cartAction.deleteItem({id: id}))
   }
 }
 

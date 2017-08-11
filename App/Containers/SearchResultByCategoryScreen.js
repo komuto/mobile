@@ -86,7 +86,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
       this.setState({
         loadingProduk: true
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
     } else if (nextProps.dataProduk.status === 'ENOENT') {
       this.setState({
         loadingProduk: true

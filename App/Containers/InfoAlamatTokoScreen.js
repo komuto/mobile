@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView, Modal, ActivityIndicator, Text, ListView, View, TouchableOpacity, Image, TextInput } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as cekAlamat from '../actions/address'
+import * as addressAction from '../actions/address'
 import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -23,13 +23,13 @@ class InfoAlamatTokoScreenScreen extends React.Component {
       namaPelimilik: this.props.namaPelimilik,
       email: this.props.email,
       noHp: this.props.noHp,
-      alamatPemilik: 'jogja',
-      kodePos: '12345',
+      alamatPemilik: '',
+      kodePos: '',
       alamatLain: [],
-      provinsiTerpilih: 'Semua Wilayah',
-      kabTerpilih: 'Semua Wilayah',
-      kecTerpilih: 'Semua Wilayah',
-      kelurahanterpilih: 'Semua Wilayah',
+      provinsiTerpilih: '',
+      kabTerpilih: '',
+      kecTerpilih: '',
+      kelurahanterpilih: '',
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
@@ -43,31 +43,6 @@ class InfoAlamatTokoScreenScreen extends React.Component {
       modalKabupaten: false,
       modalKecamatan: false,
       modalKelurahan: false,
-      tambahanProvinsi: [
-        {
-          'id': 0,
-          'name': 'Pilih Provinsi'
-        }
-      ],
-      tambahanKota: [
-        {
-          'id': 0,
-          'ro_id': 0,
-          'name': 'Pilih Kota'
-        }
-      ],
-      tambahanKecamatan: [
-        {
-          'id': 0,
-          'name': 'Pilih Kecamatan'
-        }
-      ],
-      tambahanKelurahan: [
-        {
-          'id': 0,
-          'name': 'Pilih Kelurahan'
-        }
-      ],
       dataStoreFinal: this.props.dataStore,
       addressTemp: [],
       loading: false
@@ -80,24 +55,20 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         alamatLain: nextProps.dataAlamats.address
       })
     } if (nextProps.dataProvinsi.status === 200) {
-      // console.log(nextProps.dataProvinsi)
       this.setState({
-        provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
+        provinsi: nextProps.dataProvinsi.provinces
       })
     } if (nextProps.dataKota.status === 200) {
-      // console.log(nextProps.dataKota)
       this.setState({
-        kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
+        kabupaten: nextProps.dataKota.districts
       })
     } if (nextProps.dataSubDistrict.status === 200) {
-      // console.log(nextProps.dataSubDistrict)
       this.setState({
-        kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
+        kecamatan: nextProps.dataSubDistrict.subdistricts
       })
     } if (nextProps.dataVilage.status === 200) {
-      // console.log(nextProps.dataVilage)
       this.setState({
-        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVilage.villages)
+        kelurahan: nextProps.dataVilage.villages
       })
     } if (nextProps.dataStores.status === 200) {
       this.setState({
@@ -107,15 +78,17 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         type: ActionConst.PUSH,
         tipeNotikasi: 'successBukaToko'
       })
-    } else if (nextProps.dataStores.status > 200) {
+    } if (nextProps.dataStores.status > 200) {
       window.alert('Sudah Buka Toko')
     }
   }
 
   componentDidMount () {
     this.props.getAlamat()
-    this.props.getProvinsi()
-    this.props.getKota(11)
+    this.props.getProvinsi(this.state.idProvinsiTerpilih)
+    this.props.getKabupaten(this.state.idKabTerpilih)
+    this.props.getSubDistrict(this.state.idKecTerpilih)
+    this.props.getVillage(this.state.idkelTerpilih)
   }
 
   handleChangeAlamat = (text) => {
@@ -174,8 +147,9 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           this.setState({
             provinsiTerpilih: rowData.name,
             idProvinsiTerpilih: rowData.id,
-            modalProvinsi: false })
-          this.props.getKota(rowData.id)
+            modalProvinsi: false
+          })
+          this.props.getKabupaten(rowData.id)
         }}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -273,9 +247,8 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         visible={this.state.modalProvinsi}
         onRequestClose={() => this.setState({ modalProvinsi: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={styles.bgModal} onPress={() => this.setState({modalProvinsi: false})} />
-          <ScrollView>
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({modalProvinsi: false})}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
               dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
@@ -283,7 +256,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -296,9 +269,8 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         visible={this.state.modalKabupaten}
         onRequestClose={() => this.setState({ modalKabupaten: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal]} onPress={() => this.setState({modalKabupaten: false})} />
-          <ScrollView>
+        <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKabupaten: false})}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
               dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
@@ -306,7 +278,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -319,16 +291,15 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         visible={this.state.modalKecamatan}
         onRequestClose={() => this.setState({ modalKecamatan: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalKecamatan: false})} />
-          <ScrollView>
+        <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKecamatan: false})}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
               renderRow={this.renderListKecamatan.bind(this)}
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -341,16 +312,15 @@ class InfoAlamatTokoScreenScreen extends React.Component {
         visible={this.state.modalKelurahan}
         onRequestClose={() => this.setState({ modalKelurahan: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalKelurahan: false})} />
-          <ScrollView>
+        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer]} onPress={() => this.setState({modalKelurahan: false})}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kelurahan)}
               renderRow={this.renderListKelurahan.bind(this)}
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -362,7 +332,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           <Text style={[styles.textLabel]}>Provinsi</Text>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalProvinsi: true })}>
-              <Text style={[styles.inputText, {flex: 1, marginLeft: 0}]}>{this.state.provinsiTerpilih}</Text>
+              <Text style={[styles.inputText, {flex: 1, marginLeft: 0, paddingTop: 8, paddingBottom: 4.3}]}>{this.state.provinsiTerpilih}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
@@ -371,7 +341,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           <Text style={[styles.textLabel]}>Kota / Kabupaten</Text>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
-              <Text style={[styles.inputText, {flex: 1, marginLeft: 0}]}>{this.state.kabTerpilih}</Text>
+              <Text style={[styles.inputText, {flex: 1, marginLeft: 0, paddingTop: 8, paddingBottom: 4.3}]}>{this.state.kabTerpilih}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
@@ -380,7 +350,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           <Text style={[styles.textLabel]}>Kecamatan</Text>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKecamatan: true })}>
-              <Text style={[styles.inputText, {flex: 1, marginLeft: 0}]}>{this.state.kecTerpilih}</Text>
+              <Text style={[styles.inputText, {flex: 1, marginLeft: 0, paddingTop: 8, paddingBottom: 4.3}]}>{this.state.kecTerpilih}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
@@ -389,10 +359,49 @@ class InfoAlamatTokoScreenScreen extends React.Component {
           <Text style={[styles.textLabel]}>Kelurahan</Text>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKelurahan: true })}>
-              <Text style={[styles.inputText, {flex: 1, marginLeft: 0}]}>{this.state.kelurahanterpilih}</Text>
+              <Text style={[styles.inputText, {flex: 1, marginLeft: 0, paddingTop: 8, paddingBottom: 4.3}]}>{this.state.kelurahanterpilih}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
+        </View>
+      </View>
+    )
+  }
+
+  modalAlamat () {
+    if (this.state.createStore) {
+      return (
+        <TouchableOpacity style={styles.pilihAlamat} onPress={() => this.setState({ modalAlamatLain: true })}>
+          <Text style={styles.textButtonPilihAlamat}>
+            Ambil dari Alamat yang ada
+          </Text>
+          <Image source={Images.rightArrow} style={{height: 24, width: 24}} />
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
+  stateIndicator () {
+    return (
+      <View style={styles.header}>
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>1</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>2</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>3</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>4</Text>
         </View>
       </View>
     )
@@ -402,19 +411,14 @@ class InfoAlamatTokoScreenScreen extends React.Component {
     const {alamatPemilik, kodePos} = this.state
     return (
       <View>
-        <ScrollView style={{marginBottom: 40, backgroundColor: Colors.background}}>
+        <ScrollView style={{backgroundColor: Colors.background}}>
           <View style={styles.infoAlamatContainer}>
-            <TouchableOpacity style={styles.pilihAlamat} onPress={() => this.setState({ modalAlamatLain: true })}>
-              <Text style={styles.textButtonPilihAlamat}>
-                Ambil dari Alamat yang ada
-              </Text>
-              <Image source={Images.rightArrow} style={{height: 24, width: 24}} />
-            </TouchableOpacity>
+            {this.modalAlamat()}
             <View style={{paddingLeft: 1}}>
               <Text style={styles.textLabel}>Alamat Pemilik</Text>
               <View style={[styles.inputContainer, {marginBottom: 24.8}]}>
                 <TextInput
-                  style={[styles.inputText, {paddingBottom: 3}]}
+                  style={[styles.inputText]}
                   value={alamatPemilik}
                   keyboardType='default'
                   returnKeyType='next'
@@ -429,7 +433,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
               <Text style={styles.textLabel}>Kode Pos</Text>
               <View style={[styles.inputContainer, {marginBottom: 0}]}>
                 <TextInput
-                  style={[styles.inputText, {paddingBottom: 3}]}
+                  style={[styles.inputText]}
                   value={kodePos}
                   keyboardType='default'
                   returnKeyType='next'
@@ -442,9 +446,9 @@ class InfoAlamatTokoScreenScreen extends React.Component {
               </View>
             </View>
           </View>
-          <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handlecreateStore()}>
+          <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleNextState()}>
             <Text style={styles.textButtonNext}>
-              Lanjutkan
+              lanjutkan
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -452,7 +456,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
     )
   }
 
-  handlecreateStore () {
+  handleNextState () {
     const {dataStoreFinal, addressTemp, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, namaPelimilik, email, noHp, kodePos, alamatPemilik} = this.state
     if (alamatPemilik === '' || kodePos === '' || idProvinsiTerpilih === 0 || idKabTerpilih === 0 || idKecTerpilih === 0 || idkelTerpilih === 0) {
       window.alert('Informasi Alamat harus diisi lengkap')
@@ -468,7 +472,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
       addressTemp[7] = kodePos
       addressTemp[8] = alamatPemilik
       dataStoreFinal[3] = addressTemp
-      this.props.createStores(dataStoreFinal)
+      this.props.buatToko(dataStoreFinal)
       console.log('dataStore', dataStoreFinal)
     }
   }
@@ -480,23 +484,7 @@ class InfoAlamatTokoScreenScreen extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>1</Text>
-          </View>
-          <View style={styles.line} />
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>2</Text>
-          </View>
-          <View style={styles.line} />
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>3</Text>
-          </View>
-          <View style={styles.line} />
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>4</Text>
-          </View>
-        </View>
+        {this.stateIndicator()}
         {this.renderStateFour()}
         {this.modalAlamatLain()}
         {this.renderModalProvinsi()}
@@ -517,18 +505,19 @@ const mapStateToProps = (state) => {
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
     dataVilage: state.villages,
-    dataStores: state.createStore
+    dataStores: state.createStore,
+    dataUpdate: state.updateStore
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAlamat: () => dispatch(cekAlamat.getListAddress()),
+    getAlamat: () => dispatch(addressAction.getListAddress()),
     getProvinsi: () => dispatch(locationAction.getProvince()),
-    getKota: (id) => dispatch(locationAction.getDistrict({ id })),
-    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ id })),
-    getVillage: (id) => dispatch(locationAction.getVillage({ id })),
-    createStores: (stores) => dispatch(storeAction.createStore({store: stores[0], expedition_services: stores[1], user: stores[2], address: stores[3]}))
+    getKabupaten: (id) => dispatch(locationAction.getDistrict({ province_id: id })),
+    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ district_id: id })),
+    getVillage: (id) => dispatch(locationAction.getVillage({ sub_district_id: id })),
+    buatToko: (stores) => dispatch(storeAction.createStore({store: stores[0], expedition_services: stores[1], user: stores[2], address: stores[3]}))
   }
 }
 

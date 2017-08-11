@@ -54,7 +54,7 @@ class TambahAlamatScreenScreen extends React.Component {
       modalKabupaten: false,
       modalKecamatan: false,
       modalKelurahan: false,
-      IsPrimary: true,
+      isPrimary: false,
       loading: false,
       tambahanProvinsi: [
         {
@@ -138,7 +138,8 @@ class TambahAlamatScreenScreen extends React.Component {
           idProvinsiTerpilih: nextProps.detailAddress.address.province.id,
           idKabTerpilih: nextProps.detailAddress.address.district.id,
           idKecTerpilih: nextProps.detailAddress.address.subDistrict.id,
-          idkelTerpilih: nextProps.detailAddress.address.village.id
+          idkelTerpilih: nextProps.detailAddress.address.village.id,
+          isPrimary: nextProps.detailAddress.address.is_primary_address
         })
         nextProps.detailAddress.status = 0
       }
@@ -156,6 +157,7 @@ class TambahAlamatScreenScreen extends React.Component {
       nextProps.updateAddress.status = 0
     }
   }
+
   componentDidMount () {
     this.props.getProvinsi()
     this.props.getKota(11)
@@ -432,9 +434,8 @@ class TambahAlamatScreenScreen extends React.Component {
         visible={this.state.modalProvinsi}
         onRequestClose={() => this.setState({ modalProvinsi: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={styles.bgModal} onPress={() => this.setState({modalProvinsi: false})} />
-          <ScrollView>
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({modalProvinsi: false})}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
               dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
@@ -442,7 +443,7 @@ class TambahAlamatScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -455,8 +456,7 @@ class TambahAlamatScreenScreen extends React.Component {
         visible={this.state.modalKabupaten}
         onRequestClose={() => this.setState({ modalKabupaten: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal]} onPress={() => this.setState({modalKabupaten: false})} />
+        <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKabupaten: false})}>
           <ScrollView>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
@@ -465,7 +465,7 @@ class TambahAlamatScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -478,8 +478,7 @@ class TambahAlamatScreenScreen extends React.Component {
         visible={this.state.modalKecamatan}
         onRequestClose={() => this.setState({ modalKecamatan: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalKecamatan: false})} />
+        <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKecamatan: false})}>
           <ScrollView>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
@@ -487,7 +486,7 @@ class TambahAlamatScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -500,8 +499,7 @@ class TambahAlamatScreenScreen extends React.Component {
         visible={this.state.modalKelurahan}
         onRequestClose={() => this.setState({ modalKelurahan: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalKelurahan: false})} />
+        <TouchableOpacity activeOpacity={1} style={[styles.modalContainer]} onPress={() => this.setState({modalKelurahan: false})}>
           <ScrollView>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.kelurahan)}
@@ -509,13 +507,14 @@ class TambahAlamatScreenScreen extends React.Component {
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
 
   renderInfoLokasi () {
-    const {colorPickerProv, colorPickerKab, colorPickerKec, colorPickerKel} = this.state
+    const {isPrimary, colorPickerProv, colorPickerKab, colorPickerKec, colorPickerKel} = this.state
+    const img = isPrimary ? Images.centang : null
     return (
       <View style={styles.textInput}>
         <TextInput
@@ -565,18 +564,37 @@ class TambahAlamatScreenScreen extends React.Component {
           placeholder='Kode Pos'
         />
         <View style={[styles.lokasiSeparator, {marginBottom: 30.8}]} />
+        <TouchableOpacity onPress={() => this.hadnleisPrimary()}>
+          <View style={styles.containerEkspedisi}>
+            <View style={styles.box}>
+              <Image
+                source={img}
+                style={styles.gambarCentangBox}
+              />
+            </View>
+            <Text style={[styles.title]}>Jadikan Alamat Utama</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     )
   }
 
+  hadnleisPrimary () {
+    if (this.state.isPrimary) {
+      this.setState({isPrimary: false})
+    } else {
+      this.setState({isPrimary: true})
+    }
+  }
+
   createAlamat () {
     const {namaAlias, namaPenerima, nomerHape,
-      alamatLengkap, kodePos, email, namaPemilik, IsPrimary,
+      alamatLengkap, kodePos, email, namaPemilik, isPrimary,
       idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
     if (this.state.edit) {
       this.setState({loading: true})
       this.props.editAddress(idAlamat, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary)
+        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
       this.setState({edit: false})
     } else {
       if (namaAlias === '' && namaPenerima === '' && nomerHape === '') {
@@ -584,7 +602,7 @@ class TambahAlamatScreenScreen extends React.Component {
       } else {
         this.setState({loading: true})
         this.props.createAddress(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-          idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary)
+          idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
       }
     }
   }
@@ -633,11 +651,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getProvinsi: () => dispatch(locationAction.getProvince()),
-    getKota: (id) => dispatch(locationAction.getDistrict({ id })),
-    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ id })),
-    getVillage: (id) => dispatch(locationAction.getVillage({ id })),
+    getKota: (id) => dispatch(locationAction.getDistrict({ province_id: id })),
+    getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ district_id: id })),
+    getVillage: (id) => dispatch(locationAction.getVillage({ sub_district_id: id })),
     createAddress: (idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary) =>
+        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
         dispatch(addressAction.addAddress({
           province_id: idProvinsiTerpilih,
           district_id: idKabTerpilih,
@@ -649,11 +667,11 @@ const mapDispatchToProps = (dispatch) => {
           postal_code: kodePos,
           address: alamatLengkap,
           alias_address: namaAlias,
-          is_primary: IsPrimary
+          is_primary: isPrimary
         })),
     getAlamat: () => dispatch(addressAction.getListAddress()),
     editAddress: (id, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, IsPrimary) =>
+        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
         dispatch(addressAction.updateAddress({
           id: id,
           province_id: idProvinsiTerpilih,
@@ -666,7 +684,7 @@ const mapDispatchToProps = (dispatch) => {
           postal_code: kodePos,
           address: alamatLengkap,
           alias_address: namaAlias,
-          is_primary: IsPrimary
+          is_primary: isPrimary
         }))
   }
 }

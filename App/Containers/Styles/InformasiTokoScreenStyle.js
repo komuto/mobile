@@ -93,9 +93,9 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -4,
     color: Colors.darkgrey,
-    fontFamily: Fonts.type.regular,
+    fontFamily: Fonts.type.semiBolds,
     fontSize: Fonts.size.smallMed,
-    paddingBottom: -8.3
+    paddingBottom: 8.3
   },
   buttonnext: {
     height: 50,
@@ -105,13 +105,13 @@ export default StyleSheet.create({
     borderRadius: 5,
     marginLeft: 20.3,
     marginRight: 20.3,
-    marginTop: 20.8,
-    marginBottom: 54
+    marginTop: 5,
+    marginBottom: 20
   },
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.regular
+    fontSize: Fonts.size.medium
   },
   titleEkspedisi: {
     backgroundColor: Colors.paleGrey,

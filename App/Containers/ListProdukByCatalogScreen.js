@@ -12,6 +12,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as produkAction from '../actions/product'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
@@ -77,6 +78,14 @@ class DaftarProdukScreenScreen extends React.Component {
     })
   }
 
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
+  }
+
   labelDropshipping () {
     return (
       <View>
@@ -104,7 +113,7 @@ class DaftarProdukScreenScreen extends React.Component {
     const { produk } = this.state
     const mapProduk = produk.map((data, i) => {
       return (
-        <View key={i} style={[styles.dataListProduk, {backgroundColor: Colors.snow}]}>
+        <TouchableOpacity key={i} style={[styles.dataListProduk, {backgroundColor: Colors.snow}]} onPress={() => this.produkDetail(data.id)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -124,7 +133,7 @@ class DaftarProdukScreenScreen extends React.Component {
               <Text style={styles.textDetail}>Uang yang diterima : Rp {data.price}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )
     })
     return (
@@ -169,6 +178,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

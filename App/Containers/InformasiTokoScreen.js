@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
 import * as storeAction from '../actions/stores'
+import * as loginaction from '../actions/user'
 
 import { Images, Colors } from '../Themes'
 
@@ -15,23 +16,29 @@ class InformasiTokoScreenScreen extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      namaToko: 'jaya',
-      slogan: 'kaya',
-      maxText: 25,
-      descToko: 'sukses',
-      fotoToko: null,
+      namaToko: this.props.dataProfile.user.store.name || '',
+      slogan: this.props.dataProfile.user.store.slogan || '',
+      descToko: this.props.dataProfile.user.store.description || '',
+      fotoToko: this.props.dataProfile.user.store.logo || null,
       showModalCamera: false,
       store: [],
       stores: [],
       storeTemp: [],
       storesTemp: [],
       textPemilik: 'text',
-      textSlogan: 'text',
       textDesc: 'text',
       textPemilikColor: Colors.snow,
       textSloganColor: Colors.snow,
       textDescColor: Colors.snow,
-      loading: false
+      heightSlogan: 0,
+      heightDesc: 0,
+      loading: false,
+      maxLine: 25,
+      lineLeft: 25,
+      textSlogan: ' sisa karakter',
+      createStore: this.props.createStores,
+      textButton: this.props.textButton,
+      editAbles: this.props.editAble
     }
   }
 
@@ -39,12 +46,18 @@ class InformasiTokoScreenScreen extends React.Component {
     if (nextProps.dataPhoto.status === 200) {
       this.setState({
         loading: false,
-        fotoToko: nextProps.dataPhoto.payload.name
+        fotoToko: nextProps.dataPhoto.payload.images[0].name
       })
-    } else {
+    } if (nextProps.dataPhoto.status > 200) {
       this.setState({
         loading: false
       })
+    } if (nextProps.dataUpdate.status === 200) {
+      this.setState({
+        loading: false
+      })
+      this.props.getProfile()
+      nextProps.dataUpdate.status = 0
     }
   }
 
@@ -107,7 +120,7 @@ class InformasiTokoScreenScreen extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
+    console.log('field', field)
     switch (field) {
       case 'pemilik':
         this.setState({
@@ -156,7 +169,7 @@ class InformasiTokoScreenScreen extends React.Component {
         break
       case 'slogan':
         this.setState({
-          textSlogan: '25 sisa karakter',
+          textSlogan: ' sisa karakter',
           textSloganColor: Colors.labelgrey
         })
         break
@@ -168,7 +181,7 @@ class InformasiTokoScreenScreen extends React.Component {
         break
       case 'foto':
         this.setState({
-          textDesc: 'Deskripsi harus diisi',
+          textDesc: 'Foto harus diUpload',
           textDescColor: Colors.snow
         })
         break
@@ -198,7 +211,6 @@ class InformasiTokoScreenScreen extends React.Component {
         break
       case 'slogan':
         this.setState({
-          textSlogan: '25 sisa karakter',
           textSloganColor: Colors.labelgrey
         })
         break
@@ -223,10 +235,10 @@ class InformasiTokoScreenScreen extends React.Component {
   }
 
   renderStateOne () {
-    const {namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
+    const {textButton, editAbles, lineLeft, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
     return (
-      <View>
-        <ScrollView style={{marginBottom: 40}}>
+      <ScrollView>
+        <View style={{flex: 1}}>
           <CameraModal
             visible={this.state.showModalCamera}
             onClose={() => {
@@ -248,6 +260,7 @@ class InformasiTokoScreenScreen extends React.Component {
               <TextInput
                 ref='name'
                 style={styles.inputText}
+                editable={editAbles}
                 value={namaToko}
                 keyboardType='default'
                 returnKeyType='next'
@@ -266,10 +279,10 @@ class InformasiTokoScreenScreen extends React.Component {
             <View style={styles.inputContainer}>
               <TextInput
                 ref='slogan'
-                style={styles.inputText}
+                style={[styles.inputText, {height: Math.max(30, this.state.heightSlogan)}]}
                 multiline
-                maxLength={25}
                 value={slogan}
+                maxLength={maxLine}
                 keyboardType='default'
                 returnKeyType='next'
                 onFocus={() => this.onFocus('slogan')}
@@ -278,16 +291,28 @@ class InformasiTokoScreenScreen extends React.Component {
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeSlogan}
+                onChange={(event) => {
+                  this.setState({
+                    slogan: event.nativeEvent.text,
+                    heightSlogan: event.nativeEvent.contentSize.height,
+                    lineLeft: lineLeft - 1
+                  })
+                  if (this.state.slogan.length === 0) {
+                    this.setState({
+                      lineLeft: 25
+                    })
+                  }
+                }}
                 underlineColorAndroid='transparent'
                 placeholder='Slogan Toko Anda'
               />
             </View>
-            <Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{textSlogan}</Text>
+            <Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{lineLeft}{textSlogan}</Text>
             <Text style={styles.textLabel}>Deskripsi Toko</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 ref='descToko'
-                style={styles.inputText}
+                style={[styles.inputText, {height: Math.max(30, this.state.heightDesc)}]}
                 multiline
                 value={descToko}
                 keyboardType='default'
@@ -296,7 +321,12 @@ class InformasiTokoScreenScreen extends React.Component {
                 autoCorrect
                 onFocus={() => this.onFocus('desc')}
                 onBlur={() => this.onBlur('desc')}
-                onChangeText={this.handleChangeDesToko}
+                onChange={(event) => {
+                  this.setState({
+                    descToko: event.nativeEvent.text,
+                    heightDesc: event.nativeEvent.contentSize.height
+                  })
+                }}
                 underlineColorAndroid='transparent'
                 placeholder='Deskripsi Toko Anda'
               />
@@ -306,52 +336,53 @@ class InformasiTokoScreenScreen extends React.Component {
           <View style={{flex: 1, backgroundColor: Colors.background}}>
             <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
               <Text style={styles.textButtonNext}>
-                Lanjutkan
+                {textButton}
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     )
   }
 
   nextState () {
-    const {namaToko, slogan, descToko, store, stores, storesTemp, fotoToko} = this.state
-    if (namaToko === '' && slogan === '' && descToko === '') {
-      this.onError('empty')
-    } if (namaToko === '') {
-      this.onError('pemilik')
-    } if (slogan === '') {
-      this.onError('slogan')
-    } if (descToko === '') {
-      this.onError('slogan')
-    } if (fotoToko === null) {
-      this.onError('foto')
+    const {createStore, namaToko, slogan, descToko, store, stores, storesTemp, fotoToko} = this.state
+    if (createStore) {
+      if (namaToko === '' && slogan === '' && descToko === '') {
+        this.onError('empty')
+      } if (namaToko === '') {
+        this.onError('pemilik')
+      } if (slogan === '') {
+        this.onError('slogan')
+      } if (descToko === '') {
+        this.onError('slogan')
+      } if (fotoToko === null) {
+        this.onError('foto')
+      } else {
+        store[0] = namaToko
+        store[1] = slogan
+        store[2] = descToko
+        store[3] = fotoToko
+        stores[3] = store
+        storesTemp[0] = store
+        NavigationActions.ekspedisitoko({
+          type: ActionConst.PUSH,
+          namaToko: namaToko,
+          slogan: slogan,
+          descToko: descToko,
+          dataStore: storesTemp
+        })
+        console.log(storesTemp)
+      }
     } else {
-      store[0] = namaToko
-      store[1] = slogan
-      store[2] = descToko
-      store[3] = fotoToko
-      stores[3] = store
-      storesTemp[0] = store
-      NavigationActions.ekspedisitoko({
-        type: ActionConst.PUSH,
-        namaToko: namaToko,
-        slogan: slogan,
-        descToko: descToko,
-        dataStore: storesTemp
-      })
-      console.log(storesTemp)
+      this.setState({loading: true})
+      this.props.updateInfoTokos(namaToko, slogan, descToko, fotoToko)
     }
   }
 
-  render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
-    return (
-      <View style={styles.container}>
+  stateIndicator () {
+    if (this.state.createStore) {
+      return (
         <View style={styles.header}>
           <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
             <Text style={[styles.textState, {color: Colors.background}]}>1</Text>
@@ -369,6 +400,22 @@ class InformasiTokoScreenScreen extends React.Component {
             <Text style={styles.textState}>4</Text>
           </View>
         </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
+  render () {
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
+    return (
+      <View style={styles.container}>
+        {this.stateIndicator()}
         {this.renderStateOne()}
         {spinner}
       </View>
@@ -379,13 +426,22 @@ class InformasiTokoScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPhoto: state.upload
+    dataPhoto: state.upload,
+    dataProfile: state.profile,
+    dataUpdate: state.updateStore
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data}))
+    postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data})),
+    updateInfoTokos: (name, slogan, desc, photo) => dispatch(storeAction.updateInformation({
+      name: name,
+      slogan: slogan,
+      description: desc,
+      logo: photo
+    })),
+    getProfile: (login) => dispatch(loginaction.getProfile())
   }
 }
 

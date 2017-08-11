@@ -5,15 +5,17 @@ import {
   Image,
   View,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as produkAction from '../actions/product'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
@@ -40,6 +42,26 @@ class DaftarProdukScreenScreen extends React.Component {
         produk: nextProps.dataProduk.storeProducts
       })
     }
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
+  nextState () {
+    NavigationActions.notifikasi({
+      type: ActionConst.PUSH,
+      tipeNotikasi: 'successBukaToko'
+    })
   }
 
   renderKatalogtButton () {
@@ -178,7 +200,7 @@ class DaftarProdukScreenScreen extends React.Component {
   mapSingleProduk (data, id) {
     const mapProduk = data.map((data, i) => {
       return (
-        <View key={i} style={styles.dataListProduk}>
+        <TouchableOpacity key={i} style={styles.dataListProduk} onPress={() => this.produkDetail(data.id)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -198,7 +220,7 @@ class DaftarProdukScreenScreen extends React.Component {
               <Text style={styles.textDetail}>Uang yang diterima : Rp {data.price}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )
     })
     return (
@@ -220,6 +242,14 @@ class DaftarProdukScreenScreen extends React.Component {
     NavigationActions.tambahproduk({
       type: ActionConst.PUSH
     })
+  }
+
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
   }
 
   render () {
@@ -261,7 +291,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
-    getListProduk: (hidden) => dispatch(storeAction.getStoreProducts({hidden: hidden}))
+    getListProduk: (hidden) => dispatch(storeAction.getStoreProducts({hidden: hidden})),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

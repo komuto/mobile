@@ -75,7 +75,7 @@ class PembelianKeranjangBelanja extends React.Component {
       }
       this.props.getCartReset()
     } else if (nextProps.dataCart.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
+      // ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
       this.setState({
         data: [],
         isFetching: false

@@ -9,13 +9,14 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as produkAction from '../actions/home'
+import * as homeAction from '../actions/home'
+import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -57,7 +58,8 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
       termahalCek: 0,
       terlarisCek: 0,
       sortData: menu,
-      filter: false
+      filter: false,
+      loading: this.props.loading
     }
   }
 
@@ -74,23 +76,9 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
       this.setState({
         listDataSource: nextProps.dataProduk.products,
         rowDataSource: nextProps.dataProduk.products,
-        loadingKategori: false,
-        loadingProduk: false
+        loading: false
       })
-    } else if (nextProps.dataKategori.status > 200) {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataKategori.status === 'ENOENT') {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    }
-    if (nextProps.dataFilter.status === 200) {
+    } if (nextProps.dataFilter.status === 200) {
       this.setState({
         listDataSource: nextProps.dataFilter.products,
         rowDataSource: nextProps.dataFilter.products
@@ -368,6 +356,16 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
     return hargaDiskon
   }
 
+  produkDetail (id) {
+    NavigationActions.productdetail({
+      type: ActionConst.PUSH,
+      id: id,
+      dropship: true,
+      buttonText: 'Pilih Barang ini'
+    })
+    this.props.getDetailProduk(id)
+  }
+
   renderRowList (rowData) {
     if (rowData.product.discount > 0) {
       this.statusDiskon = true
@@ -385,7 +383,7 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -437,7 +435,7 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -550,12 +548,10 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
   }
 
   render () {
-    // let background
-    // if (this.state.tipe === 'search') {
-    //   background = stylesSearch.search
-    // } else {
-    //   background = stylesSearch.kategori
-    // }
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     return (
       <View style={[styles.container, {marginTop: Metrics.navBarHeight}]}>
         <View style={stylesDropshipping.header}>
@@ -598,6 +594,7 @@ class PilihBarangDropshippingScreenScreen extends React.Component {
         </View>
         {this.modalFilter()}
         {this.renderModalSort()}
+        {spinner}
       </View>
     )
   }
@@ -612,15 +609,15 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // getProdukTerbaru: dispatch(produkAction.products()),
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(produkAction.filter({
+    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
       other: other
-    }))
+    })),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

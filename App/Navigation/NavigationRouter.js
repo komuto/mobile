@@ -80,6 +80,14 @@ import TransaksiDibayar from '../Containers/TransaksiDibayar'
 import TransaksiDetailStatus from '../Containers/TransaksiDetailStatus'
 import TransaksiKonfirmasiPembayaran from '../Containers/TransaksiKonfirmasiPembayaran'
 import CartDetailItem from '../Containers/CartDetailItem'
+import KelolaToko from '../Containers/KelolaTokoScreen'
+import Term from '../Containers/TermsScreen'
+import KatalogToko from '../Containers/KatalogTokoScreen'
+import TambahEditKatalogToko from '../Containers/TambahEditKatalogTokoScreen'
+import AlamatToko from '../Containers/AlamatTokoScreen'
+import KelolaAlamatToko from '../Containers/KelolaAlamatTokoScreen'
+import UpdateAlamatToko from '../Containers/UpdateAlamatTokoScreen'
+import KelolaEkspedisiToko from '../Containers/KelolaEkspedisiTokoScreen'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -692,6 +700,62 @@ class NavigationRouter extends Component {
             key='cartdetailitem'
             component={CartDetailItem}
             title='Detail Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kelolatoko'
+            component={KelolaToko}
+            title='Kelola Toko'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='term'
+            component={Term}
+            title='Terms and Conditions'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='katalogtoko'
+            component={KatalogToko}
+            title='Katalog'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='tambaheditkatalog'
+            component={TambahEditKatalogToko}
+            title='Tambah Katalog'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='alamattoko'
+            component={AlamatToko}
+            title='Info Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kelolaalamattoko'
+            component={KelolaAlamatToko}
+            title='Info Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='updatealamattoko'
+            component={UpdateAlamatToko}
+            title='Info Alamat'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='kelolaekspedisitoko'
+            component={KelolaEkspedisiToko}
+            title='Ekspedisi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

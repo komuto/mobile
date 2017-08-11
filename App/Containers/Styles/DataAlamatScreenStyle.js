@@ -25,7 +25,7 @@ export default StyleSheet.create({
     paddingTop: 4,
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
-    color: Colors.brownishGrey,
+    color: Colors.lightblack,
     paddingBottom: 20
   },
   headerInfoAlamat: {
@@ -42,7 +42,7 @@ export default StyleSheet.create({
     marginLeft: 20
   },
   bgModal: {
-    backgroundColor: 'rgba(72,74,76, 0.8)',
+    backgroundColor: 'rgba(0,0,0, 0.8)',
     flex: 1
   },
   contaierModal: {
@@ -122,8 +122,8 @@ export default StyleSheet.create({
     elevation: 5
   },
   imageTambah: {
-    height: 32,
-    width: 32
+    height: 24,
+    width: 24
   },
   notif: {
     flexDirection: 'row',

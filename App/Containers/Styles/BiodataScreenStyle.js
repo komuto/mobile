@@ -79,8 +79,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,
-    paddingBottom: 5,
-    paddingTop: 5,
+    paddingBottom: 8.3,
     paddingLeft: -1
   },
   radioLabel: {

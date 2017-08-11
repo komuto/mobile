@@ -120,9 +120,10 @@ class TentangDropshippingScreenScreen extends React.Component {
   }
 
   handleDropshipper () {
-    this.props.getDropshipper(false)
+    this.props.getDropshipper(true)
     NavigationActions.pilihbarangdropshipping({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      loading: true
     })
   }
 
@@ -145,8 +146,8 @@ class TentangDropshippingScreenScreen extends React.Component {
       <View style={[styles.container, {marginTop: this.state.marginNavbar}]}>
         <ScrollView>
           {this.renderInfoDropshipping()}
-          {this.button()}
         </ScrollView>
+        {this.button()}
       </View>
     )
   }

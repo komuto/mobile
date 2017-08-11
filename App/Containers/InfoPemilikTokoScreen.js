@@ -145,7 +145,7 @@ class InfoPemilikTokoScreenScreen extends React.Component {
             <View style={[styles.inputContainer, {marginTop: 15}]}>
               <TextInput
                 ref='noindentitas'
-                style={[styles.inputText, {paddingBottom: 3}]}
+                style={[styles.inputText]}
                 value={noIdentitas}
                 keyboardType='default'
                 returnKeyType='next'
@@ -163,7 +163,7 @@ class InfoPemilikTokoScreenScreen extends React.Component {
             <View style={[styles.inputContainer, {marginTop: 20}]}>
               <TextInput
                 ref='namaibu'
-                style={[styles.inputText, {paddingBottom: 3}]}
+                style={[styles.inputText]}
                 value={namaIbu}
                 keyboardType='default'
                 returnKeyType='done'

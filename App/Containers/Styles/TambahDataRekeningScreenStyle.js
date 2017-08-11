@@ -31,7 +31,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium
   },
   infoContainer: {
-    paddingTop: 20,
+    paddingTop: 50,
     paddingLeft: 20,
     paddingRight: 20
   },
@@ -46,7 +46,7 @@ export default StyleSheet.create({
     flex: 1
   },
   bgModal: {
-    backgroundColor: 'rgba(72,74,76, 0.8)',
+    backgroundColor: 'rgba(0,0,0, 0.8)',
     flex: 1
   },
   inputText: {
@@ -56,27 +56,24 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,
-    paddingBottom: 5,
-    paddingLeft: -1,
-    paddingTop: 20
+    paddingBottom: 8.3,
+    paddingLeft: -1
   },
   lokasiSeparator: {
-    marginTop: 20
+    marginBottom: 20
   },
   pilihDestinasi: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 3,
+    paddingBottom: 4.3,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver
   },
   inputText2: {
     marginLeft: -4,
-    color: Colors.grey,
-    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
     fontFamily: Fonts.type.regular,
-    paddingBottom: -8.3,
-    paddingTop: -10
+    fontSize: Fonts.size.smallMed
   },
   imagePicker: {
     height: 24,

@@ -115,7 +115,14 @@ const images = {
   susksesTambahProduk: require('../Images/sukses-tambah-produk.png'),
   plus: require('../Images/Icons/icon-plus-white.png'),
   arrowRight: require('../Images/Icons/icon-arrow-right.png'),
-  ember: require('../Images/ember.png')
+  ember: require('../Images/ember.png'),
+  katalogToko: require('../Images/Icons/icon-katalog-toko.png'),
+  term: require('../Images/Icons/icon-terms-and-conditions.png'),
+  ekspedisiPengiriman: require('../Images/Icons/icon-ekspedisi-pengiriman.png'),
+  gagalHapusKatalog: require('../Images/kelolatoko-prompt-gagal-hapus.png'),
+  suksesHapusKatalog: require('../Images/kelolatoko-prompthapus.png'),
+  promptHapusAlamat: require('../Images/prompt-hapus-Alamat-Toko.png'),
+  sukesHapusAlamat: require('../Images/suskses-hapus-alamat-toko.png')
 }
 
 export default images

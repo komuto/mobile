@@ -282,58 +282,64 @@ class TambahDataRekeningScreenScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.infoContainer}>
-            <TextInput
-              ref='pemilikakun'
-              style={styles.inputText}
-              value={this.state.pemilikAkun}
-              keyboardType='default'
-              returnKeyType='next'
-              onFocus={() => this.onFocus('pemilikAkun')}
-              onBlur={() => this.onBlur('pemilikAkun')}
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangePemilikAkun}
-              underlineColorAndroid='transparent'
-              placeholder='Pemilik Akun'
-            />
-            <Text style={[styles.textLabel, {color: colorPemilik}]}>Pemilik Akun harus diisi</Text>
-            <TextInput
-              ref='norek'
-              style={styles.inputText}
-              value={this.state.nomerRekening}
-              keyboardType='numeric'
-              returnKeyType='done'
-              onFocus={() => this.onFocus('norek')}
-              onBlur={() => this.onBlur('norek')}
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeNoRek}
-              underlineColorAndroid='transparent'
-              placeholder='Nomer Rekening'
-            />
-            <Text style={[styles.textLabel, {color: colorNomerRek}]}>Nomor Rekening harus diisi</Text>
+            <View style={[styles.lokasiSeparator]}>
+              <TextInput
+                ref='pemilikakun'
+                style={styles.inputText}
+                value={this.state.pemilikAkun}
+                keyboardType='default'
+                returnKeyType='next'
+                onFocus={() => this.onFocus('pemilikAkun')}
+                onBlur={() => this.onBlur('pemilikAkun')}
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangePemilikAkun}
+                underlineColorAndroid='transparent'
+                placeholder='Pemilik Akun'
+              />
+              <Text style={[styles.textLabel, {color: colorPemilik}]}>Pemilik Akun harus diisi</Text>
+            </View>
+            <View style={[styles.lokasiSeparator]}>
+              <TextInput
+                ref='norek'
+                style={styles.inputText}
+                value={this.state.nomerRekening}
+                keyboardType='numeric'
+                returnKeyType='done'
+                onFocus={() => this.onFocus('norek')}
+                onBlur={() => this.onBlur('norek')}
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeNoRek}
+                underlineColorAndroid='transparent'
+                placeholder='Nomer Rekening'
+              />
+              <Text style={[styles.textLabel, {color: colorNomerRek}]}>Nomor Rekening harus diisi</Text>
+            </View>
             <View style={[styles.lokasiSeparator]}>
               <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalNamaBank: true })}>
                 <Text style={[styles.inputText2, {flex: 1, marginLeft: 0, color: colorPickerNamaBank}]}>{this.state.namaBankTerpilih}</Text>
                 <Image source={Images.down} style={styles.imagePicker} />
               </TouchableOpacity>
+              <Text style={[styles.textLabel, {color: colorNamaBank}]}>Nama Bank harus diisi</Text>
             </View>
-            <Text style={[styles.textLabel, {color: colorNamaBank}]}>Nama Bank harus diisi</Text>
-            <TextInput
-              ref='cabanagbank'
-              style={styles.inputText}
-              value={this.state.cabangBank}
-              keyboardType='default'
-              returnKeyType='done'
-              onFocus={() => this.onFocus('cabanagbank')}
-              onBlur={() => this.onBlur('cabanagbank')}
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleChangeCabangBank}
-              underlineColorAndroid='transparent'
-              placeholder='Cabang Bank'
-            />
-            <Text style={[styles.textLabel, {color: colorCabangBank}]}>Cabang Bank harus diisi</Text>
+            <View style={[styles.lokasiSeparator]}>
+              <TextInput
+                ref='cabanagbank'
+                style={styles.inputText}
+                value={this.state.cabangBank}
+                keyboardType='default'
+                returnKeyType='done'
+                onFocus={() => this.onFocus('cabanagbank')}
+                onBlur={() => this.onBlur('cabanagbank')}
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeCabangBank}
+                underlineColorAndroid='transparent'
+                placeholder='Cabang Bank'
+              />
+              <Text style={[styles.textLabel, {color: colorCabangBank}]}>Cabang Bank harus diisi</Text>
+            </View>
             <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.tambahRek()}>
               <Text style={styles.textButtonNext}>
                 Simpan Perubahan

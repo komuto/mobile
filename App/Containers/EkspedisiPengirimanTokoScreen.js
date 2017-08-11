@@ -32,10 +32,10 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
     } if (nextProps.dataServicesExpedition.status === 200) {
       let dataTemp = []
       let dataTempSec = []
-      nextProps.dataServicesExpedition.expeditions.map((data, i) => (
+      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
         dataTemp.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
       ))
-      nextProps.dataServicesExpedition.expeditions.map((data, i) => (
+      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
         dataTempSec.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
       ))
       this.setState({
@@ -217,6 +217,7 @@ class EkspedisiPengirimanTokoScreenScreen extends React.Component {
   }
 
   render () {
+    console.log(this.state.expeditionServices)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />

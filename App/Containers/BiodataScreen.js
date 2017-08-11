@@ -279,7 +279,7 @@ class BiodataScreenScreen extends React.Component {
             <View style={styles.inputContainer}>
               <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
                 <DatePicker
-                  style={{width: Metrics.screenWidth - 24 - 40, height: 32}}
+                  style={{width: Metrics.screenWidth - 24 - 40, height: 35}}
                   date={this.state.date}
                   mode='date'
                   androidMode='spinner'

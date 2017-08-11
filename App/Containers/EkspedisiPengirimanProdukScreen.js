@@ -64,6 +64,7 @@ class EkspedisiPengirimanProdukScreenScreen extends React.Component {
       this.setState({
         loading: true
       })
+      console.log('error')
     }
   }
 

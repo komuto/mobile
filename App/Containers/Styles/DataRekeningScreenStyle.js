@@ -122,8 +122,8 @@ export default StyleSheet.create({
     elevation: 5
   },
   imageTambah: {
-    height: 32,
-    width: 32
+    height: 24,
+    width: 24
   },
   notif: {
     flexDirection: 'row',

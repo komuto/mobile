@@ -89,8 +89,7 @@ export default StyleSheet.create({
     marginLeft: -4,
     color: Colors.grey,
     fontSize: Fonts.size.smallMed,
-    paddingBottom: -8.3,
-    paddingTop: -10
+    paddingBottom: 8.3
   },
   buttonnext: {
     height: 50,

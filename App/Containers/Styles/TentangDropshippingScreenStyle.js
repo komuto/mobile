@@ -35,6 +35,9 @@ export default StyleSheet.create({
     color: Colors.lightblack,
     flex: 1
   },
+  containerDesc: {
+    paddingRight: 20
+  },
   desc: {
     fontFamily: Fonts.type.regular,
     lineHeight: 22,

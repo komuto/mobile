@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
@@ -27,6 +27,19 @@ class TokoDashboardScreenScreen extends React.Component {
     }
   }
 
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
   nextState () {
     NavigationActions.notifikasi({
       type: ActionConst.PUSH,
@@ -37,6 +50,12 @@ class TokoDashboardScreenScreen extends React.Component {
   handleDaftarProduk () {
     this.props.getListProduk()
     NavigationActions.daftarproduk({
+      type: ActionConst.PUSH
+    })
+  }
+
+  handleKelolaToko () {
+    NavigationActions.kelolatoko({
       type: ActionConst.PUSH
     })
   }
@@ -96,7 +115,7 @@ class TokoDashboardScreenScreen extends React.Component {
         <ScrollView>
           {this.renderNotifAktivasi()}
           <View style={[styles.dataProfileContainer, {marginTop: 30}]}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.handleKelolaToko()}>
               <View style={styles.profile}>
                 <Image source={Images.pengaturanToko} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>

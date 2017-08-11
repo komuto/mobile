@@ -24,6 +24,7 @@ import * as serviceAction from '../actions/expedition'
 import * as reviewAction from '../actions/review'
 import * as productAction from '../actions/product'
 import * as storeAction from '../actions/stores'
+import * as catalogAction from '../actions/catalog'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -112,13 +113,19 @@ class ProductDetailScreenScreen extends React.Component {
       storeId: 0,
       asuransi: false,
       jumlahLihat: 0,
-      diskusi: 0
+      diskusi: 0,
+      pickFromDropshipper: this.props.dropship || false,
+      buttonText: this.props.buttonText || 'Beli Sekarang',
+      idCategory: '',
+      idBrand: '',
+      isDropship: '',
+      photoProductDropship: [],
+      expeditionDropship: []
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
-      console.log(nextProps.dataDetailProduk.detail)
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -153,8 +160,24 @@ class ProductDetailScreenScreen extends React.Component {
         storeId: nextProps.dataDetailProduk.detail.store.id,
         dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
         asuransi: nextProps.dataDetailProduk.detail.product.insurance,
-        jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view
+        jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
+        idCategory: nextProps.dataDetailProduk.detail.product.category_id,
+        idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
+        isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper
       })
+      let tempPhoto = []
+      let tempExpedition = []
+      nextProps.dataDetailProduk.detail.images.map((data, i) => {
+        tempPhoto.push({'name': data.file})
+      })
+      nextProps.dataDetailProduk.detail.expeditions.map((data, i) => {
+        tempExpedition.push({'expedition_service_id': data.id})
+      })
+      this.setState({
+        photoProductDropship: tempPhoto,
+        expeditionDropship: tempExpedition
+      })
+
       this.props.resetProduk()
     }
     if (nextProps.dataProvinsi.status === 200) {
@@ -646,7 +669,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderRowService (rowData) {
-    const money = MaskService.toMask('money', rowData.cost, {
+    const money = MaskService.toMask('money', rowData.cost * parseInt(this.state.totalWeight), {
       unit: '',
       separator: '.',
       delimiter: '.',
@@ -932,7 +955,7 @@ class ProductDetailScreenScreen extends React.Component {
         onPress={() => {
           this.setState({
             kabTerpilih: rowData.name,
-            idKabTerpilih: rowData.ro_id,
+            idKabTerpilih: rowData.id,
             kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
@@ -944,7 +967,7 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderListKecamatan (rowData) {
-    const { id, idLokasiPenjual, idKabTerpilih, totalWeight } = this.state
+    const { id, idLokasiPenjual, idKabTerpilih } = this.state
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 15 }]}
@@ -956,7 +979,7 @@ class ProductDetailScreenScreen extends React.Component {
             modalKecamatan: false,
             showService: true
           })
-          this.listDataService(id, idLokasiPenjual, idKabTerpilih, totalWeight)
+          this.listDataService(id, idLokasiPenjual, idKabTerpilih, 1)
         }}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -988,6 +1011,7 @@ class ProductDetailScreenScreen extends React.Component {
       </Modal>
     )
   }
+
   renderModalKabupaten () {
     return (
       <Modal
@@ -1008,6 +1032,7 @@ class ProductDetailScreenScreen extends React.Component {
       </Modal>
     )
   }
+
   renderModalKecamatan () {
     return (
       <Modal
@@ -1269,6 +1294,21 @@ class ProductDetailScreenScreen extends React.Component {
     )
   }
 
+  renderProductSeller () {
+    if (!this.state.pickFromDropshipper) {
+      return (
+        <View>
+          <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
+          {this.renderProduk()}
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
   diskusi () {
     this.props.getDiscussion(this.state.id, 1)
     NavigationActions.diskusiproduk({
@@ -1283,10 +1323,36 @@ class ProductDetailScreenScreen extends React.Component {
 
   beliSekarang () {
     if (this.state.isLogin) {
-      NavigationActions.pembeliantambahkekeranjang({
-        type: ActionConst.PUSH
-      })
-      this.props.getDetailProduk(this.state.id)
+      if (!this.state.pickFromDropshipper) {
+        NavigationActions.pembeliantambahkekeranjang({
+          type: ActionConst.PUSH
+        })
+        this.props.getDetailProduk(this.state.id)
+      } else {
+        let tempDataProduct = []
+        let tempImageAndExpedition = []
+        tempDataProduct[0] = this.state.title
+        tempDataProduct[1] = this.state.idCategory
+        tempDataProduct[2] = this.state.idBrand
+        tempDataProduct[3] = this.state.deskripsi
+        tempDataProduct[4] = this.state.price
+        tempDataProduct[5] = this.state.weight
+        tempDataProduct[6] = this.state.stock
+        tempDataProduct[7] = this.state.kondisi
+        tempDataProduct[8] = this.state.asuransi
+        tempDataProduct[9] = this.state.isDropship
+        tempImageAndExpedition[0] = this.state.expeditionDropship
+        tempImageAndExpedition[1] = this.state.photoProductDropship
+        NavigationActions.tempatkandikatalog({
+          type: ActionConst.PUSH,
+          fotoToko: this.state.fotoToko,
+          namaToko: this.state.namaToko,
+          price: this.state.price,
+          dataProduk: tempDataProduct,
+          imageAndExpedition: tempImageAndExpedition
+        })
+        this.props.getCatalog()
+      }
     } else {
       Alert.alert('Pesan', 'Mohon login terlebih dahulu untuk membeli produk ini')
     }
@@ -1313,8 +1379,7 @@ class ProductDetailScreenScreen extends React.Component {
           {this.renderEstimasiPengiriman()}
           <Text style={styles.bigTitle}>Info Penjual</Text>
           {this.renderInfoPenjual()}
-          <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
-          {this.renderProduk()}
+          {this.renderProductSeller()}
         </ScrollView>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonReset} onPress={() => this.diskusi()}>
@@ -1325,7 +1390,7 @@ class ProductDetailScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonOke} onPress={() => this.beliSekarang()}>
             <Text style={styles.labelButtonOke}>
-              Beli Sekarang
+              {this.state.buttonText}
             </Text>
           </TouchableOpacity>
         </View>
@@ -1366,7 +1431,8 @@ const mapDispatchToProps = (dispatch) => {
     getToko: (id) => dispatch(storeAction.getStores({ id: id })),
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
-    resetProduk: () => dispatch(productAction.resetDetail())
+    resetProduk: () => dispatch(productAction.resetDetail()),
+    getCatalog: () => dispatch(catalogAction.getListCatalog())
   }
 }
 

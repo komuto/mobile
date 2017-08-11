@@ -41,12 +41,11 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -1,
     color: Colors.darkgrey,
-    fontFamily: Fonts.type.regular,
+    fontFamily: Fonts.type.semiBolds,
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,
-    paddingBottom: 5,
-    paddingTop: 5,
+    paddingBottom: 8.3,
     paddingLeft: -1
   },
   buttonnext: {

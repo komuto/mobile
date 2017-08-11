@@ -500,7 +500,7 @@ class InfoNamaDanKategoriProdukScreenScreen extends React.Component {
         {this.viewBrand()}
         <Text style={styles.textLabel}>Deksripsi Produk</Text>
         <TextInput
-          style={[styles.inputText, {height: Math.max(35, this.state.height)}]}
+          style={[styles.inputText, {height: Math.max(40, this.state.height)}]}
           value={this.state.descProduk}
           keyboardType='default'
           returnKeyType='done'

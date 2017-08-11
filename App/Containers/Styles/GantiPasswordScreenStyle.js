@@ -39,7 +39,8 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.small,
     color: Colors.labelgrey,
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: 10
   },
   inputText: {
     marginLeft: -1,
@@ -48,8 +49,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,
-    paddingBottom: 5,
-    paddingLeft: -1,
+    paddingBottom: 8.3,
     paddingTop: 20
   }
 })

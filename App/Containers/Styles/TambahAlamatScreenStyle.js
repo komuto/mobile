@@ -35,8 +35,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,
-    paddingBottom: 2,
-    paddingTop: 5,
+    paddingBottom: 8.3,
     paddingLeft: -1
   },
   buttonnext: {
@@ -74,7 +73,7 @@ export default StyleSheet.create({
   pilihDestinasi: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 3,
+    paddingBottom: 4.3,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver
   },
@@ -82,8 +81,7 @@ export default StyleSheet.create({
     marginLeft: -4,
     color: Colors.grey,
     fontSize: Fonts.size.smallMed,
-    paddingBottom: -8.3,
-    paddingTop: -10
+    fontFamily: Fonts.type.regular
   },
   imagePicker: {
     height: 24,
@@ -98,5 +96,41 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  containerEkspedisi: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingBottom: 23
+  },
+  box: {
+    width: 25,
+    height: 25,
+    borderWidth: 1,
+    borderColor: Colors.silver,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  gambarCentangBox: {
+    height: 25,
+    width: 25
+  },
+  title: {
+    flex: 1,
+    marginLeft: 11,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
   }
 })

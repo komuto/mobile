@@ -121,6 +121,7 @@ class UploadPhotoProdukScreenScreen extends React.Component {
       postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
     })
     postData.append('type', 'product')
+    console.log(postData)
     this.props.photoUpload(postData)
     this.setState({loading: true})
   }

@@ -59,7 +59,7 @@ class ProductDetailScreenScreen extends React.Component {
       readmoreTerm: styles.readMoreTextContainer,
       verified: false,
       title: '',
-      fotoToko: 'default',
+      fotoToko: 'http://188.166.246.46/uploads/produk/noimage.png',
       countProduct: 1,
       ulasan: [],
       kategori: '',
@@ -135,7 +135,6 @@ class ProductDetailScreenScreen extends React.Component {
         ulasan: nextProps.dataDetailProduk.detail.reviews.slice(0, 3),
         sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
         dataImage: nextProps.dataDetailProduk.detail.images,
-        fotoToko: nextProps.dataDetailProduk.detail.images[0].file,
         title: nextProps.dataDetailProduk.detail.product.name,
         like: nextProps.dataDetailProduk.detail.product.is_liked,
         diskon: nextProps.dataDetailProduk.detail.product.discount,
@@ -165,6 +164,13 @@ class ProductDetailScreenScreen extends React.Component {
         idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
         isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper
       })
+      try {
+        this.setState({
+          fotoToko: nextProps.dataDetailProduk.detail.images[0].file
+        })
+      } catch (e) {
+        console.log(e)
+      }
       let tempPhoto = []
       let tempExpedition = []
       nextProps.dataDetailProduk.detail.images.map((data, i) => {
@@ -459,17 +465,9 @@ class ProductDetailScreenScreen extends React.Component {
   }
 
   renderFotoToko () {
-    if (this.state.fotoToko !== 'default') {
-      return (
-        <Image
-          source={{ uri: this.state.fotoToko }}
-          style={[styles.styleFoto, {borderRadius: 0}]}
-        />
-      )
-    }
     return (
       <Image
-        source={Images.contohproduct}
+        source={{ uri: this.state.fotoToko }}
         style={[styles.styleFoto, {borderRadius: 0}]}
       />
     )

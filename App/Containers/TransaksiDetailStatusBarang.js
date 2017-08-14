@@ -180,7 +180,12 @@ class TransaksiDetailStatusBarang extends React.Component {
     if (status === 'dikirim') {
       return (
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.secondButton}>
+          <TouchableOpacity
+            style={styles.secondButton}
+            onPress={() => NavigationActions.transactionitemreceived({
+              type: ActionConst.PUSH
+            })}
+          >
             <Text style={styles.textSecondButton}>
               Barang sudah saya terima
             </Text>

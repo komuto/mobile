@@ -1297,7 +1297,7 @@ class ProductDetailScreenScreen extends React.Component {
   renderProductSeller () {
     if (!this.state.pickFromDropshipper) {
       return (
-        <View>
+        <View style={{ marginBottom: 80 }}>
           <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
           {this.renderProduk()}
         </View>

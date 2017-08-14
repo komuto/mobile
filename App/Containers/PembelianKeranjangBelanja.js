@@ -38,7 +38,8 @@ class PembelianKeranjangBelanja extends React.Component {
       statusDiskon: false,
       requestPromo: false,
       isFetching: true,
-      isRefreshing: false
+      isRefreshing: false,
+      deleteItem: false
     }
   }
 
@@ -72,6 +73,12 @@ class PembelianKeranjangBelanja extends React.Component {
             })
           }
         }
+      } else {
+        this.setState({
+          isFetching: false,
+          isRefreshing: false,
+          data: []
+        })
       }
       this.props.getCartReset()
     } else if (nextProps.dataCart.status > 200) {
@@ -114,6 +121,20 @@ class PembelianKeranjangBelanja extends React.Component {
       this.setState({ requestPromo: false })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
+    if (nextProps.dataCheckout.status === 200) {
+      NavigationActions.pembayaran({type: ActionConst.PUSH})
+      ToastAndroid.show('Checkout keranjang belanja berhasil..', ToastAndroid.LONG)
+    } else if (nextProps.dataCheckout.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataDeleteItem.status === 200) {
+      if (this.state.deleteItem) {
+        this.setState({
+          deleteItem: false
+        })
+        this.refresh()
+      }
+    }
   }
 
   renderView () {
@@ -147,7 +168,9 @@ class PembelianKeranjangBelanja extends React.Component {
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity
                 style={[styles.button, { height: 50 }]}
-                onPress={() => NavigationActions.pop()}
+                onPress={() => NavigationActions.backtab({
+                  type: ActionConst.RESET
+                })}
               >
                 <Text style={styles.textButton}>Belanja Sekarang</Text>
               </TouchableOpacity>
@@ -259,7 +282,7 @@ class PembelianKeranjangBelanja extends React.Component {
                 {rowData.product.store.name}
               </Text>
             </View>
-            <TouchableOpacity onPress={() => this.props.deleteItem(rowData.id)}>
+            <TouchableOpacity onPress={() => this.deleteItem(rowData.id)}>
               <Text style={styles.textHapus}>Hapus</Text>
             </TouchableOpacity>
           </View>
@@ -303,6 +326,13 @@ class PembelianKeranjangBelanja extends React.Component {
         <View style={styles.separator} />
       </View>
     )
+  }
+
+  deleteItem (id) {
+    this.props.deleteItem(id)
+    this.setState({
+      deleteItem: true
+    })
   }
 
   substract () {
@@ -362,7 +392,7 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   renderTotal () {
-    const { subtotal, diskon } = this.state
+    const { subtotal, diskon, loadingCheckout } = this.state
     const total = parseInt(subtotal) - parseInt(diskon)
     const hargaTotal = MaskService.toMask('money', total, {
       unit: 'Rp ',
@@ -370,6 +400,16 @@ class PembelianKeranjangBelanja extends React.Component {
       delimiter: '.',
       precision: 3
     })
+    const spinner = loadingCheckout
+    ? (
+      <View style={styles.button}>
+        <ActivityIndicator color={Colors.blue} size='large' />
+      </View>
+    ) : (
+      <TouchableOpacity style={styles.button} onPress={() => this.pembayaran()}>
+        <Text style={styles.textButton}>Bayar Sekarang</Text>
+      </TouchableOpacity>
+    )
     return (
       <View style={styles.totalContainer}>
         <View style={styles.total}>
@@ -377,9 +417,7 @@ class PembelianKeranjangBelanja extends React.Component {
           <Text style={styles.hargaTotal}>{hargaTotal}</Text>
         </View>
         <View style={styles.total}>
-          <TouchableOpacity style={styles.button} onPress={() => this.pembayaran()}>
-            <Text style={styles.textButton}>Bayar Sekarang</Text>
-          </TouchableOpacity>
+          {spinner}
         </View>
       </View>
     )
@@ -441,7 +479,10 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   pembayaran () {
-    NavigationActions.pembayaran({type: ActionConst.PUSH})
+    this.props.checkout([])
+    this.setState({
+      loadingCheckout: true
+    })
   }
 
   detailItem (id) {
@@ -469,7 +510,9 @@ const mapStateToProps = (state) => {
     dataDetailProduk: state.productDetail,
     dataPromo: state.promo,
     dataCancelPromo: state.cancelPromo,
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataCheckout: state.checkout,
+    dataDeleteItem: state.deleteItem
   }
 }
 
@@ -480,7 +523,8 @@ const mapDispatchToProps = (dispatch) => {
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getItem: (id) => dispatch(cartAction.getItem({id: id})),
     getCart: () => dispatch(cartAction.getCart()),
-    deleteItem: (id) => dispatch(cartAction.deleteItem({id: id}))
+    deleteItem: (id) => dispatch(cartAction.deleteItem({id: id})),
+    checkout: (items) => dispatch(cartAction.checkout({items: items}))
   }
 }
 

@@ -122,7 +122,13 @@ const images = {
   gagalHapusKatalog: require('../Images/kelolatoko-prompt-gagal-hapus.png'),
   suksesHapusKatalog: require('../Images/kelolatoko-prompthapus.png'),
   promptHapusAlamat: require('../Images/prompt-hapus-Alamat-Toko.png'),
-  sukesHapusAlamat: require('../Images/suskses-hapus-alamat-toko.png')
+  sukesHapusAlamat: require('../Images/suskses-hapus-alamat-toko.png'),
+  thumbDown: require('../Images/Icons/icon-thumbdown.png'),
+  thumbUp: require('../Images/Icons/icon-thumbup.png'),
+  thumbDownRed: require('../Images/Icons/icon-thumbdown-red.png'),
+  thumbUpGreen: require('../Images/Icons/icon-thumbup-green.png'),
+  review: require('../Images/review.png'),
+  complain: require('../Images/complain.png')
 }
 
 export default images

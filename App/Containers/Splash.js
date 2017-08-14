@@ -17,7 +17,7 @@ class Splash extends React.Component {
         this.props.stateLogin(true)
       }
       SplashScreen.hide()
-      NavigationActions.backtab({ type: ActionConst.REPLACE })
+      NavigationActions.transactionitemreceived({ type: ActionConst.REPLACE })
     }).done()
   }
 

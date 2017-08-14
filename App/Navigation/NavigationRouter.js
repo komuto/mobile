@@ -88,6 +88,8 @@ import AlamatToko from '../Containers/AlamatTokoScreen'
 import KelolaAlamatToko from '../Containers/KelolaAlamatTokoScreen'
 import UpdateAlamatToko from '../Containers/UpdateAlamatTokoScreen'
 import KelolaEkspedisiToko from '../Containers/KelolaEkspedisiTokoScreen'
+import TransactionItemReceived from '../Containers/TransactionItemReceived'
+import TransactionNotification from '../Containers/TransactionNotification'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -758,6 +760,19 @@ class NavigationRouter extends Component {
             title='Ekspedisi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transactionitemreceived'
+            component={TransactionItemReceived}
+            title='Konfirmasi Barang Diterima'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transactionnotification'
+            component={TransactionNotification}
+            navBar={CustomNavBar}
+            hideNavBar
             hideBackImage={false} />
         </Scene>
       </Router>

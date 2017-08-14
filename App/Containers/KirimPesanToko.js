@@ -22,15 +22,17 @@ class KirimPesanToko extends React.Component {
       pertanyaan: '',
       height: 50,
       heightJudul: 50,
-      loading: false
+      loading: false,
+      notification: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPesan.status === 200) {
-      ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
+      // ToastAndroid.show('Pesan berhasil dikirimkan...', ToastAndroid.LONG)
       this.setState({
-        loading: false
+        loading: false,
+        notification: true
       })
       this.props.resetSendMessage()
     } else if (nextProps.dataPesan.status > 200) {
@@ -99,6 +101,21 @@ class KirimPesanToko extends React.Component {
     )
   }
 
+  renderNotification () {
+    const { notification } = this.state
+    if (notification) {
+      return (
+        <View style={styles.notif}>
+          <Text style={styles.textNotif}>Berhasil Mengirim Pesan</Text>
+          <TouchableOpacity onPress={() => this.setState({notification: false})}>
+            <Image source={Images.closeGreen} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    return null
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -113,6 +130,7 @@ class KirimPesanToko extends React.Component {
             />
           </TouchableOpacity>
         </View>
+        {this.renderNotification()}
         {this.renderProduct()}
         <View style={styles.questionContainer}>
           <Text style={styles.textKelola}>

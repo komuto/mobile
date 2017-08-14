@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, BackAndroid } from 'react-native'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -13,12 +13,15 @@ class TransaksiDetailStatusBarang extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      id: 93,
       nama: 'Sepatu Jogging',
       namaToko: 'Sport Station Shop',
       image: 'http://www.tokomesin.com/wp-content/uploads/2015/08/Sate-Ayam-Madura-tokomesin.jpeg',
       invoice: 'Invoice-72342382320/01/2017',
       status: this.props.statusBarang,
-      resi: '238423423'
+      resi: '238423423',
+      alamat: 'Jakarta Selatan, DKI Jakarta',
+      storeId: 0
     }
   }
 
@@ -163,7 +166,7 @@ class TransaksiDetailStatusBarang extends React.Component {
     }
     return (
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => this.date()}>
+        <TouchableOpacity style={styles.button} onPress={() => this.buttonPressed(teks)}>
           <Text style={styles.textButton}>
             {teks}
           </Text>
@@ -184,6 +187,20 @@ class TransaksiDetailStatusBarang extends React.Component {
           </TouchableOpacity>
         </View>
       )
+    }
+  }
+
+  buttonPressed (teks) {
+    if (teks.toLowerCase().includes('saldo')) {
+
+    } else {
+      NavigationActions.kirimpesan({
+        type: ActionConst.PUSH,
+        id: this.state.storeId,
+        foto: this.state.image,
+        namaToko: this.state.namaToko,
+        alamat: this.state.alamat
+      })
     }
   }
 

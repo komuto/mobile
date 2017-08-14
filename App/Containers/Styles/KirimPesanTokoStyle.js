@@ -97,5 +97,23 @@ export default StyleSheet.create({
   },
   containerText: {
     flexDirection: 'row'
+  },
+  notif: {
+    flexDirection: 'row',
+    backgroundColor: Colors.duckEggBlue,
+    alignItems: 'center',
+    paddingRight: 19,
+    position: 'relative'
+  },
+  textNotif: {
+    flex: 1,
+    padding: 20,
+    color: Colors.greenish,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed
+  },
+  image: {
+    height: 25,
+    width: 25
   }
 })

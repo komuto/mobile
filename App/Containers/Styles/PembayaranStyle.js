@@ -92,10 +92,9 @@ export default StyleSheet.create({
     marginTop: 3
   },
   imageBank: {
-    height: 30,
-    width: 45,
-    marginRight: 5,
-    resizeMode: 'center'
+    height: 40,
+    width: 60,
+    resizeMode: 'contain'
   },
   totalContainerBank: {
     backgroundColor: Colors.snow,

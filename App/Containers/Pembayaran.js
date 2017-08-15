@@ -1,8 +1,9 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
+import * as paymentAction from '../actions/payment'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -13,9 +14,11 @@ class Pembayaran extends React.Component {
 
   constructor (props) {
     super(props)
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       total: '250219',
-      saldo: '300000'
+      saldo: '300000',
+      data: []
     }
   }
 
@@ -30,6 +33,14 @@ class Pembayaran extends React.Component {
   handleBack = () => {
     if (NavigationActions.pop()) {
       return true
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataPaymentMethod.status === 200) {
+      this.setState({
+        data: nextProps.dataPaymentMethod.paymentMethods
+      })
     }
   }
 
@@ -79,143 +90,68 @@ class Pembayaran extends React.Component {
     )
   }
 
-  renderBank () {
+  renderListPayment () {
     return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.transferBank()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>Transfer Bank</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.mandiri} style={styles.imageBank} />
-          <Image source={Images.bca} style={styles.imageBank} />
-          <Image source={Images.bni} style={styles.imageBank} />
-          <Image source={Images.bri} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(this.state.data)}
+        renderRow={this.renderRow.bind(this)}
+        enableEmptySections
+      />
     )
   }
 
-  renderKartuKredit () {
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.kartuKredit()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>Kartu Kredit</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.visa} style={styles.imageBank} />
-          <Image source={Images.masterCard} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  renderATM () {
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.atm()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>Virtual Account (ATM)</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.atmBersama} style={styles.imageBank} />
-          <Image source={Images.prima} style={styles.imageBank} />
-          <Image source={Images.alto} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  renderMandiri () {
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.mandiri()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>Mandiri ClickPlay</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.mandiriClickPay} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  renderBRI () {
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.bri()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>E-Pay BRI</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.epayBri} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  renderDoku () {
-    return (
-      <TouchableOpacity activeOpacity={0.5} style={styles.totalContainerBank} onPress={() => this.doku()}>
-        <View style={styles.totalBank}>
-          <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>Doku Wallet</Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.imagePicker} />
-        </View>
-        <View style={styles.totalBank}>
-          <Image source={Images.doku} style={styles.imageBank} />
-        </View>
-      </TouchableOpacity>
-    )
-  }
-
-  renderAlfaMart () {
+  renderRow (rowData) {
     return (
       <TouchableOpacity
         activeOpacity={0.5}
         style={[styles.totalContainerBank, { marginBottom: 15 }]}
-        onPress={() => this.alfamart()}
+        onPress={() => this.detailPayment(rowData.type_text)}
       >
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
-            <Text style={styles.textLabel}>AlfaMart</Text>
+            <Text style={styles.textLabel}>{rowData.name}</Text>
           </View>
           <Image source={Images.rightArrow} style={styles.imagePicker} />
         </View>
         <View style={styles.totalBank}>
-          <Image source={Images.alfamart} style={styles.imageBank} />
-          <Image source={Images.alfamidi} style={styles.imageBank} />
+          <Image source={{ uri: rowData.logo }} style={styles.imageBank} />
         </View>
       </TouchableOpacity>
     )
   }
 
+  detailPayment (typeText) {
+    if (typeText === null) {
+      NavigationActions.pembayarantransferbank({
+        type: ActionConst.PUSH
+      })
+    } else if (typeText === 'klikpay-bca') {
+
+    } else if (typeText === 'mandiri-clickpay') {
+      NavigationActions.pembayaranmandiripay({
+        type: ActionConst.PUSH
+      })
+    } else if (typeText === 'bri-epay') {
+      NavigationActions.pembayaranbri({
+        type: ActionConst.PUSH
+      })
+    } else if (typeText === 'kartu-kredit') {
+      NavigationActions.pembayarankartukredit({
+        type: ActionConst.PUSH
+      })
+    } else if (typeText === 'alfamart') {
+      NavigationActions.pembayaranalfamart({
+        type: ActionConst.PUSH
+      })
+    } else if (typeText === 'doku-wallet') {
+      NavigationActions.pembayarandoku({
+        type: ActionConst.PUSH
+      })
+    }
+  }
+
   detail () {
     NavigationActions.pembayarankeranjangbelanja({
-      type: ActionConst.PUSH
-    })
-  }
-
-  transferBank () {
-    NavigationActions.pembayarantransferbank({
-      type: ActionConst.PUSH
-    })
-  }
-
-  kartuKredit () {
-    NavigationActions.pembayarankartukredit({
       type: ActionConst.PUSH
     })
   }
@@ -232,44 +168,13 @@ class Pembayaran extends React.Component {
     })
   }
 
-  mandiri () {
-    NavigationActions.pembayaranmandiripay({
-      type: ActionConst.PUSH
-    })
-  }
-
-  bri () {
-    NavigationActions.pembayaranbri({
-      type: ActionConst.PUSH
-    })
-  }
-
-  doku () {
-    NavigationActions.pembayarandoku({
-      type: ActionConst.PUSH
-    })
-  }
-
-  alfamart () {
-    NavigationActions.pembayaranalfamart({
-      type: ActionConst.PUSH
-    })
-  }
-
   render () {
     return (
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {this.renderTotal()}
-          <Text style={styles.textPilihMetode}>Pilih Metode Pembayaran</Text>
           {this.renderSaldo()}
-          {this.renderBank()}
-          {this.renderKartuKredit()}
-          {this.renderATM()}
-          {this.renderMandiri()}
-          {this.renderBRI()}
-          {this.renderDoku()}
-          {this.renderAlfaMart()}
+          {this.renderListPayment()}
         </ScrollView>
       </View>
     )
@@ -278,11 +183,13 @@ class Pembayaran extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataPaymentMethod: state.paymentMethods
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    paymentAction: dispatch(paymentAction.getPaymentMethods())
   }
 }
 

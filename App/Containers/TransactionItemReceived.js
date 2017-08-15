@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, TextInput, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
+import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -45,7 +46,8 @@ class TransactionItemReceived extends React.Component {
           'label': 'Lainnya'
         }
       ],
-      dataPhotos: []
+      dataPhotos: [],
+      showModalCamera: false
     }
   }
 
@@ -159,7 +161,7 @@ class TransactionItemReceived extends React.Component {
               dataSource={this.dataSource.cloneWithRows(this.state.dataPhotos)}
               renderRow={this.renderRowPhotos.bind(this)}
             />
-            <TouchableOpacity style={styles.addPhoto} onPress={() => this.addPhoto()}>
+            <TouchableOpacity style={styles.addPhoto} onPress={() => this.setState({showModalCamera: true})}>
               <Image source={Images.plus} style={styles.imageplus} />
             </TouchableOpacity>
           </ScrollView>
@@ -204,17 +206,17 @@ class TransactionItemReceived extends React.Component {
     )
   }
 
-  renderRowPhotos (rowData) {
+  renderRowPhotos (rowData, sectionId, row) {
     return (
       <View style={styles.imageContainer}>
         <Image
           style={styles.photo}
-          source={{ uri: rowData.image }}
+          source={{ uri: rowData }}
           borderRadius={7}
         />
         <TouchableOpacity
           style={styles.buttonDeletePictureContainer}
-          onPress={() => this.removePhoto(rowData.id)}
+          onPress={() => this.removePhoto(row)}
         >
           <Image source={Images.closeCircleBack} style={styles.imageCheck} />
         </TouchableOpacity>
@@ -222,26 +224,20 @@ class TransactionItemReceived extends React.Component {
     )
   }
 
-  addPhoto () {
+  addPhoto (path) {
     const { dataPhotos } = this.state
-    const id = dataPhotos.length + 1
-    let temp2 = dataPhotos
-    const temp = {
-      'id': id,
-      'image': 'http://www.tokomesin.com/wp-content/uploads/2015/08/Sate-Ayam-Madura-tokomesin.jpeg',
-      'label': 'label' + id
-    }
-    temp2.push(temp)
+    let temp = dataPhotos
+    temp.push(path)
     this.setState({
-      dataPhotos: temp2
+      dataPhotos: temp,
+      showModalCamera: false
     })
   }
 
   removePhoto (id) {
-    console.log(id)
     const { dataPhotos } = this.state
     let temp2 = dataPhotos
-    temp2.splice(id - 1, 1)
+    temp2.splice(id, 1)
     this.setState({
       dataPhotos: temp2
     })
@@ -355,6 +351,20 @@ class TransactionItemReceived extends React.Component {
     )
   }
 
+  modalCamera () {
+    return (
+      <CameraModal
+        visible={this.state.showModalCamera}
+        onClose={() => {
+          this.setState({showModalCamera: false})
+        }}
+        onPhotoCaptured={(path) => {
+          this.addPhoto(path)
+        }}
+      />
+    )
+  }
+
   handleReview = (text) => {
     this.setState({ review: text })
   }
@@ -370,6 +380,7 @@ class TransactionItemReceived extends React.Component {
           {this.renderVote()}
           {this.renderContent()}
         </ScrollView>
+        {this.modalCamera()}
       </View>
     )
   }

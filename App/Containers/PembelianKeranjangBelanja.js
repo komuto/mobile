@@ -39,52 +39,85 @@ class PembelianKeranjangBelanja extends React.Component {
       requestPromo: false,
       isFetching: true,
       isRefreshing: false,
-      deleteItem: false
+      deleteItem: false,
+      getData: true,
+      dataDelivery: [],
+      dataUpload: []
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataCart.status === 200) {
-      if (nextProps.dataCart.cart.items.length > 0) {
-        let temp = 0
-        nextProps.dataCart.cart.items.map((obj, i) =>
-          (
-            temp = temp + obj.total_price
+      if (this.state.getData) {
+        if (nextProps.dataCart.cart.items.length > 0) {
+          let temp = 0
+          let tempDataDelivery = []
+          let data = []
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              temp = temp + obj.total_price
+            )
           )
-        )
-        this.setState({
-          subtotal: temp,
-          isFetching: false,
-          isRefreshing: false,
-          data: nextProps.dataCart.cart.items
-        })
-        if (nextProps.dataCart.cart.promo !== null) {
-          if (nextProps.dataCart.cart.promo.type === 0) {
-            this.setState({
-              requestPromo: true,
-              statusDiskon: true,
-              diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
-            })
-          } else {
-            this.setState({
-              requestPromo: true,
-              statusDiskon: true,
-              diskon: nextProps.dataCart.cart.promo
-            })
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              tempDataDelivery.push(obj.shipping.delivery_cost)
+            )
+          )
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              data.push({
+                'id': obj.id,
+                'expedition_id': obj.shipping.expedition_service.expedition.id,
+                'expedition_service_id': obj.shipping.expedition_service.id,
+                'qty': obj.qty,
+                'note': obj.note,
+                'address_id': obj.shipping.address.id,
+                'is_insurance': obj.shipping.is_insurance,
+                'service': obj.shipping.expedition_service.name,
+                'origin_ro_id': obj.product.store.district.ro_id,
+                'destination_ro_id': obj.shipping.address.district.ro_id
+              })
+            )
+          )
+          this.setState({
+            subtotal: temp,
+            isFetching: false,
+            isRefreshing: false,
+            getData: false,
+            data: nextProps.dataCart.cart.items,
+            dataDelivery: tempDataDelivery,
+            dataUpload: data
+          })
+          if (nextProps.dataCart.cart.promo !== null) {
+            if (nextProps.dataCart.cart.promo.type === 0) {
+              this.setState({
+                requestPromo: true,
+                statusDiskon: true,
+                diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
+              })
+            } else {
+              this.setState({
+                requestPromo: true,
+                statusDiskon: true,
+                diskon: nextProps.dataCart.cart.promo
+              })
+            }
           }
+        } else {
+          this.setState({
+            isFetching: false,
+            isRefreshing: false,
+            getData: false,
+            data: []
+          })
         }
-      } else {
-        this.setState({
-          isFetching: false,
-          isRefreshing: false,
-          data: []
-        })
+        this.props.getCartReset()
       }
-      this.props.getCartReset()
     } else if (nextProps.dataCart.status > 200) {
       // ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
       this.setState({
         data: [],
+        getData: false,
         isFetching: false
       })
     }
@@ -237,17 +270,6 @@ class PembelianKeranjangBelanja extends React.Component {
       <ListView
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
         enableEmptySections
       />
     )
@@ -300,11 +322,11 @@ class PembelianKeranjangBelanja extends React.Component {
             <Text style={[styles.qualityText, {marginBottom: 0, paddingLeft: 5}]}>Jumlah:</Text>
           </View>
           <View style={[styles.eachQualiyNoMargin, {flexDirection: 'row', paddingRight: 20, paddingBottom: 0}]}>
-            <TouchableOpacity onPress={() => this.substract()}>
+            <TouchableOpacity onPress={() => this.substract(row)}>
               <Image source={Images.sub} style={styles.imageOperator} />
             </TouchableOpacity>
             <Text style={[styles.qualityText, styles.textJumlah]}>{rowData.qty}</Text>
-            <TouchableOpacity onPress={() => this.add()}>
+            <TouchableOpacity onPress={() => this.add(row)}>
               <Image source={Images.add} style={styles.imageOperator} />
             </TouchableOpacity>
           </View>
@@ -335,23 +357,69 @@ class PembelianKeranjangBelanja extends React.Component {
     })
   }
 
-  substract () {
-    const {countProduct, price} = this.state
-    if (countProduct > 0) {
-      const temp = (countProduct - 1) * price
+  substract (row) {
+    const { data, subtotal, dataUpload } = this.state
+    let tempData = data
+    let tempDataUpload = dataUpload
+    const rowData = data[row]
+    let insurance = rowData.shipping.insurance_fee
+    if (rowData.qty > 0) {
+      if (rowData.qty === 1) {
+        if (rowData.shipping.is_insurance) {
+          tempData[row].insurance_fee = 0
+          insurance = 0
+        } else if (!rowData.shipping.is_insurance) {
+          tempData[row].insurance_fee = 0
+          insurance = 0
+        } else {
+          tempData[row].insurance_fee = 10000
+          insurance = 10000
+        }
+      }
+      const tempPrice = (rowData.qty - 1) * rowData.product.price
+      const tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
+      const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
+      tempData[row].qty = rowData.qty - 1
+      tempDataUpload[row].qty = rowData.qty - 1
+      tempData[row].shipping.delivery_cost = tempDeliveryCost
+      tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
       this.setState({
-        countProduct: countProduct - 1,
-        subtotal: temp
+        data: tempData,
+        subtotal: tempSubtotal,
+        dataUpload: tempDataUpload
       })
     }
   }
 
-  add () {
-    const {countProduct, price} = this.state
-    const temp = (countProduct + 1) * price
+  add (row) {
+    const { data, subtotal, dataDelivery, dataUpload } = this.state
+    let tempData = data
+    let tempDataUpload = dataUpload
+    let tempDeliveryCost
+    const rowData = data[row]
+    let insurance = rowData.shipping.insurance_fee
+    if (rowData.shipping.is_insurance) {
+      tempData[row].insurance_fee = 10000
+      insurance = 10000
+    } else {
+      tempData[row].insurance_fee = 0
+      insurance = 0
+    }
+    const tempPrice = (rowData.qty + 1) * rowData.product.price
+    if (rowData.qty === 0) {
+      tempDeliveryCost = dataDelivery[row]
+    } else {
+      tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
+    }
+    const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
+    tempData[row].qty = rowData.qty + 1
+    tempDataUpload[row].qty = rowData.qty + 1
+    tempData[row].shipping.delivery_cost = tempDeliveryCost
+    tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
     this.setState({
-      countProduct: countProduct + 1,
-      subtotal: temp
+      data: tempData,
+      subtotal: tempSubtotal,
+      dataUpload: tempDataUpload
     })
   }
 
@@ -479,7 +547,8 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   pembayaran () {
-    this.props.checkout([])
+    const { dataUpload } = this.state
+    this.props.checkout(dataUpload)
     this.setState({
       loadingCheckout: true
     })
@@ -491,7 +560,7 @@ class PembelianKeranjangBelanja extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], isFetching: true })
+    this.setState({ isRefreshing: true, data: [], isFetching: true, getData: true })
     this.props.getCart()
   }
 

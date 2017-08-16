@@ -28,7 +28,7 @@ import stylesHome from './Styles/HomeStyle'
 
 import { Images, Colors } from '../Themes'
 
-class ProdukTerbaruScreenScreen extends React.Component {
+class SearchResultByCategory extends React.Component {
 
   constructor (props) {
     super(props)
@@ -86,7 +86,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
       this.setState({
         loadingProduk: true
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
     } else if (nextProps.dataProduk.status === 'ENOENT') {
       this.setState({
         loadingProduk: true
@@ -115,9 +114,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
       return true
     } else if (NavigationActions.pop()) {
       if (this.state.from === 'home') {
-        NavigationActions.popTo('backtab')
+        NavigationActions.backtab({
+          type: ActionConst.RESET
+        })
       } else {
-        NavigationActions.popTo('newproduct')
+        NavigationActions.popTo('categori1')
       }
       return true
     }
@@ -499,17 +500,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
-  renderImage () {
-    if (this.state.tipeView === 'grid') {
-      return (
-        <Image source={Images.grid} style={styles.searchImage} />
-      )
-    }
-    return (
-      <Image source={Images.list} style={styles.searchImage} />
-    )
-  }
-
   produkDetail (id) {
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
@@ -548,7 +538,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              {this.renderImage()}
+              <Image style={styles.imageFooter} source={Images.grid} />
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>
@@ -584,7 +574,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.productBySearch,
+    dataProduk: state.productByCategory,
     dataFilter: state.filterProduct
   }
 }
@@ -604,4 +594,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProdukTerbaruScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(SearchResultByCategory)

@@ -9,14 +9,14 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as produkAction from '../actions/product'
 import * as homeAction from '../actions/home'
+import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -25,10 +25,11 @@ import * as homeAction from '../actions/home'
 import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
+import stylesDropshipping from './Styles/PilihBarangDropshippingScreenStyle'
 
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Metrics } from '../Themes'
 
-class ProdukTerbaruScreenScreen extends React.Component {
+class ChooseItemDropship extends React.Component {
 
   constructor (props) {
     super(props)
@@ -41,7 +42,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      query: this.props.querys,
       search: '',
       listDataSource: [],
       rowDataSource: [],
@@ -59,12 +59,11 @@ class ProdukTerbaruScreenScreen extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      from: this.props.from
+      loading: this.props.loading
     }
   }
 
   componentDidMount () {
-    this.props.getFilterProduk(this.props.querys)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -73,27 +72,13 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.query !== nextProps.querys) {
-      this.props.getSearch(this.props.querys)
-    }
     if (nextProps.dataProduk.status === 200) {
       this.setState({
         listDataSource: nextProps.dataProduk.products,
         rowDataSource: nextProps.dataProduk.products,
-        loadingProduk: false
+        loading: false
       })
-    } else if (nextProps.dataProduk.status > 200) {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataProduk.status === 'ENOENT') {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    }
-    if (nextProps.dataFilter.status === 200) {
+    } if (nextProps.dataFilter.status === 200) {
       this.setState({
         listDataSource: nextProps.dataFilter.products,
         rowDataSource: nextProps.dataFilter.products
@@ -105,6 +90,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
     this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+    this.setState({
+      filter: false
+    })
   }
 
   handleBack = () => {
@@ -114,11 +102,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
       })
       return true
     } else if (NavigationActions.pop()) {
-      if (this.state.from === 'home') {
-        NavigationActions.popTo('backtab')
-      } else {
-        NavigationActions.popTo('newproduct')
-      }
       return true
     }
   }
@@ -132,16 +115,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   backButton () {
-    if (this.state.from === 'home') {
-      NavigationActions.backtab({
-        type: ActionConst.RESET
-      })
-    } else {
-      NavigationActions.popTo('newproduct')
-    }
-  }
-
-  popSearch () {
     NavigationActions.pop()
   }
 
@@ -191,7 +164,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.popSearch()}>
+        <TouchableOpacity onPress={() => this.openSearch()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -303,6 +276,34 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
   }
 
+  modalFilter () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.filter}
+        onRequestClose={() => { this.setState({ filter: false }) }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeaderContainer}>
+            <Text style={styles.modalHeaderText}>
+              Filter
+            </Text>
+            <TouchableOpacity onPress={() => this.closeModal()}>
+              <Image
+                source={Images.close}
+                style={styles.imageCancel}
+              />
+            </TouchableOpacity>
+          </View>
+          <Filter
+            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
+            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+        </View>
+      </Modal>
+    )
+  }
+
   renderVerified (status) {
     if (status === 'verified') {
       return (
@@ -355,6 +356,16 @@ class ProdukTerbaruScreenScreen extends React.Component {
     return hargaDiskon
   }
 
+  produkDetail (id) {
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id,
+      dropship: true,
+      buttonText: 'Pilih Barang ini'
+    })
+    this.props.getDetailProduk(id)
+  }
+
   renderRowList (rowData) {
     if (rowData.product.discount > 0) {
       this.statusDiskon = true
@@ -372,11 +383,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity
-        style={styles.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -428,11 +435,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity
-        style={stylesHome.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -499,7 +502,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
-  renderImage () {
+  renderImageTypeView () {
     if (this.state.tipeView === 'grid') {
       return (
         <Image source={Images.grid} style={styles.searchImage} />
@@ -510,26 +513,62 @@ class ProdukTerbaruScreenScreen extends React.Component {
     )
   }
 
-  produkDetail (id) {
-    NavigationActions.detailproduct({
-      type: ActionConst.PUSH,
-      id: id
-    })
-    this.props.getDetailProduk(id)
+  renderSearch () {
+    return (
+      <View style={stylesDropshipping.searchContainer}>
+        <Image source={Images.searchGrey} style={stylesDropshipping.searchImage} />
+        <View style={stylesDropshipping.textInputContainer}>
+          <TextInput
+            ref='search'
+            style={stylesDropshipping.inputText}
+            value={this.state.search}
+            onSubmitEditing={() => this.search()}
+            keyboardType='default'
+            autoCapitalize='none'
+            autoCorrect
+            onChangeText={this.handleTextSearch}
+            underlineColorAndroid='transparent'
+            placeholder='Cari Produk atau Nama Toko'
+          />
+        </View>
+      </View>
+    )
+  }
+
+  renderilihKategori () {
+    return (
+      <View style={stylesDropshipping.containerKategori}>
+        <Text style={stylesDropshipping.textKategori}>Kategori : </Text>
+        <TouchableOpacity style={{alignItems: 'center', flexDirection: 'row', flex: 1}} activeOpacity={0.5} onPress={() => console.log('tai')}>
+          <Text style={[stylesDropshipping.textKategori, {flex: 1}]}>Semua Kategori</Text>
+          <Image source={Images.down} style={stylesDropshipping.image} />
+        </TouchableOpacity>
+      </View>
+    )
   }
 
   render () {
-    let background
-    if (this.state.tipe === 'search') {
-      background = stylesSearch.search
-    } else {
-      background = stylesSearch.kategori
-    }
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     return (
-      <View style={styles.container}>
-        <View style={[styles.headerContainer, background]}>
-          {this.renderHeader()}
+      <View style={[styles.container, {marginTop: Metrics.navBarHeight}]}>
+        <View style={stylesDropshipping.header}>
+          <View style={[stylesDropshipping.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+            <Text style={[stylesDropshipping.textState, {color: Colors.background}]}>1</Text>
+          </View>
+          <View style={stylesDropshipping.line} />
+          <View style={[stylesDropshipping.state]}>
+            <Text style={[stylesDropshipping.textState]}>2</Text>
+          </View>
+          <View style={stylesDropshipping.line} />
+          <View style={stylesDropshipping.state}>
+            <Text style={stylesDropshipping.textState}>3</Text>
+          </View>
         </View>
+        {this.renderSearch()}
+        {this.renderilihKategori()}
         <ScrollView style={styles.listViewContainer}>
           {this.viewProduk()}
         </ScrollView>
@@ -548,35 +587,14 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              {this.renderImage()}
+              {this.renderImageTypeView()}
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>
         </View>
-        <Modal
-          animationType={'slide'}
-          transparent
-          visible={this.state.filter}
-          onRequestClose={() => { this.setState({ filter: false }) }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeaderContainer}>
-              <Text style={styles.modalHeaderText}>
-                Filter
-              </Text>
-              <TouchableOpacity onPress={() => this.closeModal()}>
-                <Image
-                  source={Images.close}
-                  style={styles.imageCancel}
-                />
-              </TouchableOpacity>
-            </View>
-            <Filter
-              handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-              this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
-          </View>
-        </Modal>
+        {this.modalFilter()}
         {this.renderModalSort()}
+        {spinner}
       </View>
     )
   }
@@ -584,15 +602,14 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.productBySearch,
+    dataProduk: state.productByCategory,
     dataFilter: state.filterProduct
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getFilterProduk: (q, condition, services, price, address, brands, other) => dispatch(homeAction.filter({
-      q: q,
+    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
       condition: condition,
       services: services,
       price: price,
@@ -604,4 +621,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProdukTerbaruScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(ChooseItemDropship)

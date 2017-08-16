@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   ListView,
   View,
@@ -9,14 +8,14 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
 import * as produkAction from '../actions/product'
-import * as homeAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -26,9 +25,9 @@ import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Metrics } from '../Themes'
 
-class ProdukTerbaruScreenScreen extends React.Component {
+class NewProduct extends React.Component {
 
   constructor (props) {
     super(props)
@@ -41,7 +40,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      query: this.props.querys,
       search: '',
       listDataSource: [],
       rowDataSource: [],
@@ -59,12 +57,20 @@ class ProdukTerbaruScreenScreen extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      from: this.props.from
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false,
+      kondisi: '',
+      pengiriman: '',
+      price: '',
+      address: '',
+      brand: '',
+      other: ''
     }
   }
 
   componentDidMount () {
-    this.props.getFilterProduk(this.props.querys)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -73,38 +79,46 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.query !== nextProps.querys) {
-      this.props.getSearch(this.props.querys)
-    }
-    if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products,
-        loadingProduk: false
-      })
-    } else if (nextProps.dataProduk.status > 200) {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataProduk.status === 'ENOENT') {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    }
     if (nextProps.dataFilter.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products
-      })
+      if (nextProps.dataFilter.products.length > 0) {
+        let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
+        console.log(nextProps.dataFilter)
+        this.setState({
+          listDataSource: data,
+          rowDataSource: data,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          page: this.state.page + 1
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
     } else if (nextProps.dataFilter.status > 200) {
       console.log(nextProps.dataFilter.status)
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: true
+      })
     }
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0)
+    this.setState({
+      filter: false,
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other
+    })
   }
 
   handleBack = () => {
@@ -114,11 +128,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
       })
       return true
     } else if (NavigationActions.pop()) {
-      if (this.state.from === 'home') {
-        NavigationActions.popTo('backtab')
-      } else {
-        NavigationActions.popTo('newproduct')
-      }
       return true
     }
   }
@@ -132,16 +141,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   backButton () {
-    if (this.state.from === 'home') {
-      NavigationActions.backtab({
-        type: ActionConst.RESET
-      })
-    } else {
-      NavigationActions.popTo('newproduct')
-    }
-  }
-
-  popSearch () {
     NavigationActions.pop()
   }
 
@@ -149,6 +148,21 @@ class ProdukTerbaruScreenScreen extends React.Component {
     this.setState({
       tipe: 'data'
     })
+  }
+
+  loadMore () {
+    const { page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, page)
+      }
+    }
+  }
+
+  refresh = () => {
+    const { kondisi, pengiriman, price, address, brand, other } = this.state
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1)
   }
 
   renderHeader () {
@@ -191,7 +205,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.popSearch()}>
+        <TouchableOpacity onPress={() => this.openSearch()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -298,9 +312,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
   }
 
   openSearch () {
-    this.setState({
-      tipe: 'search'
-    })
+    NavigationActions.search({ type: ActionConst.PUSH, from: 'product' })
   }
 
   renderVerified (status) {
@@ -372,11 +384,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
     })
 
     return (
-      <TouchableOpacity
-        style={styles.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -428,11 +436,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity
-        style={stylesHome.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
@@ -477,29 +481,75 @@ class ProdukTerbaruScreenScreen extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
-          <ListView
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            enableEmptySections
-            dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
-            renderRow={this.renderRowGrid.bind(this)}
-          />
-        </View>
+        <ListView
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          enableEmptySections
+          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          renderRow={this.renderRowGrid.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+        }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50, marginLeft: Metrics.screenWidth / 2 - 20 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          style={styles.listView}
+        />
       )
     }
     return (
-      <View style={styles.listViewContainer}>
-        <ListView
-          contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          enableEmptySections
-          dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
-          renderRow={this.renderRowList.bind(this)}
-        />
-      </View>
+      <ListView
+        contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
+        enableEmptySections
+        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        renderRow={this.renderRowList.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        style={styles.listView}
+      />
     )
   }
 
-  renderImage () {
+  renderImageTypeView () {
     if (this.state.tipeView === 'grid') {
       return (
         <Image source={Images.grid} style={styles.searchImage} />
@@ -508,14 +558,6 @@ class ProdukTerbaruScreenScreen extends React.Component {
     return (
       <Image source={Images.list} style={styles.searchImage} />
     )
-  }
-
-  produkDetail (id) {
-    NavigationActions.detailproduct({
-      type: ActionConst.PUSH,
-      id: id
-    })
-    this.props.getDetailProduk(id)
   }
 
   render () {
@@ -530,9 +572,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
         <View style={[styles.headerContainer, background]}>
           {this.renderHeader()}
         </View>
-        <ScrollView style={styles.listViewContainer}>
-          {this.viewProduk()}
-        </ScrollView>
+        {this.viewProduk()}
         <View style={styles.footerMenu}>
           <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>
@@ -548,7 +588,7 @@ class ProdukTerbaruScreenScreen extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              {this.renderImage()}
+              {this.renderImageTypeView()}
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>
@@ -584,24 +624,24 @@ class ProdukTerbaruScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.productBySearch,
-    dataFilter: state.filterProduct
+    dataProduk: state.products,
+    dataFilter: state.productBySearch
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getFilterProduk: (q, condition, services, price, address, brands, other) => dispatch(homeAction.filter({
-      q: q,
+    getProdukTerbaru: dispatch(produkAction.listProductBySearch()),
+    getFilterProduk: (condition, services, price, address, brands, other, page) => dispatch(produkAction.listProductBySearch({
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
-      other: other
-    })),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+      other: other,
+      page: page
+    }))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProdukTerbaruScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(NewProduct)

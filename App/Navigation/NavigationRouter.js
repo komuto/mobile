@@ -2,92 +2,92 @@ import React, { Component } from 'react'
 import { Scene, Router } from 'react-native-router-flux'
 import { View, Text, Image } from 'react-native'
 
-// screens identified by the router
+// s identified by the router
 import Profile from '../Containers/Profile'
 import Splash from '../Containers/Splash'
 import ForgetPassword from '../Containers/ForgetPassword'
-import Notifikasi from '../Containers/Notifikasi'
+import Notification from '../Containers/Notification'
 import Register from '../Containers/Register'
-import Login from '../Containers/LoginScreen'
-import PasswordBaru from '../Containers/PasswordBaru'
+import Login from '../Containers/Login'
+import NewPassword from '../Containers/NewPassword'
 import Home from '../Containers/Home'
-import NotifikasiPengguna from '../Containers/NotifikasiPengguna'
-import Transaksi from '../Containers/Transaksi'
-import KategoriScreen from '../Containers/KategoriScreen'
-import KategoriDuaScreen from '../Containers/KategoriDuaScreen'
-import KategoriTigaScreen from '../Containers/KategoriTigaScreen'
-import KategoriEmpatScreen from '../Containers/KategoriEmpatScreen'
+import UserNotification from '../Containers/UserNotification'
+import Transaction from '../Containers/Transaction'
+import Category1 from '../Containers/Category1'
+import Category2 from '../Containers/Category2'
+import Category3 from '../Containers/Category3'
+import Category4 from '../Containers/Category4'
 import SearchResult from '../Containers/SearchResult'
 import Search from '../Containers/Search'
-import ProdukTerbaru from '../Containers/ProdukTerbaruScreen'
-import OTPCodeScreen from '../Containers/OTPCodeScreen'
+import NewProduct from '../Containers/NewProduct'
+import OTPCode from '../Containers/OTPCode'
 import Wishlist from '../Containers/Wishlist'
-import DetailToko from '../Containers/DetailToko'
-import ProductDetailScreen from '../Containers/ProductDetailScreen'
-import UlasanScreen from '../Containers/UlasanScreen'
-import Laporkan from '../Containers/Laporkan'
-import InfoAlamatToko from '../Containers/InfoAlamatTokoScreen'
-import InfoPemilikToko from '../Containers/InfoPemilikTokoScreen'
-import InfoToko from '../Containers/InformasiTokoScreen'
-import EkspedisiKirimToko from '../Containers/EkspedisiPengirimanTokoScreen'
-import TokoDashboard from '../Containers/TokoDashboardScreen'
-import DiskusiProduk from '../Containers/DiskusiProduk'
-import DiskusiAdd from '../Containers/DiskusiAdd'
-import PembelianInfoPengguna from '../Containers/PembelianInfoPengguna'
-import PembelianKeranjangBelanja from '../Containers/PembelianKeranjangBelanja'
-import PembelianTambahKeKeranjang from '../Containers/PembelianTambahKeKeranjang'
-import KirimPesan from '../Containers/KirimPesanToko'
-import DiskusiProdukKomentar from '../Containers/DiskusiProdukKomentar'
-import TambahAlamat from '../Containers/TambahAlamatScreen'
-import EditAlamat from '../Containers/EditAlamatScreen'
-import DataAlamat from '../Containers/DataAlamatScreen'
-import DataRekening from '../Containers/DataRekeningScreen'
-import TambahRekening from '../Containers/TambahDataRekeningScreen'
-import PengaturanNotifikasi from '../Containers/PengaturanNotifikasiScreen'
-import KelolaAkunScreen from '../Containers/KelolaAkunScreen'
-import BiodataScreen from '../Containers/BiodataScreen'
-import NomerHandphoneScreen from '../Containers/NomerHandphoneScreen'
-import GantiPassword from '../Containers/GantiPasswordScreen'
-import Pembayaran from '../Containers/Pembayaran'
-import PembayaranKeranjangBelanja from '../Containers/PembayaranKeranjangBelanja'
-import PembayaranTransferBank from '../Containers/PembayaranTransferBank'
-import PembayaranTransferBankDetail from '../Containers/PembayaranTransferBankDetail'
-import PembayaranDetailBarang from '../Containers/PembayaranDetailBarang'
-import PembayaranKartuKredit from '../Containers/PembayaranKartuKredit'
-import PembayaranSaldo from '../Containers/PembayaranSaldo'
-import DaftarProduk from '../Containers/DaftarProdukScreen'
-import TambahProduk from '../Containers/TambahProdukScreen'
-import UploadPhotoProduk from '../Containers/UploadPhotoProdukScreen'
-import InfoNamaDanKategoriProdukScreen from '../Containers/InfoNamaDanKategoriProdukScreen'
-import TentangDropshipping from '../Containers/TentangDropshippingScreen'
-import EkspedisiPengirimanProduk from '../Containers/EkspedisiPengirimanProdukScreen'
-import InfoHargaDanSpesifikasiProduk from '../Containers/InfoHargaDanSpesifikasiProdukScreen'
-import PembayaranMandiriPay from '../Containers/PembayaranMandiriPay'
-import PembayaranVirtualAccount from '../Containers/PembayaranVirtualAccount'
-import PembayaranBri from '../Containers/PembayaranBri'
-import PembayaranDoku from '../Containers/PembayaranDoku'
-import PembayaranAlfamart from '../Containers/PembayaranAlfamart'
-import PembayaranBerhasil from '../Containers/PembayaranBerhasil'
-import PembayaranAlfamartDetail from '../Containers/PembayaranAlfamartDetail'
-import SearchByCategory from '../Containers/SearchByCategoryScreen'
-import SearchResultByCategory from '../Containers/SearchResultByCategoryScreen'
-import PilihBarangDropshipping from '../Containers/PilihBarangDropshippingScreen'
-import TempatkanDiKatalog from '../Containers/TempatkanDiKatalogScreen'
-import ListProdukByCatalogScreen from '../Containers/ListProdukByCatalogScreen'
-import TransaksiVerifikasi from '../Containers/TransaksiVerifikasi'
-import TransaksiKadaluarsa from '../Containers/TransaksiKadaluarsa'
-import TransaksiDibayar from '../Containers/TransaksiDibayar'
-import TransaksiDetailStatus from '../Containers/TransaksiDetailStatus'
-import TransaksiKonfirmasiPembayaran from '../Containers/TransaksiKonfirmasiPembayaran'
+import StoreDetail from '../Containers/StoreDetail'
+import DetailProduct from '../Containers/DetailProduct'
+import Review from '../Containers/Review'
+import Report from '../Containers/Report'
+import InfoAddressStore from '../Containers/InfoAddressStore'
+import InfoStoreOwner from '../Containers/InfoStoreOwner'
+import InfoStore from '../Containers/InfoStore'
+import StoreExpedition from '../Containers/StoreExpedition'
+import StoreDashboard from '../Containers/StoreDashboard'
+import ProductDiscussion from '../Containers/ProductDiscussion'
+import NewDiscussion from '../Containers/NewDiscussion'
+import PurchaseUserInfo from '../Containers/PurchaseUserInfo'
+import PurchaseCart from '../Containers/PurchaseCart'
+import PurchaseAddToCart from '../Containers/PurchaseAddToCart'
+import SendMessageStore from '../Containers/SendMessageStore'
+import CommentProductDiscussion from '../Containers/CommentProductDiscussion'
+import AddAddress from '../Containers/AddAddress'
+import EditAddress from '../Containers/EditAddress'
+import AddressData from '../Containers/AddressData'
+import AccountData from '../Containers/AccountData'
+import AddAccount from '../Containers/AddAccount'
+import NotificationSetting from '../Containers/NotificationSetting'
+import AccountManage from '../Containers/AccountManage'
+import Biodata from '../Containers/Biodata'
+import Cellphone from '../Containers/Cellphone'
+import ChangePassword from '../Containers/ChangePassword'
+import Payment from '../Containers/Payment'
+import PaymentCart from '../Containers/PaymentCart'
+import PaymentTransferBank from '../Containers/PaymentTransferBank'
+import PaymentTransferBankDetail from '../Containers/PaymentTransferBankDetail'
+import PaymentItemDetail from '../Containers/PaymentItemDetail'
+import PaymentCreditCard from '../Containers/PaymentCreditCard'
+import PaymentBalance from '../Containers/PaymentBalance'
+import ProductList from '../Containers/ProductList'
+import AddProduct from '../Containers/AddProduct'
+import UploadProductPhoto from '../Containers/UploadProductPhoto'
+import ProductInfoNameAndCategory from '../Containers/ProductInfoNameAndCategory'
+import Dropshipping from '../Containers/Dropshipping'
+import ExpeditionProduct from '../Containers/ExpeditionProduct'
+import PriceAndSpecificationProduct from '../Containers/PriceAndSpecificationProduct'
+import PaymentMandiriPay from '../Containers/PaymentMandiriPay'
+import PaymentVirtualAccount from '../Containers/PaymentVirtualAccount'
+import PaymentBRI from '../Containers/PaymentBRI'
+import PaymentDoku from '../Containers/PaymentDoku'
+import PaymentAlfamart from '../Containers/PaymentAlfamart'
+import PaymentSuccess from '../Containers/PaymentSuccess'
+import PaymentAlfamartDetail from '../Containers/PaymentAlfamartDetail'
+import SearchByCategory from '../Containers/SearchByCategory'
+import SearchResultByCategory from '../Containers/SearchResultByCategory'
+import ChooseItemDropship from '../Containers/ChooseItemDropship'
+import PlaceInCatalog from '../Containers/PlaceInCatalog'
+import ProductListByCatalog from '../Containers/ProductListByCatalog'
+import TransactionVerification from '../Containers/TransactionVerification'
+import TransactionExpired from '../Containers/TransactionExpired'
+import TransactionPaid from '../Containers/TransactionPaid'
+import TransactionDetailStatus from '../Containers/TransactionDetailStatus'
+import TransactionPaymentConfirmation from '../Containers/TransactionPaymentConfirmation'
 import CartDetailItem from '../Containers/CartDetailItem'
-import KelolaToko from '../Containers/KelolaTokoScreen'
-import Term from '../Containers/TermsScreen'
-import KatalogToko from '../Containers/KatalogTokoScreen'
-import TambahEditKatalogToko from '../Containers/TambahEditKatalogTokoScreen'
-import AlamatToko from '../Containers/AlamatTokoScreen'
-import KelolaAlamatToko from '../Containers/KelolaAlamatTokoScreen'
-import UpdateAlamatToko from '../Containers/UpdateAlamatTokoScreen'
-import KelolaEkspedisiToko from '../Containers/KelolaEkspedisiTokoScreen'
+import ManageStore from '../Containers/ManageStore'
+import Terms from '../Containers/Terms'
+import StoreCatalog from '../Containers/StoreCatalog'
+import AddEditStoreCatalog from '../Containers/AddEditStoreCatalog'
+import AddressStore from '../Containers/AddressStore'
+import ManageStoreAddress from '../Containers/ManageStoreAddress'
+import UpdateStoreAddress from '../Containers/UpdateStoreAddress'
+import ManageStoreExpedition from '../Containers/ManageStoreExpedition'
 import TransactionItemReceived from '../Containers/TransactionItemReceived'
 import TransactionNotification from '../Containers/TransactionNotification'
 
@@ -130,7 +130,7 @@ class NavigationRouter extends Component {
                 iconDefault={Images.home}
                 iconActive={Images.homeActive}>
                 <Scene
-                  key='homeScreen'
+                  key='homescreen'
                   component={Home}
                   title='Home'
                   navBar={CustomNavBar}
@@ -144,22 +144,22 @@ class NavigationRouter extends Component {
                 iconDefault={Images.transaksi}
                 iconActive={Images.transaksiActive}>
                 <Scene
-                  key='transactionScreen'
-                  component={Transaksi}
+                  key='transactionscreen'
+                  component={Transaction}
                   title='Transaksi'
                   navBar={CustomNavBar}
                   hideNavBar={false}
                   hideBackImage />
               </Scene>
               <Scene
-                key='notification'
+                key='usernotification'
                 title='Notifikasi'
                 icon={TabIcon}
                 iconDefault={Images.notifikasi}
                 iconActive={Images.notifikasiActive}>
                 <Scene
-                  key='notificationScreen'
-                  component={NotifikasiPengguna}
+                  key='usernotificationscreen'
+                  component={UserNotification}
                   title='Notifikasi'
                   navBar={CustomNavBar}
                   hideNavBar={false}
@@ -172,7 +172,7 @@ class NavigationRouter extends Component {
                 iconDefault={Images.profile}
                 iconActive={Images.profileActive}>
                 <Scene
-                  key='acccountScreen'
+                  key='acccountscreen'
                   component={Profile}
                   title='Profile'
                   navBar={CustomNavBar}
@@ -190,14 +190,14 @@ class NavigationRouter extends Component {
             hideBackImage={false} />
           <Scene
             key='otpcode'
-            component={OTPCodeScreen}
+            component={OTPCode}
             title='Lupa Password'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='notifikasi'
-            component={Notifikasi}
+            key='notification'
+            component={Notification}
             navBar={CustomNavBar}
             hideNavBar />
           <Scene
@@ -215,15 +215,15 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='passwordbaru'
-            component={PasswordBaru}
+            key='newpassword'
+            component={NewPassword}
             title='Password Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kategoriscreen'
-            component={KategoriScreen}
+            key='category1'
+            component={Category1}
             title='Kategori'
             navBar={CustomNavBar}
             hideNavBar={false}
@@ -243,30 +243,30 @@ class NavigationRouter extends Component {
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='produkterbaru'
-            component={ProdukTerbaru}
+            key='newproduct'
+            component={NewProduct}
             title='Produk Terbaru'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
           <Scene
-            key='kategoriduascreen'
-            component={KategoriDuaScreen}
+            key='category2'
+            component={Category2}
             title='Fashion Pria'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kategoritigascreen'
-            component={KategoriTigaScreen}
+            key='category3'
+            component={Category3}
             title='Fashion Pria'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kategoriempatscreen'
+            key='category4'
             showSearchIcon
-            component={KategoriEmpatScreen}
+            component={Category4}
             title='Fashion Pria'
             navBar={CustomNavBar}
             hideNavBar
@@ -279,351 +279,351 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             />
           <Scene
-            key='detailtoko'
-            component={DetailToko}
+            key='storedetail'
+            component={StoreDetail}
             title='Detail Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             />
           <Scene
-            key='productdetail'
-            component={ProductDetailScreen}
+            key='detailproduct'
+            component={DetailProduct}
             title='Fashion Pria'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
           <Scene
-            key='ulasanscreen'
-            component={UlasanScreen}
+            key='review'
+            component={Review}
             title='Ulasan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='laporkan'
-            component={Laporkan}
+            key='report'
+            component={Report}
             title='Laporkan Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='infotoko'
-            component={InfoToko}
+            key='infostore'
+            component={InfoStore}
             title='Isi Informasi Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='ekspedisitoko'
-            component={EkspedisiKirimToko}
+            key='storeexpedition'
+            component={StoreExpedition}
             title='Ekspedisi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='infopemilik'
-            component={InfoPemilikToko}
+            key='infostoreowner'
+            component={InfoStoreOwner}
             title='Info Pemilik'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='infoalamattoko'
-            component={InfoAlamatToko}
+            key='infoaddressstore'
+            component={InfoAddressStore}
             title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tokodashboard'
-            component={TokoDashboard}
+            key='storedashboard'
+            component={StoreDashboard}
             title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='diskusiproduk'
-            component={DiskusiProduk}
+            key='productdiscussion'
+            component={ProductDiscussion}
             title='Diskusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambahDiskusi'
-            component={DiskusiAdd}
+            key='newdiscussion'
+            component={NewDiscussion}
             title='Buat Diskusi Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembelianinfopengguna'
-            component={PembelianInfoPengguna}
+            key='purchaseuserinfo'
+            component={PurchaseUserInfo}
             title='Isi Informasi Data Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembeliankeranjangbelanja'
-            component={PembelianKeranjangBelanja}
+            key='purchasecart'
+            component={PurchaseCart}
             title='Keranjang Belanja'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kirimpesan'
-            component={KirimPesan}
+            key='sendmessagestore'
+            component={SendMessageStore}
             title='Kirim Pesan'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
           <Scene
-            key='pembeliantambahkekeranjang'
-            component={PembelianTambahKeKeranjang}
+            key='purchaseaddtocart'
+            component={PurchaseAddToCart}
             title='Proses Pembelian'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='diskusiprodukkomentar'
-            component={DiskusiProdukKomentar}
+            key='commentproductdiscussion'
+            component={CommentProductDiscussion}
             title='Detail Diskusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambahalamat'
-            component={TambahAlamat}
+            key='addaddress'
+            component={AddAddress}
             title='Tambah Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='editalamat'
-            component={EditAlamat}
+            key='editaddress'
+            component={EditAddress}
             title='Tambah Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='dataalamat'
-            component={DataAlamat}
+            key='addressdata'
+            component={AddressData}
             title='Data Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambahrekening'
-            component={TambahRekening}
+            key='addaccount'
+            component={AddAccount}
             title='Tambah Rekening'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='datarekening'
-            component={DataRekening}
+            key='accountdata'
+            component={AccountData}
             title='Data Rekening'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pengarutannotif'
-            component={PengaturanNotifikasi}
+            key='notificationsetting'
+            component={NotificationSetting}
             title='Pengaturan Notifikasi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kelolaakun'
-            component={KelolaAkunScreen}
+            key='accountmanage'
+            component={AccountManage}
             title='Kelola Akun'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
             key='biodata'
-            component={BiodataScreen}
+            component={Biodata}
             title='Biodata'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='nomerhape'
-            component={NomerHandphoneScreen}
+            key='cellphone'
+            component={Cellphone}
             title='Nomor Handphone'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='gantipassword'
-            component={GantiPassword}
+            key='changepassword'
+            component={ChangePassword}
             title='Ganti Password'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaran'
-            component={Pembayaran}
+            key='payment'
+            component={Payment}
             title='Pembayaran'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayarankeranjangbelanja'
-            component={PembayaranKeranjangBelanja}
+            key='paymentcart'
+            component={PaymentCart}
             title='Detail Pembelian'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayarantransferbank'
-            component={PembayaranTransferBank}
+            key='paymenttransferbank'
+            component={PaymentTransferBank}
             title='Transfer Bank'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayarantransferbankdetail'
-            component={PembayaranTransferBankDetail}
+            key='paymenttransferbankdetail'
+            component={PaymentTransferBankDetail}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='pembayarandetailbarang'
-            component={PembayaranDetailBarang}
+            key='paymentitemdetail'
+            component={PaymentItemDetail}
             title='Detail Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayarankartukredit'
-            component={PembayaranKartuKredit}
+            key='paymentcreditcard'
+            component={PaymentCreditCard}
             title='Kartu Kredit'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaransaldo'
-            component={PembayaranSaldo}
+            key='paymentbalance'
+            component={PaymentBalance}
             title='Bayar Dengan Saldo'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambahrekening'
-            component={TambahRekening}
+            key='addaccount'
+            component={AddAccount}
             title='Tambah Rekening'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='datarekening'
-            component={DataRekening}
+            key='accountdata'
+            component={AccountData}
             title='Data Rekening'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pengarutannotif'
-            component={PengaturanNotifikasi}
+            key='notificationsetting'
+            component={NotificationSetting}
             title='Pengaturan Notifikasi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='daftarproduk'
-            component={DaftarProduk}
+            key='productlist'
+            component={ProductList}
             title='Daftar Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambahproduk'
-            component={TambahProduk}
+            key='addproduct'
+            component={AddProduct}
             title='Tambah Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='uploadphotoproduk'
-            component={UploadPhotoProduk}
+            key='uploadproductphoto'
+            component={UploadProductPhoto}
             title='Upload Photo'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='infonamadankategori'
-            component={InfoNamaDanKategoriProdukScreen}
+            key='productinfonameandcategory'
+            component={ProductInfoNameAndCategory}
             title='Nama dan Kategori Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tentangdropshipping'
-            component={TentangDropshipping}
+            key='dropshipping'
+            component={Dropshipping}
             title='Tentang Dropshipping'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='ekspedisipengirimanproduk'
-            component={EkspedisiPengirimanProduk}
+            key='expeditionproduct'
+            component={ExpeditionProduct}
             title='Ekspedisi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='infohargaspesifikasi'
-            component={InfoHargaDanSpesifikasiProduk}
+            key='priceandspesificationproduct'
+            component={PriceAndSpecificationProduct}
             title='Harga dan Spesifikasi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaranmandiripay'
-            component={PembayaranMandiriPay}
+            key='paymentmandiripay'
+            component={PaymentMandiriPay}
             title='Mandiri Click Pay'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaranvirtualaccount'
-            component={PembayaranVirtualAccount}
+            key='paymentvirtualaccount'
+            component={PaymentVirtualAccount}
             title='Virtual Account (ATM)'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaranbri'
-            component={PembayaranBri}
+            key='paymentbri'
+            component={PaymentBRI}
             title='E-Pay BRI'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayarandoku'
-            component={PembayaranDoku}
+            key='paymentdoku'
+            component={PaymentDoku}
             title='Doku Wallet'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaranalfamart'
-            component={PembayaranAlfamart}
+            key='paymentalfamart'
+            component={PaymentAlfamart}
             title='Alfamart'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='pembayaranberhasil'
-            component={PembayaranBerhasil}
+            key='paymentsuccess'
+            component={PaymentSuccess}
             title='Notifikasi'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='pembayaranalfamartdetail'
-            component={PembayaranAlfamartDetail}
+            key='paymentalfamartdetail'
+            component={PaymentAlfamartDetail}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar
@@ -643,57 +643,57 @@ class NavigationRouter extends Component {
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='pilihbarangdropshipping'
-            component={PilihBarangDropshipping}
+            key='chooseitemdropship'
+            component={ChooseItemDropship}
             title='Pilih Barang dari Dropshipping'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tempatkandikatalog'
-            component={TempatkanDiKatalog}
+            key='placeincatalog'
+            component={PlaceInCatalog}
             title='Tempatkan di Katalog'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='listprodukbycatalog'
-            component={ListProdukByCatalogScreen}
+            key='productlistbycatalog'
+            component={ProductListByCatalog}
             title='Daftar Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='transaksiverifikasi'
-            component={TransaksiVerifikasi}
+            key='transactionverification'
+            component={TransactionVerification}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='transaksikadaluarsa'
-            component={TransaksiKadaluarsa}
+            key='transactionexpired'
+            component={TransactionExpired}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='transaksidibayar'
-            component={TransaksiDibayar}
+            key='transactionpaid'
+            component={TransactionPaid}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='transaksidetailstatus'
-            component={TransaksiDetailStatus}
+            key='transactiondetailstatus'
+            component={TransactionDetailStatus}
             title='Detail Status Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='transaksikonfirmasipembayaran'
-            component={TransaksiKonfirmasiPembayaran}
+            key='transactionpaymentconfirmation'
+            component={TransactionPaymentConfirmation}
             title='Konfirmasi Pembayaran'
             navBar={CustomNavBar}
             hideNavBar={false}
@@ -706,57 +706,57 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kelolatoko'
-            component={KelolaToko}
+            key='managestore'
+            component={ManageStore}
             title='Kelola Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='term'
-            component={Term}
+            key='terms'
+            component={Terms}
             title='Terms and Conditions'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='katalogtoko'
-            component={KatalogToko}
+            key='storecatalog'
+            component={StoreCatalog}
             title='Katalog'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='tambaheditkatalog'
-            component={TambahEditKatalogToko}
+            key='addeditstorecatalog'
+            component={AddEditStoreCatalog}
             title='Tambah Katalog'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='alamattoko'
-            component={AlamatToko}
+            key='addressstore'
+            component={AddressStore}
             title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kelolaalamattoko'
-            component={KelolaAlamatToko}
+            key='managestoreaddress'
+            component={ManageStoreAddress}
             title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='updatealamattoko'
-            component={UpdateAlamatToko}
+            key='updatestoreaddress'
+            component={UpdateStoreAddress}
             title='Info Alamat'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='kelolaekspedisitoko'
-            component={KelolaEkspedisiToko}
+            key='managestoreexpedition'
+            component={ManageStoreExpedition}
             title='Ekspedisi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}

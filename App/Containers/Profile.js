@@ -262,7 +262,7 @@ class Profile extends React.Component {
   }
 
   handleKelolaAkun () {
-    NavigationActions.kelolaakun({
+    NavigationActions.accountmanage({
       type: ActionConst.PUSH,
       statusNoHp: this.state.verifyNoHp,
       nomerHape: this.state.nomerHape,
@@ -345,11 +345,11 @@ class Profile extends React.Component {
   handleCekNoHp () {
     if (this.state.verifyNoHp) {
       if (this.state.statusToko === 1) {
-        NavigationActions.tokodashboard({
+        NavigationActions.dashboardstore({
           type: ActionConst.PUSH
         })
       } else {
-        NavigationActions.infotoko({
+        NavigationActions.infostore({
           type: ActionConst.PUSH
         })
       }

@@ -156,7 +156,7 @@ class Wishlist extends React.Component {
   }
 
   produkDetail (id) {
-    NavigationActions.productdetail({
+    NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id
     })

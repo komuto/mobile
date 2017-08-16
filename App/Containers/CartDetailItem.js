@@ -365,7 +365,7 @@ class CartDetailItem extends React.Component {
             <TouchableOpacity
               style={styles.buttonAlamat}
               onPress={() => {
-                NavigationActions.pembelianinfopengguna({type: ActionConst.PUSH})
+                NavigationActions.purchaseuserinfo({type: ActionConst.PUSH})
                 this.setState({ modalAddress: false })
               }}
             >

@@ -261,7 +261,7 @@ class Home extends React.Component {
   }
 
   semuaKategori () {
-    NavigationActions.kategoriscreen({ type: ActionConst.PUSH })
+    NavigationActions.category1({ type: ActionConst.PUSH })
   }
 
   wishlist () {
@@ -283,14 +283,14 @@ class Home extends React.Component {
   }
 
   produkTerbaru () {
-    NavigationActions.produkterbaru({
+    NavigationActions.newproduct({
       type: ActionConst.PUSH,
       header: 'Produk Terbaru'
     })
   }
 
   produkDetail (id) {
-    NavigationActions.productdetail({
+    NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id
     })
@@ -298,7 +298,7 @@ class Home extends React.Component {
   }
 
   handleDetailKategori (rowId, title) {
-    NavigationActions.kategoriempatscreen({
+    NavigationActions.category4({
       type: ActionConst.PUSH,
       id: rowId,
       header: title,
@@ -307,7 +307,7 @@ class Home extends React.Component {
   }
 
   keranjang () {
-    NavigationActions.pembeliankeranjangbelanja({
+    NavigationActions.purchasecart({
       type: ActionConst.PUSH
     })
     this.props.getCart()

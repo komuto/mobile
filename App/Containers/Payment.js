@@ -18,7 +18,8 @@ class Payment extends React.Component {
     this.state = {
       total: '250219',
       saldo: '300000',
-      data: []
+      data: [],
+      idCart: this.props.idCart
     }
   }
 
@@ -105,7 +106,7 @@ class Payment extends React.Component {
       <TouchableOpacity
         activeOpacity={0.5}
         style={[styles.totalContainerBank, { marginBottom: 15 }]}
-        onPress={() => this.detailPayment(rowData.type_text)}
+        onPress={() => this.detailPayment(rowData.type_text, rowData.id)}
       >
         <View style={styles.totalBank}>
           <View style={styles.textContainer}>
@@ -120,32 +121,39 @@ class Payment extends React.Component {
     )
   }
 
-  detailPayment (typeText) {
+  detailPayment (typeText, idPayment) {
+    const { idCart } = this.state
     if (typeText === null) {
       NavigationActions.paymenttransferbank({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idPayment: idPayment
       })
     } else if (typeText === 'klikpay-bca') {
 
     } else if (typeText === 'mandiri-clickpay') {
       NavigationActions.paymentmandiripay({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idCart: idCart
       })
     } else if (typeText === 'bri-epay') {
       NavigationActions.paymentbri({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idCart: idCart
       })
     } else if (typeText === 'kartu-kredit') {
       NavigationActions.paymentcreditcard({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idCart: idCart
       })
     } else if (typeText === 'alfamart') {
       NavigationActions.paymentalfamart({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idCart: idCart
       })
     } else if (typeText === 'doku-wallet') {
       NavigationActions.paymentdoku({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH,
+        idCart: idCart
       })
     }
   }

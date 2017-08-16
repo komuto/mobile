@@ -3,6 +3,8 @@ import { ScrollView, Text, View, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
+import Spinner from '../Components/Spinner'
+import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -14,10 +16,60 @@ class PaymentTransferBank extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      kode: 'BELANJAENAK',
-      total: 320000,
-      diskon: 10000,
-      kodeUnik: 2000
+      kode: null,
+      total: 0,
+      diskon: 0,
+      kodeUnik: 0,
+      idPayment: this.props.idPayment,
+      getDataCartPayment: true,
+      loading: false
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataCart.status === 200) {
+      if (this.state.getDataCartPayment) {
+        let temp = 0
+        nextProps.dataCart.cart.items.map((obj, i) =>
+          (
+            temp = temp + obj.total_price
+          )
+        )
+        this.setState({
+          total: temp,
+          getDataCartPayment: false,
+          idCart: nextProps.dataCart.cart.id
+        })
+        if (nextProps.dataCart.cart.promo !== null) {
+          if (nextProps.dataCart.cart.promo.type === 0) {
+            this.setState({
+              diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
+              kode: nextProps.dataCart.cart.promo.promo_code
+            })
+          } else {
+            this.setState({
+              diskon: nextProps.dataCart.cart.promo,
+              kode: nextProps.dataCart.cart.promo.promo_code
+            })
+          }
+        }
+        this.props.getCartReset()
+      }
+    } else if (nextProps.dataCart.status > 200) {
+      this.setState({
+        data: [],
+        getDataCartPayment: false,
+        isFetching: false
+      })
+    }
+    if (nextProps.dataCheckout.status === 200) {
+      console.log('checkout sukses')
+      this.setState({
+        loading: false
+      })
+      NavigationActions.paymenttransferbankdetail({
+        type: ActionConst.RESET
+      })
     }
   }
 
@@ -58,26 +110,29 @@ class PaymentTransferBank extends React.Component {
   }
 
   renderRincian () {
-    const { kode, total, diskon, kodeUnik } = this.state
-    const sisaBayar = total - diskon - kodeUnik
+    const { kode, total, diskon } = this.state
+    const sisaBayar = total - diskon
+    let viewDiscount
     const totalHarga = MaskService.toMask('money', total, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    if (kode !== null) {
+      const hargaDiskon = MaskService.toMask('money', diskon, {
+        unit: 'Rp -',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+      viewDiscount = (
+        <View style={styles.rincianRow}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
+          <Text style={styles.textGreen}>{hargaDiskon}</Text>
+        </View>
+      )
+    }
     const hargaSisaBayar = MaskService.toMask('money', sisaBayar, {
       unit: 'Rp ',
       separator: '.',
@@ -94,14 +149,7 @@ class PaymentTransferBank extends React.Component {
             <Text style={[styles.textTitle, { flex: 1 }]}>Total Belanja</Text>
             <Text style={styles.textTitle}>{totalHarga}</Text>
           </View>
-          <View style={styles.rincianRow}>
-            <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
-            <Text style={styles.textGreen}>{hargaDiskon}</Text>
-          </View>
-          <View style={styles.rincianRow}>
-            <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
-            <Text style={styles.textTitle}>{hargaKodeUnik}</Text>
-          </View>
+          {viewDiscount}
         </View>
         <View style={styles.sisaPembayaran}>
           <View style={styles.rincianRow}>
@@ -114,22 +162,37 @@ class PaymentTransferBank extends React.Component {
   }
 
   renderButton () {
+    const { loading } = this.state
+    let viewButton
+    if (!loading) {
+      viewButton = (
+        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
+          <Text style={styles.textI}>Bayar dengan Transfer Bank</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      viewButton = (
+        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
+          <Spinner />
+        </TouchableOpacity>
+      )
+    }
     return (
       <View style={styles.containerButton}>
         <Text style={[styles.time, { fontSize: 12 }]}>
           Dengan menekan tombol "Lanjutkan" Anda telah menyetujui Syarat dan Ketentuan dari Komuto
         </Text>
-        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
-          <Text style={styles.textI}>Bayar dengan Transfer Bank</Text>
-        </TouchableOpacity>
+        {viewButton}
       </View>
     )
   }
 
   transferBank () {
-    NavigationActions.paymenttransferbankdetail({
-      type: ActionConst.RESET
+    const { idPayment } = this.state
+    this.setState({
+      loading: true
     })
+    this.props.checkout(idPayment)
   }
 
   render () {
@@ -148,11 +211,16 @@ class PaymentTransferBank extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataCart: state.cart,
+    dataCheckout: state.checkout
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getCart: dispatch(cartAction.getCart()),
+    getCartReset: () => dispatch(cartAction.getCartReset()),
+    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))
   }
 }
 

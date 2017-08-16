@@ -1,9 +1,16 @@
 import { buildAction, typeReq } from '../config'
 
 export const GET_PAYMENT_METHODS = 'GET_PAYMENT_METHODS'
-export const CHOOSE_PAYMENT_METHOD = 'CHOOSE_PAYMENT_METHOD'
 export const CONFIRM_TRANSFER = 'CONFIRM_TRANSFER'
 
+/**
+ * @state paymentMethods
+ */
 export const getPaymentMethods = () => buildAction(typeReq(GET_PAYMENT_METHODS))
-export const choosePaymentMethod = params => buildAction(typeReq(CHOOSE_PAYMENT_METHOD), params)
+
+/**
+ * @params id {int} bucket id
+ * @params params are the same as the api
+ * @state confirmation
+ */
 export const confirmTransfer = params => buildAction(typeReq(CONFIRM_TRANSFER), params)

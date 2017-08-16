@@ -95,6 +95,8 @@ const product = function* () {
   yield takeEvery(typeReq(productActions.HIDE_PRODUCTS), productSaga.hideProducts)
   yield takeEvery(typeReq(productActions.DELETE_PRODUCTS), productSaga.deleteProducts)
   yield takeEvery(typeReq(productActions.CHANGE_CATALOG), productSaga.changeCatalogProducts)
+  yield takeEvery(typeReq(productActions.UPDATE_PRODUCT), productSaga.updateProduct)
+  yield takeEvery(typeReq(productActions.GET_PRODUCT_EXPEDITIONS), productSaga.getProductExpeditions)
 }
 
 const store = function* () {
@@ -177,7 +179,6 @@ const location = function* () {
 
 const payment = function* () {
   yield takeEvery(typeReq(paymentActions.GET_PAYMENT_METHODS), paymentSaga.getPaymentMethods)
-  yield takeEvery(typeReq(paymentActions.CHOOSE_PAYMENT_METHOD), paymentSaga.choosePaymentMethod)
   yield takeEvery(typeReq(paymentActions.CONFIRM_TRANSFER), paymentSaga.confirmTransfer)
 }
 

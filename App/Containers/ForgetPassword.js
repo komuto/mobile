@@ -34,7 +34,7 @@ class ForgetPassword extends React.Component {
       this.setState({
         loading: false
       })
-      NavigationActions.notifikasi({
+      NavigationActions.notification({
         type: ActionConst.REPLACE,
         email: this.state.email,
         tipeNotikasi: 'resetpassword'

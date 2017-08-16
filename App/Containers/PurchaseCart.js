@@ -154,12 +154,12 @@ class PurchaseCart extends React.Component {
       this.setState({ requestPromo: false })
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
-    if (nextProps.dataCheckout.status === 200) {
-      NavigationActions.payment({type: ActionConst.PUSH})
-      ToastAndroid.show('Checkout keranjang belanja berhasil..', ToastAndroid.LONG)
-    } else if (nextProps.dataCheckout.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
-    }
+    // if (nextProps.dataCheckout.status === 200) {
+    //   NavigationActions.payment({type: ActionConst.PUSH})
+    //   ToastAndroid.show('Checkout keranjang belanja berhasil..', ToastAndroid.LONG)
+    // } else if (nextProps.dataCheckout.status > 200) {
+    //   ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
+    // }
     if (nextProps.dataDeleteItem.status === 200) {
       if (this.state.deleteItem) {
         this.setState({
@@ -547,10 +547,13 @@ class PurchaseCart extends React.Component {
   }
 
   pembayaran () {
-    const { dataUpload } = this.state
-    this.props.checkout(dataUpload)
-    this.setState({
-      loadingCheckout: true
+    // const { dataUpload } = this.state
+    // this.props.checkout(dataUpload)
+    // this.setState({
+    //   loadingCheckout: true
+    // })
+    NavigationActions.payment({
+      type: ActionConst.PUSH
     })
   }
 
@@ -580,7 +583,7 @@ const mapStateToProps = (state) => {
     dataPromo: state.promo,
     dataCancelPromo: state.cancelPromo,
     dataCart: state.cart,
-    dataCheckout: state.checkout,
+    // dataCheckout: state.checkout,
     dataDeleteItem: state.deleteItem
   }
 }
@@ -592,8 +595,8 @@ const mapDispatchToProps = (dispatch) => {
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getItem: (id) => dispatch(cartAction.getItem({id: id})),
     getCart: () => dispatch(cartAction.getCart()),
-    deleteItem: (id) => dispatch(cartAction.deleteItem({id: id})),
-    checkout: (items) => dispatch(cartAction.checkout({items: items}))
+    deleteItem: (id) => dispatch(cartAction.deleteItem({id: id}))
+    // checkout: (items) => dispatch(cartAction.checkout({items: items}))
   }
 }
 

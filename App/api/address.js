@@ -25,7 +25,7 @@ export const getListAddress = () => {
   return axios.get('users/addresses').catch((err) => { throw err })
 }
 
-export const getPrimaryAddress = (action) => {
+export const getPrimaryAddress = () => {
   const axios = authApiKomuto()
-  return axios.get('users/address', {}).catch((err) => { throw err })
+  return axios.get('users/address').catch((err) => { throw err })
 }

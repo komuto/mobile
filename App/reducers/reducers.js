@@ -58,7 +58,8 @@ const product = {
   comments: productReducers.getComment,
   newComment: productReducers.newComment,
   report: productReducers.reportProduct,
-  alterProducts: productReducers.alterProducts
+  alterProducts: productReducers.alterProducts,
+  productExpeditions: productReducers.getProductExpeditions
 }
 
 const store = {
@@ -138,7 +139,6 @@ const location = {
 
 const payment = {
   paymentMethods: paymentReducers.getPaymentMethods,
-  choosePayment: paymentReducers.choosePaymentMethod,
   confirmation: paymentReducers.confirmTransfer
 }
 

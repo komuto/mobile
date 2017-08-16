@@ -11,16 +11,6 @@ export const getPaymentMethods = (state = initState({ paymentMethods: [] }), act
   }
 }
 
-export const choosePaymentMethod = (state = initState({ cart: {} }), action) => {
-  const type = buildType(action.type)
-  switch (type) {
-    case actions.CHOOSE_PAYMENT_METHOD:
-      return buildReducer(state, action, type, 'cart')
-    default:
-      return state
-  }
-}
-
 export const confirmTransfer = (state = initState({ confirmation: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {

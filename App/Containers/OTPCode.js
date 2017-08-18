@@ -68,40 +68,11 @@ class OTPCode extends React.Component {
     }
   }
 
-  verifikaksi () {
-    this.setState({loading: true})
-    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
-    this.props.verifyOtp(tempOTp)
-  }
-
-  verifikaksiKelola () {
-    this.setState({loading: true})
-    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
-    this.props.verifyOtp(tempOTp)
-  }
-
   handleVerifikasi () {
     this.setState({vefifikasiModal: false})
     NavigationActions.infostore({
       type: ActionConst.PUSH
     })
-  }
-
-  verifikasiCodeOtpEmail () {
-    this.setState({loading: true})
-    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
-    this.props.createRekening(
-      tempOTp,
-      this.state.idBank,
-      this.state.namaPemilik,
-      this.state.nomerRek,
-      this.state.namaCabang
-    )
-  }
-
-  verifikasiOTP () {
-    this.setState({loading: true})
-    this.props.sentOTPCode()
   }
 
   modalVerifikasiSukses () {
@@ -129,346 +100,153 @@ class OTPCode extends React.Component {
   }
 
   renderOTP () {
-    const {typeVerifikasi, fieldPass} = this.state
+    const {fieldPass} = this.state
+    return (
+      <View>
+        <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
+        <View style={styles.containerCodeStyle}>
+          <View>
+            <TextInput
+              autoFocus
+              keyboardType='numeric'
+              maxLength={1}
+              returnKeyType='next'
+              underlineColorAndroid='transparent'
+              value={this.state.code1}
+              style={styles.codeStyle}
+              blurOnSubmit={false}
+              onChange={(event) =>
+                this.setState({
+                  code1: event.nativeEvent.text,
+                  nextField: 2
+                })
+              }
+            />
+          </View>
+          <View>
+            <TextInput
+              ref='2'
+              underlineColorAndroid='transparent'
+              keyboardType='numeric'
+              maxLength={1}
+              returnKeyType='next'
+              value={this.state.code2}
+              style={styles.codeStyle}
+              blurOnSubmit={false}
+              onChange={(event) =>
+                this.setState({
+                  code2: event.nativeEvent.text,
+                  nextField: 3
+                })
+              }
+            />
+          </View>
+          <View>
+            <TextInput
+              ref='3'
+              underlineColorAndroid='transparent'
+              keyboardType='numeric'
+              maxLength={1}
+              returnKeyType='next'
+              value={this.state.code3}
+              style={styles.codeStyle}
+              blurOnSubmit={false}
+              onChange={(event) =>
+                this.setState({
+                  code3: event.nativeEvent.text,
+                  nextField: 4
+                })
+              }
+            />
+          </View>
+          <View>
+            <TextInput
+              ref='4'
+              underlineColorAndroid='transparent'
+              keyboardType='numeric'
+              maxLength={1}
+              returnKeyType='next'
+              value={this.state.code4}
+              style={styles.codeStyle}
+              blurOnSubmit={false}
+              onChange={(event) =>
+                this.setState({
+                  code4: event.nativeEvent.text,
+                  nextField: 5
+                })
+              }
+            />
+          </View>
+          <View>
+            <TextInput
+              ref='5'
+              underlineColorAndroid='transparent'
+              keyboardType='numeric'
+              maxLength={1}
+              returnKeyType='next'
+              value={this.state.code5}
+              style={styles.codeStyle}
+              blurOnSubmit={false}
+              onChange={(event) =>
+                this.setState({
+                  code5: event.nativeEvent.text
+                })
+              }
+            />
+          </View>
+        </View>
+        <TouchableOpacity
+          onPress={() => this.verfify()}
+          style={styles.buttonLogin}
+        >
+          <Text style={styles.textButtonLogin}>
+            Verifikasi Nomor Telepon
+          </Text>
+        </TouchableOpacity>
+        <View style={styles.containerBanner}>
+          <Text style={styles.textBanner}>
+            Belum menerima kode aktifasi
+          </Text>
+          <TouchableOpacity onPress={() => this.sendCode()}>
+            <Text style={styles.textLogin}> Klik Disini</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
+  verify () {
+    const { typeVerifikasi } = this.state
     if (typeVerifikasi === 'verifikasitelepon') {
-      return (
-        <View>
-          <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
-          <View style={styles.containerCodeStyle}>
-            <View>
-              <TextInput
-                autoFocus
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                underlineColorAndroid='transparent'
-                value={this.state.code1}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code1: event.nativeEvent.text,
-                    nextField: 2
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='2'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code2}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code2: event.nativeEvent.text,
-                    nextField: 3
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='3'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code3}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code3: event.nativeEvent.text,
-                    nextField: 4
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='4'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code4}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code4: event.nativeEvent.text,
-                    nextField: 5
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='5'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code5}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code5: event.nativeEvent.text
-                  })
-                }
-              />
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => this.verifikaksi()}
-            style={styles.buttonLogin}
-          >
-            <Text style={styles.textButtonLogin}>
-              Verifikasi Nomor Telepon
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.containerBanner}>
-            <Text style={styles.textBanner}>
-              Belum menerima kode aktifasi
-            </Text>
-            <TouchableOpacity onPress={() => this.verifikasiOTP()}>
-              <Text style={styles.textLogin}> Klik Disini</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.verifyOtp(tempOTp)
     } else if (typeVerifikasi === 'verifikasiKelolatelepon') {
-      return (
-        <View>
-          <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
-          <View style={styles.containerCodeStyle}>
-            <View>
-              <TextInput
-                autoFocus
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                underlineColorAndroid='transparent'
-                value={this.state.code1}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code1: event.nativeEvent.text,
-                    nextField: 2
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='2'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code2}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code2: event.nativeEvent.text,
-                    nextField: 3
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='3'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code3}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code3: event.nativeEvent.text,
-                    nextField: 4
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='4'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code4}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code4: event.nativeEvent.text,
-                    nextField: 5
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='5'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code5}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code5: event.nativeEvent.text
-                  })
-                }
-              />
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => this.verifikaksiKelola()}
-            style={styles.buttonLogin}
-          >
-            <Text style={styles.textButtonLogin}>
-              Verifikasi Nomor Telepon
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.containerBanner}>
-            <Text style={styles.textBanner}>
-              Belum menerima kode aktifasi
-            </Text>
-            <TouchableOpacity onPress={() => this.props.sentOTPCode()}>
-              <Text style={styles.textLogin}> Klik Disini</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.verifyOtp(tempOTp)
     } else if (typeVerifikasi === 'otptambahrekening') {
-      return (
-        <View>
-          <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
-          <View style={styles.containerCodeStyle}>
-            <View>
-              <TextInput
-                autoFocus
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                underlineColorAndroid='transparent'
-                value={this.state.code1}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code1: event.nativeEvent.text,
-                    nextField: 2
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='2'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code2}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code2: event.nativeEvent.text,
-                    nextField: 3
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='3'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code3}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code3: event.nativeEvent.text,
-                    nextField: 4
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='4'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code4}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code4: event.nativeEvent.text,
-                    nextField: 5
-                  })
-                }
-              />
-            </View>
-            <View>
-              <TextInput
-                ref='5'
-                underlineColorAndroid='transparent'
-                keyboardType='numeric'
-                maxLength={1}
-                returnKeyType='next'
-                value={this.state.code5}
-                style={styles.codeStyle}
-                blurOnSubmit={false}
-                onChange={(event) =>
-                  this.setState({
-                    code5: event.nativeEvent.text
-                  })
-                }
-              />
-            </View>
-          </View>
-          <TouchableOpacity
-            onPress={() => this.verifikasiCodeOtpEmail()}
-            style={styles.buttonLogin}
-          >
-            <Text style={styles.textButtonLogin}>
-              Verifikasi Kode OTP
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.containerBanner}>
-            <Text style={styles.textBanner}>
-              Belum menerima kode aktifasi
-            </Text>
-            <TouchableOpacity onPress={() => this.props.sendOtpEmail()}>
-              <Text style={styles.textLogin}> Klik Disini</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.createRekening(
+        tempOTp,
+        this.state.idBank,
+        this.state.namaPemilik,
+        this.state.nomerRek,
+        this.state.namaCabang
       )
+    }
+  }
+
+  sendCode () {
+    const { typeVerifikasi } = this.state
+    if (typeVerifikasi === 'verifikasitelepon') {
+      this.setState({loading: true})
+      this.props.sentOTPCode()
+    } else if (typeVerifikasi === 'verifikasiKelolatelepon') {
+      this.props.sentOTPCode()
+    } else if (typeVerifikasi === 'otptambahrekening') {
+      this.props.sentOTPCode()
     }
   }
 

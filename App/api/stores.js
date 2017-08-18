@@ -106,3 +106,8 @@ export const updateStoreAddress = (data) => {
   const axios = authApiKomuto()
   return axios.put('users/store/address', data).catch((err) => { throw err })
 }
+
+export const getHiddenStoreProducts = () => {
+  const axios = authApiKomuto()
+  return axios.get('users/store/products?hidden=true')
+}

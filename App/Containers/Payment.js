@@ -53,6 +53,13 @@ class Payment extends React.Component {
             temp = temp + obj.total_price
           )
         )
+        if (nextProps.dataCart.cart.promo !== null) {
+          if (nextProps.dataCart.cart.promo.type === 0) {
+            temp = temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
+          } else {
+            temp = temp - parseInt(nextProps.dataCart.cart.promo.nominal)
+          }
+        }
         this.setState({
           total: temp,
           getCartPayment: false

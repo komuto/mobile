@@ -101,7 +101,7 @@ class PurchaseCart extends React.Component {
               this.setState({
                 requestPromo: true,
                 statusDiskon: true,
-                diskon: nextProps.dataCart.cart.promo
+                diskon: nextProps.dataCart.cart.promo.nominal
               })
             }
           }

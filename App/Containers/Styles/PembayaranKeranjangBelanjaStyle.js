@@ -4,7 +4,6 @@ import { Colors, Metrics, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     marginTop: Metrics.navBarHeight,
-    marginBottom: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
   dataContainer: {

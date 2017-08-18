@@ -177,7 +177,7 @@ function register (state = initUser, action) {
         token: action.data.token,
         ...succState(action)
       }
-    case typeFail(actions.GET_PROFILE):
+    case typeFail(actions.USER_REGISTER):
       return {
         ...initUser,
         ...failState(action)

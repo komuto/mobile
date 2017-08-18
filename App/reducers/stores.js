@@ -159,6 +159,16 @@ export const updateStoreAddress = (state = initState({ updateStoreAddress: {} })
   }
 }
 
+export const getHiddenStoreProducts = (state = initState({ hiddenStoreProducts: [] }), action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_HIDDEN_STORE_PRODUCTS:
+      return buildReducer(state, action, type, 'hiddenStoreProducts')
+    default:
+      return state
+  }
+}
+
 export {
     stores,
     photoUpload,

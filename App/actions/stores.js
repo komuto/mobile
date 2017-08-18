@@ -11,6 +11,7 @@ export const MESSAGE_STORE = 'MESSAGE_STORE'
 export const MESSAGE_STORE_RESET = 'MESSAGE_STORE_RESET'
 export const GET_OWN_STORE = 'GET_OWN_STORE'
 export const GET_STORE_PRODUCTS = 'GET_STORE_PRODUCTS'
+export const GET_HIDDEN_STORE_PRODUCTS = 'GET_HIDDEN_STORE_PRODUCTS'
 export const GET_STORE_CATALOG_PRODUCTS = 'GET_STORE_CATALOG_PRODUCTS'
 export const UPDATE_INFORMATION = 'UPDATE_INFORMATION'
 export const UPDATE_TERM = 'UPDATE_TERM'
@@ -104,3 +105,7 @@ export const getStoreAddress = () => buildAction(typeReq(GET_ADDRESS))
  */
 export const updateStoreAddress = params => buildAction(typeReq(UPDATE_STORE_ADDRESS), params)
 
+/**
+ * @state hiddenStoreProducts
+ */
+export const getHiddenStoreProducts = () => buildAction(typeReq(GET_HIDDEN_STORE_PRODUCTS))

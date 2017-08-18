@@ -10,6 +10,7 @@ import {
   Alert
 } from 'react-native'
 import { connect } from 'react-redux'
+// import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
@@ -55,6 +56,7 @@ class Register extends React.Component {
         type: ActionConst.RESET
       })
     } else if (nextProps.dataRegister.status > 200) {
+      console.log('anu')
       this.setState({
         loading: false
       })
@@ -100,7 +102,11 @@ class Register extends React.Component {
   }
 
   handlePressRegister = () => {
-    console.log(this.state.gender)
+    // FCM.getFCMToken().then(tokenFCM => {
+    //   if (tokenFCM !== null && tokenFCM !== undefined) {
+    //     console.log('token', tokenFCM)
+    //   }
+    // })
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
     if (EmailValidator.validate(email)) {
       if (name === '') {

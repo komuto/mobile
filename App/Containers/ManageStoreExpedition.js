@@ -42,7 +42,7 @@ class ManageStoreExpedition extends React.Component {
         if (data.is_active) {
           dataTempSec.push({'expedition_service_id': data.id, 'status': 1, 'parent': data.expedition.id})
         } else {
-          dataTempSec.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition.id})
+          dataTempSec.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition.id})
         }
       })
       this.setState({
@@ -141,8 +141,7 @@ class ManageStoreExpedition extends React.Component {
     if (dataListExpedition[parentIndex].services[childIndex].is_checked) {
       filterExpedition.filter(function (data) {
         if (data.expedition_service_id === parents) {
-          console.log('in1')
-          data.status = 0
+          data.status = 2
         }
       })
       dataListExpedition[parentIndex].services[childIndex].is_checked = false
@@ -156,7 +155,6 @@ class ManageStoreExpedition extends React.Component {
     } else {
       filterExpedition.filter(function (data) {
         if (data.expedition_service_id === parents) {
-          console.log('in')
           data.status = 1
         }
       })
@@ -189,10 +187,10 @@ class ManageStoreExpedition extends React.Component {
       this.setState({dataListExpedition: dataListExpedition})
       filterExpedition.filter(function (data) {
         if (data.parent === parentId) {
-          if (data.status === 0) {
+          if (data.status === 2) {
             data.status = 1
           } else {
-            data.status = 0
+            data.status = 2
           }
         }
       })

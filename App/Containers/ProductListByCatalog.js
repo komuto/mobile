@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -86,34 +87,79 @@ class ListProdukByCatalog extends React.Component {
     this.props.getDetailProduk(id)
   }
 
-  labelDropshipping () {
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
+    return hargaDiskon
+  }
+
+  discountCheck (data) {
+    var priceAfterDiscount = this.discountCalculate(data.price, data.discount)
+    var maskedPriceAfterDiscount = this.maskedMoney(priceAfterDiscount)
     return (
-      <View>
-        <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
-          <View style={styles.laberDropShipping}>
-            <Text style={styles.textDropShipping}>
-              Dropship dari WorldSports
-            </Text>
-          </View>
-          <View style={styles.triangleLabel} />
-        </View>
-        <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
-          <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
-            <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
-              Terbuka untuk dropshipper
-            </Text>
-          </View>
-          <View style={[styles.triangleLabel, {backgroundColor: Colors.lightBlueGrey}]} />
-        </View>
-      </View>
+      <Text style={styles.textDetail}>Harga jual setelah diskon : {maskedPriceAfterDiscount}</Text>
     )
+  }
+
+  maskedMoney (value) {
+    const maskedPrice = MaskService.toMask('money', value, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    return maskedPrice
+  }
+
+  labeldaridropshipper (data) {
+    if (data.is_dropshipper === true && data.dropship_origin) {
+      var maskedCommision = this.maskedMoney(data.dropship_origin.commission)
+      return (
+        <View>
+          <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+            <View style={styles.laberDropShipping}>
+              <Text style={styles.textDropShipping}>
+                Dropship dari {data.dropship_origin.name}
+              </Text>
+            </View>
+            <View style={styles.triangleLabel} />
+          </View>
+          <Text style={styles.textDetail}>Komisi yang diterima : {maskedCommision}</Text>
+        </View>
+      )
+    } if (data.is_dropshipper) {
+      var maskedPrice = this.maskedMoney(data.price)
+      return (
+        <View>
+          <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+            <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
+              <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
+                Terbuka untuk dropshipper
+              </Text>
+            </View>
+            <View style={[styles.triangleLabel, {backgroundColor: Colors.lightBlueGrey}]} />
+          </View>
+          <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
+          {this.discountCheck(data)}
+          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrice}</Text>
+        </View>
+      )
+    } else {
+      var maskedPrices = this.maskedMoney(data.price)
+      return (
+        <View>
+          <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
+          {this.discountCheck(data)}
+          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrices}</Text>
+        </View>
+      )
+    }
   }
 
   mapSingleProduk (data, id) {
     const { produk } = this.state
     const mapProduk = produk.map((data, i) => {
       return (
-        <TouchableOpacity key={i} style={[styles.dataListProduk, {backgroundColor: Colors.snow}]} onPress={() => this.produkDetail(data.id)}>
+        <TouchableOpacity key={i} activeOpacity={0.5} style={styles.dataListProduk} onPress={() => this.produkDetail(data.id)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -126,11 +172,7 @@ class ListProdukByCatalog extends React.Component {
                   <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
                 </TouchableOpacity>
               </View>
-              {this.labelDropshipping()}
-              <Text style={styles.textDetail}>Komisi yang diterima : Rp {data.price}</Text>
-              <Text style={styles.textDetail}>Jumlah Stok : {data.price}</Text>
-              <Text style={styles.textDetail}>Harga jual setelah diskon : Rp {data.price}</Text>
-              <Text style={styles.textDetail}>Uang yang diterima : Rp {data.price}</Text>
+              {this.labeldaridropshipper(data)}
             </View>
           </View>
         </TouchableOpacity>

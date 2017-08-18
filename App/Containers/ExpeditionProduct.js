@@ -37,10 +37,10 @@ class ExpeditionProduct extends React.Component {
       let dataTemp = []
       let dataTempSec = []
       nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
-        dataTemp.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
+        dataTemp.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition_id})
       ))
       nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
-        dataTempSec.push({'expedition_service_id': data.id, 'status': 0, 'parent': data.expedition_id})
+        dataTempSec.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition_id})
       ))
       this.setState({
         filterPengiriman: dataTemp,
@@ -166,8 +166,8 @@ class ExpeditionProduct extends React.Component {
     if (dataListEkspedisi[parentId].services[selected].is_checked) {
       var i = dummy.indexOf(dataListEkspedisi[parentId].services[selected].id)
       if (i !== 0) {
-        dummy[selected].status = 0
-        temp[selected].status = 0
+        dummy[selected].status = 2
+        temp[selected].status = 2
         console.log('masuk')
       }
       dataListEkspedisi[parentId].services[selected].is_checked = false
@@ -217,13 +217,13 @@ class ExpeditionProduct extends React.Component {
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
           console.log('in')
-          if (data.status === 0) {
+          if (data.status === 2) {
             data.status = 1
           } else {
-            data.status = 0
+            data.status = 2
           }
         } else {
-          data.status = 0
+          data.status = 2
         }
       })
       this.setState({expeditionServices: filterPengiriman})

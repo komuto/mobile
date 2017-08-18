@@ -158,7 +158,7 @@ class DetailProduct extends React.Component {
         jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
         storeId: nextProps.dataDetailProduk.detail.store.id,
         dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
-        asuransi: nextProps.dataDetailProduk.detail.product.insurance,
+        asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
         idCategory: nextProps.dataDetailProduk.detail.product.category_id,
         idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,

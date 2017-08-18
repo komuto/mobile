@@ -90,6 +90,13 @@ import UpdateStoreAddress from '../Containers/UpdateStoreAddress'
 import ManageStoreExpedition from '../Containers/ManageStoreExpedition'
 import TransactionItemReceived from '../Containers/TransactionItemReceived'
 import TransactionNotification from '../Containers/TransactionNotification'
+import ReviewBuyer from '../Containers/ReviewBuyer'
+import MessagesBuyer from '../Containers/MessagesBuyer'
+import DetailMessages from '../Containers/DetailMessages'
+import DiscussionBuyer from '../Containers/DiscussionBuyer'
+import DetailDiscussionBuyer from '../Containers/DetailDiscussionBuyer'
+import ResolutionCenter from '../Containers/ResolutionCenter'
+import DetailResolution from '../Containers/DetailResolution'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -773,6 +780,54 @@ class NavigationRouter extends Component {
             component={TransactionNotification}
             navBar={CustomNavBar}
             hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='reviewbuyer'
+            component={ReviewBuyer}
+            title='Review'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='messagesbuyer'
+            component={MessagesBuyer}
+            title='Pesan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailmessage'
+            component={DetailMessages}
+            title=''
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='discussionbuyer'
+            component={DiscussionBuyer}
+            title='Diskusi Produk'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detaildiscussionbuyer'
+            component={DetailDiscussionBuyer}
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='resolutioncenter'
+            component={ResolutionCenter}
+            title='Pusat Resolusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailresolution'
+            component={DetailResolution}
+            title='Detail Resolusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
             hideBackImage={false} />
         </Scene>
       </Router>

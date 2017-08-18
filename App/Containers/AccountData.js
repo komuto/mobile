@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-// import * as bankAction from '../actions/bank'
+import * as bankAction from '../actions/bank'
 
 import { Colors, Fonts, Images } from '../Themes/'
 
@@ -21,7 +21,7 @@ class AccountData extends React.Component {
       email: this.props.email,
       nomerHape: this.props.nomerHape,
       rowTerpilih: '',
-      idDelete: '',
+      idBankAccount: '',
       notif: this.props.notif,
       pesanNotif: this.props.pesanNotif
     }
@@ -32,7 +32,7 @@ class AccountData extends React.Component {
       this.setState({
         listBank: nextProps.dataRekenings.listBankAccounts
       })
-      nextProps.dataRekenings.status = 0
+      console.log(nextProps.dataRekenings.listBankAccounts)
     }
   }
 
@@ -66,8 +66,9 @@ class AccountData extends React.Component {
     })
   }
 
-  handlleEditRekening (id) {
+  handlleEditRekening (id, norek) {
     this.setState({statusDot: false})
+    this.props.getBankAccounts(id)
     NavigationActions.addaccount({
       type: ActionConst.PUSH,
       edit: true,
@@ -83,6 +84,7 @@ class AccountData extends React.Component {
 
   handleDeleteRekening () {
     this.setState({deletRekening: false})
+    this.props.deleteBankAccount(this.state.idBankAccount)
   }
 
   modalConfrimdeletRekening () {
@@ -108,16 +110,16 @@ class AccountData extends React.Component {
     )
   }
 
-  containerEdit (i, idAlamat) {
+  containerEdit (i, id) {
     if (this.state.statusDot && this.state.rowTerpilih === i) {
       return (
         <View elevation={5} style={styles.edit}>
           <TouchableOpacity style={styles.touch} onPress={() =>
-            this.handlleEditRekening(idAlamat)}>
+            this.handlleEditRekening(id)}>
             <Text style={styles.textEdit}>Edit</Text>
           </TouchableOpacity>
           <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletRekening: true, idDelete: idAlamat, statusDot: false})}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletRekening: true, idBankAccount: id, statusDot: false})}>
             <Text style={styles.textEdit}>Hapus</Text>
           </TouchableOpacity>
         </View>
@@ -128,60 +130,35 @@ class AccountData extends React.Component {
     )
   }
 
-  mapingRekening () {
-    const { listBank } = this.state
-    const mapparent = listBank.map((data, i) =>
-    (<View key={i} >
-      <View style={styles.headerInfoAlamat}>
-        <Image source={{uri: data.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} />
-        <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i})}>
-          <Image source={Images.threeDotSilver} style={styles.imageDot} />
-        </TouchableOpacity>
-      </View>
-      {this.containerEdit(i, data.id)}
-      <View style={styles.dataInfoAlamat}>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Pemilik Akun</Text>
-        <Text style={styles.textHeader2}>{data.holder_name}</Text>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nomor Rekening</Text>
-        <Text style={styles.textHeader2}>{data.holder_account_name}</Text>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Bank</Text>
-        <Text style={styles.textHeader2}>{data.bank.name}</Text>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Cabang Bank</Text>
-        <Text style={styles.textHeader2}>{data.bank_branch_office_name}</Text>
-      </View>
-      <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
-    </View>
-    ))
-    return (
-      <View>
-        {mapparent}
-      </View>
-    )
-  }
-
   renderRowBank (rowData, sectionId, rowId) {
-    return (
-      <View>
-        <View style={styles.headerInfoAlamat}>
-          <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} />
-          <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
-            <Image source={Images.threeDotSilver} style={styles.imageDot} />
-          </TouchableOpacity>
+    if (rowData !== null) {
+      return (
+        <View>
+          <View style={styles.headerInfoAlamat}>
+            <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} />
+            <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
+              <Image source={Images.threeDotSilver} style={styles.imageDot} />
+            </TouchableOpacity>
+          </View>
+          {this.containerEdit(rowId, rowData.id)}
+          <View style={styles.dataInfoAlamat}>
+            <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Pemilik Akun</Text>
+            <Text style={styles.textHeader2}>{rowData.holder_name}</Text>
+            <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nomor Rekening</Text>
+            <Text style={styles.textHeader2}>{rowData.holder_account_number}</Text>
+            <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Bank</Text>
+            <Text style={styles.textHeader2}>{rowData.bank.name}</Text>
+            <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Cabang Bank</Text>
+            <Text style={styles.textHeader2}>{rowData.bank_branch_office_name}</Text>
+          </View>
+          <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
         </View>
-        {this.containerEdit(rowId, rowData.id)}
-        <View style={styles.dataInfoAlamat}>
-          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Pemilik Akun</Text>
-          <Text style={styles.textHeader2}>{rowData.holder_name}</Text>
-          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nomor Rekening</Text>
-          <Text style={styles.textHeader2}>{rowData.holder_account_name}</Text>
-          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Bank</Text>
-          <Text style={styles.textHeader2}>{rowData.bank.name}</Text>
-          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Cabang Bank</Text>
-          <Text style={styles.textHeader2}>{rowData.bank_branch_office_name}</Text>
-        </View>
-        <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
-      </View>
-    )
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
   }
 
   render () {
@@ -217,6 +194,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    deleteBankAccount: (id) => dispatch(bankAction.deleteBankAccount({id})),
+    getBankAccounts: (id) => dispatch(bankAction.getBankAccounts({id}))
   }
 }
 

@@ -12,6 +12,7 @@ export default class CustomRadio extends React.Component {
       horizontal: this.props.horizontal || false,
       vertical: this.props.vertical || false,
       index: this.props.index || 0,
+      id: this.props.id || 0,
       label: 0
     }
   }
@@ -25,13 +26,14 @@ export default class CustomRadio extends React.Component {
           animation
         >
           {this.state.data.map((obj, i) => {
-            var onPress = (value, index) => {
+            var onPress = (value, index, id) => {
               this.setState({
                 index: value,
-                label: index
+                label: index,
+                id: id
               })
 
-              this.props.handlingRadio(obj.value, obj.label)
+              this.props.handlingRadio(obj.value, obj.label, obj.id)
             }
             return (
               <RadioButton labelHorizontal key={i} >

@@ -45,7 +45,8 @@ class InfoAddressStore extends React.Component {
       modalKelurahan: false,
       dataStoreFinal: this.props.dataStore,
       addressTemp: [],
-      loading: false
+      loading: false,
+      createStores: this.props.createStores
     }
   }
 
@@ -369,7 +370,7 @@ class InfoAddressStore extends React.Component {
   }
 
   modalAlamat () {
-    if (this.state.createStore) {
+    if (this.state.createStores) {
       return (
         <TouchableOpacity style={styles.pilihAlamat} onPress={() => this.setState({ modalAlamatLain: true })}>
           <Text style={styles.textButtonPilihAlamat}>
@@ -473,7 +474,6 @@ class InfoAddressStore extends React.Component {
       addressTemp[8] = alamatPemilik
       dataStoreFinal[3] = addressTemp
       this.props.buatToko(dataStoreFinal)
-      console.log('dataStore', dataStoreFinal)
     }
   }
 

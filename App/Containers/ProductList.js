@@ -11,6 +11,7 @@ import {
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -28,7 +29,8 @@ class ProductList extends React.Component {
     this.state = {
       loading: false,
       katalog: [],
-      produk: [],
+      product: [],
+      productHidden: [],
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
@@ -39,7 +41,11 @@ class ProductList extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
       this.setState({
-        produk: nextProps.dataProduk.storeProducts
+        product: nextProps.dataProduk.storeProducts
+      })
+    } if (nextProps.dataProductHidden.status === 200) {
+      this.setState({
+        productHidden: nextProps.dataProductHidden.hiddenStoreProducts
       })
     }
   }
@@ -108,52 +114,34 @@ class ProductList extends React.Component {
   DaftarProdukDiTampilkan () {
     return (
       <View>
-        {this.mapingProduk()}
+        {this.mapingProduct()}
       </View>
     )
   }
 
   handleListProduk (id, name) {
     this.props.getProductByCAtalog(id)
-    NavigationActions.listprodukbycatalog({
+    NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
       title: name
     })
   }
 
-  containerEdit (i, idAlamat) {
-    if (this.state.statusDot && this.state.rowTerpilih === i) {
-      return (
-        <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() =>
-            this.handlleEditAlamat(idAlamat)}>
-            <Text style={styles.textEdit}>Edit</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletAlamat: true, idDelete: idAlamat, statusDot: false})}>
-            <Text style={styles.textEdit}>Hapus</Text>
-          </TouchableOpacity>
-        </View>
-      )
-    }
-    return (
-      <View />
-    )
+  onPopupEvent = (eventName, index) => {
+    if (eventName !== 'itemSelected') return
+    if (index === 0) this.onEdit()
+    else this.onRemove()
   }
 
-  mapingProduk () {
-    const { produk } = this.state
-    const mapProduk = produk.map((data, i) => {
+  mapingProduct () {
+    const { product } = this.state
+    const mapProduk = product.map((data, i) => {
       return (
         <View key={i} style={styles.separaator}>
           <View style={styles.containerProduk}>
             <View style={styles.headerInfoAlamat}>
               <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
-              <TouchableOpacity onPress={() => this.setState({statusDot: true})}>
-                <Image source={Images.threeDotSilver} style={styles.imageDot} />
-              </TouchableOpacity>
             </View>
-            {this.containerEdit()}
             {this.mapSingleProduk(data.products, i)}
           </View>
           <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(data.catalog.id, data.catalog.name)}>
@@ -170,31 +158,97 @@ class ProductList extends React.Component {
     )
   }
 
-  labeldaridropshipper () {
-    return (
-      <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
-        <View style={styles.laberDropShipping}>
-          <Text style={styles.textDropShipping}>
-            Dropship dari WorldSports
-          </Text>
+  mapingProductHidden () {
+    const { productHidden } = this.state
+    const mapProduk = productHidden.map((data, i) => {
+      return (
+        <View key={i} style={styles.separaator}>
+          <View style={styles.containerProduk}>
+            <View style={styles.headerInfoAlamat}>
+              <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
+            </View>
+            {this.mapSingleProduk(data.products, i)}
+          </View>
+          <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(data.catalog.id, data.catalog.name)}>
+            <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
+            <Image source={Images.rightArrow} style={styles.imageDot} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.triangleLabel} />
+      )
+    })
+    return (
+      <View>
+        {mapProduk}
       </View>
     )
   }
-  labelDropshipping () {
+
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
+    return hargaDiskon
+  }
+
+  discountCheck (data) {
+    var priceAfterDiscount = this.discountCalculate(data.price, data.discount)
+    var maskedPriceAfterDiscount = this.maskedMoney(priceAfterDiscount)
     return (
-      <View>
-        <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
-          <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
-            <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
-              Terbuka untuk dropshipper
-            </Text>
-          </View>
-          <View style={[styles.triangleLabel, {backgroundColor: Colors.lightBlueGrey}]} />
-        </View>
-      </View>
+      <Text style={styles.textDetail}>Harga jual setelah diskon : {maskedPriceAfterDiscount}</Text>
     )
+  }
+
+  maskedMoney (value) {
+    const maskedPrice = MaskService.toMask('money', value, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    return maskedPrice
+  }
+
+  labeldaridropshipper (data) {
+    if (data.is_dropshipper === true && data.dropship_origin) {
+      var maskedCommision = this.maskedMoney(data.dropship_origin.commission)
+      return (
+        <View>
+          <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+            <View style={styles.laberDropShipping}>
+              <Text style={styles.textDropShipping}>
+                Dropship dari {data.dropship_origin.name}
+              </Text>
+            </View>
+            <View style={styles.triangleLabel} />
+          </View>
+          <Text style={styles.textDetail}>Komisi yang diterima : {maskedCommision}</Text>
+        </View>
+      )
+    } if (data.is_dropshipper) {
+      var maskedPrice = this.maskedMoney(data.price)
+      return (
+        <View>
+          <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
+            <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
+              <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
+                Terbuka untuk dropshipper
+              </Text>
+            </View>
+            <View style={[styles.triangleLabel, {backgroundColor: Colors.lightBlueGrey}]} />
+          </View>
+          <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
+          {this.discountCheck(data)}
+          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrice}</Text>
+        </View>
+      )
+    } else {
+      var maskedPrices = this.maskedMoney(data.price)
+      return (
+        <View>
+          <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
+          {this.discountCheck(data)}
+          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrices}</Text>
+        </View>
+      )
+    }
   }
 
   mapSingleProduk (data, id) {
@@ -213,11 +267,7 @@ class ProductList extends React.Component {
                   <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
                 </TouchableOpacity>
               </View>
-              {this.labelDropshipping()}
-              <Text style={styles.textDetail}>Komisi yang diterima : Rp {data.price}</Text>
-              <Text style={styles.textDetail}>Jumlah Stok : {data.price}</Text>
-              <Text style={styles.textDetail}>Harga jual setelah diskon : Rp {data.price}</Text>
-              <Text style={styles.textDetail}>Uang yang diterima : Rp {data.price}</Text>
+              {this.labeldaridropshipper(data)}
             </View>
           </View>
         </TouchableOpacity>
@@ -233,7 +283,7 @@ class ProductList extends React.Component {
   DaftarProdukDiSembunyikan () {
     return (
       <View>
-        {this.mapingProduk()}
+        {this.mapingProductHidden()}
       </View>
     )
   }
@@ -269,7 +319,7 @@ class ProductList extends React.Component {
             {this.renderSearch()}
             {this.DaftarProdukDiTampilkan()}
           </ScrollView>
-          <ScrollView tabLabel='Disembunyikan' ref='produkHidden' style={styles.scrollView}>
+          <ScrollView tabLabel='Disembunyikan' ref='productHidden' style={styles.scrollView}>
             {this.renderSearch()}
             {this.DaftarProdukDiSembunyikan()}
           </ScrollView>
@@ -284,7 +334,8 @@ class ProductList extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.storeProducts
+    dataProduk: state.storeProducts,
+    dataProductHidden: state.hiddenStoreProducts
   }
 }
 

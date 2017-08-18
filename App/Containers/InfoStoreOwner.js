@@ -209,7 +209,8 @@ class InfoStoreOwner extends React.Component {
         namaPelimilik: namaPelimilik,
         email: email,
         noHp: noHp,
-        dataStore: dataStore
+        dataStore: dataStore,
+        createStores: true
       })
       console.log(dataStore)
     }

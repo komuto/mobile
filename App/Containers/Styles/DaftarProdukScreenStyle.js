@@ -7,15 +7,12 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey,
     marginTop: Metrics.navBarHeight
   },
-  edit: {
-    position: 'absolute',
-    top: 23,
-    right: 20,
-    backgroundColor: Colors.snow
-  },
   touch: {
     justifyContent: 'center',
-    padding: 5
+    padding: 5,
+    backgroundColor: 'red',
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
   },
   textEdit: {
     fontFamily: Fonts.type.semiBolds,
@@ -54,7 +51,8 @@ export default StyleSheet.create({
     paddingLeft: 20,
     paddingTop: 20,
     borderBottomColor: Colors.silver,
-    borderBottomWidth: 0.5
+    borderBottomWidth: 0.5,
+    backgroundColor: Colors.snow
   },
   imageProduk: {
     height: 45,

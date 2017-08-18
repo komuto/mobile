@@ -32,7 +32,7 @@ class AddAccount extends React.Component {
       colorCabangBank: Colors.snow,
       colorPickerNamaBank: Colors.labelgrey,
       loading: this.props.loading || false,
-      listNamaBanks: [],
+      listBankName: [],
       modalNamaBank: false,
       edit: this.props.edit,
       tambahBank: [
@@ -45,12 +45,11 @@ class AddAccount extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log('tai2')
-    // if (nextProps.dataList.status === 200) {
-    //   this.setState({
-    //     listNamaBanks: this.state.tambahBank.concat(nextProps.dataList.banks)
-    //   })
-    // }
+    if (nextProps.dataListBank.status === 200) {
+      this.setState({
+        listBankName: this.state.tambahBank.concat(nextProps.dataListBank.banks)
+      })
+    }
     // if (nextProps.codeOtp.status === 200) {
     //   console.log(nextProps.codeOtp)
     //   this.setState({
@@ -68,24 +67,23 @@ class AddAccount extends React.Component {
     //     title: 'Tambah Data Rekening'
     //   })
     // } if (nextProps.edit) {
-    //   if (nextProps.detailRekening.status === 200) {
-    //     console.log('edit', nextProps.detailRekening)
-    //     this.setState({
-    //       pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
-    //       nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
-    //       namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
-    //       idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
-    //       colorPickerNamaBank: Colors.darkgrey,
-    //       cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
-    //       loading: false
-    //     })
-    //   }
+    if (nextProps.detailRekening.status === 200) {
+      console.log('edit', nextProps.detailRekening)
+      this.setState({
+        pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
+        nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
+        namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
+        idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
+        colorPickerNamaBank: Colors.darkgrey,
+        cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
+        loading: false
+      })
+    }
     // }
   }
 
   componentDidMount () {
-    // this.props.getListBank()
-    // this.props.getDetailRekening(this.props.idRekening)
+    this.props.getListBank()
   }
 
   handleChangePemilikAkun = (text) => {
@@ -230,7 +228,7 @@ class AddAccount extends React.Component {
     }
   }
 
-  renderListNamaBank (rowData) {
+  renderListBankName (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
@@ -261,8 +259,8 @@ class AddAccount extends React.Component {
           <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalNamaBank: false})} />
           <ScrollView>
             <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.listNamaBanks)}
-              renderRow={this.renderListNamaBank.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.listBankName)}
+              renderRow={this.renderListBankName.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -272,7 +270,6 @@ class AddAccount extends React.Component {
   }
 
   render () {
-    console.log('tai')
     const {colorPemilik, colorNomerRek, colorNamaBank, colorCabangBank, colorPickerNamaBank} = this.state
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -356,7 +353,7 @@ class AddAccount extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataList: state.banks,
+    dataListBank: state.banks,
     codeOtp: state.sendOTPBank,
     detailRekening: state.listBankAccounts
   }
@@ -365,8 +362,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getListBank: () => dispatch(bankAction.listBank()),
-    sendOtp: () => dispatch(accountAction.sendOTPBank()),
-    getDetailRekening: (id) => dispatch(bankAction.getBankAccounts({id}))
+    sendOtp: () => dispatch(accountAction.sendOTPBank())
   }
 }
 

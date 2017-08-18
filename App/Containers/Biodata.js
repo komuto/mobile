@@ -1,16 +1,15 @@
 import React from 'react'
-import { ScrollView, View, BackAndroid, Text, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
+import { ScrollView, View, BackAndroid, Text, DatePickerAndroid, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import DatePicker from 'react-native-datepicker'
 import moment from 'moment'
 
 import * as locationAction from '../actions/location'
 import * as storeAction from '../actions/stores'
 import * as userAction from '../actions/user'
 
-import { Images, Colors, Fonts, Metrics } from '../Themes'
+import { Images, Colors } from '../Themes'
 import CustomRadio from '../Components/CustomRadio'
 
 import styles from './Styles/BiodataScreenStyle'
@@ -21,29 +20,27 @@ class Biodata extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
-    var day = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD-MMMM-YYYY').toString()
+    var listMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+    var timeStampToDate = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
+    var day = moment(timeStampToDate, 'DD/MM/YYYY').date()
+    var month = moment(timeStampToDate, 'DD/MM/YYYY').month()
+    var year = moment(timeStampToDate, 'DD/MM/YYYY').year()
     this.state = {
       fotoProfil: null || this.props.dataProfile.user.user.photo,
       showModalCamera: false,
       gender: this.props.dataProfile.user.user.gender,
       index: '',
       dataGender: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
-      loading: false,
       namaPemilik: '' || this.props.dataProfile.user.user.name,
-      tambahanKota: [
-        {
-          'id': 0,
-          'ro_id': 0,
-          'name': 'Pilih Kota'
-        }
-      ],
       modalKabupaten: false,
       kabTerpilih: this.props.dataProfile.user.user.place_of_birth || 'Tempat Lahir Anda',
-      idKabTerpilih: 0,
+      idKabTerpilih: this.props.dataProfile.user.user.place_of_birth_id || 0,
       kabupaten: [],
       colorPicker: Colors.darkgrey,
-      date: day,
-      notif: false
+      dof: (day + 1) + ' ' + listMonths[month] + ' ' + year,
+      timestamp: this.props.dataProfile.user.user.date_of_birth || '',
+      notif: false,
+      loading: false
     }
   }
 
@@ -52,20 +49,20 @@ class Biodata extends React.Component {
       this.setState({kabupaten: nextProps.dataKota.districts})
     }
     if (nextProps.dataPhoto.status === 200) {
-      this.setState({fotoProfil: nextProps.dataPhoto.payload.name})
+      this.setState({fotoProfil: nextProps.dataPhoto.payload.images[0].name})
     }
     if (nextProps.dataUpdate.status === 200) {
-      this.props.getProfil()
+      this.props.getProfil(this.state.idKabTerpilih)
       this.setState({notif: true})
       nextProps.dataUpdate.status = 0
     }
   }
 
   componentDidMount () {
-    if (this.props.dataProfile.user.user.gender === 'female') {
-      this.setState({index: 1})
-    } else {
+    if (this.props.dataProfile.user.user.gender === 'male') {
       this.setState({index: 0})
+    } else {
+      this.setState({index: 1})
     }
     this.props.getKota()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
@@ -185,10 +182,9 @@ class Biodata extends React.Component {
 
   addPhoto (photo) {
     this.setState({ fotoProfil: photo, showModalCamera: false, loading: true })
-    const PicturePath = this.state.fotoProfil
     const postData = new FormData()
-    postData.append('images', { uri: PicturePath, type: 'image/jpg', name: 'image.jpg' })
-    postData.append('type', 'store')
+    postData.append('images', { uri: photo, type: 'image/jpg', name: 'image.jpg' })
+    postData.append('type', 'profile')
     this.props.postFotoToko(postData)
   }
 
@@ -202,7 +198,6 @@ class Biodata extends React.Component {
   }
 
   handlingRadio (index, value) {
-    console.log(index, value)
     if (value.toLowerCase() === 'pria') {
       this.setState({
         gender: 'male',
@@ -217,12 +212,35 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
-    let tempDate = moment(this.state.date, 'DD-MMMM-YYYY').format('MM-DD-YYYY')
-    tempDate = tempDate.split('-')
-    let dayMod = parseInt(tempDate[1]) + 2
-    tempDate[1] = String(dayMod)
-    let dob = new Date(tempDate).getTime() / 1000
-    this.props.updateProfile(this.state.fotoProfil, this.state.namaPemilik, this.state.idKabTerpilih, dob)
+    console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
+    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
+  }
+
+  async date () {
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({
+        mode: 'calendar',
+        date: moment(this.timeStampToDate, 'DD/MM/YYYY')._d
+      })
+
+      if (action !== DatePickerAndroid.dismissedAction) {
+        // Selected year, month (0-11), day
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+        const dateChoose = String(day + '/' + (parseInt(month) + 1) + '/' + year)
+        const tempChooseDate = moment(dateChoose, 'DD/MM/YYYY').month()
+        const tempTimestamp = day + '-' + (parseInt(month) + 1) + '-' + year
+        const bulan = months[tempChooseDate]
+        const label = day + ' ' + bulan + ' ' + year
+        const timestamp = moment(tempTimestamp, 'DD-MM-YYYY').unix()
+
+        this.setState({
+          dof: label,
+          timestamp: timestamp
+        })
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message)
+    }
   }
 
   renderFoto () {
@@ -277,41 +295,8 @@ class Biodata extends React.Component {
           </View>
           <View style={styles.lokasiSeparator}>
             <View style={styles.inputContainer}>
-              <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
-                <DatePicker
-                  style={{width: Metrics.screenWidth - 24 - 40, height: 35}}
-                  date={this.state.date}
-                  mode='date'
-                  androidMode='spinner'
-                  placeholder='Tanggal Lahir Anda'
-                  format='DD-MMMM-YYYY'
-                  minDate='02-01-1970'
-                  maxDate='01-01-2019'
-                  showIcon={false}
-                  confirmBtnText='Confirm'
-                  cancelBtnText='Cancel'
-                  customStyles={{
-                    dateInput: {
-                      marginLeft: 0,
-                      borderBottomWidth: 0,
-                      borderColor: '#fff',
-                      alignItems: 'flex-start',
-                      height: 32
-                    },
-                    dateText: {
-                      fontFamily: Fonts.type.regular,
-                      color: Colors.darkgrey,
-                      fontSize: 14
-                    },
-                    placeholderText: {
-                      fontFamily: Fonts.type.regular,
-                      color: Colors.labelgrey,
-                      fontSize: 13,
-                      textAlign: 'left'
-                    }
-                  }}
-                  onDateChange={(date) => { this.setState({date: date}) }}
-                />
+              <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.date()}>
+                <Text style={[styles.inputText, {color: this.state.colorPicker, borderBottomWidth: 0, flex: 1, marginLeft: 0}]}>{this.state.dof}</Text>
                 <Image source={Images.down} style={styles.imagePicker} />
               </TouchableOpacity>
             </View>
@@ -352,9 +337,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     postFotoToko: (data) => dispatch(storeAction.photoUpload({data: data})),
     getProfil: () => dispatch(userAction.getProfile()),
-    getKota: () => dispatch(locationAction.getDistrict()),
+    getKota: (id) => dispatch(locationAction.getDistrict({id: id})),
     searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
-    updateProfile: (foto, namaLengkap, idKabTerpilih, tanggalLahir) => dispatch(userAction.updateProfile({photo: foto, name: namaLengkap, place_of_birth_id: idKabTerpilih, date_of_birth: tanggalLahir}))
+    updateProfile: (namaPemilik, gender, fotoProfil, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, photo: fotoProfil, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
   }
 }
 

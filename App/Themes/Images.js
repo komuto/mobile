@@ -128,7 +128,8 @@ const images = {
   thumbDownRed: require('../Images/Icons/icon-thumbdown-red.png'),
   thumbUpGreen: require('../Images/Icons/icon-thumbup-green.png'),
   review: require('../Images/review.png'),
-  complain: require('../Images/complain.png')
+  complain: require('../Images/complain.png'),
+  messageBuyer: require('../Images/Icons/icon-envelope.png')
 }
 
 export default images

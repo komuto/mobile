@@ -20,6 +20,7 @@ const size = {
   medium: 14,
   smallMed: 13,
   small: 12,
+  mediumTiny: 11,
   tiny: 10,
   extraTiny: 8
 }

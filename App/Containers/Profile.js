@@ -345,12 +345,14 @@ class Profile extends React.Component {
   handleCekNoHp () {
     if (this.state.verifyNoHp) {
       if (this.state.statusToko === 1) {
-        NavigationActions.dashboardstore({
+        NavigationActions.storedashboard({
           type: ActionConst.PUSH
         })
       } else {
         NavigationActions.infostore({
-          type: ActionConst.PUSH
+          type: ActionConst.PUSH,
+          createStores: true,
+          textButton: 'Lanjutkan'
         })
       }
     } else {
@@ -364,7 +366,7 @@ class Profile extends React.Component {
     NavigationActions.otpcode({
       type: ActionConst.PUSH,
       title: 'Verifikasi Nomor Telepon',
-      noTelep: '082113101585',
+      noTelep: this.state.nomerHape,
       typeVerifikasi: 'verifikasitelepon'
     })
   }

@@ -71,7 +71,9 @@ class OTPCode extends React.Component {
   handleVerifikasi () {
     this.setState({vefifikasiModal: false})
     NavigationActions.infostore({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      createStores: true,
+      textButton: 'lanjutkan'
     })
   }
 
@@ -196,7 +198,7 @@ class OTPCode extends React.Component {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => this.verfify()}
+          onPress={() => this.verify()}
           style={styles.buttonLogin}
         >
           <Text style={styles.textButtonLogin}>

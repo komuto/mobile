@@ -38,7 +38,8 @@ class PaymentTransferBank extends React.Component {
         this.setState({
           total: temp,
           getDataCartPayment: false,
-          idCart: nextProps.dataCart.cart.id
+          idCart: nextProps.dataCart.cart.id,
+          kodeUnik: nextProps.dataCart.cart.unique_code
         })
         if (nextProps.dataCart.cart.promo !== null) {
           if (nextProps.dataCart.cart.promo.type === 0) {
@@ -63,7 +64,6 @@ class PaymentTransferBank extends React.Component {
       })
     }
     if (nextProps.dataCheckout.status === 200) {
-      console.log('checkout sukses')
       this.setState({
         loading: false
       })
@@ -110,8 +110,8 @@ class PaymentTransferBank extends React.Component {
   }
 
   renderRincian () {
-    const { kode, total, diskon } = this.state
-    const sisaBayar = total - diskon
+    const { kode, total, diskon, kodeUnik } = this.state
+    const sisaBayar = total - diskon + kodeUnik
     let viewDiscount
     const totalHarga = MaskService.toMask('money', total, {
       unit: 'Rp ',
@@ -150,6 +150,10 @@ class PaymentTransferBank extends React.Component {
             <Text style={styles.textTitle}>{totalHarga}</Text>
           </View>
           {viewDiscount}
+          <View style={styles.rincianRow}>
+            <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
+            <Text style={styles.textTitle}>{kodeUnik}</Text>
+          </View>
         </View>
         <View style={styles.sisaPembayaran}>
           <View style={styles.rincianRow}>

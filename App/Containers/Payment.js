@@ -4,6 +4,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import * as paymentAction from '../actions/payment'
+import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -16,9 +17,10 @@ class Payment extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      total: '250219',
+      total: '0',
       saldo: '300000',
       data: [],
+      getCartPayment: true,
       idCart: this.props.idCart
     }
   }
@@ -42,6 +44,21 @@ class Payment extends React.Component {
       this.setState({
         data: nextProps.dataPaymentMethod.paymentMethods
       })
+    }
+    if (nextProps.dataCart.status === 200) {
+      if (this.state.getCartPayment) {
+        let temp = 0
+        nextProps.dataCart.cart.items.map((obj, i) =>
+          (
+            temp = temp + obj.total_price
+          )
+        )
+        this.setState({
+          total: temp,
+          getCartPayment: false
+        })
+        this.props.getCartReset()
+      }
     }
   }
 
@@ -191,13 +208,16 @@ class Payment extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPaymentMethod: state.paymentMethods
+    dataPaymentMethod: state.paymentMethods,
+    dataCart: state.cart
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    paymentAction: dispatch(paymentAction.getPaymentMethods())
+    paymentAction: dispatch(paymentAction.getPaymentMethods()),
+    getCartReset: () => dispatch(cartAction.getCartReset()),
+    getCart: dispatch(cartAction.getCart())
   }
 }
 

@@ -61,7 +61,10 @@ class TransactionPaymentConfirmation extends React.Component {
           'id': 4,
           'name': 'Bank BNI'
         }
-      ]
+      ],
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember']
     }
   }
 
@@ -103,6 +106,7 @@ class TransactionPaymentConfirmation extends React.Component {
   }
 
   async date () {
+    const { days, months } = this.state
     try {
       const {action, year, month, day} = await DatePickerAndroid.open({
         mode: 'calendar',
@@ -110,13 +114,10 @@ class TransactionPaymentConfirmation extends React.Component {
       })
       if (action !== DatePickerAndroid.dismissedAction) {
         // Selected year, month (0-11), day
-        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
-        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-          'Agustus', 'September', 'Oktober', 'November', 'Desember']
-        const tempLabel = (parseInt(month) + 1) + '-' + day + '-' + year
+        const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
         const d = new Date(tempLabel)
 
-        const tempTimestamp = day + '-' + (parseInt(month) + 1) + '-' + year
+        const tempTimestamp = day + '/' + (parseInt(month) + 1) + '/' + year
         const hari = days[d.getDay()]
         const bulan = months[d.getMonth()]
         const label = hari + ', ' + day + ' ' + bulan + ' ' + year

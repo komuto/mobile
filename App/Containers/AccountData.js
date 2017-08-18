@@ -135,7 +135,7 @@ class AccountData extends React.Component {
       return (
         <View>
           <View style={styles.headerInfoAlamat}>
-            <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} />
+            <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} resizeMode={'contain'} />
             <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
               <Image source={Images.threeDotSilver} style={styles.imageDot} />
             </TouchableOpacity>

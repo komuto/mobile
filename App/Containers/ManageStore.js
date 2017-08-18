@@ -40,7 +40,7 @@ class ManageStore extends React.Component {
   }
 
   handleTerm () {
-    NavigationActions.term({ type: ActionConst.PUSH })
+    NavigationActions.terms({ type: ActionConst.PUSH })
   }
 
   handleKatalog () {
@@ -54,7 +54,7 @@ class ManageStore extends React.Component {
   }
 
   handleUpdateInfoToko () {
-    NavigationActions.infotoko({
+    NavigationActions.infostore({
       type: ActionConst.PUSH,
       createStores: false,
       textButton: 'Simpan Perubahan',
@@ -63,7 +63,7 @@ class ManageStore extends React.Component {
   }
 
   handleUpdateExpeditionStore () {
-    NavigationActions.kelolaekspedisitoko({
+    NavigationActions.managestoreexpedition({
       type: ActionConst.PUSH
     })
   }

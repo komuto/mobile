@@ -113,7 +113,10 @@ export default StyleSheet.create({
   },
   touch: {
     justifyContent: 'center',
-    padding: 5
+    flex: 0.7,
+    paddingLeft: 20,
+    paddingTop: 15,
+    paddingBottom: 15
   },
   textEdit: {
     fontFamily: Fonts.type.semiBolds,
@@ -122,8 +125,11 @@ export default StyleSheet.create({
   },
   edit: {
     position: 'absolute',
-    top: 23,
+    top: 20,
     right: 20,
+    height: 97,
+    width: 100,
+    borderRadius: 3,
     backgroundColor: Colors.snow
   },
   border: {

@@ -31,18 +31,21 @@ class OTPCode extends React.Component {
       focusCode5: false,
       vefifikasiModal: false,
       codeOtp: [],
+      idAccount: this.props.idAccount,
       email: this.props.email,
-      namaPemilik: this.props.name,
+      namaPemilik: this.props.nameAccount,
       nomerRek: this.props.nomerRek,
       idBank: this.props.idBank,
       namaCabang: this.props.cabangBank,
-      loading: false
+      loading: false,
+      textButton: this.props.textButton || 'Verifikasi Nomor Telepon'
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasiKelolatelepon') {
       this.setState({loading: false})
+      this.props.getProfile()
       NavigationActions.cellphone({
         type: ActionConst.REPLACE,
         statusVerifikasi: 'true',
@@ -52,11 +55,33 @@ class OTPCode extends React.Component {
       nextProps.dataOTP.status = 0
     } if (nextProps.dataOTP.status === 200 && nextProps.typeVerifikasi === 'verifikasitelepon') {
       this.setState({loading: false, vefifikasiModal: true})
+      this.props.getProfile()
       nextProps.dataOTP.status = 0
+    } if (nextProps.deleteAccount.status === 200 && nextProps.typeVerifikasi === 'verificationdeleteaccount') {
+      this.setState({loading: false})
+      this.props.getListRekening()
+      NavigationActions.accountdata({
+        type: ActionConst.RESET,
+        notif: true,
+        pesanNotif: 'menghapus rekening'
+      })
+      nextProps.deleteAccount.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
       this.setState({loading: false})
-      NavigationActions.backtab({
-        type: ActionConst.RESET
+      this.props.getListRekening()
+      NavigationActions.accountdata({
+        type: ActionConst.RESET,
+        notif: true,
+        pesanNotif: 'menambah rekening'
+      })
+      nextProps.createRek.status = 0
+    } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'verificationeditaccount') {
+      this.setState({loading: false})
+      this.props.getListRekening()
+      NavigationActions.accountdata({
+        type: ActionConst.RESET,
+        notif: true,
+        pesanNotif: 'mengubah rekening'
       })
       nextProps.createRek.status = 0
     }
@@ -102,7 +127,7 @@ class OTPCode extends React.Component {
   }
 
   renderOTP () {
-    const {fieldPass} = this.state
+    const {fieldPass, textButton} = this.state
     return (
       <View>
         <Text style={styles.title}>Silahkan menuliskan kode verifikasi yang telah{'\n'}kami kirim ke {fieldPass}</Text>
@@ -202,7 +227,7 @@ class OTPCode extends React.Component {
           style={styles.buttonLogin}
         >
           <Text style={styles.textButtonLogin}>
-            Verifikasi Nomor Telepon
+            {textButton}
           </Text>
         </TouchableOpacity>
         <View style={styles.containerBanner}>
@@ -237,18 +262,39 @@ class OTPCode extends React.Component {
         this.state.nomerRek,
         this.state.namaCabang
       )
+    } else if (typeVerifikasi === 'verificationeditaccount') {
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.updateAccount(
+        this.state.idAccount,
+        tempOTp,
+        this.state.idBank,
+        this.state.namaPemilik,
+        this.state.nomerRek,
+        this.state.namaCabang
+      )
+    } else if (typeVerifikasi === 'verificationdeleteaccount') {
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.deleteAccounts(
+        tempOTp,
+        this.state.idBank
+      )
     }
   }
 
   sendCode () {
     const { typeVerifikasi } = this.state
     if (typeVerifikasi === 'verifikasitelepon') {
-      this.setState({loading: true})
       this.props.sentOTPCode()
     } else if (typeVerifikasi === 'verifikasiKelolatelepon') {
       this.props.sentOTPCode()
     } else if (typeVerifikasi === 'otptambahrekening') {
-      this.props.sentOTPCode()
+      this.props.sendOtpEmail()
+    } else if (typeVerifikasi === 'verificationeditaccount') {
+      this.props.sendOtpEmail()
+    } else if (typeVerifikasi === 'verificationdeleteaccount') {
+      this.props.sendOtpEmail()
     }
   }
 
@@ -271,7 +317,8 @@ class OTPCode extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataOTP: state.verifyPhone,
-    createRek: state.bankAccount
+    createRek: state.bankAccount,
+    deleteAccount: state.bankAccount
   }
 }
 
@@ -287,7 +334,19 @@ const mapDispatchToProps = (dispatch) => {
       holder_name: namaPemilik,
       holder_account_number: nomerRek,
       bank_branch_office_name: namaCabang
-    }))
+    })),
+    updateAccount: (id, code, idBank, namaPemilik, nomerRek, namaCabang) =>
+    dispatch(bankAction.updateBankAccount({
+      id: id,
+      code: code,
+      master_bank_id: idBank,
+      holder_name: namaPemilik,
+      holder_account_number: nomerRek,
+      bank_branch_office_name: namaCabang
+    })),
+    deleteAccounts: (code, id) => dispatch(bankAction.deleteBankAccount({code: code, id: id})),
+    getListRekening: () => dispatch(bankAction.getBankAccounts()),
+    getProfile: (login) => dispatch(userAction.getProfile())
   }
 }
 

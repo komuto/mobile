@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Modal, ActivityIndicator, Text, ListView, View, TouchableOpacity, Image, TextInput } from 'react-native'
+import { ScrollView, Modal, ToastAndroid, ActivityIndicator, Text, ListView, View, TouchableOpacity, Image, TextInput } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as addressAction from '../actions/address'
@@ -45,7 +45,7 @@ class InfoAddressStore extends React.Component {
       modalKelurahan: false,
       dataStoreFinal: this.props.dataStore,
       addressTemp: [],
-      loading: false,
+      loading: true,
       createStores: this.props.createStores
     }
   }
@@ -53,11 +53,13 @@ class InfoAddressStore extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataAlamats.status === 200) {
       this.setState({
-        alamatLain: nextProps.dataAlamats.address
+        alamatLain: nextProps.dataAlamats.address,
+        loading: false
       })
     } if (nextProps.dataProvinsi.status === 200) {
       this.setState({
-        provinsi: nextProps.dataProvinsi.provinces
+        provinsi: nextProps.dataProvinsi.provinces,
+        loading: false
       })
     } if (nextProps.dataKota.status === 200) {
       this.setState({
@@ -80,17 +82,14 @@ class InfoAddressStore extends React.Component {
         tipeNotikasi: 'successBukaToko'
       })
     }
-    // if (nextProps.dataStores.status > 200) {
-    //   window.alert('Sudah Buka Toko')
-    // }
+    if (nextProps.dataStores.status > 200) {
+      ToastAndroid.show(nextProps.dataStores.message, ToastAndroid.LONG)
+    }
   }
 
   componentDidMount () {
     this.props.getAlamat()
     this.props.getProvinsi(this.state.idProvinsiTerpilih)
-    this.props.getKabupaten(this.state.idKabTerpilih)
-    this.props.getSubDistrict(this.state.idKecTerpilih)
-    this.props.getVillage(this.state.idkelTerpilih)
   }
 
   handleChangeAlamat = (text) => {
@@ -478,9 +477,9 @@ class InfoAddressStore extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loadign
+    const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='small' />
+      <ActivityIndicator color='#ef5656' size='large' />
     </View>) : (<View />)
     return (
       <View style={styles.container}>

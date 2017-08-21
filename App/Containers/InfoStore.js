@@ -354,7 +354,7 @@ class InfoStore extends React.Component {
       } if (slogan === '') {
         this.onError('slogan')
       } if (descToko === '') {
-        this.onError('slogan')
+        this.onError('descToko')
       } if (fotoToko === null) {
         this.onError('foto')
       } else {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 // import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as bankAction from '../actions/bank'
 import * as accountAction from '../actions/user'
 
@@ -25,7 +26,7 @@ class AddAccount extends React.Component {
       namaBankTerpilih: 'Nama Bank',
       idnamaBankTerpilih: 0,
       email: this.props.email,
-      nomerHape: this.props.nomerHape,
+      nomerHape: this.props.phoneNumber,
       colorPemilik: Colors.snow,
       colorNomerRek: Colors.snow,
       colorNamaBank: Colors.snow,
@@ -40,7 +41,11 @@ class AddAccount extends React.Component {
           'id': 0,
           'name': 'Pilih Bank'
         }
-      ]
+      ],
+      typeVerifikasi: this.props.typeVerifikasi,
+      title: this.props.titles,
+      textButton: this.props.textButton,
+      idAccount: this.props.idAccount
     }
   }
 
@@ -50,36 +55,36 @@ class AddAccount extends React.Component {
         listBankName: this.state.tambahBank.concat(nextProps.dataListBank.banks)
       })
     }
-    // if (nextProps.codeOtp.status === 200) {
-    //   console.log(nextProps.codeOtp)
-    //   this.setState({
-    //     loading: false
-    //   })
-    //   NavigationActions.otpcode({
-    //     type: ActionConst.PUSH,
-    //     typeVerifikasi: 'otptambahrekening',
-    //     fieldPass: this.state.nomerHape,
-    //     email: this.state.email,
-    //     name: this.state.pemilikAkun,
-    //     nomerRek: this.state.nomerRekening,
-    //     idBank: this.state.idnamaBankTerpilih,
-    //     cabangBank: this.state.cabangBank,
-    //     title: 'Tambah Data Rekening'
-    //   })
-    // } if (nextProps.edit) {
-    if (nextProps.detailRekening.status === 200) {
-      console.log('edit', nextProps.detailRekening)
+    if (nextProps.codeOtp.status === 200) {
       this.setState({
-        pemilikAkun: nextProps.detailRekening.detailBankAccounts.holder_name,
-        nomerRekening: nextProps.detailRekening.detailBankAccounts.holder_account_name,
-        namaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.name,
-        idnamaBankTerpilih: nextProps.detailRekening.detailBankAccounts.bank.id,
-        colorPickerNamaBank: Colors.darkgrey,
-        cabangBank: nextProps.detailRekening.detailBankAccounts.bank_branch_office_name,
         loading: false
       })
+      NavigationActions.otpcode({
+        type: ActionConst.PUSH,
+        typeVerifikasi: this.state.typeVerifikasi,
+        fieldPass: this.state.nomerHape,
+        idAccount: this.state.idAccount,
+        nameAccount: this.state.pemilikAkun,
+        nomerRek: this.state.nomerRekening,
+        idBank: this.state.idnamaBankTerpilih,
+        cabangBank: this.state.cabangBank,
+        title: this.state.title,
+        textButton: 'Verifikasi kode OTP'
+      })
+      nextProps.codeOtp.status = 0
+    } if (nextProps.detailRekening.status === 200) {
+      this.setState({
+        pemilikAkun: nextProps.detailRekening.bankAccountDetail.holder_name,
+        nomerRekening: nextProps.detailRekening.bankAccountDetail.holder_account_number,
+        namaBankTerpilih: nextProps.detailRekening.bankAccountDetail.bank.name,
+        idnamaBankTerpilih: nextProps.detailRekening.bankAccountDetail.bank.id,
+        colorPickerNamaBank: Colors.darkgrey,
+        cabangBank: nextProps.detailRekening.bankAccountDetail.bank_branch_office_name,
+        loading: false
+      })
+      nextProps.codeOtp.status = 0
+      nextProps.detailRekening.status = 0
     }
-    // }
   }
 
   componentDidMount () {
@@ -220,9 +225,7 @@ class AddAccount extends React.Component {
       this.onError('namabank')
     } if (cabangBank === '') {
       this.onError('cabanagbank')
-    } if (this.state.edit) {
-      console.log('edit not availab')
-    } else {
+    } if (pemilikAkun !== '' && nomerRekening !== '' && namaBankTerpilih !== '' && cabangBank !== '') {
       this.setState({loading: true})
       this.props.sendOtp()
     }
@@ -232,7 +235,7 @@ class AddAccount extends React.Component {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={5}
         onPress={() => {
           this.setState({
             namaBankTerpilih: rowData.name,
@@ -255,16 +258,15 @@ class AddAccount extends React.Component {
         visible={this.state.modalNamaBank}
         onRequestClose={() => this.setState({ modalNamaBank: false })}
         >
-        <View style={styles.rowContainer}>
-          <TouchableOpacity activeOpacity={1} style={[styles.bgModal, {flex: 1}]} onPress={() => this.setState({modalNamaBank: false})} />
-          <ScrollView>
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalNamaBank: false })}>
+          <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               dataSource={this.dataSource.cloneWithRows(this.state.listBankName)}
               renderRow={this.renderListBankName.bind(this)}
               enableEmptySections
             />
           </ScrollView>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }
@@ -355,7 +357,7 @@ const mapStateToProps = (state) => {
   return {
     dataListBank: state.banks,
     codeOtp: state.sendOTPBank,
-    detailRekening: state.listBankAccounts
+    detailRekening: state.bankAccountDetail
   }
 }
 

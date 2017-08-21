@@ -41,7 +41,7 @@ class AddressData extends React.Component {
       this.props.getAlamat()
       this.setState({
         notif: true,
-        pesanNotif: 'Berhasil menghapus Alamat',
+        pesanNotif: 'menghapus Alamat',
         loading: false
       })
       nextProps.dataDeletAlamat.status = 0
@@ -104,8 +104,6 @@ class AddressData extends React.Component {
       type: ActionConst.PUSH,
       edit: true,
       idAlamat: idAlamat,
-      name: this.state.name,
-      email: this.state.email,
       titleButton: 'Simpan Alamat'
     })
   }
@@ -154,16 +152,15 @@ class AddressData extends React.Component {
     )
   }
 
-  containerEdit (i, idAlamat) {
+  containerEdit (i, id) {
     if (this.state.statusDot && this.state.rowTerpilih === i) {
       return (
         <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() =>
-            this.handlleEditAlamat(idAlamat)}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.handlleEditAlamat(id)}>
             <Text style={styles.textEdit}>Edit</Text>
           </TouchableOpacity>
           <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletAlamat: true, idDelete: idAlamat, statusDot: false})}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletAlamat: true, statusDot: false})}>
             <Text style={styles.textEdit}>Hapus</Text>
           </TouchableOpacity>
         </View>
@@ -177,24 +174,24 @@ class AddressData extends React.Component {
   mapingAlamat () {
     const { listAlamat } = this.state
     const mapparent = listAlamat.map((alamat, i) =>
-    (<View key={i} >
-      <View style={styles.headerInfoAlamat}>
-        <Text style={styles.textHeader}>{alamat.alias_address}</Text>
-        <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i})}>
-          <Image source={Images.threeDotSilver} style={styles.imageDot} />
-        </TouchableOpacity>
-      </View>
-      {this.containerEdit(i, alamat.id)}
-      <View style={styles.dataInfoAlamat}>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
-        <Text style={styles.textHeader2}>{alamat.name}</Text>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
-        <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
-        <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
-        <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
-      </View>
-      <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
+  (<TouchableOpacity key={i} activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
+    <View style={styles.headerInfoAlamat}>
+      <Text style={styles.textHeader}>{alamat.alias_address}</Text>
+      <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i, idDelete: alamat.id})}>
+        <Image source={Images.threeDotSilver} style={styles.imageDot} />
+      </TouchableOpacity>
     </View>
+    <View style={styles.dataInfoAlamat}>
+      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
+      <Text style={styles.textHeader2}>{alamat.name}</Text>
+      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
+      <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
+      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
+      <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
+    </View>
+    {this.containerEdit(i, alamat.id)}
+    <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
+  </TouchableOpacity>
     ))
     return (
       <View>

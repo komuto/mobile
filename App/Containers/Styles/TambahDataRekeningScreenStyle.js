@@ -78,5 +78,16 @@ export default StyleSheet.create({
   imagePicker: {
     height: 24,
     width: 24
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
   }
 })

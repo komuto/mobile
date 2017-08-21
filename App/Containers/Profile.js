@@ -51,7 +51,6 @@ class Profile extends React.Component {
         isLogin: false
       })
     } else if (nextProps.dataProfile.status === 200) {
-      console.log(nextProps.dataProfile)
       this.setState({
         isLogin: true,
         nama: nextProps.dataProfile.user.user.name,
@@ -354,7 +353,7 @@ class Profile extends React.Component {
     NavigationActions.otpcode({
       type: ActionConst.PUSH,
       title: 'Verifikasi Nomor Telepon',
-      noTelep: this.state.nomerHape,
+      fieldPass: this.state.nomerHape,
       typeVerifikasi: 'verifikasitelepon'
     })
   }

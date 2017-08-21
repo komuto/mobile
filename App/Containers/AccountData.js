@@ -3,6 +3,7 @@ import { ScrollView, Text, View, TouchableOpacity, Image, Modal, ListView } from
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as bankAction from '../actions/bank'
+import * as userAction from '../actions/user'
 
 import { Colors, Fonts, Images } from '../Themes/'
 
@@ -32,7 +33,6 @@ class AccountData extends React.Component {
       this.setState({
         listBank: nextProps.dataRekenings.listBankAccounts
       })
-      console.log(nextProps.dataRekenings.listBankAccounts)
     }
   }
 
@@ -56,35 +56,45 @@ class AccountData extends React.Component {
     }
   }
 
-  handleCreateRekening () {
+  handleCreateAccount () {
+    console.log(this.state.nomerHape)
     NavigationActions.addaccount({
       type: ActionConst.PUSH,
-      name: this.state.name,
-      email: this.state.email,
-      nomerHape: this.state.nomerHape,
-      titleButton: 'Tambah Rekening Baru'
+      title: 'Tambah Data Rekening',
+      titles: 'Tambah Data Rekening',
+      phoneNumber: this.state.nomerHape,
+      titleButton: 'Verifikasi kode OTP',
+      typeVerifikasi: 'otptambahrekening'
     })
   }
 
-  handlleEditRekening (id, norek) {
+  handleEditAccount (id) {
     this.setState({statusDot: false})
     this.props.getBankAccounts(id)
     NavigationActions.addaccount({
       type: ActionConst.PUSH,
       edit: true,
-      idRekening: id,
-      name: this.state.name,
-      email: this.state.email,
-      nomerHape: this.state.nomerHape,
-      titleButton: 'Simpan Rekening',
+      loading: true,
+      idAccount: id,
       title: 'Edit Data Rekening',
-      loading: true
+      phoneNumber: this.state.nomerHape,
+      titles: 'Edit Data Rekening',
+      titleButton: 'Simpan Rekening',
+      typeVerifikasi: 'verificationeditaccount'
     })
   }
 
-  handleDeleteRekening () {
+  handleDeleteAccount () {
     this.setState({deletRekening: false})
-    this.props.deleteBankAccount(this.state.idBankAccount)
+    this.props.sendOtpBank()
+    NavigationActions.otpcode({
+      type: ActionConst.PUSH,
+      idBank: this.state.idBankAccount,
+      fieldPass: this.state.nomerHape,
+      textButton: 'Verifikasi kode OTP',
+      title: 'Hapus Data Rekening',
+      typeVerifikasi: 'verificationdeleteaccount'
+    })
   }
 
   modalConfrimdeletRekening () {
@@ -98,7 +108,7 @@ class AccountData extends React.Component {
         <View style={styles.bgModal}>
           <View style={styles.contaierModal}>
             <Text style={styles.titleModal}>Anda yakin akan menghapus{'\n'}rekening tersebut?</Text>
-            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleDeleteRekening()}>
+            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleDeleteAccount()}>
               <Text style={styles.textVerifikasiButton}>Ya, Hapus Rekening</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.batalButton} onPress={() => this.setState({deletRekening: false})}>
@@ -114,12 +124,11 @@ class AccountData extends React.Component {
     if (this.state.statusDot && this.state.rowTerpilih === i) {
       return (
         <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() =>
-            this.handlleEditRekening(id)}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleEditAccount(id)}>
             <Text style={styles.textEdit}>Edit</Text>
           </TouchableOpacity>
           <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletRekening: true, idBankAccount: id, statusDot: false})}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.setState({deletRekening: true, statusDot: false})}>
             <Text style={styles.textEdit}>Hapus</Text>
           </TouchableOpacity>
         </View>
@@ -133,14 +142,15 @@ class AccountData extends React.Component {
   renderRowBank (rowData, sectionId, rowId) {
     if (rowData !== null) {
       return (
-        <View>
+        <TouchableOpacity activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
           <View style={styles.headerInfoAlamat}>
-            <Image source={{uri: rowData.bank.logo}} style={{flex: 1, width: 66.6, height: 35}} resizeMode={'contain'} />
-            <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
+            <View style={{flex: 1}}>
+              <Image source={{uri: rowData.bank.logo}} style={{width: 66.6, height: 35}} resizeMode={'contain'} />
+            </View>
+            <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId, idBankAccount: rowData.id})}>
               <Image source={Images.threeDotSilver} style={styles.imageDot} />
             </TouchableOpacity>
           </View>
-          {this.containerEdit(rowId, rowData.id)}
           <View style={styles.dataInfoAlamat}>
             <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Pemilik Akun</Text>
             <Text style={styles.textHeader2}>{rowData.holder_name}</Text>
@@ -151,8 +161,9 @@ class AccountData extends React.Component {
             <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Cabang Bank</Text>
             <Text style={styles.textHeader2}>{rowData.bank_branch_office_name}</Text>
           </View>
+          {this.containerEdit(rowId, rowData.id)}
           <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
-        </View>
+        </TouchableOpacity>
       )
     } else {
       return (
@@ -175,7 +186,7 @@ class AccountData extends React.Component {
             {this.modalConfrimdeletRekening()}
           </View>
         </ScrollView>
-        <TouchableOpacity style={styles.create} onPress={() => this.handleCreateRekening()}>
+        <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAccount()}>
           <View elevation={9}>
             <Image source={Images.tambahWhite} style={styles.imageTambah} />
           </View>
@@ -194,8 +205,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    deleteBankAccount: (id) => dispatch(bankAction.deleteBankAccount({id})),
-    getBankAccounts: (id) => dispatch(bankAction.getBankAccounts({id}))
+    sendOtpBank: () => dispatch(userAction.sendOTPBank()),
+    getBankAccounts: (id) => dispatch(bankAction.getBankAccountDetail({id: id}))
   }
 }
 

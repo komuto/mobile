@@ -24,11 +24,11 @@ class AddAddress extends React.Component {
       edit: this.props.edit,
       namaPemilik: this.props.name,
       email: this.props.email,
-      namaAlias: 'sadsd',
-      namaPenerima: 'sadsad',
-      nomerHape: 'sadsad',
-      alamatLengkap: 'sadsad',
-      kodePos: '12345',
+      namaAlias: '',
+      namaPenerima: '',
+      nomerHape: '',
+      alamatLengkap: '',
+      kodePos: '',
       idAlamat: this.props.idAlamat,
       namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
       colorNamaAlias: Colors.lightblack,
@@ -42,10 +42,10 @@ class AddAddress extends React.Component {
       kabTerpilih: 'Kota / Kabupaten',
       kecTerpilih: 'Kecamatan',
       kelurahanterpilih: 'Keluraahan',
-      idProvinsiTerpilih: 11,
-      idKabTerpilih: 1116,
-      idKecTerpilih: 1116061,
-      idkelTerpilih: 1116061014,
+      idProvinsiTerpilih: 0,
+      idKabTerpilih: 0,
+      idKecTerpilih: 0,
+      idkelTerpilih: 0,
       provinsi: [],
       kabupaten: [],
       kecamatan: [],
@@ -93,30 +93,28 @@ class AddAddress extends React.Component {
         loading: false
       })
     }
-    if (nextProps.edit) {
-      if (nextProps.detailAddress.status === 200) {
-        this.setState({
-          loading: false,
-          namaAlias: nextProps.detailAddress.address.alias_address,
-          namaPenerima: nextProps.detailAddress.address.name,
-          nomerHape: nextProps.detailAddress.address.phone_number,
-          alamatLengkap: nextProps.detailAddress.address.address,
-          kodePos: nextProps.detailAddress.address.postal_code,
-          colorPickerProv: Colors.lightblack,
-          colorPickerKab: Colors.lightblack,
-          colorPickerKec: Colors.lightblack,
-          colorPickerKel: Colors.lightblack,
-          provinsiTerpilih: nextProps.detailAddress.address.province.name,
-          kabTerpilih: nextProps.detailAddress.address.district.name,
-          kecTerpilih: nextProps.detailAddress.address.subDistrict.name,
-          kelurahanterpilih: nextProps.detailAddress.address.village.name,
-          idProvinsiTerpilih: nextProps.detailAddress.address.province.id,
-          idKabTerpilih: nextProps.detailAddress.address.district.id,
-          idKecTerpilih: nextProps.detailAddress.address.subDistrict.id,
-          idkelTerpilih: nextProps.detailAddress.address.village.id,
-          isPrimary: nextProps.detailAddress.address.is_primary_address
-        })
-      }
+    if (nextProps.detailAddress.status === 200 && this.props.edit === true) {
+      this.setState({
+        loading: false,
+        namaAlias: nextProps.detailAddress.address.alias_address,
+        namaPenerima: nextProps.detailAddress.address.name,
+        nomerHape: nextProps.detailAddress.address.phone_number,
+        alamatLengkap: nextProps.detailAddress.address.address,
+        kodePos: nextProps.detailAddress.address.postal_code,
+        colorPickerProv: Colors.lightblack,
+        colorPickerKab: Colors.lightblack,
+        colorPickerKec: Colors.lightblack,
+        colorPickerKel: Colors.lightblack,
+        provinsiTerpilih: nextProps.detailAddress.address.province.name,
+        kabTerpilih: nextProps.detailAddress.address.district.name,
+        kecTerpilih: nextProps.detailAddress.address.subDistrict.name,
+        kelurahanterpilih: nextProps.detailAddress.address.village.name,
+        idProvinsiTerpilih: nextProps.detailAddress.address.province.id,
+        idKabTerpilih: nextProps.detailAddress.address.district.id,
+        idKecTerpilih: nextProps.detailAddress.address.subDistrict.id,
+        idkelTerpilih: nextProps.detailAddress.address.village.id,
+        isPrimary: nextProps.detailAddress.address.is_primary_address
+      })
     }
     if (nextProps.updateAddress.status === 200) {
       this.setState({
@@ -562,12 +560,12 @@ class AddAddress extends React.Component {
 
   createAlamat () {
     const {namaAlias, namaPenerima, nomerHape,
-      alamatLengkap, kodePos, email, namaPemilik, isPrimary,
+      alamatLengkap, kodePos, isPrimary,
       idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
     if (this.state.edit) {
       this.setState({loading: true})
       this.props.editAddress(idAlamat, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
+        idkelTerpilih, namaPenerima, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
       this.setState({edit: false})
     } else {
       if (namaAlias === '' && namaPenerima === '' && nomerHape === '') {
@@ -575,7 +573,7 @@ class AddAddress extends React.Component {
       } else {
         this.setState({loading: true})
         this.props.createAddress(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-          idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
+          idkelTerpilih, namaPenerima, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
       }
     }
   }
@@ -628,14 +626,13 @@ const mapDispatchToProps = (dispatch) => {
     getSubDistrict: (id) => dispatch(locationAction.getSubDistrict({ district_id: id })),
     getVillage: (id) => dispatch(locationAction.getVillage({ sub_district_id: id })),
     createAddress: (idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
+        idkelTerpilih, namaPemilik, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
         dispatch(addressAction.addAddress({
           province_id: idProvinsiTerpilih,
           district_id: idKabTerpilih,
           sub_district_id: idKecTerpilih,
           village_id: idkelTerpilih,
           name: namaPemilik,
-          email: email,
           phone_number: nomerHape,
           postal_code: kodePos,
           address: alamatLengkap,
@@ -644,7 +641,7 @@ const mapDispatchToProps = (dispatch) => {
         })),
     getAlamat: () => dispatch(addressAction.getListAddress()),
     editAddress: (id, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPemilik, email, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
+        idkelTerpilih, namaPemilik, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary) =>
         dispatch(addressAction.updateAddress({
           id: id,
           province_id: idProvinsiTerpilih,
@@ -652,7 +649,6 @@ const mapDispatchToProps = (dispatch) => {
           sub_district_id: idKecTerpilih,
           village_id: idkelTerpilih,
           name: namaPemilik,
-          email: email,
           phone_number: nomerHape,
           postal_code: kodePos,
           address: alamatLengkap,

@@ -129,7 +129,7 @@ class PaymentAlfamart extends React.Component {
   }
 
   transferBank () {
-    NavigationActions.paymenttransferbankdetail({
+    NavigationActions.paymentalfamartdetail({
       type: ActionConst.PUSH
     })
   }

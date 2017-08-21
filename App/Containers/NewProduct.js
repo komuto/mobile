@@ -66,7 +66,9 @@ class NewProduct extends React.Component {
       price: '',
       address: '',
       brand: '',
-      other: ''
+      other: '',
+      statusFilter: false,
+      sort: 'newest'
     }
   }
 
@@ -80,21 +82,32 @@ class NewProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataFilter.status === 200) {
-      if (nextProps.dataFilter.products.length > 0) {
-        let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
-        console.log(nextProps.dataFilter)
+      if (!this.state.statusFilter) {
+        if (nextProps.dataFilter.products.length > 0) {
+          let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
+          this.setState({
+            listDataSource: data,
+            rowDataSource: data,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1
+          })
+        } else {
+          this.setState({
+            loadmore: false,
+            isLoading: false
+          })
+        }
+      } else {
         this.setState({
-          listDataSource: data,
-          rowDataSource: data,
+          listDataSource: nextProps.dataFilter.products,
+          rowDataSource: nextProps.dataFilter.products,
           isRefreshing: false,
           isLoading: false,
           loadmore: true,
-          page: this.state.page + 1
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
+          statusFilter: false,
+          page: 1
         })
       }
     } else if (nextProps.dataFilter.status > 200) {
@@ -107,8 +120,8 @@ class NewProduct extends React.Component {
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0)
+  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, sort)
     this.setState({
       filter: false,
       page: 1,
@@ -117,7 +130,9 @@ class NewProduct extends React.Component {
       price: price,
       address: address,
       brand: brand,
-      other: other
+      other: other,
+      statusFilter: true,
+      isRefreshing: true
     })
   }
 
@@ -160,9 +175,9 @@ class NewProduct extends React.Component {
   }
 
   refresh = () => {
-    const { kondisi, pengiriman, price, address, brand, other } = this.state
+    const { kondisi, pengiriman, price, address, brand, other, sort } = this.state
     this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1)
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1, sort)
   }
 
   renderHeader () {
@@ -231,41 +246,22 @@ class NewProduct extends React.Component {
     this.setState({sortModal: visible})
   }
 
-  sortArrayAsc (array, key, field) {
-    const {bluesky, lightblack} = Colors
-    switch (field) {
-      case 'terbaru':
-        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
-        }).reverse()
-      case 'termurah':
-        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        }).reverse()
-      case 'termahal':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        })
-      case 'terlaris':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
-        return array.sort(function (a, b) {
-          return b.product.stock - a.product.stock
-        })
-      default:
-        window.alert('Internal Error')
-        break
-    }
-  }
-
   _onPress (field) {
-    const {listDataSource} = this.state
-    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
-    this.setState({
-      listDataSource: sortedData
-    })
+    const {bluesky, lightblack} = Colors
+    const {kondisi, pengiriman, price, address, brand, other} = this.state
+    if (field === 'terbaru') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
+      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'newest')
+    } else if (field === 'termahal') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
+      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'expensive')
+    } else if (field === 'termurah') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
+      return this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'cheapest')
+    } else if (field === 'terlaris') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
+      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'selling')
+    }
   }
 
   renderModalSort () {
@@ -632,14 +628,15 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getProdukTerbaru: dispatch(produkAction.listProductBySearch()),
-    getFilterProduk: (condition, services, price, address, brands, other, page) => dispatch(produkAction.listProductBySearch({
+    getFilterProduk: (condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductBySearch({
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
       other: other,
-      page: page
+      page: page,
+      sort: sort
     }))
   }
 }

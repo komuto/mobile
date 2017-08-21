@@ -207,6 +207,9 @@ class PaymentCreditCard extends React.Component {
     NavigationActions.paymentsuccess({
       type: ActionConst.PUSH
     })
+    // this.setState({
+    //   modalGagal: true
+    // })
   }
 
   cobaLagi () {

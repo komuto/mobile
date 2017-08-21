@@ -109,8 +109,13 @@ class PurchaseUserInfo extends React.Component {
         type: ActionConst.PUSH,
         statusAlamat: true
       })
+      this.props.addAddressReset()
     } else if (nextProps.dataCreateAlamat.status > 200) {
       ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.LONG)
+      this.setState({
+        loadingCart: false
+      })
+      this.props.addAddressReset()
     }
   }
 
@@ -316,7 +321,6 @@ class PurchaseUserInfo extends React.Component {
       namaAlamat,
       true
     )
-    this.props.getListAlamat()
   }
 
   render () {
@@ -434,6 +438,7 @@ class PurchaseUserInfo extends React.Component {
             <TextInput
               ref='kodepos'
               style={styles.input}
+              maxLength={5}
               value={kodepos}
               keyboardType='numeric'
               autoCapitalize='none'
@@ -475,6 +480,7 @@ const mapDispatchToProps = (dispatch) => {
     getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
     getVillage: (id) => dispatch(filterAction.getVillage({ sub_district_id: id })),
     getListAlamat: () => dispatch(addressAction.getListAddress()),
+    addAddressReset: () => dispatch(addressAction.addAddressReset()),
     createAddress: (
       provinceId,
       districtId,

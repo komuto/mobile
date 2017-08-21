@@ -50,6 +50,10 @@ class PaymentCart extends React.Component {
               namaDiskon: nextProps.dataCart.cart.promo.promo_code
             })
           }
+        } else {
+          this.setState({
+            total: temp
+          })
         }
         this.props.getCartReset()
       }
@@ -99,7 +103,7 @@ class PaymentCart extends React.Component {
           <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
         </View>
         {this.renderRincian(
-          rowData.total_price - rowData.shipping.delivery_cost,
+          rowData.total_price - rowData.shipping.delivery_cost - rowData.shipping.insurance_fee,
           rowData.shipping.insurance_fee,
           rowData.shipping.delivery_cost
         )}
@@ -179,6 +183,7 @@ class PaymentCart extends React.Component {
 
   renderTotal () {
     const { total, diskon, namaDiskon } = this.state
+    let renderdiskon
     const totalBiaya = MaskService.toMask('money', total + diskon, {
       unit: 'Rp ',
       separator: '.',
@@ -197,6 +202,17 @@ class PaymentCart extends React.Component {
       delimiter: '.',
       precision: 3
     })
+
+    if (namaDiskon !== '') {
+      renderdiskon = (
+        <View style={styles.rincian}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.textRincianTotalHijau}>Kode Voucher {namaDiskon}</Text>
+          </View>
+          <Text style={styles.textRincianTotalHijau}>{totalDiskon}</Text>
+        </View>
+      )
+    }
     return (
       <View style={styles.totalHargaContainer}>
         {this.renderInfo('Rincian Harga Total')}
@@ -207,12 +223,7 @@ class PaymentCart extends React.Component {
             </View>
             <Text style={styles.textRincianTotal}>{totalBiaya}</Text>
           </View>
-          <View style={styles.rincian}>
-            <View style={styles.labelContainer}>
-              <Text style={styles.textRincianTotalHijau}>Kode Voucher {namaDiskon}</Text>
-            </View>
-            <Text style={styles.textRincianTotalHijau}>{totalDiskon}</Text>
-          </View>
+          {renderdiskon}
           <View style={styles.sisaPembayaran}>
             <View style={styles.labelContainer}>
               <Text style={styles.sisaPembayaranText}>Sisa Pembayaran</Text>

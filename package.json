@@ -100,6 +100,9 @@
     "babel": "inherit"
   },
   "standard": {
+    "ignore": [
+      "/static/"
+    ],
     "parser": "babel-eslint",
     "globals": [
       "describe",

@@ -953,7 +953,7 @@ class DetailProduct extends React.Component {
         onPress={() => {
           this.setState({
             kabTerpilih: rowData.name,
-            idKabTerpilih: rowData.id,
+            idKabTerpilih: rowData.ro_id,
             kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)

@@ -194,6 +194,7 @@ export default StyleSheet.create({
   },
   title: {
     flex: 1,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.medium,
     color: Colors.lightblack
   },

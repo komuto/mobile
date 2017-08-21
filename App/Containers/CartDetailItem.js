@@ -132,6 +132,7 @@ class CartDetailItem extends React.Component {
           roIdDistrict: shipping.address.district.ro_id,
           courier: shipping.expedition_service.expedition.name,
           idKurir: shipping.expedition_service.expedition.id,
+          idSubKurir: shipping.expedition_service.id,
           service: shipping.expedition_service.name,
           insurance: shipping.is_insurance,
           note: nextProps.dataCartItem.item.note,

@@ -5,6 +5,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import CameraModal from '../Components/CameraModal'
 import * as storeAction from '../actions/stores'
 import * as loginaction from '../actions/user'
+import * as expeditionAction from '../actions/expedition'
 
 import { Images, Colors } from '../Themes'
 
@@ -19,7 +20,7 @@ class InfoStore extends React.Component {
       namaToko: this.props.dataProfile.user.store.name || '',
       slogan: this.props.dataProfile.user.store.slogan || '',
       descToko: this.props.dataProfile.user.store.description || '',
-      fotoToko: this.props.dataProfile.user.store.logo || null,
+      fotoToko: this.props.dataProfile.user.store.logo || 'kucing',
       showModalCamera: false,
       store: [],
       stores: [],
@@ -237,7 +238,7 @@ class InfoStore extends React.Component {
   renderStateOne () {
     const {textButton, editAbles, lineLeft, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
     return (
-      <ScrollView>
+      <View>
         <View style={{flex: 1}}>
           <CameraModal
             visible={this.state.showModalCamera}
@@ -279,7 +280,7 @@ class InfoStore extends React.Component {
             <View style={styles.inputContainer}>
               <TextInput
                 ref='slogan'
-                style={[styles.inputText, {height: Math.max(30, this.state.heightSlogan)}]}
+                style={[styles.inputText, {height: Math.max(35, this.state.heightSlogan)}]}
                 multiline
                 value={slogan}
                 maxLength={maxLine}
@@ -312,7 +313,7 @@ class InfoStore extends React.Component {
             <View style={styles.inputContainer}>
               <TextInput
                 ref='descToko'
-                style={[styles.inputText, {height: Math.max(30, this.state.heightDesc)}]}
+                style={[styles.inputText, {height: Math.max(35, this.state.heightDesc)}]}
                 multiline
                 value={descToko}
                 keyboardType='default'
@@ -333,20 +334,18 @@ class InfoStore extends React.Component {
             </View>
             <Text style={[styles.textLabel, {color: textDescColor}]}>Deskripsi Toko {textDesc}</Text>
           </View>
-          <View style={{flex: 1, backgroundColor: Colors.background}}>
-            <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
-              <Text style={styles.textButtonNext}>
-                {textButton}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
+            <Text style={styles.textButtonNext}>
+              {textButton}
+            </Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
     )
   }
 
   nextState () {
-    const {createStore, namaToko, slogan, descToko, store, stores, storesTemp, fotoToko} = this.state
+    const {createStore, namaToko, slogan, descToko, store, stores, fotoToko} = this.state
     if (createStore) {
       if (namaToko === '' && slogan === '' && descToko === '') {
         this.onError('empty')
@@ -363,16 +362,17 @@ class InfoStore extends React.Component {
         store[1] = slogan
         store[2] = descToko
         store[3] = fotoToko
-        stores[3] = store
-        storesTemp[0] = store
+        stores[0] = store
+        this.props.getExpedition()
+        this.props.getServicesExpedition()
         NavigationActions.storeexpedition({
           type: ActionConst.PUSH,
           namaToko: namaToko,
           slogan: slogan,
           descToko: descToko,
-          dataStore: storesTemp
+          dataStore: stores
         })
-        console.log(storesTemp)
+        console.log(stores)
       }
     } else {
       this.setState({loading: true})
@@ -416,7 +416,9 @@ class InfoStore extends React.Component {
     return (
       <View style={styles.container}>
         {this.stateIndicator()}
-        {this.renderStateOne()}
+        <ScrollView>
+          {this.renderStateOne()}
+        </ScrollView>
         {spinner}
       </View>
     )
@@ -441,7 +443,9 @@ const mapDispatchToProps = (dispatch) => {
       description: desc,
       logo: photo
     })),
-    getProfile: (login) => dispatch(loginaction.getProfile())
+    getProfile: (login) => dispatch(loginaction.getProfile()),
+    getExpedition: () => dispatch(expeditionAction.getExpedition()),
+    getServicesExpedition: () => dispatch(expeditionAction.getServices())
   }
 }
 

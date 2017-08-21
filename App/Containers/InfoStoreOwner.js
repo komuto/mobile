@@ -18,9 +18,9 @@ class InfoStoreOwner extends React.Component {
     this.state = {
       noIdentitas: '111',
       namaIbu: 'marta',
-      namaPelimilik: '',
-      email: '',
-      noHp: '',
+      namaPelimilik: this.props.dataProfile.user.user.name,
+      email: this.props.dataProfile.user.user.email,
+      noHp: this.props.dataProfile.user.user.phone_number,
       dataStore: this.props.dataStore,
       tempData: [],
       textNoIdentitas: 'NO Identitas',
@@ -28,23 +28,8 @@ class InfoStoreOwner extends React.Component {
       textNoIdentitasColor: Colors.snow,
       textNamaIbuColor: Colors.snow,
       opacity: 1,
-      loading: true
+      loading: false
     }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProfile.status === 200) {
-      this.setState({
-        namaPelimilik: nextProps.dataProfile.user.user.name,
-        email: nextProps.dataProfile.user.user.email,
-        noHp: nextProps.dataProfile.user.user.phone_number,
-        loading: false
-      })
-    }
-  }
-
-  componentDidMount () {
-    this.props.getProfile()
   }
 
   handleChangeIdentitas = (text) => {
@@ -134,58 +119,54 @@ class InfoStoreOwner extends React.Component {
     const {noIdentitas, namaIbu, namaPelimilik, email, noHp, textNoIdentitas, textNamaIbu, textNoIdentitasColor, textNamaIbuColor} = this.state
     return (
       <View>
-        <ScrollView>
-          <View style={styles.infoPemilikContainer}>
-            <Text style={styles.textLabel}>Nama Pemilik</Text>
-            <Text style={styles.textInfoPemilik}>{namaPelimilik}</Text>
-            <Text style={styles.textLabel}>Alamat Email</Text>
-            <Text style={styles.textInfoPemilik}>{email}</Text>
-            <Text style={styles.textLabel}>No Handphone</Text>
-            <Text style={[styles.textInfoPemilik]}>{noHp}</Text>
-            <View style={[styles.inputContainer, {marginTop: 15}]}>
-              <TextInput
-                ref='noindentitas'
-                style={[styles.inputText]}
-                value={noIdentitas}
-                keyboardType='default'
-                returnKeyType='next'
-                onFocus={() => this.onFocus('noidentitas')}
-                onBlur={() => this.onBlur('noidentitas')}
-                onSubmitEditing={() => this.refs.namaibu.focus()}
-                autoCapitalize='none'
-                autoCorrect
-                onChangeText={this.handleChangeIdentitas}
-                underlineColorAndroid='transparent'
-                placeholder='No Identitas (KTP/SIM/Paspor)'
-              />
-            </View>
-            <Text style={[styles.errorLabel, {color: textNoIdentitasColor}]}>{textNoIdentitas}</Text>
-            <View style={[styles.inputContainer, {marginTop: 20}]}>
-              <TextInput
-                ref='namaibu'
-                style={[styles.inputText]}
-                value={namaIbu}
-                keyboardType='default'
-                returnKeyType='done'
-                autoCapitalize='none'
-                autoCorrect
-                onFocus={() => this.onFocus('namaibu')}
-                onBlur={() => this.onBlur('namaibu')}
-                onChangeText={this.handleChangeNamaIbu}
-                underlineColorAndroid='transparent'
-                placeholder='Nama Ibu Kandung'
-              />
-            </View>
-            <Text style={[styles.errorLabel, {color: textNamaIbuColor}]}>{textNamaIbu}</Text>
+        <View style={styles.infoPemilikContainer}>
+          <Text style={styles.textLabel}>Nama Pemilik</Text>
+          <Text style={styles.textInfoPemilik}>{namaPelimilik}</Text>
+          <Text style={styles.textLabel}>Alamat Email</Text>
+          <Text style={styles.textInfoPemilik}>{email}</Text>
+          <Text style={styles.textLabel}>No Handphone</Text>
+          <Text style={[styles.textInfoPemilik]}>{noHp}</Text>
+          <View style={[styles.inputContainer, {marginTop: 15}]}>
+            <TextInput
+              ref='noindentitas'
+              style={[styles.inputText]}
+              value={noIdentitas}
+              keyboardType='default'
+              returnKeyType='next'
+              onFocus={() => this.onFocus('noidentitas')}
+              onBlur={() => this.onBlur('noidentitas')}
+              onSubmitEditing={() => this.refs.namaibu.focus()}
+              autoCapitalize='none'
+              autoCorrect
+              onChangeText={this.handleChangeIdentitas}
+              underlineColorAndroid='transparent'
+              placeholder='No Identitas (KTP/SIM/Paspor)'
+            />
           </View>
-          <View style={{flex: 1, backgroundColor: Colors.background}}>
-            <TouchableOpacity style={styles.buttonnext} onPress={() => this.nextState()}>
-              <Text style={styles.textButtonNext}>
-                Lanjutkan
-              </Text>
-            </TouchableOpacity>
+          <Text style={[styles.errorLabel, {color: textNoIdentitasColor}]}>{textNoIdentitas}</Text>
+          <View style={[styles.inputContainer, {marginTop: 20}]}>
+            <TextInput
+              ref='namaibu'
+              style={[styles.inputText]}
+              value={namaIbu}
+              keyboardType='default'
+              returnKeyType='done'
+              autoCapitalize='none'
+              autoCorrect
+              onFocus={() => this.onFocus('namaibu')}
+              onBlur={() => this.onBlur('namaibu')}
+              onChangeText={this.handleChangeNamaIbu}
+              underlineColorAndroid='transparent'
+              placeholder='Nama Ibu Kandung'
+            />
           </View>
-        </ScrollView>
+          <Text style={[styles.errorLabel, {color: textNamaIbuColor}]}>{textNamaIbu}</Text>
+        </View>
+        <TouchableOpacity style={styles.buttonnext} onPress={() => this.nextState()}>
+          <Text style={styles.textButtonNext}>
+            Lanjutkan
+          </Text>
+        </TouchableOpacity>
       </View>
     )
   }
@@ -240,7 +221,9 @@ class InfoStoreOwner extends React.Component {
             <Text style={styles.textState}>4</Text>
           </View>
         </View>
-        {this.renderStateThree()}
+        <ScrollView>
+          {this.renderStateThree()}
+        </ScrollView>
         {spinner}
       </View>
     )

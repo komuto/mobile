@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, Modal } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, BackAndroid, Image, Modal } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import Spinner from '../Components/Spinner'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -24,28 +25,49 @@ class AddressData extends React.Component {
       rowTerpilih: '',
       idDelete: '',
       notif: this.props.notif,
-      pesanNotif: this.props.pesanNotif
+      pesanNotif: this.props.pesanNotif,
+      loading: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataAlamats.status === 200 || nextProps.dataAlamats.status === 0) {
+    if (nextProps.dataAlamats.status === 200) {
       this.setState({
-        listAlamat: nextProps.dataAlamats.address
+        listAlamat: nextProps.dataAlamats.address,
+        loading: false
       })
-      nextProps.dataAlamats.status = 0
     }
     if (nextProps.dataDeletAlamat.status === 200) {
       this.props.getAlamat()
       this.setState({
         notif: true,
-        pesanNotif: 'Berhasil menghapus Alamat'
+        pesanNotif: 'Berhasil menghapus Alamat',
+        loading: false
       })
       nextProps.dataDeletAlamat.status = 0
     }
   }
 
   componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.accountmanage({
+      type: ActionConst.POP_AND_REPLACE
+    })
+    return true
+  }
+
+  backButton () {
+    NavigationActions.accountmanage({
+      type: ActionConst.PUSH_OR_POP
+    })
+    return true
   }
 
   notif () {
@@ -91,6 +113,22 @@ class AddressData extends React.Component {
   handleDeleteAlamat () {
     this.setState({deletAlamat: false})
     this.props.deleteAddress(this.state.idDelete)
+  }
+
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.backButton()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Data Alamat
+        </Text>
+      </View>
+    )
   }
 
   modalConfrimDeletAlamat () {
@@ -166,22 +204,29 @@ class AddressData extends React.Component {
   }
 
   render () {
-    return (
-      <View style={styles.container}>
-        {this.notif()}
-        <ScrollView>
-          <View style={styles.infoAlamat}>
-            {this.mapingAlamat()}
-            {this.modalConfrimDeletAlamat()}
-          </View>
-        </ScrollView>
-        <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAlamat()}>
-          <View elevation={9}>
-            <Image source={Images.tambahWhite} style={styles.imageTambah} />
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
+    const { loading } = this.state
+    if (!loading) {
+      return (
+        <View style={styles.container}>
+          {this.notif()}
+          <ScrollView>
+            <View style={styles.infoAlamat}>
+              {this.mapingAlamat()}
+              {this.modalConfrimDeletAlamat()}
+            </View>
+          </ScrollView>
+          <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAlamat()}>
+            <View elevation={9}>
+              <Image source={Images.tambahWhite} style={styles.imageTambah} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <Spinner />
+      )
+    }
   }
 
 }

@@ -5,7 +5,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.paleGrey
+    backgroundColor: Colors.snow
   },
   header: {
     flexDirection: 'row',
@@ -103,10 +103,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginLeft: 20.3,
-    marginRight: 20.3,
-    marginTop: 5,
-    marginBottom: 20
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 20,
+    marginTop: 10
   },
   textButtonNext: {
     color: Colors.background,

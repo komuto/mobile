@@ -2,7 +2,6 @@ import React from 'react'
 import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as expeditionAction from '../actions/expedition'
 
 import { Images, Colors, Fonts } from '../Themes'
 
@@ -50,8 +49,6 @@ class StoreExpedition extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getExpedition()
-    this.props.getServicesExpedition()
   }
 
   nextState () {
@@ -134,7 +131,6 @@ class StoreExpedition extends React.Component {
       if (i !== 0) {
         dummy[selected].status = 2
         temp[selected].status = 2
-        console.log('masuk')
       }
       dataListEkspedisi[parentId].services[selected].is_checked = false
       const newDataSource = dataListEkspedisi.map(data => {
@@ -179,7 +175,6 @@ class StoreExpedition extends React.Component {
       this.setState({dataListEkspedisi: dataListEkspedisi})
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
-          console.log('in')
           if (data.status === 2) {
             data.status = 1
           } else {
@@ -202,22 +197,17 @@ class StoreExpedition extends React.Component {
         <View style={styles.titleEkspedisi}>
           <Text style={styles.textTitle}>Pilihlah ekspedisi pengiriman yang digunakan oleh toko Anda untuk mengirim barang</Text>
         </View>
-        <ScrollView style={{marginBottom: 100}}>
-          {this.mapParent(a)}
-          <View style={{ flex: 1 }}>
-            <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
-              <Text style={styles.textButtonNext}>
-                Lanjutkan
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        {this.mapParent(a)}
+        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
+          <Text style={styles.textButtonNext}>
+            Lanjutkan
+          </Text>
+        </TouchableOpacity>
       </View>
     )
   }
 
   render () {
-    console.log(this.state.expeditionServices)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -241,7 +231,9 @@ class StoreExpedition extends React.Component {
             <Text style={styles.textState}>4</Text>
           </View>
         </View>
-        {this.renderStateTwo()}
+        <ScrollView>
+          {this.renderStateTwo()}
+        </ScrollView>
         {spinner}
       </View>
     )
@@ -257,8 +249,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getExpedition: () => dispatch(expeditionAction.getExpedition()),
-    getServicesExpedition: () => dispatch(expeditionAction.getServices())
   }
 }
 

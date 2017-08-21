@@ -24,11 +24,11 @@ class AddAddress extends React.Component {
       edit: this.props.edit,
       namaPemilik: this.props.name,
       email: this.props.email,
-      namaAlias: '',
-      namaPenerima: '',
-      nomerHape: '',
-      alamatLengkap: '',
-      kodePos: '',
+      namaAlias: 'sadsd',
+      namaPenerima: 'sadsad',
+      nomerHape: 'sadsad',
+      alamatLengkap: 'sadsad',
+      kodePos: '12345',
       idAlamat: this.props.idAlamat,
       namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
       colorNamaAlias: Colors.lightblack,
@@ -42,10 +42,10 @@ class AddAddress extends React.Component {
       kabTerpilih: 'Kota / Kabupaten',
       kecTerpilih: 'Kecamatan',
       kelurahanterpilih: 'Keluraahan',
-      idProvinsiTerpilih: 0,
-      idKabTerpilih: 0,
-      idKecTerpilih: 0,
-      idkelTerpilih: 0,
+      idProvinsiTerpilih: 11,
+      idKabTerpilih: 1116,
+      idKecTerpilih: 1116061,
+      idkelTerpilih: 1116061014,
       provinsi: [],
       kabupaten: [],
       kecamatan: [],
@@ -55,51 +55,26 @@ class AddAddress extends React.Component {
       modalKecamatan: false,
       modalKelurahan: false,
       isPrimary: false,
-      loading: false,
-      tambahanProvinsi: [
-        {
-          'id': 0,
-          'name': 'Pilih Provinsi'
-        }
-      ],
-      tambahanKota: [
-        {
-          'id': 0,
-          'ro_id': 0,
-          'name': 'Pilih Kota'
-        }
-      ],
-      tambahanKecamatan: [
-        {
-          'id': 0,
-          'name': 'Pilih Kecamatan'
-        }
-      ],
-      tambahanKelurahan: [
-        {
-          'id': 0,
-          'name': 'Pilih Kelurahan'
-        }
-      ]
+      loading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
-        provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
+        provinsi: nextProps.dataProvinsi.provinces
       })
     } if (nextProps.dataKota.status === 200) {
       this.setState({
-        kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
+        kabupaten: nextProps.dataKota.districts
       })
     } if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
-        kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
+        kecamatan: nextProps.dataSubDistrict.subdistricts
       })
     } if (nextProps.dataVilage.status === 200) {
       this.setState({
-        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVilage.villages)
+        kelurahan: nextProps.dataVilage.villages
       })
     }
     if (nextProps.dataAddress.status === 200) {
@@ -141,7 +116,6 @@ class AddAddress extends React.Component {
           idkelTerpilih: nextProps.detailAddress.address.village.id,
           isPrimary: nextProps.detailAddress.address.is_primary_address
         })
-        nextProps.detailAddress.status = 0
       }
     }
     if (nextProps.updateAddress.status === 200) {
@@ -160,7 +134,6 @@ class AddAddress extends React.Component {
 
   componentDidMount () {
     this.props.getProvinsi()
-    this.props.getKota(11)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 

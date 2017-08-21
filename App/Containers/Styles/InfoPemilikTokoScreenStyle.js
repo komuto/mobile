@@ -5,7 +5,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.paleGrey
+    backgroundColor: Colors.snow
   },
   header: {
     flexDirection: 'row',
@@ -97,15 +97,14 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginLeft: 20.3,
-    marginRight: 20.3,
-    marginTop: 20.8,
-    marginBottom: 54
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 20
   },
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.regular
+    fontSize: Fonts.size.medium
   },
   titleEkspedisi: {
     backgroundColor: Colors.paleGrey,

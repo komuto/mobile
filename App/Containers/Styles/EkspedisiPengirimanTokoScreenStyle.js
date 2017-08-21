@@ -98,14 +98,15 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginLeft: 20.3,
-    marginRight: 20.3,
-    marginBottom: 54
+    marginLeft: 20,
+    marginRight: 20,
+    marginBottom: 20,
+    marginTop: 10
   },
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.regular
+    fontSize: Fonts.size.medium
   },
   titleEkspedisi: {
     backgroundColor: Colors.paleGrey,

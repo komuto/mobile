@@ -79,9 +79,10 @@ class InfoAddressStore extends React.Component {
         type: ActionConst.PUSH,
         tipeNotikasi: 'successBukaToko'
       })
-    } if (nextProps.dataStores.status > 200) {
-      window.alert('Sudah Buka Toko')
     }
+    // if (nextProps.dataStores.status > 200) {
+    //   window.alert('Sudah Buka Toko')
+    // }
   }
 
   componentDidMount () {
@@ -412,47 +413,46 @@ class InfoAddressStore extends React.Component {
     const {alamatPemilik, kodePos} = this.state
     return (
       <View>
-        <ScrollView style={{backgroundColor: Colors.background}}>
-          <View style={styles.infoAlamatContainer}>
-            {this.modalAlamat()}
-            <View style={{paddingLeft: 1}}>
-              <Text style={styles.textLabel}>Alamat Pemilik</Text>
-              <View style={[styles.inputContainer, {marginBottom: 24.8}]}>
-                <TextInput
-                  style={[styles.inputText]}
-                  value={alamatPemilik}
-                  keyboardType='default'
-                  returnKeyType='next'
-                  autoCapitalize='none'
-                  autoCorrect
-                  onChangeText={this.handleChangeAlamat}
-                  underlineColorAndroid='transparent'
-                  placeholder=''
-                />
-              </View>
-              {this.renderPickerLokasi()}
-              <Text style={styles.textLabel}>Kode Pos</Text>
-              <View style={[styles.inputContainer, {marginBottom: 0}]}>
-                <TextInput
-                  style={[styles.inputText]}
-                  value={kodePos}
-                  keyboardType='default'
-                  returnKeyType='next'
-                  autoCapitalize='none'
-                  autoCorrect
-                  onChangeText={this.handleChangeKodePos}
-                  underlineColorAndroid='transparent'
-                  placeholder=''
-                />
-              </View>
+        <View style={styles.infoAlamatContainer}>
+          {this.modalAlamat()}
+          <View style={{paddingLeft: 1}}>
+            <Text style={styles.textLabel}>Alamat Pemilik</Text>
+            <View style={[styles.inputContainer, {marginBottom: 24.8}]}>
+              <TextInput
+                style={[styles.inputText]}
+                value={alamatPemilik}
+                keyboardType='default'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeAlamat}
+                underlineColorAndroid='transparent'
+                placeholder=''
+              />
+            </View>
+            {this.renderPickerLokasi()}
+            <Text style={styles.textLabel}>Kode Pos</Text>
+            <View style={[styles.inputContainer, {marginBottom: 0}]}>
+              <TextInput
+                style={[styles.inputText]}
+                value={kodePos}
+                maxLength={5}
+                keyboardType='numeric'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeKodePos}
+                underlineColorAndroid='transparent'
+                placeholder=''
+              />
             </View>
           </View>
-          <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleNextState()}>
-            <Text style={styles.textButtonNext}>
-              lanjutkan
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+        </View>
+        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleNextState()}>
+          <Text style={styles.textButtonNext}>
+            Lanjutkan
+          </Text>
+        </TouchableOpacity>
       </View>
     )
   }
@@ -485,7 +485,9 @@ class InfoAddressStore extends React.Component {
     return (
       <View style={styles.container}>
         {this.stateIndicator()}
-        {this.renderStateFour()}
+        <ScrollView>
+          {this.renderStateFour()}
+        </ScrollView>
         {this.modalAlamatLain()}
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}

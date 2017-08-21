@@ -14,7 +14,6 @@ import CustomRadio from '../Components/CustomRadio'
 
 import styles from './Styles/BiodataScreenStyle'
 import stylesLokasi from './Styles/ProductDetailScreenStyle'
-
 class Biodata extends React.Component {
 
   constructor (props) {
@@ -23,8 +22,8 @@ class Biodata extends React.Component {
     var listMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
     var timeStampToDate = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
     var day = moment(timeStampToDate, 'DD/MM/YYYY').date()
-    var month = moment(timeStampToDate, 'DD/MM/YYYY').month()
-    var year = moment(timeStampToDate, 'DD/MM/YYYY').year()
+    var months = moment(timeStampToDate, 'DD/MM/YYYY').month()
+    var years = moment(timeStampToDate, 'DD/MM/YYYY').year()
     this.state = {
       fotoProfil: null || this.props.dataProfile.user.user.photo,
       showModalCamera: false,
@@ -37,7 +36,7 @@ class Biodata extends React.Component {
       idKabTerpilih: this.props.dataProfile.user.user.place_of_birth_id || 0,
       kabupaten: [],
       colorPicker: Colors.darkgrey,
-      dof: (day + 1) + ' ' + listMonths[month] + ' ' + year,
+      dof: (day + 1) + ' ' + listMonths[months] + ' ' + years,
       timestamp: this.props.dataProfile.user.user.date_of_birth || '',
       notif: false,
       loading: false

@@ -15,6 +15,7 @@ class Splash extends React.Component {
       if (value === null || value === undefined || value === '') {
       } else {
         this.props.stateLogin(true)
+        console.log(value)
       }
       SplashScreen.hide()
       NavigationActions.backtab({ type: ActionConst.REPLACE })

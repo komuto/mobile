@@ -184,62 +184,54 @@ class Profile extends React.Component {
         {this.renderStatus()}
         <View style={styles.profileContainer}>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity onPress={() => this.handleKelolaAkun()}>
-              <View style={styles.profile}>
-                {this.renderFoto()}
-                <View style={styles.namaContainer}>
-                  <Text style={styles.textNama}>
-                    {this.state.nama}
-                  </Text>
-                  <Text style={styles.textKelola}>
-                    Kelola Akun
-                  </Text>
-                </View>
-                {this.verifikasiNoHp()}
-                <Image source={Images.rightArrow} style={styles.rightArrow} />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <View style={styles.profile}>
-                <Image source={Images.saldo} style={styles.imageCategory} />
-                <View style={styles.namaContainer}>
-                  <Text style={styles.textNama}>
-                    Saldo
-                  </Text>
-                </View>
+            <TouchableOpacity onPress={() => this.handleKelolaAkun()} style={styles.profile}>
+              {this.renderFoto()}
+              <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
-                  {money}
+                  {this.state.nama}
                 </Text>
-                <Image source={Images.rightArrow} style={styles.rightArrow} />
+                <Text style={styles.textKelola}>
+                  Kelola Akun
+                </Text>
               </View>
+              {this.verifikasiNoHp()}
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <View style={styles.profile}>
-                <Image source={Images.daftar} style={styles.imageCategory} />
-                <View style={styles.namaContainer}>
-                  <Text style={styles.textNama}>
-                    Daftar Toko Favorit
-                  </Text>
-                </View>
-                <Image source={Images.rightArrow} style={styles.rightArrow} />
+            <TouchableOpacity style={[styles.profile, {marginBottom: 1}]}>
+              <Image source={Images.saldo} style={styles.imageCategory} />
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  Saldo
+                </Text>
               </View>
+              <Text style={styles.textNama}>
+                {money}
+              </Text>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.profile, {borderBottomWidth: 0}]}>
+              <Image source={Images.daftar} style={styles.imageCategory} />
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  Daftar Toko Favorit
+                </Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
           </View>
         </View>
         {this.rernderToko()}
-        <View style={styles.dataProfileContainer}>
-          <TouchableOpacity onPress={() => this.logout()}>
-            <View style={styles.profile}>
-              <Image source={Images.logout} style={styles.imageCategory} />
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Logout
-                </Text>
-              </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
+        <TouchableOpacity style={styles.dataProfileContainer} onPress={() => this.logout()}>
+          <View style={styles.profile}>
+            <Image source={Images.logout} style={styles.imageCategory} />
+            <View style={styles.namaContainer}>
+              <Text style={styles.textNama}>
+                Logout
+              </Text>
             </View>
-          </TouchableOpacity>
-        </View>
+            <Image source={Images.rightArrow} style={styles.rightArrow} />
+          </View>
+        </TouchableOpacity>
         {this.modalVerifikasiNoTelepon()}
       </View>
     )
@@ -263,11 +255,7 @@ class Profile extends React.Component {
 
   handleKelolaAkun () {
     NavigationActions.accountmanage({
-      type: ActionConst.PUSH,
-      statusNoHp: this.state.verifyNoHp,
-      nomerHape: this.state.nomerHape,
-      name: this.state.nama,
-      email: this.state.email
+      type: ActionConst.PUSH
     })
   }
 
@@ -303,7 +291,7 @@ class Profile extends React.Component {
       return (
         <View style={styles.dataProfileContainer}>
           <TouchableOpacity onPress={() => this.handleCekNoHp()}>
-            <View style={styles.profile}>
+            <View style={[styles.profile, {borderBottomWidth: 0}]}>
               <View style={{borderRadius: 21, backgroundColor: 'red'}}>
                 <Image source={{uri: this.state.fotoToko}} style={[styles.imageCategory]} />
               </View>
@@ -324,7 +312,7 @@ class Profile extends React.Component {
       return (
         <View style={styles.dataProfileContainer}>
           <TouchableOpacity onPress={() => this.handleCekNoHp()}>
-            <View style={styles.profile}>
+            <View style={[styles.profile, {borderBottomWidth: 0}]}>
               <Image source={Images.toko} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>

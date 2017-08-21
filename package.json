@@ -101,7 +101,7 @@
   },
   "standard": {
     "ignore": [
-      "/static/"
+      "App/static/"
     ],
     "parser": "babel-eslint",
     "globals": [

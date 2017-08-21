@@ -3,6 +3,7 @@ import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal } fro
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
+import * as paymentAction from '../actions/payment'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -20,7 +21,33 @@ class PaymentDoku extends React.Component {
       kodeUnik: 2000,
       id: '',
       pass: '',
-      modalGagal: false
+      modalGagal: false,
+      merchantCode: '',
+      chainMerchant: '',
+      paymentChannel: '04',
+      transactionId: '',
+      amount: '',
+      currency: '',
+      words: '',
+      sessionId: '',
+      formType: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataInvoice.status === 200) {
+      const invoice = nextProps.dataInvoice.invoice
+      this.setState({
+        merchantCode: '4533',
+        chainMerchant: invoice.chain_merchant,
+        paymentChannel: '04',
+        transactionId: invoice.invoice,
+        amount: invoice.amount,
+        currency: invoice.currency,
+        words: invoice.words,
+        sessionId: new Date().getTime(),
+        formType: 'full'
+      })
     }
   }
 
@@ -203,11 +230,13 @@ class PaymentDoku extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataInvoice: state.invoice
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDokuInvoice: dispatch(paymentAction.getDokuInvoice())
   }
 }
 

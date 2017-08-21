@@ -1,4 +1,4 @@
-function getForm (e) {
+export function getForm (e) {
     console.log(e);
     var t = new Object;
     t.req_merchant_code = e.req_merchant_code, t.req_transaction_id = e.req_transaction_id, t.req_payment_channel = e.req_payment_channel, t.req_chain_merchant = e.req_chain_merchant, t.req_amount = e.req_amount, t.req_currency = e.req_currency, t.req_words = e.req_words, t.req_form_type = e.req_form_type, t.req_domain_valid = document.location.origin, t.req_timeout = e.req_timeout, t.req_device_info = getDeviceInfo(), void 0 != e.req_ref_account_id && "" != e.req_ref_account_id && (t.req_ref_account_id = e.req_ref_account_id, t.req_access_type = "W", t.req_session_id = e.req_session_id), void 0 != e.req_customer_id && "" != e.req_customer_id && (t.req_customer_id = e.req_customer_id), void 0 != e.req_token_payment && "" != e.req_token_payment && (t.req_token_payment = e.req_token_payment);

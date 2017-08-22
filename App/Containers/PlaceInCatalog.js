@@ -65,21 +65,9 @@ class PlaceInCatalog extends React.Component {
       this.setState({
         namaKatalog: ''
       })
-      this.props.getCatalog()
       nextProps.dataCreateCatalog.status = 0
-    } if (nextProps.dataCreateProduk.status === 200) {
-      nextProps.dataCreateProduk.status = 0
-      this.setState({
-        loading: false
-      })
-      NavigationActions.notification({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'succestambahproduk',
-        hideNavBar: true,
-        hideBackImage: true
-      })
+      this.props.getCatalog()
     } if (nextProps.dataCreateProdukDropshipper.status === 200) {
-      nextProps.dataCreateProdukDropshipper.status = 0
       this.setState({
         loading: false
       })
@@ -89,8 +77,9 @@ class PlaceInCatalog extends React.Component {
         hideNavBar: true,
         hideBackImage: true
       })
+      nextProps.dataCreateProdukDropshipper.status = 0
     }
-    if (nextProps.dataCreateProduk.status > 200) {
+    if (nextProps.dataCreateProdukDropshipper.status > 200) {
       this.setState({
         loading: true
       })
@@ -284,7 +273,6 @@ const mapStateToProps = (state) => {
   return {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
-    dataCreateProduk: state.alterProducts,
     dataCreateProdukDropshipper: state.addDropshipProducts
   }
 }

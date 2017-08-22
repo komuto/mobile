@@ -60,6 +60,7 @@ class ExpeditionProduct extends React.Component {
         hideNavBar: true,
         hideBackImage: true
       })
+      nextProps.dataCreateProduk.status = 0
     } if (nextProps.dataCreateProduk.status > 200) {
       this.setState({
         loading: true

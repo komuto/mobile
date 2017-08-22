@@ -97,6 +97,7 @@ const product = function* () {
   yield takeEvery(typeReq(productActions.CHANGE_CATALOG), productSaga.changeCatalogProducts)
   yield takeEvery(typeReq(productActions.UPDATE_PRODUCT), productSaga.updateProduct)
   yield takeEvery(typeReq(productActions.GET_PRODUCT_EXPEDITIONS), productSaga.getProductExpeditions)
+  yield takeEvery(typeReq(productActions.ADD_DROPSHIP_PRODUCTS), productSaga.addDropshipProducts)
 }
 
 const store = function* () {

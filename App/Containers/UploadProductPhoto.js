@@ -28,15 +28,17 @@ class UploadProductPhoto extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPhoto.status === 200) {
-      console.log(nextProps.dataPhoto)
+      let temp = this.state.images
+      nextProps.dataPhoto.payload.images.map((data, i) => {
+        temp[i] = ({'name': data.name})
+      })
       this.setState({
-        loading: false,
-        images: nextProps.dataPhoto.payload
+        loading: false
       })
       this.props.getKategori()
       NavigationActions.productinfonameandcategory({
         type: ActionConst.PUSH,
-        images: nextProps.dataPhoto.payload
+        images: temp
       })
     } else if (nextProps.dataPhoto.status > 200) {
       this.setState({
@@ -121,7 +123,6 @@ class UploadProductPhoto extends React.Component {
       postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
     })
     postData.append('type', 'product')
-    console.log(postData)
     this.props.photoUpload(postData)
     this.setState({loading: true})
   }

@@ -21,6 +21,7 @@ export const DELETE_PRODUCTS = 'DELETE_PRODUCTS'
 export const CHANGE_CATALOG = 'CHANGE_CATALOG'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 export const GET_PRODUCT_EXPEDITIONS = 'GET_PRODUCT_EXPEDITIONS'
+export const ADD_DROPSHIP_PRODUCTS = 'ADD_DROPSHIP_PRODUCTS'
 
 /**
  * @params id {int} product id
@@ -130,3 +131,9 @@ export const updateProduct = params => buildAction(typeReq(UPDATE_PRODUCT), para
  * @state productExpeditions
  */
 export const getProductExpeditions = params => buildAction(typeReq(GET_PRODUCT_EXPEDITIONS), params)
+
+/**
+ * @params id {int} product id
+ * @state addDropshipProducts
+ */
+export const addDropshipProducts = params => buildAction(typeReq(ADD_DROPSHIP_PRODUCTS), params)

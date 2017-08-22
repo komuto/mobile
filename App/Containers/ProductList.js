@@ -17,6 +17,7 @@ import { MaskService } from 'react-native-masked-text'
 // import YourActions from '../Redux/YourRedux'
 import * as produkAction from '../actions/product'
 import * as storeAction from '../actions/stores'
+import * as catalogAction from '../actions/catalog'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
@@ -34,7 +35,9 @@ class ProductList extends React.Component {
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
-      search: ''
+      search: '',
+      statusDot: false,
+      rowTerpilih: ''
     }
   }
 
@@ -61,6 +64,10 @@ class ProductList extends React.Component {
   handleBack = () => {
     NavigationActions.pop()
     return true
+  }
+
+  backButton () {
+    NavigationActions.pop()
   }
 
   nextState () {
@@ -120,17 +127,84 @@ class ProductList extends React.Component {
   }
 
   handleListProduk (id, name) {
-    this.props.getProductByCAtalog(id)
+    this.props.getProductByCatalog(id)
     NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
       title: name
     })
   }
 
-  onPopupEvent = (eventName, index) => {
-    if (eventName !== 'itemSelected') return
-    if (index === 0) this.onEdit()
-    else this.onRemove()
+  handleHideProduct (id) {
+    this.setState({statusDot: false})
+    this.props.getProductByCatalog(id)
+    NavigationActions.movingproduct({
+      type: ActionConst.PUSH,
+      actionType: 'hideProduct',
+      title: 'Pindahkan ke Katalog Lain',
+      textButton: 'Sembunyikan Barang Terpilih'
+    })
+  }
+
+  handleDeleteProduct (id) {
+    this.setState({statusDot: false})
+    this.props.getProductByCatalog(id)
+    NavigationActions.movingproduct({
+      type: ActionConst.PUSH,
+      actionType: 'deleteProduct',
+      title: 'Hapus Barang',
+      textButton: 'Hapus Barang Terpilih'
+    })
+  }
+
+  handleMoveToCatalog (id) {
+    this.setState({statusDot: false})
+    this.props.getProductByCatalog(id)
+    this.props.getCatalog()
+    NavigationActions.movingproduct({
+      type: ActionConst.PUSH,
+      actionType: 'moveCatalog',
+      title: 'Pindahkan ke Katalog Lain',
+      textButton: 'Pindahkan Barang Terpilih'
+    })
+  }
+
+  handleMoveToDropshipper (id) {
+    this.setState({statusDot: false})
+    this.props.getProductByCatalog(id)
+    NavigationActions.movingproduct({
+      type: ActionConst.PUSH,
+      isDropshipper: true,
+      actionType: 'moveDropship',
+      title: 'Jadikan Dropshipping',
+      textButton: 'Jadikan Dropshipping untuk barang terpilih'
+    })
+  }
+
+  containerEdit (i, id) {
+    if (this.state.statusDot && this.state.rowTerpilih === i) {
+      return (
+        <View elevation={5} style={styles.edit}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id)}>
+            <Text style={styles.textEdit}>Sembunyikan Barang</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id)}>
+            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    return (
+      <View />
+    )
   }
 
   mapingProduct () {
@@ -141,6 +215,9 @@ class ProductList extends React.Component {
           <View style={styles.containerProduk}>
             <View style={styles.headerInfoAlamat}>
               <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
+              <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i})}>
+                <Image source={Images.threeDotSilver} style={styles.imageDot} />
+              </TouchableOpacity>
             </View>
             {this.mapSingleProduk(data.products, i)}
           </View>
@@ -148,6 +225,7 @@ class ProductList extends React.Component {
             <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
             <Image source={Images.rightArrow} style={styles.imageDot} />
           </TouchableOpacity>
+          {this.containerEdit(i, data.catalog.id)}
         </View>
       )
     })
@@ -254,7 +332,7 @@ class ProductList extends React.Component {
   mapSingleProduk (data, id) {
     const mapProduk = data.map((data, i) => {
       return (
-        <TouchableOpacity key={i} style={styles.dataListProduk} onPress={() => this.produkDetail(data.id)}>
+        <TouchableOpacity key={i} style={styles.dataListProduk} onPress={() => this.produkDetail(data.id, data.name)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -294,12 +372,13 @@ class ProductList extends React.Component {
     })
   }
 
-  produkDetail (id) {
-    NavigationActions.detailproduct({
+  produkDetail (id, name) {
+    NavigationActions.detailproductstore({
       type: ActionConst.PUSH,
-      id: id
+      id: id,
+      productName: name
     })
-    this.props.getDetailProduk(id)
+    // this.props.getDetailProduk(id)
   }
 
   render () {
@@ -341,9 +420,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    getProductByCatalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
     getListProduk: (hidden) => dispatch(storeAction.getStoreProducts({hidden: hidden})),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    getCatalog: () => dispatch(catalogAction.getListCatalog())
   }
 }
 

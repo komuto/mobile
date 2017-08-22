@@ -1,31 +1,36 @@
 import * as actions from '../actions/stores'
 import { buildReducer, buildType, initState } from '../config'
 
-const initStore = {
-  store: {},
-  ...initState()
+const initProcessCreateStore = {
+  store: {
+    name: '',
+    slogan: '',
+    description: '',
+    logo: '',
+    path: ''
+  },
+  expedition_services: {
+    selectedExpeditions: [],
+    selectedServices: []
+  },
+  user: {
+    id_number: '',
+    mother_name: ''
+  },
+  address: {
+    province_id: 0,
+    district_id: 0,
+    sub_district_id: 0,
+    village_id: 0,
+    name: '',
+    email: '',
+    phone_number: '',
+    postal_code: '',
+    address: ''
+  }
 }
 
-const initExpedition = {
-  expeditions: [],
-  ...initState()
-}
-
-const initVerify = {
-  ...initState()
-}
-
-const initOwnStore = {
-  ownStore: {},
-  ...initState()
-}
-
-const initStoreProducts = {
-  storeProducts: {},
-  ...initState()
-}
-
-function stores (state = initStore, action) {
+export const stores = (state = initState({ store: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_STORE:
@@ -35,7 +40,7 @@ function stores (state = initStore, action) {
   }
 }
 
-function createStore (state = initStore, action) {
+export const createStore = (state = initState({ store: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.CREATE_STORE:
@@ -45,7 +50,7 @@ function createStore (state = initStore, action) {
   }
 }
 
-function expeditionListStore (state = initExpedition, action) {
+export const expeditionListStore = (state = initState({ expeditions: [] }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.STORE_EXPEDITION_LIST:
@@ -55,7 +60,7 @@ function expeditionListStore (state = initExpedition, action) {
   }
 }
 
-function expeditionStore (state = initExpedition, action) {
+export const expeditionStore = (state = initState({ expeditions: [] }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.STORE_EXPEDITION_MANAGE:
@@ -65,7 +70,7 @@ function expeditionStore (state = initExpedition, action) {
   }
 }
 
-function photoUpload (state = initState({ payload: {} }), action) {
+export const photoUpload = (state = initState({ payload: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.PHOTO_UPLOAD:
@@ -75,7 +80,7 @@ function photoUpload (state = initState({ payload: {} }), action) {
   }
 }
 
-function verifyStore (state = initVerify, action) {
+export const verifyStore = (state = initState(), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.VERIFY_STORE:
@@ -85,19 +90,19 @@ function verifyStore (state = initVerify, action) {
   }
 }
 
-function sendMessageStore (state = initStore, action) {
+export const sendMessageStore = (state = initState({ store: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.MESSAGE_STORE:
       return buildReducer(state, action, type, 'store')
     case actions.MESSAGE_STORE_RESET:
-      return initStore
+      return initState({ store: {} })
     default:
       return state
   }
 }
 
-export const getOwnStore = (state = initOwnStore, action) => {
+export const getOwnStore = (state = initState({ ownStore: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_OWN_STORE:
@@ -107,7 +112,7 @@ export const getOwnStore = (state = initOwnStore, action) => {
   }
 }
 
-export const getStoreProducts = (state = initStoreProducts, action) => {
+export const getStoreProducts = (state = initState({ storeProducts: {} }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.GET_STORE_PRODUCTS:
@@ -169,12 +174,11 @@ export const getHiddenStoreProducts = (state = initState({ hiddenStoreProducts: 
   }
 }
 
-export {
-    stores,
-    photoUpload,
-    createStore,
-    expeditionListStore,
-    expeditionStore,
-    verifyStore,
-    sendMessageStore
+export const processCreateStore = (state = initProcessCreateStore, { type, ...temp }) => {
+  switch (type) {
+    case actions.CREATE_STORE_TEMP:
+      return { ...state, ...temp }
+    default:
+      return state
+  }
 }

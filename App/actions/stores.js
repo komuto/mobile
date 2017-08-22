@@ -17,6 +17,7 @@ export const UPDATE_INFORMATION = 'UPDATE_INFORMATION'
 export const UPDATE_TERM = 'UPDATE_TERM'
 export const GET_ADDRESS = 'GET_ADDRESS'
 export const UPDATE_STORE_ADDRESS = 'UPDATE_STORE_ADDRESS'
+export const CREATE_STORE_TEMP = 'CREATE_STORE_TEMP'
 
 /**
  * @params id {int} store id
@@ -109,3 +110,8 @@ export const updateStoreAddress = params => buildAction(typeReq(UPDATE_STORE_ADD
  * @state hiddenStoreProducts
  */
 export const getHiddenStoreProducts = () => buildAction(typeReq(GET_HIDDEN_STORE_PRODUCTS))
+
+/**
+ * @state createStoreTemp
+ */
+export const createStoreTemp = params => buildAction(CREATE_STORE_TEMP, params)

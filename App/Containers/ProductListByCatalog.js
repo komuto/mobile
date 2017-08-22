@@ -36,7 +36,6 @@ class ListProdukByCatalog extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
-      console.log('ooo', nextProps.dataProduk)
       this.setState({
         produk: nextProps.dataProduk.storeCatalogProducts.products
       })

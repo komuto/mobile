@@ -307,7 +307,7 @@ const mapDispatchToProps = (dispatch) => {
         weight: weight,
         stock: stock,
         condition: condition,
-        insurance: insurance,
+        is_insurance: insurance,
         is_dropship: isDropship,
         catalog_id: catalogId,
         expeditions: expeditions,

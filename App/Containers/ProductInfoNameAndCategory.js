@@ -140,7 +140,6 @@ class ProductInfoNameAndCategory extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'namaproduk':
         this.setState({
@@ -526,11 +525,6 @@ class ProductInfoNameAndCategory extends React.Component {
   nextState () {
     const {dataProduk, namaProduk, idkategoriTerpilih, idBrandTerpilih, descProduk} = this.state
     if (namaProduk === '') {
-      console.log(dataProduk)
-      NavigationActions.priceandspesificationproduct({
-        type: ActionConst.PUSH
-      })
-      this.props.getCatalog()
       this.onError('namaproduk')
     } else {
       dataProduk[0] = namaProduk
@@ -539,7 +533,7 @@ class ProductInfoNameAndCategory extends React.Component {
       dataProduk[3] = descProduk
       console.log(dataProduk)
       this.props.getCatalog()
-      NavigationActions.infohargaspesifikasi({
+      NavigationActions.priceandspesificationproduct({
         type: ActionConst.PUSH,
         dataProduk: dataProduk,
         images: this.state.images

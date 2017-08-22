@@ -87,3 +87,8 @@ export const getProductExpeditions = ({ id }) => {
   const axios = authApiKomuto()
   return axios.get(`users/store/products/${id}/expeditions/manage`)
 }
+
+export const addDropshipProducts = ({ id, ...params }) => {
+  const axios = authApiKomuto()
+  return axios.post(`products/${id}/dropship`, params)
+}

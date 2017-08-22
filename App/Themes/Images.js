@@ -129,7 +129,8 @@ const images = {
   thumbUpGreen: require('../Images/Icons/icon-thumbup-green.png'),
   review: require('../Images/review.png'),
   complain: require('../Images/complain.png'),
-  messageBuyer: require('../Images/Icons/icon-envelope.png')
+  messageBuyer: require('../Images/Icons/icon-envelope.png'),
+  deletWhite: require('../Images/Icons/icon-delete-white.png')
 }
 
 export default images

@@ -1,18 +1,7 @@
 import * as actions from '../actions/home'
 import { buildReducer, buildType, initState } from '../config'
 
-const initCategory = {
-  categories: [],
-  ...initState()
-}
-
-const initAllCategory = {
-  allCategory: [],
-  ...initState()
-}
-
-function product (state = initState({ products: [] }, true), action) {
-  console.log(action)
+export const product = (state = initState({ products: [] }, true), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.HOME_PRODUCT:
@@ -22,7 +11,8 @@ function product (state = initState({ products: [] }, true), action) {
   }
 }
 
-function searchProduct (state = initState({ products: [] }), action) {
+export const searchProduct = (state = initState({ products: [] }), action) => {
+  console.log(action)
   const type = buildType(action.type)
   switch (type) {
     case actions.SEARCH_PRODUCT:
@@ -32,7 +22,7 @@ function searchProduct (state = initState({ products: [] }), action) {
   }
 }
 
-function filterProduct (state = initState({ products: [] }, true), action) {
+export const filterProduct = (state = initState({ products: [] }, true), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.FILTER_PRODUCT:
@@ -42,7 +32,7 @@ function filterProduct (state = initState({ products: [] }, true), action) {
   }
 }
 
-function allCategory (state = initAllCategory, action) {
+export const allCategory = (state = initState({ allCategory: [] }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.ALL_CATEGORY:
@@ -52,7 +42,7 @@ function allCategory (state = initAllCategory, action) {
   }
 }
 
-function categoryList (state = initCategory, action) {
+export const categoryList = (state = initState({ categories: [] }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.HOME_CATEGORY:
@@ -62,11 +52,11 @@ function categoryList (state = initCategory, action) {
   }
 }
 
-function subCategory (state = initCategory, action) {
+export const subCategory = (state = initState({ categories: [] }), action) => {
   const type = buildType(action.type)
   switch (type) {
     case actions.STATUS_SUBCATEGORY_RESET:
-      return initCategory
+      return initState({ categories: [] })
     case actions.HOME_SUBCATEGORY:
       return buildReducer(state, action, type, 'categories')
     default:
@@ -74,11 +64,3 @@ function subCategory (state = initCategory, action) {
   }
 }
 
-export {
-  product,
-  searchProduct,
-  filterProduct,
-  allCategory,
-  categoryList,
-  subCategory
-}

@@ -32,7 +32,7 @@ class PlaceInCatalog extends React.Component {
       id: this.props.id,
       data: [],
       foto: this.props.fotoToko || null,
-      price: this.props.price || null,
+      price: this.props.price || 1000,
       namaToko: this.props.namaToko || null,
       page: 1,
       loadmore: true,
@@ -45,8 +45,8 @@ class PlaceInCatalog extends React.Component {
       modalTambahKatalog: false,
       namaKatalog: '',
       dataProduct: this.props.dataProduk,
-      imageAndExpedition: this.props.imageAndExpedition
-
+      imageAndExpedition: this.props.imageAndExpedition,
+      isFromDropshipper: this.props.isFromDropshipper || false
     }
   }
 
@@ -54,20 +54,21 @@ class PlaceInCatalog extends React.Component {
     if (nextProps.dataCatalog.status === 200) {
       let temp = this.state.listKatalog
       nextProps.dataCatalog.catalogs.map((data, i) => {
-        temp.push({value: i, label: data.name, id: data.id})
+        temp[i] = ({value: i, label: data.name, id: data.id})
       })
       this.setState({
         listKatalog: temp,
         idCatalog: nextProps.dataCatalog.catalogs[0].id
       })
-      temp = []
+      nextProps.dataCatalog.status = 0
     } if (nextProps.dataCreateCatalog.status === 200) {
-      nextProps.dataCreateCatalog.status = 0
       this.setState({
-        listKatalog: []
+        namaKatalog: ''
       })
       this.props.getCatalog()
+      nextProps.dataCreateCatalog.status = 0
     } if (nextProps.dataCreateProduk.status === 200) {
+      nextProps.dataCreateProduk.status = 0
       this.setState({
         loading: false
       })
@@ -77,7 +78,19 @@ class PlaceInCatalog extends React.Component {
         hideNavBar: true,
         hideBackImage: true
       })
-    } if (nextProps.dataCreateProduk.status > 200) {
+    } if (nextProps.dataCreateProdukDropshipper.status === 200) {
+      nextProps.dataCreateProdukDropshipper.status = 0
+      this.setState({
+        loading: false
+      })
+      NavigationActions.notification({
+        type: ActionConst.PUSH,
+        tipeNotikasi: 'succestambahproduk',
+        hideNavBar: true,
+        hideBackImage: true
+      })
+    }
+    if (nextProps.dataCreateProduk.status > 200) {
       this.setState({
         loading: true
       })
@@ -85,7 +98,6 @@ class PlaceInCatalog extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getCatalog()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -207,25 +219,29 @@ class PlaceInCatalog extends React.Component {
   }
 
   nextState () {
-    const {dataProduct, imageAndExpedition, idCatalog} = this.state
+    const {dataProduct, imageAndExpedition, idCatalog, isFromDropshipper, id} = this.state
     this.setState({
       loading: true
     })
-    this.props.createProduk(
-      dataProduct[0],
-      dataProduct[1],
-      dataProduct[2],
-      dataProduct[3],
-      dataProduct[4],
-      dataProduct[5],
-      dataProduct[6],
-      dataProduct[7],
-      dataProduct[8],
-      dataProduct[9],
-      idCatalog,
-      imageAndExpedition[0],
-      imageAndExpedition[1]
-    )
+    if (!isFromDropshipper) {
+      this.props.createProduk(
+        dataProduct[0],
+        dataProduct[1],
+        dataProduct[2],
+        dataProduct[3],
+        dataProduct[4],
+        dataProduct[5],
+        dataProduct[6],
+        dataProduct[7],
+        dataProduct[8],
+        dataProduct[9],
+        idCatalog,
+        imageAndExpedition[0],
+        imageAndExpedition[1]
+      )
+    } else {
+      this.props.createProductFromDropshipper(id, idCatalog)
+    }
   }
 
   render () {
@@ -268,7 +284,8 @@ const mapStateToProps = (state) => {
   return {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
-    dataCreateProduk: state.alterProducts
+    dataCreateProduk: state.alterProducts,
+    dataCreateProdukDropshipper: state.addDropshipProducts
   }
 }
 
@@ -293,7 +310,8 @@ const mapDispatchToProps = (dispatch) => {
         expeditions: expeditions,
         images: images
       }
-    ))
+    )),
+    createProductFromDropshipper: (id, idCatalog) => dispatch(productAction.addDropshipProducts({id: id, catalog_id: idCatalog}))
   }
 }
 

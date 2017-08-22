@@ -97,6 +97,9 @@ import DiscussionBuyer from '../Containers/DiscussionBuyer'
 import DetailDiscussionBuyer from '../Containers/DetailDiscussionBuyer'
 import ResolutionCenter from '../Containers/ResolutionCenter'
 import DetailResolution from '../Containers/DetailResolution'
+import MovingProduct from '../Containers/MovingProduct'
+import DetailProductStore from '../Containers/DetailProductStore'
+import StatusStockDropshipping from '../Containers/StatusStockDropshipping'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -826,6 +829,31 @@ class NavigationRouter extends Component {
             key='detailresolution'
             component={DetailResolution}
             title='Detail Resolusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailresolution'
+            component={DetailResolution}
+            title='Detail Resolusi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='movingproduct'
+            component={MovingProduct}
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailproductstore'
+            component={DetailProductStore}
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='statusstokdropshipping'
+            component={StatusStockDropshipping}
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

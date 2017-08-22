@@ -953,7 +953,7 @@ class DetailProduct extends React.Component {
         onPress={() => {
           this.setState({
             kabTerpilih: rowData.name,
-            idKabTerpilih: rowData.ro_id,
+            idKabTerpilih: rowData.id,
             kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
@@ -1327,27 +1327,14 @@ class DetailProduct extends React.Component {
         })
         this.props.getDetailProduk(this.state.id)
       } else {
-        let tempDataProduct = []
-        let tempImageAndExpedition = []
-        tempDataProduct[0] = this.state.title
-        tempDataProduct[1] = this.state.idCategory
-        tempDataProduct[2] = this.state.idBrand
-        tempDataProduct[3] = this.state.deskripsi
-        tempDataProduct[4] = this.state.price
-        tempDataProduct[5] = this.state.weight
-        tempDataProduct[6] = this.state.stock
-        tempDataProduct[7] = this.state.kondisi
-        tempDataProduct[8] = this.state.asuransi
-        tempDataProduct[9] = this.state.isDropship
-        tempImageAndExpedition[0] = this.state.expeditionDropship
-        tempImageAndExpedition[1] = this.state.photoProductDropship
+        console.log(this.state.id)
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
           fotoToko: this.state.fotoToko,
           namaToko: this.state.namaToko,
           price: this.state.price,
-          dataProduk: tempDataProduct,
-          imageAndExpedition: tempImageAndExpedition
+          isFromDropshipper: true,
+          id: this.state.id
         })
         this.props.getCatalog()
       }

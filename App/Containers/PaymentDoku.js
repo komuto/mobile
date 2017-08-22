@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal, NativeModules } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
@@ -32,6 +32,12 @@ class PaymentDoku extends React.Component {
       sessionId: '',
       formType: ''
     }
+  }
+
+  componentDidMount () {
+    NativeModules.IMEI.getIMEI().then(result => {
+      console.log('imei', result)
+    })
   }
 
   componentWillReceiveProps (nextProps) {

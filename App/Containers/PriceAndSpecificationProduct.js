@@ -33,7 +33,8 @@ class PriceAndSpecificationProduct extends React.Component {
       data: [{label: 'Baru', value: 0}, {label: 'Bekas', value: 1}],
       jenisAsuransi: 'opsional',
       indexAsuransi: 0,
-      dataAsuransi: [{label: 'Opsional', value: 0}, {label: 'Wajib', value: 1}],
+      isInsurance: false,
+      dataAsuransi: [{label: 'Opsional', value: 0}, {label: 'Wajib', value: 0}],
       listKatalog: [],
       modalDropshipping: false,
       grosirAktif: false,
@@ -340,12 +341,14 @@ class PriceAndSpecificationProduct extends React.Component {
     if (value.toLowerCase() === 'opsional') {
       this.setState({
         jenisAsuransi: 'opsional',
-        indexAsuransi: index
+        indexAsuransi: index,
+        isInsurance: false
       })
     } else {
       this.setState({
         jenisAsuransi: 'wajib',
-        indexAsuransi: index
+        indexAsuransi: index,
+        isInsurance: true
       })
     }
   }
@@ -591,7 +594,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   nextState () {
-    const {images, harga, dataProduk, beratProduk, stokProduk, indexKondisi, indexAsuransi, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
+    const {images, harga, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
     let detailGrosir = []
     let tempGrosir = []
     detailGrosir[0] = parseInt(minimalGrosir)
@@ -602,7 +605,7 @@ class PriceAndSpecificationProduct extends React.Component {
     dataProduk[5] = parseInt(beratProduk)
     dataProduk[6] = parseInt(stokProduk)
     dataProduk[7] = parseInt(indexKondisi)
-    dataProduk[8] = parseInt(indexAsuransi)
+    dataProduk[8] = isInsurance
     dataProduk[9] = dropShippingActive
     dataProduk[10] = idKatalogTerpilih
     // dataProduk[11] = tempGrosir

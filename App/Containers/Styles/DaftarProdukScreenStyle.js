@@ -7,18 +7,6 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey,
     marginTop: Metrics.navBarHeight
   },
-  touch: {
-    justifyContent: 'center',
-    padding: 5,
-    backgroundColor: 'red',
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
-  },
-  textEdit: {
-    fontFamily: Fonts.type.semiBolds,
-    fontSize: Fonts.size.smallMed,
-    color: Colors.darkgrey
-  },
   textHeader: {
     flex: 1,
     fontFamily: Fonts.type.bold,
@@ -153,7 +141,7 @@ export default StyleSheet.create({
   laberDropShipping: {
     width: 180,
     backgroundColor: Colors.veryLighBlue,
-    height: 30,
+    height: 40,
     borderTopLeftRadius: 2,
     borderBottomLeftRadius: 2,
     justifyContent: 'center'
@@ -176,5 +164,30 @@ export default StyleSheet.create({
     borderLeftColor: 'transparent',
     backgroundColor: Colors.veryLighBlue,
     width: 20
+  },
+  touch: {
+    justifyContent: 'center',
+    flex: 0.7,
+    paddingLeft: 20,
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  textEdit: {
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
+  },
+  edit: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    height: 212,
+    width: 243,
+    borderRadius: 3,
+    backgroundColor: Colors.snow
+  },
+  border: {
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5
   }
 })

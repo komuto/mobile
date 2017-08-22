@@ -117,7 +117,7 @@ export const buildAction = (type, params = false) => {
  * @param action {object}
  * @param type {string}
  * @param name {string} additional field name
- * @param meta {boolean}
+ * @param meta {boolean} add meta init on req state
  */
 export const buildReducer = (state, action, type, name, meta = false) => {
   switch (action.type) {
@@ -154,12 +154,14 @@ export const typeFail = type => `${type}_FAILURE`
  */
 export const buildQuery = (params) => Object.keys(params)
   .reduce((query, prop) => {
+    if (params[prop] === undefined || (typeof params[prop] !== 'number' && params[prop].length === 0)) {
+      return query
+    }
     if (Array.isArray(params[prop])) {
-      if (params[prop].length === 0) params[prop] = ''
       // Change from array to string -> [1,2] -> '1,2'
       params[prop] = String(params[prop])
     }
-    if (params[prop] !== undefined) query.push(`${prop}=${params[prop]}`)
+    query.push(`${prop}=${params[prop]}`)
     return query
   }, []).join('&')
 
@@ -178,7 +180,6 @@ export const buildSaga = (callApi, actionType, props = []) => function* ({ type,
     }
     yield put({ type: typeSucc(actionType), ...data })
   } catch (e) {
-    console.log(e.response.data)
     yield errorHandling(typeFail(actionType), e)
   }
 }

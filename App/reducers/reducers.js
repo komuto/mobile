@@ -59,7 +59,8 @@ const product = {
   newComment: productReducers.newComment,
   report: productReducers.reportProduct,
   alterProducts: productReducers.alterProducts,
-  productExpeditions: productReducers.getProductExpeditions
+  productExpeditions: productReducers.getProductExpeditions,
+  addDropshipProducts: productReducers.addDropshipProducts
 }
 
 const store = {
@@ -73,6 +74,7 @@ const store = {
   ownStore: storeReducers.getOwnStore,
   storeProducts: storeReducers.getStoreProducts,
   storeCatalogProducts: storeReducers.getStoreCatalogProducts,
+  createStoreTemp: storeReducers.processCreateStore,
   updateStore: storeReducers.updateStore,
   storeAddress: storeReducers.getStoreAddress,
   updateStoreAddress: storeReducers.updateStoreAddress,

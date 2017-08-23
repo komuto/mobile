@@ -64,8 +64,8 @@ class ProductDiscussion extends React.Component {
     this.props.getDiscussion(this.state.id, 1)
   }
 
-  detailDiskusi (produkId, id, page) {
-    this.props.getComment(produkId, id, page)
+  detailDiskusi (id, page) {
+    this.props.getComment(id, page)
     NavigationActions.commentproductdiscussion({
       id: this.state.id,
       type: ActionConst.PUSH,
@@ -188,7 +188,7 @@ class ProductDiscussion extends React.Component {
   }
 
   addDiskusi () {
-    NavigationActions.adddiscussion({
+    NavigationActions.newdiscussion({
       type: ActionConst.PUSH,
       id: this.state.id,
       foto: this.state.foto,
@@ -230,7 +230,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
     resetDiscussion: () => dispatch(productAction.resetDiscussion()),
-    getComment: (productId, id, page) => dispatch(productAction.getComment({ productId: productId, id: id, page: page }))
+    getComment: (id, page) => dispatch(productAction.getComment({ id: id, page: page }))
   }
 }
 

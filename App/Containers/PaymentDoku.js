@@ -1,6 +1,6 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal, NativeModules } from 'react-native'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import * as paymentAction from '../actions/payment'
@@ -202,7 +202,9 @@ class PaymentDoku extends React.Component {
   }
 
   notifikasi () {
-    NativeModules.DOKU.openPaymentDokuWallet(2)
+    NavigationActions.paymentsuccess({
+      type: ActionConst.PUSH
+    })
   }
 
   cobaLagi () {

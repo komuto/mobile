@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView, NativeModules } from 'react-native'
+import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -165,22 +165,20 @@ class Payment extends React.Component {
         idCart: idCart
       })
     } else if (typeText === 'kartu-kredit') {
-      // NavigationActions.paymentcreditcard({
-      //   type: ActionConst.PUSH,
-      //   idCart: idCart
-      // })
-      NativeModules.DOKU.openPaymentDokuWallet(1)
+      NavigationActions.paymentcreditcard({
+        type: ActionConst.PUSH,
+        idCart: idCart
+      })
     } else if (typeText === 'alfamart') {
       NavigationActions.paymentalfamart({
         type: ActionConst.PUSH,
         idCart: idCart
       })
     } else if (typeText === 'doku-wallet') {
-      // NavigationActions.paymentdoku({
-      //   type: ActionConst.PUSH,
-      //   idCart: idCart
-      // })
-      NativeModules.DOKU.openPaymentDokuWallet(2)
+      NavigationActions.paymentdoku({
+        type: ActionConst.PUSH,
+        idCart: idCart
+      })
     }
   }
 

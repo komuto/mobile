@@ -63,14 +63,14 @@ class DiskusiProdukKomentar extends React.Component {
     if (nextProps.tambahKomentar.status === 200) {
       ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
       this.setState({ data: [], komentar: '' })
-      this.props.getComment(this.state.id, this.state.discussionId, 1)
+      this.props.getComment(this.state.discussionId, 1)
       this.props.resetNewComment()
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.getComment(this.state.id, this.state.discussionId, 1)
+    this.props.getComment(this.state.discussionId, 1)
   }
 
   handlePertanyaan = (text) => {
@@ -170,19 +170,19 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   loadMore () {
-    const { id, discussionId, page, loadmore, isLoading } = this.state
+    const { discussionId, page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
         this.setState({ isLoading: true })
-        this.props.getComment(id, discussionId, page)
+        this.props.getComment(discussionId, page)
       }
     }
   }
 
   kirimKomentar () {
-    const { komentar, id, discussionId } = this.state
+    const { komentar, discussionId } = this.state
     if (komentar !== '') {
-      this.props.newComment(id, discussionId, komentar)
+      this.props.newComment(discussionId, komentar)
     } else {
       Alert.alert('Pesan', 'Mohon tulis komentar anda dahulu')
     }
@@ -227,8 +227,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getComment: (productId, id, page) => dispatch(productAction.getComment({ productId: productId, id: id, page: page })),
-    newComment: (productId, id, content) => dispatch(productAction.newComment({ productId: productId, id: id, content: content })),
+    getComment: (id, page) => dispatch(productAction.getComment({ id: id, page: page })),
+    newComment: (id, content) => dispatch(productAction.newComment({ id: id, content: content })),
     resetNewComment: () => dispatch(productAction.resetNewComment())
   }
 }

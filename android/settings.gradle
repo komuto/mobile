@@ -1,5 +1,5 @@
 rootProject.name = 'KomutoApps'
-include ':react-native-fcm', ':sdkocov2-release'
+include ':react-native-fcm'
 project(':react-native-fcm').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-fcm/android')
 include ':react-native-image-crop-picker'
 project(':react-native-image-crop-picker').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-crop-picker/android')

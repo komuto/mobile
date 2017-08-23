@@ -321,7 +321,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     registers: (name, phoneNumber, email, gender, password) => dispatch(registerAction.register({
-      name, phone_number: phoneNumber, email, gender, password})),
+      name, phone_number: phoneNumber, email, gender, password, reg_token: 'asdf'})),
     stateLogin: (login) => dispatch(registerAction.stateLogin({login})),
     getProfile: (login) => dispatch(registerAction.getProfile())
   }

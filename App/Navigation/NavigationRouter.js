@@ -102,6 +102,8 @@ import DetailProductStore from '../Containers/DetailProductStore'
 import StatusStockDropshipping from '../Containers/StatusStockDropshipping'
 import EditProductPhoto from '../Containers/EditProductPhoto'
 import EditProductNameAndCategory from '../Containers/EditProductNameAndCategory'
+import EditProductPriceAndSpecification from '../Containers/EditProductPriceAndSpecification'
+import EditProductExpedition from '../Containers/EditProductExpedition'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -871,6 +873,20 @@ class NavigationRouter extends Component {
             component={EditProductNameAndCategory}
             navBar={CustomNavBar}
             title='Nama dan Kategory Produk'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='editproductpriceandspecification'
+            component={EditProductPriceAndSpecification}
+            navBar={CustomNavBar}
+            title='Harga dan Spesifikasi'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='editproductexpedition'
+            component={EditProductExpedition}
+            navBar={CustomNavBar}
+            title='Ekspedisi Pengiriman'
             hideNavBar={false}
             hideBackImage={false} />
         </Scene>

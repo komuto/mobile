@@ -36,7 +36,8 @@ class DiskusiProdukKomentar extends React.Component {
       loadmore: true,
       isRefreshing: false,
       isLoading: false,
-      komentar: ''
+      komentar: '',
+      getData: this.props.getData
     }
   }
 
@@ -44,16 +45,26 @@ class DiskusiProdukKomentar extends React.Component {
     if (nextProps.dataDiskusi.status === 200) {
       if (nextProps.dataDiskusi.comments.length > 0) {
         console.log(nextProps.dataDiskusi.comments)
-        let data = [...this.state.data, ...nextProps.dataDiskusi.comments]
-        this.setState({
-          data: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true
-        })
+        if (this.state.getData) {
+          this.setState({
+            data: nextProps.dataDiskusi.comments,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            getData: false
+          })
+        } else {
+          let data = [...this.state.data, ...nextProps.dataDiskusi.comments]
+          this.setState({
+            data: data,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true
+          })
+        }
       } else {
-        console.log('end')
         this.setState({
           loadmore: false,
           isLoading: false
@@ -62,7 +73,7 @@ class DiskusiProdukKomentar extends React.Component {
     }
     if (nextProps.tambahKomentar.status === 200) {
       ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
-      this.setState({ data: [], komentar: '' })
+      this.setState({ data: [], komentar: '', page: 1 })
       this.props.getComment(this.state.discussionId, 1)
       this.props.resetNewComment()
     }

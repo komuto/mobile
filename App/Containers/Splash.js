@@ -18,7 +18,7 @@ class Splash extends React.Component {
         console.log(value)
       }
       SplashScreen.hide()
-      NavigationActions.expeditionproduct({ type: ActionConst.REPLACE })
+      NavigationActions.editproductnameandcategory({ type: ActionConst.REPLACE })
     }).done()
   }
 

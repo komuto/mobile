@@ -14,6 +14,7 @@ import * as catalogReducers from './catalog'
 import * as cartReducers from './cart'
 import * as paymentReducers from './payment'
 import * as transactionReducers from './transaction'
+import * as messageReducers from './message'
 
 const user = {
   user: userReducers.auth,
@@ -73,6 +74,7 @@ const store = {
   sendMessageStore: storeReducers.sendMessageStore,
   ownStore: storeReducers.getOwnStore,
   storeProducts: storeReducers.getStoreProducts,
+  storeProductDetail: storeReducers.getStoreProductDetail,
   storeCatalogProducts: storeReducers.getStoreCatalogProducts,
   createStoreTemp: storeReducers.processCreateStore,
   updateStore: storeReducers.updateStore,
@@ -141,6 +143,14 @@ const location = {
   villages: locationReducers.village
 }
 
+const message = {
+  buyerMessages: messageReducers.getBuyerMessages,
+  sellerMessages: messageReducers.getSellerMessages,
+  buyerDetailMessage: messageReducers.getBuyerDetailMessage,
+  sellerDetailMessage: messageReducers.getSellerDetailMessage,
+  archiveMessage: messageReducers.archiveMessage
+}
+
 const payment = {
   dokuPayment: paymentReducers.payDoku,
   invoice: paymentReducers.getDokuInvoice,
@@ -151,7 +161,9 @@ const payment = {
 
 const review = {
   productReview: reviewReducers.getReviews,
-  addReview: reviewReducers.addReview
+  addReview: reviewReducers.addReview,
+  buyerReview: reviewReducers.getBuyerReview,
+  sellerReview: reviewReducers.getSellerReview
 }
 
 const transaction = {
@@ -173,7 +185,8 @@ const komutoApps = storage.reducer(combineReducers({
   ...location,
   ...review,
   ...payment,
-  ...transaction
+  ...transaction,
+  ...message
 }))
 
 export default komutoApps

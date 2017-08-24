@@ -73,7 +73,8 @@ class ProductDiscussion extends React.Component {
       foto: this.state.foto,
       namaProduk: this.state.namaProduk,
       discussionId: id,
-      data: []
+      data: [],
+      getData: true
     })
   }
 
@@ -128,7 +129,7 @@ class ProductDiscussion extends React.Component {
         </View>
         <View style={styles.komentarContainer}>
           <View style={styles.foto} />
-          <TouchableOpacity style={styles.infoContainerRow} onPress={() => this.detailDiskusi(this.state.id, rowData.id, 1)}>
+          <TouchableOpacity style={styles.infoContainerRow} onPress={() => this.detailDiskusi(rowData.id, 1)}>
             <Image source={Images.diskusiGrey} style={styles.logoDiskusi} />
             <Text style={styles.textKomentarContainer}>
               {rowData.count_comments} komentar

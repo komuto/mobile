@@ -12,6 +12,7 @@ import * as catalogActions from '../actions/catalog'
 import * as cartActions from '../actions/cart'
 import * as paymentActions from '../actions/payment'
 import * as transactionActions from '../actions/transaction'
+import * as messageActions from '../actions/message'
 import * as userSaga from './user'
 import * as homeSaga from './home'
 import * as brandSaga from './brand'
@@ -26,6 +27,7 @@ import * as catalogSaga from './catalog'
 import * as cartSaga from './cart'
 import * as paymentSaga from './payment'
 import * as transactionSaga from './transaction'
+import * as messageSaga from './message'
 import { takeEvery, takeLatest } from 'redux-saga/effects'
 import { typeReq } from '../config'
 
@@ -44,6 +46,7 @@ function* dataSaga () {
   yield * payment()
   yield * review()
   yield * transaction()
+  yield * message()
 }
 
 const user = function* () {
@@ -110,6 +113,7 @@ const store = function* () {
   yield takeEvery(typeReq(storeActions.STORE_EXPEDITION_MANAGE), storeSaga.storeExpeditionManage)
   yield takeEvery(typeReq(storeActions.GET_OWN_STORE), storeSaga.getOwnStore)
   yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS), storeSaga.getStoreProducts)
+  yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCT_DETAIL), storeSaga.getStoreProductDetail)
   yield takeEvery(typeReq(storeActions.GET_STORE_CATALOG_PRODUCTS), storeSaga.getStoreCatalogProducts)
   yield takeEvery(typeReq(storeActions.UPDATE_INFORMATION), storeSaga.updateInformation)
   yield takeEvery(typeReq(storeActions.UPDATE_TERM), storeSaga.updateTerm)
@@ -180,6 +184,15 @@ const location = function* () {
   yield takeEvery(typeReq(locationActions.GET_VILLAGE), locationSaga.getVillage)
 }
 
+const message = function* () {
+  yield takeEvery(typeReq(messageActions.GET_BUYER_MESSAGES), messageSaga.getBuyerMessages)
+  yield takeEvery(typeReq(messageActions.GET_SELLER_MESSAGES), messageSaga.getSellerMessages)
+  yield takeEvery(typeReq(messageActions.GET_BUYER_DETAIL_MESSAGE), messageSaga.getBuyerDetailMessage)
+  yield takeEvery(typeReq(messageActions.GET_SELLER_DETAIL_MESSAGE), messageSaga.getSellerDetailMessage)
+  yield takeEvery(typeReq(messageActions.ARCHIVE_BUYER_MESSAGE), messageSaga.archiveBuyerMessage)
+  yield takeEvery(typeReq(messageActions.ARCHIVE_SELLER_MESSAGE), messageSaga.archiveSellerMessage)
+}
+
 const payment = function* () {
   yield takeEvery(typeReq(paymentActions.PAY_DOKU), paymentSaga.payDoku)
   yield takeEvery(typeReq(paymentActions.GET_DOKU_INVOICE), paymentSaga.getDokuInvoice)
@@ -191,6 +204,8 @@ const payment = function* () {
 const review = function* () {
   yield takeEvery(typeReq(reviewActions.GET_REVIEWS), reviewSaga.getReviews)
   yield takeEvery(typeReq(reviewActions.ADD_REVIEW), reviewSaga.addReview)
+  yield takeEvery(typeReq(reviewActions.GET_BUYER_REVIEW), reviewSaga.getBuyerReview)
+  yield takeEvery(typeReq(reviewActions.GET_SELLER_REVIEW), reviewSaga.getSellerReview)
 }
 
 const transaction = function* () {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 
@@ -8,6 +8,7 @@ import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as categoriAction from '../actions/home'
 import * as brandAction from '../actions/brand'
 import * as katalogAction from '../actions/catalog'
+import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/EditProductNameAndCategoryStyle'
@@ -120,6 +121,11 @@ class EditProductNameAndCategory extends React.Component {
         loading: false,
         brand: this.state.tambahanBrand.concat(nextProps.dataBrand.brands)
       })
+    }
+    if (nextProps.dataUpdateData.status === 200) {
+      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+    } else if (nextProps.dataUpdateData.status > 200) {
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
 
@@ -523,23 +529,10 @@ class EditProductNameAndCategory extends React.Component {
     )
   }
 
-  nextState () {
-    // const {dataProduk, namaProduk, idkategoriTerpilih, idBrandTerpilih, descProduk} = this.state
-    // if (namaProduk === '') {
-    //   this.onError('namaproduk')
-    // } else {
-    //   dataProduk[0] = namaProduk
-    //   dataProduk[1] = idkategoriTerpilih
-    //   dataProduk[2] = idBrandTerpilih
-    //   dataProduk[3] = descProduk
-    //   console.log(dataProduk)
-    //   this.props.getCatalog()
-    //   NavigationActions.priceandspesificationproduct({
-    //     type: ActionConst.PUSH,
-    //     dataProduk: dataProduk,
-    //     images: this.state.images
-    //   })
-    // }
+  save () {
+    const { namaProduk, idkategoriTerpilih } = this.state
+    this.props.updateData(namaProduk, idkategoriTerpilih)
+    console.log(namaProduk, idkategoriTerpilih)
   }
 
   render () {
@@ -582,15 +575,18 @@ const mapStateToProps = (state) => {
     dataSubKategori1: state.subCategory,
     dataSubKategori2: state.subCategory,
     dataSubKategori3: state.subCategory,
-    dataBrand: state.brands
+    dataBrand: state.brands,
+    dataUpdateData: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    allCategory: dispatch(categoriAction.categoryList()),
     getSubKategori1: (id) => dispatch(categoriAction.subCategory({id})),
     getBrand: (id) => dispatch(brandAction.getBrand()),
-    getCatalog: () => dispatch(katalogAction.getListCatalog())
+    getCatalog: () => dispatch(katalogAction.getListCatalog()),
+    updateData: (name, category) => dispatch(productAction.updateProduct({name: name, category_id: category}))
   }
 }
 

@@ -182,3 +182,23 @@ export const processCreateStore = (state = initProcessCreateStore, { type, ...te
       return state
   }
 }
+
+export const getStoreDiscussions = (state = initState({ storeDiscussions: [] }, true), action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_STORE_DISCUSSIONS:
+      return buildReducer(state, action, type, 'storeDiscussions', true)
+    default:
+      return state
+  }
+}
+
+export const getStoreProductDetail = (state = initState({ storeProductDetail: {} }), action) => {
+  const type = buildType(action.type)
+  switch (type) {
+    case actions.GET_STORE_PRODUCT_DETAIL:
+      return buildReducer(state, action, type, 'storeProductDetail')
+    default:
+      return state
+  }
+}

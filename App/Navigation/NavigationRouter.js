@@ -104,6 +104,8 @@ import EditProductPhoto from '../Containers/EditProductPhoto'
 import EditProductNameAndCategory from '../Containers/EditProductNameAndCategory'
 import EditProductPriceAndSpecification from '../Containers/EditProductPriceAndSpecification'
 import EditProductExpedition from '../Containers/EditProductExpedition'
+import EditProductCatalog from '../Containers/EditProductCatalog'
+import EditWholesale from '../Containers/EditWholesale'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -887,6 +889,20 @@ class NavigationRouter extends Component {
             component={EditProductExpedition}
             navBar={CustomNavBar}
             title='Ekspedisi Pengiriman'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='editproductcatalog'
+            component={EditProductCatalog}
+            navBar={CustomNavBar}
+            title='Ubah Katalog'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='editwholesale'
+            component={EditWholesale}
+            navBar={CustomNavBar}
+            title='Harga Grosir'
             hideNavBar={false}
             hideBackImage={false} />
         </Scene>

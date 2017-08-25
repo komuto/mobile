@@ -140,10 +140,12 @@ class PurchaseCart extends React.Component {
           diskon: nextProps.dataPromo.promo.nominal
         })
       }
+      nextProps.dataPromo.status = 0
     } else if (nextProps.dataPromo.status > 200) {
       this.setState({
         modalPromo: false
       })
+      nextProps.dataPromo.status
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
@@ -153,8 +155,10 @@ class PurchaseCart extends React.Component {
         statusDiskon: false,
         requestPromo: false
       })
+      nextProps.dataCancelPromo.status = 0
     } else if (nextProps.dataCancelPromo.status > 200) {
       this.setState({ requestPromo: false })
+      nextProps.dataCancelPromo.status = 0
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCheckout.status === 200) {

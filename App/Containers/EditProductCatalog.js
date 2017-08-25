@@ -197,8 +197,8 @@ class EditProductCatalog extends React.Component {
   }
 
   save () {
-    const { idCatalog } = this.state
-    this.props.updateData(idCatalog)
+    const { id, idCatalog } = this.state
+    this.props.updateData(id, idCatalog)
   }
 
   render () {
@@ -257,7 +257,7 @@ const mapDispatchToProps = (dispatch) => {
       }
     )),
     createProductFromDropshipper: (id, idCatalog) => dispatch(productAction.addDropshipProducts({id: id, catalog_id: idCatalog})),
-    updateData: (idCatalog) => dispatch(productAction.updateProduct({catalog_id: idCatalog}))
+    updateData: (id, idCatalog) => dispatch(productAction.updateProduct({id: id, catalog_id: idCatalog}))
   }
 }
 

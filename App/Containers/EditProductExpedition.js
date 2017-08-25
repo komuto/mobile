@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as expeditionAction from '../actions/expedition'
 import * as productAction from '../actions/product'
 
@@ -16,6 +15,7 @@ class EditProductExpedition extends React.Component {
     super(props)
     this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
+      id: this.props.id,
       imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
       namaProduk: 'Sepatu Lari Nike',
       dataListEkspedisi: [],
@@ -48,30 +48,16 @@ class EditProductExpedition extends React.Component {
         filterPengiriman: dataTemp,
         expeditionServices: dataTempSec
       })
-    } if (nextProps.dataServicesExpedition.status && nextProps.dataServicesExpedition.status === 200) {
+    } if (nextProps.dataServicesExpedition.status && nextProps.dataEkspedisiList.status === 200) {
       this.setState({
         loading: false
       })
-    } if (nextProps.dataCreateProduk.status === 200) {
-      this.setState({
-        loading: false
-      })
-      NavigationActions.notification({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'succestambahproduk',
-        hideNavBar: true,
-        hideBackImage: true
-      })
-      nextProps.dataCreateProduk.status = 0
-    } if (nextProps.dataCreateProduk.status > 200) {
-      this.setState({
-        loading: true
-      })
-      console.log('error')
     }
     if (nextProps.dataUpdateData.status === 200) {
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
@@ -82,9 +68,9 @@ class EditProductExpedition extends React.Component {
   }
 
   save () {
-    const { expeditionServices } = this.state
+    const { id, expeditionServices } = this.state
     console.log(expeditionServices)
-    this.props.updateData(expeditionServices)
+    this.props.updateData(id, expeditionServices)
   }
 
   checkParent (title) {
@@ -293,7 +279,7 @@ const mapDispatchToProps = (dispatch) => {
         images: images
       }
     )),
-    updateData: (expeditions) => dispatch(productAction.updateProduct({expeditions: expeditions}))
+    updateData: (id, expeditions) => dispatch(productAction.updateProduct({id: id, expeditions: expeditions}))
   }
 }
 

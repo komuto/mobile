@@ -420,7 +420,8 @@ class DetailProductStore extends React.Component {
   changeCatalog (id) {
     console.log(id)
     NavigationActions.editproductcatalog({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      id: id
     })
   }
 
@@ -429,7 +430,7 @@ class DetailProductStore extends React.Component {
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
           <Text style={styles.titleMenu}>Kategori</Text>
-          <TouchableOpacity onPress={() => this.changeCatalog(this.state.catalog.id)}>
+          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>
@@ -493,9 +494,10 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changeExpedition () {
+  changeExpedition (id) {
     NavigationActions.editproductexpedition({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      id: id
     })
   }
 
@@ -504,7 +506,7 @@ class DetailProductStore extends React.Component {
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
           <Text style={styles.titleMenu}>Ekspedisi Pengiriman</Text>
-          <TouchableOpacity onPress={() => this.changeExpedition()}>
+          <TouchableOpacity onPress={() => this.changeExpedition(this.state.product.id)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>

@@ -22,6 +22,7 @@ class EditProductPriceAndSpecification extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
+      id: this.props.id,
       images: this.props.images,
       imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
       namaProduk: this.props.name,
@@ -33,7 +34,7 @@ class EditProductPriceAndSpecification extends React.Component {
       namaKatalog: '',
       jenisProduk: 'baru',
       indexKondisi: this.props.condition,
-      data: [{label: 'Baru', value: 0}, {label: 'Bekas', value: 1}],
+      data: [{label: 'Bekas', value: 0}, {label: 'Baru', value: 1}],
       jenisAsuransi: 'opsional',
       indexAsuransi: 0,
       isInsurance: this.props.insurance,
@@ -582,33 +583,16 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   save () {
-    // const {images, harga, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
-    // let detailGrosir = []
-    // let tempGrosir = []
-    // detailGrosir[0] = parseInt(minimalGrosir)
-    // detailGrosir[1] = parseInt(maksimalGrosir)
-    // detailGrosir[2] = Number(hargaGrosir.replace(/[^0-9,]+/g, ''))
-    // tempGrosir[0] = detailGrosir
-    // dataProduk[4] = Number(harga.replace(/[^0-9,]+/g, ''))
-    // dataProduk[5] = parseInt(beratProduk)
-    // dataProduk[6] = parseInt(stokProduk)
-    // dataProduk[7] = parseInt(indexKondisi)
-    // dataProduk[8] = isInsurance
-    // dataProduk[9] = dropShippingActive
-    // dataProduk[10] = idKatalogTerpilih
-    // // dataProduk[11] = tempGrosir
-    // console.log(dataProduk)
-    // NavigationActions.expeditionproduct({
-    //   type: ActionConst.PUSH,
-    //   dataProduk: dataProduk,
-    //   image: images
-    // })
-    const { harga, beratProduk, indexKondisi, isInsurance } = this.state
-    let price = Number(harga.replace(/[^0-9,]+/g, ''))
+    const { id, harga, beratProduk, indexKondisi, isInsurance } = this.state
+    let price
+    try {
+      price = Number(harga.replace(/[^0-9,]+/g, ''))
+    } catch (e) {
+      price = harga
+    }
     let weight = parseInt(beratProduk)
     let condition = parseInt(indexKondisi)
-
-    this.props.updateData(price, weight, condition, isInsurance)
+    this.props.updateData(id, price, weight, condition, isInsurance)
   }
 
   render () {
@@ -655,8 +639,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(katalogAction.getListCatalog()),
     createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
-    updateData: (price, weight, condition, isInsurance) => dispatch(productAction.updateProduct({
-      price: price, weight: weight, condition: condition, is_insurance: isInsurance
+    updateData: (id, price, weight, condition, isInsurance) => dispatch(productAction.updateProduct({
+      id: id, price: price, weight: weight, condition: condition, is_insurance: isInsurance
     }))
   }
 }

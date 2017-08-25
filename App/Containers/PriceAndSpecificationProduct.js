@@ -40,7 +40,7 @@ class PriceAndSpecificationProduct extends React.Component {
       grosirAktif: false,
       tambahDaftarGrosir: false,
       dropShippingActive: false,
-      sembunyikanBarang: false,
+      sembunyikanBarang: 1,
       modalTambahKatalog: false,
       modalListKatalog: false,
       katalogTerpilih: 'Katalog Anda',
@@ -413,16 +413,20 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   handleSembuntikanBarang () {
-    if (!this.state.sembunyikanBarang) {
-      this.setState({sembunyikanBarang: true})
+    if (this.state.sembunyikanBarang === 1) {
+      this.setState({sembunyikanBarang: 0})
     } else {
-      this.setState({sembunyikanBarang: false})
+      this.setState({sembunyikanBarang: 1})
     }
   }
 
   opsi () {
     const centangDropshipping = this.state.dropShippingActive ? Images.centang : null
-    const centangSebunyikanBarang = this.state.sembunyikanBarang ? Images.centang : null
+    if (this.state.sembunyikanBarang === 1) {
+      this.centangSebunyikanBarang = null
+    } else {
+      this.centangSebunyikanBarang = Images.centang
+    }
     return (
       <View>
         <Text style={styles.title}>Opsi</Text>
@@ -448,7 +452,7 @@ class PriceAndSpecificationProduct extends React.Component {
             <View style={[styles.left, {flex: 0}]}>
               <TouchableOpacity style={styles.checkBox} onPress={() => this.handleSembuntikanBarang()}>
                 <Image
-                  source={centangSebunyikanBarang}
+                  source={this.centangSebunyikanBarang}
                   style={styles.gambarCentangBox}
                 />
               </TouchableOpacity>
@@ -594,7 +598,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   nextState () {
-    const {images, harga, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
+    const {images, sembunyikanBarang, harga, diskon, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
     let detailGrosir = []
     let tempGrosir = []
     detailGrosir[0] = parseInt(minimalGrosir)
@@ -608,6 +612,8 @@ class PriceAndSpecificationProduct extends React.Component {
     dataProduk[8] = isInsurance
     dataProduk[9] = dropShippingActive
     dataProduk[10] = idKatalogTerpilih
+    dataProduk[11] = sembunyikanBarang
+    dataProduk[12] = diskon
     // dataProduk[11] = tempGrosir
     console.log(dataProduk)
     NavigationActions.expeditionproduct({

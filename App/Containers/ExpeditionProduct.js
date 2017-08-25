@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, ScrollView, ToastAndroid, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as expeditionAction from '../actions/expedition'
@@ -63,9 +63,9 @@ class ExpeditionProduct extends React.Component {
       nextProps.dataCreateProduk.status = 0
     } if (nextProps.dataCreateProduk.status > 200) {
       this.setState({
-        loading: true
+        loading: false
       })
-      console.log('error')
+      ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
     }
   }
 
@@ -77,10 +77,10 @@ class ExpeditionProduct extends React.Component {
   nextState () {
     const {expeditionServices, image, dataProduk} = this.state
     this.setState({
-      loading: false
+      loading: true
     })
-    dataProduk[11] = expeditionServices
-    dataProduk[12] = image
+    dataProduk[13] = expeditionServices
+    dataProduk[14] = image
     this.props.createProduk(
       dataProduk[0],
       dataProduk[1],
@@ -94,7 +94,9 @@ class ExpeditionProduct extends React.Component {
       dataProduk[9],
       dataProduk[10],
       dataProduk[11],
-      dataProduk[12]
+      dataProduk[12],
+      dataProduk[13],
+      dataProduk[14]
     )
     console.log(dataProduk)
   }
@@ -297,7 +299,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getExpedition: () => dispatch(expeditionAction.getExpedition()),
     getServicesExpedition: () => dispatch(expeditionAction.getServices()),
-    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, expeditions, images) =>
+    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, status, discount, expeditions, images) =>
     dispatch(productAction.createProduct(
       {
         name: name,
@@ -311,6 +313,8 @@ const mapDispatchToProps = (dispatch) => {
         is_insurance: insurance,
         is_dropship: isDropship,
         catalog_id: catalogId,
+        status: status,
+        discount: discount,
         expeditions: expeditions,
         images: images
       }

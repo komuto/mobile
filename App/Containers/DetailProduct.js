@@ -1333,7 +1333,6 @@ class DetailProduct extends React.Component {
           fotoToko: this.state.fotoToko,
           namaToko: this.state.namaToko,
           price: this.state.price,
-          isFromDropshipper: true,
           id: this.state.id
         })
         this.props.getCatalog()

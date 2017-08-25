@@ -212,11 +212,13 @@ export default StyleSheet.create({
     backgroundColor: 'white'
   },
   spinnerProduk: {
-    backgroundColor: Colors.background,
-    height: 177.25,
+    position: 'absolute',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'black',
     width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
     opacity: 0.5
   },
   moneyLikesContainer: {

@@ -21,6 +21,7 @@ import { MaskService } from 'react-native-masked-text'
 import * as produkAction from '../actions/product'
 import * as storeAction from '../actions/stores'
 import * as catalogAction from '../actions/catalog'
+import * as categoriAction from '../actions/home'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
@@ -451,7 +452,7 @@ class ProductList extends React.Component {
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
     return (
-      <TouchableOpacity activeOpacity={100} onPress={() => this.setState({statusDot: false})} style={styles.container}>
+      <View style={styles.container}>
         <ScrollableTabView
           prerenderingSiblingsNumber={2}
           style={this.state.tabViewStyle}
@@ -480,7 +481,7 @@ class ProductList extends React.Component {
         {this.renderTambahButton()}
         {this.renderModal()}
         {spinner}
-      </TouchableOpacity>
+      </View>
     )
   }
 }
@@ -497,7 +498,8 @@ const mapDispatchToProps = (dispatch) => {
     getProductByCatalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
+    getKategori: (id) => dispatch(categoriAction.subCategory({id: id}))
   }
 }
 

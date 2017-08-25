@@ -7,6 +7,16 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   headerProduct: {
     padding: 20,
     borderBottomColor: Colors.silver,
@@ -97,6 +107,33 @@ export default StyleSheet.create({
     paddingLeft: 5,
     paddingTop: 15.8,
     paddingBottom: 27,
-    height: 118.7
+    height: 240.5
+  },
+  textDesc: {
+    color: Colors.labelgrey,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    lineHeight: 23,
+    paddingLeft: 55,
+    paddingRight: 20
+  },
+  headerModal: {
+    elevation: 1,
+    backgroundColor: Colors.snow,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 18,
+    paddingBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  texthapus: {
+    color: Colors.red,
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.smallMed
+  },
+  imagePicker: {
+    height: 24,
+    width: 24
   }
 })

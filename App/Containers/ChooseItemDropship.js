@@ -59,7 +59,7 @@ class ChooseItemDropship extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      loading: this.props.loading
+      loading: true
     }
   }
 
@@ -81,7 +81,8 @@ class ChooseItemDropship extends React.Component {
     } if (nextProps.dataFilter.status === 200) {
       this.setState({
         listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products
+        rowDataSource: nextProps.dataFilter.products,
+        loading: false
       })
     } else if (nextProps.dataFilter.status > 200) {
       console.log(nextProps.dataFilter.status)
@@ -549,7 +550,7 @@ class ChooseItemDropship extends React.Component {
 
   render () {
     const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
+    ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
     return (
@@ -569,7 +570,7 @@ class ChooseItemDropship extends React.Component {
         </View>
         {this.renderSearch()}
         {this.renderilihKategori()}
-        <ScrollView style={styles.listViewContainer}>
+        <ScrollView>
           {this.viewProduk()}
         </ScrollView>
         <View style={styles.footerMenu}>

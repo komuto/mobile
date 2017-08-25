@@ -333,7 +333,8 @@ class Profile extends React.Component {
     if (this.state.verifyNoHp) {
       if (this.state.statusToko === 1) {
         NavigationActions.storedashboard({
-          type: ActionConst.PUSH
+          type: ActionConst.PUSH,
+          title: 'Toko Anda'
         })
       } else {
         NavigationActions.infostore({

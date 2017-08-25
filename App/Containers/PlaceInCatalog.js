@@ -8,17 +8,19 @@ import {
   BackAndroid,
   Modal,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import CustomRadio from '../Components/CustomRadio'
+import CustomRadio from '../Components/CustomRadioCatalog'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as catalogAction from '../actions/catalog'
 import * as productAction from '../actions/product'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/TempatkanDiKatalogScreenStyle'
@@ -29,24 +31,18 @@ class PlaceInCatalog extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      id: this.props.id,
       data: [],
+      listKatalog: [],
+      id: this.props.id,
       foto: this.props.fotoToko || null,
       price: this.props.price || 1000,
       namaToko: this.props.namaToko || null,
-      page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: false,
-      index: '',
-      catalogValue: '',
-      listKatalog: [],
-      idCatalog: '',
+      productName: this.props.productName || null,
+      index: this.props.catalogId,
+      idCatalog: this.props.catalogId,
       modalTambahKatalog: false,
       namaKatalog: '',
-      dataProduct: this.props.dataProduk,
-      imageAndExpedition: this.props.imageAndExpedition,
-      isFromDropshipper: this.props.isFromDropshipper || false
+      statusCreateProduct: this.props.createDropshipper
     }
   }
 
@@ -54,7 +50,7 @@ class PlaceInCatalog extends React.Component {
     if (nextProps.dataCatalog.status === 200) {
       let temp = this.state.listKatalog
       nextProps.dataCatalog.catalogs.map((data, i) => {
-        temp[i] = ({value: i, label: data.name, id: data.id})
+        temp[i] = ({'index': data.id, 'label': data.name})
       })
       this.setState({
         listKatalog: temp,
@@ -78,10 +74,15 @@ class PlaceInCatalog extends React.Component {
         hideBackImage: true
       })
       nextProps.dataCreateProdukDropshipper.status = 0
-    }
-    if (nextProps.dataCreateProdukDropshipper.status > 200) {
+    } if (nextProps.alterProduct.status === 200) {
       this.setState({
-        loading: true
+        loading: false
+      })
+      nextProps.alterProduct.status = 0
+    } if (nextProps.dataCreateProdukDropshipper.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
+      this.setState({
+        loading: false
       })
     }
   }
@@ -92,6 +93,8 @@ class PlaceInCatalog extends React.Component {
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+    this.props.getListProduk()
+    this.props.getHiddenProduct()
   }
 
   handleBack = () => {
@@ -115,7 +118,7 @@ class PlaceInCatalog extends React.Component {
           />
           <View style={styles.namaContainer}>
             <Text style={styles.textNama}>
-              {this.state.namaToko}
+              {this.state.productName}
             </Text>
             <View style={styles.rowContainer}>
               <Text style={styles.textKelola}>
@@ -129,10 +132,10 @@ class PlaceInCatalog extends React.Component {
     )
   }
 
-  handlingRadio (index, value, id) {
+  handlingRadio (index, value) {
     this.setState({
       index: index,
-      idCatalog: id
+      idCatalog: index
     })
   }
 
@@ -197,8 +200,8 @@ class PlaceInCatalog extends React.Component {
             <CustomRadio
               data={this.state.listKatalog}
               index={this.state.index}
-              handlingRadio={(index1, value1, id) =>
-                this.handlingRadio(index1, value1, id)}
+              handlingRadio={(index, label) =>
+                this.handlingRadio(index, label)}
               vertical
             />
           </View>
@@ -208,28 +211,34 @@ class PlaceInCatalog extends React.Component {
   }
 
   nextState () {
-    const {dataProduct, imageAndExpedition, idCatalog, isFromDropshipper, id} = this.state
+    const {idCatalog, id, statusCreateProduct} = this.state
     this.setState({
       loading: true
     })
-    if (!isFromDropshipper) {
-      this.props.createProduk(
-        dataProduct[0],
-        dataProduct[1],
-        dataProduct[2],
-        dataProduct[3],
-        dataProduct[4],
-        dataProduct[5],
-        dataProduct[6],
-        dataProduct[7],
-        dataProduct[8],
-        dataProduct[9],
-        idCatalog,
-        imageAndExpedition[0],
-        imageAndExpedition[1]
-      )
-    } else {
+    if (statusCreateProduct) {
       this.props.createProductFromDropshipper(id, idCatalog)
+    } else {
+      let tempIdProduct = []
+      tempIdProduct[0] = id
+      this.props.changeCatalog(idCatalog, tempIdProduct)
+    }
+  }
+
+  renderStage () {
+    if (this.state.statusCreateProduct) {
+      <View style={styles.header}>
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>1</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
+          <Text style={[styles.textState, {color: Colors.background}]}>2</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.state}>
+          <Text style={styles.textState}>3</Text>
+        </View>
+      </View>
     }
   }
 
@@ -240,19 +249,7 @@ class PlaceInCatalog extends React.Component {
     </View>) : (<View />)
     return (
       <View style={[styles.container]}>
-        <View style={styles.header}>
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>1</Text>
-          </View>
-          <View style={styles.line} />
-          <View style={[styles.state, {borderColor: Colors.background, backgroundColor: Colors.red}]}>
-            <Text style={[styles.textState, {color: Colors.background}]}>2</Text>
-          </View>
-          <View style={styles.line} />
-          <View style={styles.state}>
-            <Text style={styles.textState}>3</Text>
-          </View>
-        </View>
+        {this.renderStage()}
         {this.renderProduct()}
         <Text style={styles.bigTitle}>Pilih Katalog yang sesuai dengan produk Anda</Text>
         {this.renderCatalog()}
@@ -273,7 +270,8 @@ const mapStateToProps = (state) => {
   return {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
-    dataCreateProdukDropshipper: state.addDropshipProducts
+    dataCreateProdukDropshipper: state.addDropshipProducts,
+    alterProduct: state.alterProducts
   }
 }
 
@@ -281,25 +279,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
     createCatalog: (name) => dispatch(catalogAction.createCatalog({name: name})),
-    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, expeditions, images) =>
-    dispatch(productAction.createProduct(
-      {
-        name: name,
-        category_id: categoriId,
-        brand_id: brandId,
-        description: desc,
-        price: price,
-        weight: weight,
-        stock: stock,
-        condition: condition,
-        is_insurance: insurance,
-        is_dropship: isDropship,
-        catalog_id: catalogId,
-        expeditions: expeditions,
-        images: images
-      }
-    )),
-    createProductFromDropshipper: (id, idCatalog) => dispatch(productAction.addDropshipProducts({id: id, catalog_id: idCatalog}))
+    changeCatalog: (id, data) => dispatch(productAction.changeCatalogProducts({catalog_id: id, product_ids: data})),
+    createProductFromDropshipper: (id, idCatalog) => dispatch(productAction.addDropshipProducts({id: id, catalog_id: idCatalog})),
+    getListProduk: () => dispatch(storeAction.getStoreProducts()),
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
   }
 }
 

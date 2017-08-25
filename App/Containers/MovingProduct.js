@@ -1,9 +1,10 @@
 import React from 'react'
-import { View, TouchableOpacity, Modal, ScrollView, Image, Text, ListView, ActivityIndicator } from 'react-native'
+import { View, TouchableOpacity, ToastAndroid, Modal, ScrollView, Image, Text, ListView, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as storeAction from '../actions/stores'
+import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/MovingProductStyle'
@@ -22,6 +23,7 @@ class MovingProduct extends React.Component {
       messageNotification: this.props.messageNotification,
       textButton: this.props.textButton,
       actionType: this.props.actionType,
+      idCatalog: this.props.idCatalog,
       product: [],
       listKatalog: [],
       addCatalog: [
@@ -35,25 +37,72 @@ class MovingProduct extends React.Component {
       modalCatalog: false,
       isDropshipper: this.props.isDropshipper || false,
       loading: true,
-      isChecked: false
+      isChecked: false,
+      arrayIdProduct: [],
+      size: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
       this.setState({
-        product: nextProps.dataProduk.storeCatalogProducts.products
+        product: nextProps.dataProduk.storeCatalogProducts.products,
+        loading: false,
+        size: nextProps.dataProduk.storeCatalogProducts.products.length
       })
-    } if (nextProps.dataCatalog.status === 200) {
+      nextProps.dataProduk.status = 0
+    } else if (nextProps.dataCatalog.status === 200) {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
       })
-    } if (nextProps.dataProduk.status > 200) {
-      console.log('ERROR')
+      nextProps.dataCatalog.status = 0
+    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'hideProduct') {
+      this.setState({
+        isChecked: false,
+        notification: true,
+        loading: false,
+        messageNotification: 'Berhasil menyembunyikan barang'
+      })
+      this.props.getProductByCatalog(this.state.idCatalog)
+      nextProps.alterProduct.status = 0
+    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'deleteProduct') {
+      this.setState({
+        isChecked: false,
+        notification: true,
+        loading: false,
+        messageNotification: 'Berhasil menghapus barang'
+      })
+      this.props.getProductByCatalog(this.state.idCatalog)
+      nextProps.alterProduct.status = 0
+    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'moveCatalog') {
+      this.setState({
+        isChecked: false,
+        loading: false,
+        notification: true,
+        messageNotification: 'Berhasil memindahkan ke katalog lain'
+      })
+      this.props.getProductByCatalog(this.state.idCatalog)
+      nextProps.alterProduct.status = 0
+    } else if (nextProps.alterProduct.status === 400 && this.props.actionType === 'deleteProduct') {
+      this.setState({
+        isChecked: false,
+        notification: false,
+        loading: false
+      })
+      ToastAndroid.show(nextProps.alterProduct.message, ToastAndroid.LONG)
+    } else if (nextProps.dataProduk.status > 200) {
+      ToastAndroid.show('Terjadi kesalahan', ToastAndroid.LONG)
+    } else if (nextProps.dataCatalog.status > 200) {
+      ToastAndroid.show('Terjadi kesalahan', ToastAndroid.LONG)
     }
   }
 
   componentDidMount () {
+  }
+
+  componentWillUnmount () {
+    this.props.getListProduk()
+    this.props.getHiddenProduct()
   }
 
   notif () {
@@ -83,18 +132,14 @@ class MovingProduct extends React.Component {
     )
   }
 
-  handleCheck (id) {
-    console.log(id)
-  }
-
-  renderRowData (rowData) {
-    const check = this.state.isChecked ? Images.centang : null
+  renderRowData (rowData, selectionId, rowId) {
+    const checkProduct = rowData.is_checked ? Images.centang : null
     return (
-      <TouchableOpacity style={styles.list} onPress={() => this.handleCheck(rowData.id)}>
+      <TouchableOpacity style={styles.list} onPress={this.handleCheckProduct(rowId, rowData.id)}>
         <View style={[styles.row, {paddingLeft: 0}]}>
           <View style={styles.box}>
             <Image
-              source={check}
+              source={checkProduct}
               style={styles.check}
             />
           </View>
@@ -161,32 +206,124 @@ class MovingProduct extends React.Component {
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
         activeOpacity={0.8}
-        onPress={() => {
-          this.setState({
-            idCatalogChoosen: rowData.id,
-            modalCatalog: false,
-            notification: true,
-            messageNotification: 'Berhasil memindahkan ke katalog lain' })
-        }}
+        onPress={() => this.handleCatalog(rowData.id)}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
       </TouchableOpacity>
     )
   }
 
+  handleCatalog (id) {
+    let data = this.state.arrayIdProduct
+    console.log('kirim', this.state.arrayIdProduct)
+    this.setState({
+      idCatalogChoosen: id,
+      modalCatalog: false
+    })
+    this.props.changeCatalog(id, data)
+  }
+
   handleDeleteProduct () {
+    let data = this.state.arrayIdProduct
+    console.log('kirim', this.state.arrayIdProduct)
+    this.props.setDeleteProduct(data)
     this.setState({
       modalDelete: false,
-      notification: true,
-      messageNotification: 'Berhasil menghapus barang'
+      loading: true
     })
+  }
+
+  handleCheckProduct = (i, id) => (e) => {
+    const {product} = this.state
+    if (product[i].is_checked) {
+      product[i].is_checked = false
+      const newDataSource = product.map(data => {
+        return {...data}
+      })
+      this.setState({
+        product: newDataSource,
+        notification: false
+      })
+      let tempunCheck = []
+      product.map((data, j) => {
+        if (data.is_checked) {
+          tempunCheck[j] = data.id
+        }
+      })
+      let temp = []
+      tempunCheck.findIndex((e, i) => {
+        if (e !== undefined) {
+          temp.push(e)
+        }
+      })
+      this.setState({
+        arrayIdProduct: temp
+      })
+      if (temp.length <= product.length) {
+        this.setState({
+          isChecked: false
+        })
+      }
+    } else {
+      product[i].is_checked = true
+      const newDataSource = product.map(data => {
+        return {...data}
+      })
+      this.setState({
+        product: newDataSource
+      })
+      let tempCheck = []
+      product.map((data, i) => {
+        if (data.is_checked) {
+          tempCheck[i] = data.id
+        }
+      })
+      let temp = []
+      tempCheck.findIndex((e, x) => {
+        if (e !== undefined) {
+          temp.push(e)
+        }
+      })
+      this.setState({
+        arrayIdProduct: temp
+      })
+      if (temp.length === product.length) {
+        this.setState({
+          isChecked: true
+        })
+      }
+    }
+  }
+
+  handleCheckAll = (data) => (e) => {
+    const {product, arrayIdProduct, size} = this.state
+    if (arrayIdProduct.length === size) {
+      product.map((data, i) => {
+        product[i].is_checked = false
+      })
+      this.setState({product: product, isChecked: false})
+    } else {
+      product.map((data, i) => {
+        product[i].is_checked = true
+      })
+      this.setState({product: product, isChecked: true})
+    }
+    let tempCheck = []
+    product.map((data, i) => {
+      if (data.is_checked) {
+        tempCheck[i] = data.id
+      }
+    })
+    this.setState({arrayIdProduct: tempCheck, notification: false})
   }
 
   finalAction () {
     if (this.state.actionType === 'hideProduct') {
+      let data = this.state.arrayIdProduct
+      console.log('kirim', this.state.arrayIdProduct)
+      this.props.setHideProduct(data)
       this.setState({
-        notification: true,
-        messageNotification: 'Berhasil menyembunyikan barang'
+        loading: true
       })
     } else if (this.state.actionType === 'deleteProduct') {
       this.setState({
@@ -205,7 +342,7 @@ class MovingProduct extends React.Component {
   }
 
   headerDropshipper () {
-    if (this.state.isDropshipper) {
+    if (this.state.actionType === 'moveDropship') {
       return (
         <View style={styles.containerHeader}>
           <Text style={styles.headerText}>Hanya barang milik Anda sendiri yang bisa dijadikan sebagai dropshipping</Text>
@@ -218,6 +355,37 @@ class MovingProduct extends React.Component {
     }
   }
 
+  headerHideProduct () {
+    if (this.state.actionType === 'hideProduct') {
+      return (
+        <View style={styles.containerHeader}>
+          <Text style={styles.headerText}>Barang yang disembunyikan tidak akan muncul di toko Anda.  Barang Anda yang terbuka untuk dropshipping tetap dapat di dropship oleh toko lain dan tetap bisa dijual seperti biasa oleh toko lain.</Text>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
+  header () {
+    const checkAll = this.state.isChecked ? Images.centang : null
+    return (
+      <TouchableOpacity style={styles.header} onPress={this.handleCheckAll(this.state.product)}>
+        <View style={styles.row}>
+          <View style={styles.box}>
+            <Image
+              source={checkAll}
+              style={styles.check}
+            />
+          </View>
+          <Text style={[styles.title, {marginLeft: 20.7}]}>Pilih Semua Produk</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -227,17 +395,8 @@ class MovingProduct extends React.Component {
       <View style={styles.container}>
         {this.notif()}
         {this.headerDropshipper()}
-        <TouchableOpacity style={styles.header}>
-          <View style={styles.row}>
-            <View style={styles.box}>
-              <Image
-                source={null}
-                style={styles.check}
-              />
-            </View>
-            <Text style={[styles.title, {marginLeft: 20.7}]}>Pilih Semua Produk</Text>
-          </View>
-        </TouchableOpacity>
+        {this.headerHideProduct()}
+        {this.header()}
         <ScrollView>
           <ListView
             dataSource={this.dataSource.cloneWithRows(this.state.product)}
@@ -257,13 +416,20 @@ class MovingProduct extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataProduk: state.storeCatalogProducts,
-    dataCatalog: state.getListCatalog
+    dataCatalog: state.getListCatalog,
+    alterProduct: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id}))
+    getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
+    setDeleteProduct: (data) => dispatch(productAction.deleteProducts({product_ids: data})),
+    changeCatalog: (id, data) => dispatch(productAction.changeCatalogProducts({catalog_id: id, product_ids: data})),
+    getProductByCatalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    getListProduk: () => dispatch(storeAction.getStoreProducts()),
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
   }
 }
 

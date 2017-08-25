@@ -7,9 +7,20 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.background
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   header: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
+    borderWidth: 0.5,
+    borderColor: Colors.silver,
+    backgroundColor: Colors.paleGreyThree
   },
   list: {
     marginLeft: 20,
@@ -143,13 +154,16 @@ export default StyleSheet.create({
   headerText: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
-    color: Colors.lightblack
+    color: Colors.lightblack,
+    lineHeight: 20
   },
   containerHeader: {
     backgroundColor: Colors.paleGreyThree,
     paddingLeft: 20,
     paddingTop: 14.5,
     paddingBottom: 14.5,
-    paddingRight: 47
+    paddingRight: 47,
+    borderWidth: 0.5,
+    borderColor: Colors.silver
   }
 })

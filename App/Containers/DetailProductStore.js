@@ -51,7 +51,7 @@ class DetailProductStore extends React.Component {
         isRefreshing: false
       })
       nextProps.dataDetailProduct.status = 0
-      this.props.getKategori(this.state.id)
+      this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.parent_id)
     } else if (nextProps.dataDetailProduct.status) {
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataDetailProduct.message, ToastAndroid.LONG)
     }
@@ -247,7 +247,7 @@ class DetailProductStore extends React.Component {
 
   checkCategory (data) {
     return (
-      <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.category.name}</Text>
+      <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.nameCategory} / {this.state.category.name}</Text>
     )
   }
 

@@ -7,6 +7,16 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey,
     marginTop: Metrics.navBarHeight
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   textHeader: {
     flex: 1,
     fontFamily: Fonts.type.bold,
@@ -189,5 +199,48 @@ export default StyleSheet.create({
   border: {
     borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5
+  },
+  modalContainer: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  listViewModal: {
+    position: 'absolute',
+    bottom: 95,
+    left: 20,
+    backgroundColor: Colors.snow,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    width: (Metrics.screenWidth * 3) / 4
+  },
+  floatButtonClose: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    backgroundColor: 'rgba(64,72,82,0.8)',
+    borderRadius: 5,
+    width: 45,
+    height: 45,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
+  containerDataLast: {
+    padding: 20
+  },
+  kategori: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.22,
+    color: Colors.darkgrey
+  },
+  containerData: {
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
   }
 })

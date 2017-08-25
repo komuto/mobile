@@ -18,7 +18,7 @@ export const UPDATE_INFORMATION = 'UPDATE_INFORMATION'
 export const UPDATE_TERM = 'UPDATE_TERM'
 export const GET_ADDRESS = 'GET_ADDRESS'
 export const UPDATE_STORE_ADDRESS = 'UPDATE_STORE_ADDRESS'
-export const CREATE_STORE_TEMP = 'CREATE_STORE_TEMP'
+export const TEMP_CREATE_STORE = 'TEMP_CREATE_STORE'
 export const GET_STORE_DISCUSSIONS = 'GET_STORE_DISCUSSIONS'
 
 /**
@@ -114,9 +114,9 @@ export const updateStoreAddress = params => buildAction(typeReq(UPDATE_STORE_ADD
 export const getHiddenStoreProducts = () => buildAction(typeReq(GET_HIDDEN_STORE_PRODUCTS))
 
 /**
- * @state createStoreTemp
+ * @state tempCreateStore
  */
-export const createStoreTemp = params => buildAction(CREATE_STORE_TEMP, params)
+export const tempCreateStore = params => buildAction(TEMP_CREATE_STORE, params)
 
 /**
  * @params params are the same as the api query

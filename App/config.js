@@ -196,3 +196,13 @@ export const buildSagaDelay = (callApi, actionType, delayCount = 200, props = []
     yield errorHandling(typeFail(actionType), e)
   }
 }
+
+/**
+ * Filter update object, field with the value of '$' will not be updated
+ * @param obj {object}
+ */
+export const filterUpdate = obj => Object.keys(obj).reduce((res, prop) => {
+  if (obj[prop] === '$') return res
+  res[prop] = obj[prop]
+  return res
+}, {})

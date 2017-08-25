@@ -61,7 +61,8 @@ const product = {
   report: productReducers.reportProduct,
   alterProducts: productReducers.alterProducts,
   productExpeditions: productReducers.getProductExpeditions,
-  addDropshipProducts: productReducers.addDropshipProducts
+  addDropshipProducts: productReducers.addDropshipProducts,
+  tempCreateProduct: productReducers.tempCreateProduct
 }
 
 const store = {
@@ -76,7 +77,7 @@ const store = {
   storeProducts: storeReducers.getStoreProducts,
   storeProductDetail: storeReducers.getStoreProductDetail,
   storeCatalogProducts: storeReducers.getStoreCatalogProducts,
-  createStoreTemp: storeReducers.processCreateStore,
+  tempCreateStore: storeReducers.tempCreateStore,
   updateStore: storeReducers.updateStore,
   storeAddress: storeReducers.getStoreAddress,
   updateStoreAddress: storeReducers.updateStoreAddress,

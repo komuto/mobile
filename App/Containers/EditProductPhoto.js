@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, ToastAndroid, BackAndroid, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
+import * as storeAction from '../actions/stores'
+import * as productAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -20,7 +22,26 @@ class EditProductPhoto extends React.Component {
       loading: false,
       showModalCamera: false,
       count: 0,
-      images: []
+      images: [],
+      id: this.props.id
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataPhoto.status === 200) {
+      this.setState({
+        loading: false
+      })
+      console.log(nextProps.dataPhoto.payload.images)
+      this.props.updateData(this.state.id, nextProps.dataPhoto.payload.images)
+      nextProps.dataPhoto.status = 0
+    }
+    if (nextProps.dataUpdateData.status === 200) {
+      this.props.resetAlterProduct()
+      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+    } else if (nextProps.dataUpdateData.status > 200) {
+      this.props.resetAlterProduct()
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
 
@@ -100,8 +121,8 @@ class EditProductPhoto extends React.Component {
       postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
     })
     postData.append('type', 'product')
-    // this.props.photoUpload(postData)
-    // this.setState({loading: true})
+    this.props.photoUpload(postData)
+    this.setState({loading: true})
   }
 
   stateOne () {
@@ -145,11 +166,16 @@ class EditProductPhoto extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataPhoto: state.upload,
+    dataUpdateData: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data})),
+    resetAlterProduct: () => dispatch(productAction.resetAlterProduct()),
+    updateData: (id, images) => dispatch(productAction.updateProduct({id: id, images: images}))
   }
 }
 

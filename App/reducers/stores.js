@@ -1,7 +1,7 @@
 import * as actions from '../actions/stores'
 import { buildReducer, buildType, initState } from '../config'
 
-const initProcessCreateStore = {
+const initTempCreateStore = {
   store: {
     name: '',
     slogan: '',
@@ -174,9 +174,9 @@ export const getHiddenStoreProducts = (state = initState({ hiddenStoreProducts: 
   }
 }
 
-export const processCreateStore = (state = initProcessCreateStore, { type, ...temp }) => {
+export const tempCreateStore = (state = initTempCreateStore, { type, ...temp }) => {
   switch (type) {
-    case actions.CREATE_STORE_TEMP:
+    case actions.TEMP_CREATE_STORE:
       return { ...state, ...temp }
     default:
       return state

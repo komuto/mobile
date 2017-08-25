@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { TextInputMask, MaskService } from 'react-native-masked-text'
@@ -7,6 +7,7 @@ import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
 import * as katalogAction from '../actions/catalog'
+import * as productAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -23,19 +24,19 @@ class EditProductPriceAndSpecification extends React.Component {
     this.state = {
       images: this.props.images,
       imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
-      namaProduk: 'Sepatu Lari Nike',
+      namaProduk: this.props.name,
       loading: false,
-      harga: '',
-      diskon: 0,
-      beratProduk: '',
+      harga: this.props.price,
+      diskon: this.props.discount,
+      beratProduk: this.props.weight,
       stokProduk: '',
       namaKatalog: '',
       jenisProduk: 'baru',
-      indexKondisi: 0,
+      indexKondisi: this.props.condition,
       data: [{label: 'Baru', value: 0}, {label: 'Bekas', value: 1}],
       jenisAsuransi: 'opsional',
       indexAsuransi: 0,
-      isInsurance: false,
+      isInsurance: this.props.insurance,
       dataAsuransi: [{label: 'Opsional', value: 0}, {label: 'Wajib', value: 1}],
       listKatalog: [],
       modalDropshipping: false,
@@ -65,6 +66,11 @@ class EditProductPriceAndSpecification extends React.Component {
     } if (nextProps.dataCreateCatalog.status === 200) {
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
+    }
+    if (nextProps.dataUpdateData.status === 200) {
+      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+    } else if (nextProps.dataUpdateData.status > 200) {
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
 
@@ -359,7 +365,12 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   rincianDiskon () {
-    let hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
+    let hargaTemp = 0
+    try {
+      hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
+    } catch (e) {
+      hargaTemp = this.state.harga
+    }
     let diskonTemp = +this.state.diskon
     let hargaMasked = this.maskedText(hargaTemp)
     let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
@@ -529,20 +540,13 @@ class EditProductPriceAndSpecification extends React.Component {
               <View style={{marginLeft: 35}} />
               <View style={styles.flexOne}>
                 <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Harga Produk</Text>
-                <TextInputMask
+                <TextInput
                   style={styles.inputText}
                   value={this.state.hargaGrosir}
                   keyboardType='numeric'
                   returnKeyType='done'
                   autoCapitalize='none'
-                  type='money'
                   maxLength={18}
-                  options={{
-                    unit: 'Rp ',
-                    separator: '.',
-                    delimiter: '.',
-                    precision: 3
-                  }}
                   autoCorrect
                   onChangeText={this.changeHargaGrosir}
                   underlineColorAndroid='transparent'
@@ -599,6 +603,12 @@ class EditProductPriceAndSpecification extends React.Component {
     //   dataProduk: dataProduk,
     //   image: images
     // })
+    const { harga, beratProduk, indexKondisi, isInsurance } = this.state
+    let price = Number(harga.replace(/[^0-9,]+/g, ''))
+    let weight = parseInt(beratProduk)
+    let condition = parseInt(indexKondisi)
+
+    this.props.updateData(price, weight, condition, isInsurance)
   }
 
   render () {
@@ -636,14 +646,18 @@ class EditProductPriceAndSpecification extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataCatalog: state.getListCatalog,
-    dataCreateCatalog: state.createCatalog
+    dataCreateCatalog: state.createCatalog,
+    dataUpdateData: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(katalogAction.getListCatalog()),
-    createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name}))
+    createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
+    updateData: (price, weight, condition, isInsurance) => dispatch(productAction.updateProduct({
+      price: price, weight: weight, condition: condition, is_insurance: isInsurance
+    }))
   }
 }
 

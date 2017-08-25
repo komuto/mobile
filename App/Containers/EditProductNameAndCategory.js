@@ -22,9 +22,10 @@ class EditProductNameAndCategory extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       images: this.props.images,
+      id: this.props.id,
       imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
-      namaProduk: 'Sepatu Lari Nike',
-      descProduk: '',
+      namaProduk: this.props.nameProduct,
+      descProduk: this.props.description,
       active: false,
       errorColorNamaProduk: Colors.snow,
       colorKategori: Colors.labelgrey,
@@ -38,11 +39,36 @@ class EditProductNameAndCategory extends React.Component {
       subKat3Icon: Images.down,
       brandIcon: Images.down,
       loading: false,
-      kategori: [],
-      subKategori1: [],
-      subKategori2: [],
-      subKategori3: [],
-      brand: [],
+      kategori: [
+        {
+          'id': 0,
+          'name': 'Pilih Kategori'
+        }
+      ],
+      subKategori1: [
+        {
+          'id': 0,
+          'name': 'Pilih Sub Kategori 1'
+        }
+      ],
+      subKategori2: [
+        {
+          'id': 0,
+          'name': 'Pilih Sub Kategori 2'
+        }
+      ],
+      subKategori3: [
+        {
+          'id': 0,
+          'name': 'Pilih Sub Kategori 3'
+        }
+      ],
+      brand: [
+        {
+          'id': 0,
+          'name': 'Pilih Brand'
+        }
+      ],
       kategoriTerpilih: 'Pilih Kategori',
       subKategori1Terpilih: 'Pilih Sub Kategori 1',
       subKategori2Terpilih: 'Pilih Sub Kategori 2',
@@ -51,8 +77,9 @@ class EditProductNameAndCategory extends React.Component {
       idkategoriTerpilih: 0,
       idSubKategori1Terpilih: 0,
       idSubKategori2Terpilih: 0,
-      idSubKategori3Terpilih: 0,
-      idBrandTerpilih: 0,
+      idSubKategori3Terpilih: '$',
+      idBrandTerpilih: '$',
+      idCategory: '$',
       tambahanKategori: [
         {
           'id': 0,
@@ -123,8 +150,10 @@ class EditProductNameAndCategory extends React.Component {
       })
     }
     if (nextProps.dataUpdateData.status === 200) {
+      this.props.resetAlterProduct()
       ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
+      this.props.resetAlterProduct()
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
@@ -210,6 +239,7 @@ class EditProductNameAndCategory extends React.Component {
           this.setState({
             kategoriTerpilih: rowData.name,
             idkategoriTerpilih: rowData.id,
+            idCategory: rowData.id,
             colorKategori: Colors.darkgrey,
             kategoriIcon: Images.down,
             modalKategori: false })
@@ -230,6 +260,7 @@ class EditProductNameAndCategory extends React.Component {
           this.setState({
             subKategori1Terpilih: rowData.name,
             idSubKategori1Terpilih: rowData.id,
+            idCategory: rowData.id,
             colorsubKat1: Colors.darkgrey,
             subKat1Icon: Images.down,
             modalSubKategori1: false })
@@ -250,6 +281,7 @@ class EditProductNameAndCategory extends React.Component {
           this.setState({
             subKategori2Terpilih: rowData.name,
             idSubKategori2Terpilih: rowData.id,
+            idCategory: rowData.id,
             colorsubKat2: Colors.darkgrey,
             subKat2Icon: Images.down,
             modalSubKategori2: false })
@@ -270,6 +302,7 @@ class EditProductNameAndCategory extends React.Component {
           this.setState({
             subKategori3Terpilih: rowData.name,
             idSubKategori3Terpilih: rowData.id,
+            idCategory: rowData.id,
             colorsubKat3: Colors.darkgrey,
             subKat3Icon: Images.down,
             modalSubKategori3: false })
@@ -530,9 +563,9 @@ class EditProductNameAndCategory extends React.Component {
   }
 
   save () {
-    const { namaProduk, idkategoriTerpilih } = this.state
-    this.props.updateData(namaProduk, idkategoriTerpilih)
-    console.log(namaProduk, idkategoriTerpilih)
+    const { id, namaProduk, idCategory, descProduk, idBrandTerpilih } = this.state
+    this.props.updateData(id, namaProduk, idCategory, descProduk, idBrandTerpilih)
+    console.log(id, namaProduk, idCategory, descProduk, idBrandTerpilih)
   }
 
   render () {
@@ -582,11 +615,13 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    allCategory: dispatch(categoriAction.categoryList()),
     getSubKategori1: (id) => dispatch(categoriAction.subCategory({id})),
     getBrand: (id) => dispatch(brandAction.getBrand()),
     getCatalog: () => dispatch(katalogAction.getListCatalog()),
-    updateData: (name, category) => dispatch(productAction.updateProduct({name: name, category_id: category}))
+    updateData: (id, name, category, description, brandId) => dispatch(productAction.updateProduct({
+      id: id, name: name, category_id: category, description: description, brand_id: brandId
+    })),
+    resetAlterProduct: () => dispatch(productAction.resetAlterProduct())
   }
 }
 

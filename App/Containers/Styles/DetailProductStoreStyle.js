@@ -6,6 +6,16 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.paleGrey
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   headerTextContainer: {
     height: Metrics.navBarHeight,
     flexDirection: 'row',
@@ -89,8 +99,7 @@ export default StyleSheet.create({
   image: {
     height: 73,
     width: 73,
-    borderRadius: 3,
-    marginRight: 10
+    borderRadius: 3
   },
   imageProduct: {
     height: 73,
@@ -109,5 +118,40 @@ export default StyleSheet.create({
     paddingLeft: 20,
     paddingTop: 16.3,
     paddingBottom: 18
+  },
+  rincianContainrer: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    borderTopWidth: 0.5,
+    borderTopColor: Colors.silver,
+    backgroundColor: Colors.paleGrey,
+    marginLeft: -20,
+    marginRight: -20,
+    paddingTop: 20,
+    elevation: 1
+  },
+  title: {
+    color: Colors.darkgrey,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.medium,
+    paddingLeft: 20,
+    paddingTop: 19.3,
+    paddingBottom: 10.7
+  },
+  containerRincian: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginRight: 20,
+    paddingBottom: 15.8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textRincian: {
+    flex: 1,
+    paddingTop: 15.3,
+    color: Colors.darkgrey,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    paddingRight: 26
   }
 })

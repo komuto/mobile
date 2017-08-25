@@ -2,6 +2,7 @@ import * as actions from '../actions/home'
 import { buildReducer, buildType, initState } from '../config'
 
 export const product = (state = initState({ products: [] }, true), action) => {
+  console.log(action)
   const type = buildType(action.type)
   switch (type) {
     case actions.HOME_PRODUCT:
@@ -12,7 +13,6 @@ export const product = (state = initState({ products: [] }, true), action) => {
 }
 
 export const searchProduct = (state = initState({ products: [] }), action) => {
-  console.log(action)
   const type = buildType(action.type)
   switch (type) {
     case actions.SEARCH_PRODUCT:

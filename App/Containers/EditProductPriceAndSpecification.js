@@ -24,7 +24,7 @@ class EditProductPriceAndSpecification extends React.Component {
     this.state = {
       id: this.props.id,
       images: this.props.images,
-      imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
+      imageProduct: this.props.dataDetailProduct.storeProductDetail.images[0].file,
       namaProduk: this.props.name,
       loading: false,
       harga: this.props.price,
@@ -583,7 +583,7 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   save () {
-    const { id, harga, beratProduk, indexKondisi, isInsurance } = this.state
+    const { id, harga, beratProduk, indexKondisi, isInsurance, diskon } = this.state
     let price
     try {
       price = Number(harga.replace(/[^0-9,]+/g, ''))
@@ -592,7 +592,7 @@ class EditProductPriceAndSpecification extends React.Component {
     }
     let weight = parseInt(beratProduk)
     let condition = parseInt(indexKondisi)
-    this.props.updateData(id, price, weight, condition, isInsurance)
+    this.props.updateData(id, price, weight, condition, isInsurance, diskon)
   }
 
   render () {
@@ -631,7 +631,8 @@ const mapStateToProps = (state) => {
   return {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
-    dataUpdateData: state.alterProducts
+    dataUpdateData: state.alterProducts,
+    dataDetailProduct: state.storeProductDetail
   }
 }
 
@@ -639,8 +640,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(katalogAction.getListCatalog()),
     createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
-    updateData: (id, price, weight, condition, isInsurance) => dispatch(productAction.updateProduct({
-      id: id, price: price, weight: weight, condition: condition, is_insurance: isInsurance
+    updateData: (id, price, weight, condition, isInsurance, discount) => dispatch(productAction.updateProduct({
+      id: id, price: price, weight: weight, condition: condition, is_insurance: isInsurance, discount: discount
     }))
   }
 }

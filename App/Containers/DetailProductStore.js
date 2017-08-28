@@ -325,7 +325,7 @@ class DetailProductStore extends React.Component {
   }
 
   detailReception () {
-    if (this.state.is_wholesaler) {
+    if (this.state.product.is_wholesaler) {
       let hargaTemp = Number(this.state.product.price)
       let komisi = 10
       let hargaMasked = this.maskedText(hargaTemp)
@@ -429,7 +429,7 @@ class DetailProductStore extends React.Component {
     return (
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
-          <Text style={styles.titleMenu}>Kategori</Text>
+          <Text style={styles.titleMenu}>Katalog</Text>
           <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id)}>
             <Text style={styles.buttonChange}>
               Ubah
@@ -460,7 +460,7 @@ class DetailProductStore extends React.Component {
   }
 
   renderWholeSale () {
-    if (this.state.is_wholesaler) {
+    if (this.state.product.is_wholesaler) {
       return (
         <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
           <View style={[styles.headerMenuRow]}>

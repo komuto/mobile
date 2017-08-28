@@ -31,9 +31,10 @@ class EditProductCatalog extends React.Component {
     this.state = {
       id: this.props.id,
       data: [],
-      foto: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
+      namaProduk: this.props.dataDetailProduct.storeProductDetail.product.name,
+      foto: this.props.dataDetailProduct.storeProductDetail.images[0].file,
       price: 1000000,
-      namaToko: 'Sendal',
+      namaToko: this.props.dataDetailProduct.storeProductDetail.product.name,
       index: this.props.catalogId,
       idCatalog: this.props.catalogId,
       catalogValue: '',
@@ -96,8 +97,9 @@ class EditProductCatalog extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
-    return true
+    if (NavigationActions.pop()) {
+      return true
+    }
   }
 
   renderProduct () {
@@ -229,7 +231,8 @@ const mapStateToProps = (state) => {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
     dataCreateProdukDropshipper: state.addDropshipProducts,
-    dataUpdateData: state.alterProducts
+    dataUpdateData: state.alterProducts,
+    dataDetailProduct: state.storeProductDetail
   }
 }
 

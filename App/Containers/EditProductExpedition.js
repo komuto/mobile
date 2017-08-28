@@ -16,8 +16,8 @@ class EditProductExpedition extends React.Component {
     this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       id: this.props.id,
-      imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
-      namaProduk: 'Sepatu Lari Nike',
+      imageProduct: this.props.dataDetailProduct.storeProductDetail.images[0].file,
+      namaProduk: this.props.dataDetailProduct.storeProductDetail.product.name,
       dataListEkspedisi: [],
       filterPengiriman: [],
       expeditionServices: [],
@@ -253,7 +253,8 @@ const mapStateToProps = (state) => {
     dataEkspedisiList: state.expeditions,
     dataServicesExpedition: state.expeditionServices,
     dataCreateProduk: state.alterProducts,
-    dataUpdateData: state.alterProducts
+    dataUpdateData: state.alterProducts,
+    dataDetailProduct: state.storeProductDetail
   }
 }
 

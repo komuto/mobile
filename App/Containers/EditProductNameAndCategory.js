@@ -23,7 +23,7 @@ class EditProductNameAndCategory extends React.Component {
     this.state = {
       images: this.props.images,
       id: this.props.id,
-      imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
+      imageProduct: this.props.dataDetailProduct.storeProductDetail.images[0].file,
       namaProduk: this.props.nameProduct,
       descProduk: this.props.description,
       active: false,
@@ -609,7 +609,8 @@ const mapStateToProps = (state) => {
     dataSubKategori2: state.subCategory,
     dataSubKategori3: state.subCategory,
     dataBrand: state.brands,
-    dataUpdateData: state.alterProducts
+    dataUpdateData: state.alterProducts,
+    dataDetailProduct: state.storeProductDetail
   }
 }
 

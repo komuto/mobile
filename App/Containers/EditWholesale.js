@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TextInput, TouchableOpacity } from 'react-native'
+import { ScrollView, Text, View, Image, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
+import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -13,15 +14,117 @@ class EditWholesale extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      imageProduct: 'https://yt3.ggpht.com/--xn-YG3OCCc/AAAAAAAAAAI/AAAAAAAAAAA/-fucMHe6v8M/s48-c-k-no-mo-rj-c0xffffff/photo.jpg',
-      namaProduk: 'Sepatu Lari Nike',
-      wholesale: false,
+      id: this.props.id,
+      imageProduct: this.props.dataDetailProduct.storeProductDetail.images[0].file,
+      namaProduk: this.props.dataDetailProduct.storeProductDetail.product.name,
+      wholesale: this.props.dataDetailProduct.storeProductDetail.product.is_wholesaler,
       form: [],
-      data: [
-        {'start': 0, 'end': 0, 'harga': 0},
-        {'start': 0, 'end': 0, 'harga': 0}
-      ]
+      lengthDefaultForm: this.props.dataDetailProduct.storeProductDetail.wholesaler.length,
+      data: [...this.props.dataDetailProduct.storeProductDetail.wholesaler],
+      dataUpload: [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
     }
+  }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataUpdateData.status === 200) {
+      nextProps.dataUpdateData.status = 0
+      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+    } else if (nextProps.dataUpdateData.status > 200) {
+      nextProps.dataUpdateData.status = 0
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
+    }
+  }
+
+  defaultForm () {
+    const formData = [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+    formData.map((data, i) => {
+      this.buildForm(data, i)
+    })
+  }
+
+  buildForm (data, i) {
+    const { form, dataUpload } = this.state
+    let tempUploadData = dataUpload
+    tempUploadData.push({
+      'id': data.id,
+      'min': data.min,
+      'max': data.max,
+      'price': data.price,
+      'status': 2
+    })
+    let temp = form
+    const temp2 = (
+      <View style={styles.formContainer}>
+        <View style={styles.rowContainer}>
+          <View style={styles.wholesale}>
+            <Text style={styles.textLabel}>
+              Jumlah Produk
+            </Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputText}
+                value={data.min.toString()}
+                keyboardType='numeric'
+                returnKeyType='done'
+                autoCapitalize='none'
+                maxLength={3}
+                autoCorrect
+                onChange={(event) => this.changeStart(event.nativeEvent.text, i)}
+                underlineColorAndroid='transparent'
+              />
+              <Text style={[styles.textLabel, { marginLeft: 5, marginRight: 5 }]}>
+                s/d
+              </Text>
+              <TextInput
+                style={styles.inputText}
+                value={data.max.toString()}
+                keyboardType='numeric'
+                returnKeyType='done'
+                autoCapitalize='none'
+                maxLength={3}
+                autoCorrect
+                onChange={(event) => this.changeEnd(event.nativeEvent.text, i)}
+                underlineColorAndroid='transparent'
+              />
+            </View>
+          </View>
+          <View style={[styles.wholesale, { marginLeft: 30 }]}>
+            <Text style={styles.textLabel}>
+              Harga Produk
+            </Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputText}
+                value={data.price.toString()}
+                keyboardType='numeric'
+                returnKeyType='done'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={(event) => this.changePrice(event.nativeEvent.text, i)}
+                underlineColorAndroid='transparent'
+              />
+            </View>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.deleteButton}>
+          <Text style={styles.textDelete}>
+            Hapus
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
+    temp.push(temp2)
+    this.setState({
+      form: temp,
+      dataUpload: [...tempUploadData,
+        ...{
+          'id': '',
+          'min': 0,
+          'max': 0,
+          'price': 0,
+          'status': false
+        }
+      ]
+    })
   }
 
   renderProduct () {
@@ -49,6 +152,7 @@ class EditWholesale extends React.Component {
         </View>
         <View style={styles.switch}>
           <Switch
+            defaultValue={this.state.wholesale}
             width={35}
             height={20}
             onSyncPress={(value) =>
@@ -61,179 +165,147 @@ class EditWholesale extends React.Component {
   }
 
   set (value) {
-    const { data } = this.state
-    let temp
     this.setState({
       wholesale: value,
-      data: [
-        {'start': 0, 'end': 0, 'harga': 0},
-        {'start': 0, 'end': 0, 'harga': 0}
-      ]
+      data: [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
     })
-    temp =
-    [
-      <View style={styles.formContainer}>
-        <View style={styles.rowContainer}>
-          <View style={styles.wholesale}>
-            <Text style={styles.textLabel}>
-              Jumlah Produk
-            </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputText}
-                value={data[0].start}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChange={(event) => this.changeStart(event.nativeEvent.text, 0)}
-                underlineColorAndroid='transparent'
-              />
-              <Text style={[styles.textLabel, { marginLeft: 5, marginRight: 5 }]}>
-                s/d
-              </Text>
-              <TextInput
-                style={styles.inputText}
-                value={data[0].end}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChange={(event) => this.changeEnd(event.nativeEvent.text, 0)}
-                underlineColorAndroid='transparent'
-              />
-            </View>
-          </View>
-          <View style={[styles.wholesale, { marginLeft: 30 }]}>
-            <Text style={styles.textLabel}>
-              Harga Produk
-            </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputText}
-                value={data[0].harga}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChangeText={this.changeMinimalGrosir}
-                underlineColorAndroid='transparent'
-              />
-            </View>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.textDelete}>
-            Hapus
-          </Text>
-        </TouchableOpacity>
-      </View>
-    ]
-    this.setState({
-      form: temp
-    })
+    console.log(this.state.data)
+    // this.defaultForm()
   }
 
   changeStart (text, id) {
-    const { data } = this.state
+    const { data, dataUpload } = this.state
+    console.log(dataUpload)
     let temp = data
-    temp[id].start = text
+    let tempDataUpload = dataUpload
+    const defaultData = [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+    try {
+      if (defaultData[id].id === data[id].id) {
+        temp[id].status = 2
+        tempDataUpload[id].status = 2
+      }
+    } catch (e) {
+
+    }
+    temp[id].min = text
+    tempDataUpload[id].min = text
     this.setState({
-      data: temp
+      data: temp,
+      dataUpload: tempDataUpload
     })
   }
 
   changeEnd (text, id) {
-    const { data } = this.state
+    const { data, dataUpload } = this.state
     let temp = data
-    temp[id].end = text
+    let tempDataUpload = dataUpload
+    const defaultData = [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+    try {
+      if (defaultData[id].id === data[id].id) {
+        temp[id].status = 2
+        tempDataUpload[id].status = 2
+      }
+    } catch (e) {
+
+    }
+    temp[id].max = text
+    tempDataUpload[id].max = text
     this.setState({
-      data: temp
+      data: temp,
+      dataUpload: tempDataUpload
     })
   }
 
   changePrice (text, id) {
-    const { data } = this.state
+    const { data, dataUpload } = this.state
     let temp = data
-    temp[id].harga = text
+    let tempDataUpload = dataUpload
+    const defaultData = [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+    try {
+      if (defaultData[id].id === data[id].id) {
+        temp[id].status = 2
+        tempDataUpload[id].status = 2
+      }
+    } catch (e) {
+
+    }
+    temp[id].price = text
+    tempDataUpload[id].price = text
     this.setState({
-      data: temp
+      data: temp,
+      dataUpload: tempDataUpload
     })
   }
 
   renderWholesale () {
-    const { form, data, wholesale } = this.state
-    const tempData = data
-    const mapFoto = form.map((data, i) => {
-      return (
-        <View>
-          <View style={styles.formContainer}>
-            <View style={styles.rowContainer}>
-              <View style={styles.wholesale}>
-                <Text style={styles.textLabel}>
-                  Jumlah Produk
-                </Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.inputText}
-                    value={tempData[i].start}
-                    keyboardType='numeric'
-                    returnKeyType='done'
-                    autoCapitalize='none'
-                    maxLength={3}
-                    autoCorrect
-                    onChange={(event) => this.changeStart(event.nativeEvent.text, i)}
-                    underlineColorAndroid='transparent'
-                  />
-                  <Text style={[styles.textLabel, { marginLeft: 5, marginRight: 5 }]}>
-                    s/d
-                  </Text>
-                  <TextInput
-                    style={styles.inputText}
-                    value={tempData[i].end}
-                    keyboardType='numeric'
-                    returnKeyType='done'
-                    autoCapitalize='none'
-                    maxLength={3}
-                    autoCorrect
-                    onChange={(event) => this.changeEnd(event.nativeEvent.text, i)}
-                    underlineColorAndroid='transparent'
-                  />
-                </View>
-              </View>
-              <View style={[styles.wholesale, { marginLeft: 30 }]}>
-                <Text style={styles.textLabel}>
-                  Harga Produk
-                </Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.inputText}
-                    value={tempData[i].harga}
-                    keyboardType='numeric'
-                    returnKeyType='done'
-                    autoCapitalize='none'
-                    maxLength={3}
-                    autoCorrect
-                    onChange={(event) => this.changePrice(event.nativeEvent.text, i)}
-                    underlineColorAndroid='transparent'
-                  />
-                </View>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.deleteButton} onPress={() => this.removeItem(i)}>
-              <Text style={styles.textDelete}>
-                Hapus
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.separator} />
-        </View>
-      )
-    })
+    const { data, wholesale } = this.state
     if (wholesale) {
+      const tempData = data
+      const mapFoto = data.map((data, i) => {
+        return (
+          <View key={i}>
+            <View style={styles.formContainer}>
+              <View style={styles.rowContainer}>
+                <View style={styles.wholesale}>
+                  <Text style={styles.textLabel}>
+                    Jumlah Produk
+                  </Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.inputText}
+                      value={tempData[i].min.toString()}
+                      keyboardType='numeric'
+                      returnKeyType='done'
+                      autoCapitalize='none'
+                      maxLength={3}
+                      autoCorrect
+                      onChange={(event) => this.changeStart(event.nativeEvent.text, i)}
+                      underlineColorAndroid='transparent'
+                    />
+                    <Text style={[styles.textLabel, { marginLeft: 5, marginRight: 5 }]}>
+                      s/d
+                    </Text>
+                    <TextInput
+                      style={styles.inputText}
+                      value={tempData[i].max.toString()}
+                      keyboardType='numeric'
+                      returnKeyType='done'
+                      autoCapitalize='none'
+                      maxLength={3}
+                      autoCorrect
+                      onChange={(event) => this.changeEnd(event.nativeEvent.text, i)}
+                      underlineColorAndroid='transparent'
+                    />
+                  </View>
+                </View>
+                <View style={[styles.wholesale, { marginLeft: 30 }]}>
+                  <Text style={styles.textLabel}>
+                    Harga Produk
+                  </Text>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      style={styles.inputText}
+                      value={tempData[i].price.toString()}
+                      keyboardType='numeric'
+                      returnKeyType='done'
+                      autoCapitalize='none'
+                      autoCorrect
+                      onChange={(event) => this.changePrice(event.nativeEvent.text, i)}
+                      underlineColorAndroid='transparent'
+                    />
+                  </View>
+                </View>
+              </View>
+              <TouchableOpacity style={styles.deleteButton} onPress={() => this.removeItem(i)}>
+                <Text style={styles.textDelete}>
+                  Hapus
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.separator} />
+          </View>
+        )
+      })
       return (
         <View>
           <View style={styles.titleContainer}>
@@ -254,96 +326,95 @@ class EditWholesale extends React.Component {
   }
 
   removeItem (i) {
-    const { form, data } = this.state
-    let tempForm = form
+    const { data } = this.state
     let tempData = data
-    tempForm.splice(i, 1)
     tempData.splice(i, 1)
     this.setState({
-      form: tempForm,
       data: tempData
     })
   }
 
   addSale () {
-    const { form, data } = this.state
-    let tempData = data
+    const { data, dataUpload } = this.state
+    let tempData = [...data]
+    let tempDataUpload = dataUpload
     tempData.push({
-      'start': 0,
-      'end': 0,
-      'harga': 0
+      'id': -1,
+      'min': 0,
+      'max': 0,
+      'price': 0,
+      'status': 1
+    })
+    tempDataUpload.push({
+      'id': -1,
+      'min': 0,
+      'max': 0,
+      'price': 0,
+      'status': 1
     })
     this.setState({
-      data: tempData
+      data: tempData,
+      dataUpload: tempDataUpload
     })
-    const id = form.length + 1
-    let tempForm = form
-    let temp = (
-      <View style={styles.formContainer}>
-        <View style={styles.rowContainer}>
-          <View style={styles.wholesale}>
-            <Text style={styles.textLabel}>
-              Jumlah Produk
+  }
+
+  save () {
+    const dataDefault = [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+    const { data } = this.state
+    let tempData = [...data]
+    var j, i
+    let coba = new Promise((resolve) => {
+      for (i = 0; i < dataDefault.length; i++) {
+        if (data.length === 0) {
+          tempData.push({
+            'id': dataDefault[i].id,
+            'min': dataDefault[i].min,
+            'max': dataDefault[i].max,
+            'price': dataDefault[i].price,
+            'status': 3
+          })
+          this.setState({
+            dataUpload: tempData
+          })
+        } else {
+          for (j = 0; j < data.length; j++) {
+            if (dataDefault[i].id === data[j].id) {
+              tempData[j].status = 2
+              break
+            } else if (dataDefault[i].id !== data[j].id && (j === (data.length - 1))) {
+              tempData.push({
+                'id': dataDefault[i].id,
+                'min': dataDefault[i].min,
+                'max': dataDefault[i].max,
+                'price': dataDefault[i].price,
+                'status': 3
+              })
+            }
+            this.setState({
+              dataUpload: tempData
+            })
+          }
+        }
+      }
+      resolve(tempData)
+    })
+    coba.then((result) =>
+    this.props.updateData(this.state.id, result))
+  }
+
+  renderSaveButton () {
+    const { wholesale } = this.state
+    if (wholesale) {
+      return (
+        <View style={styles.saveContainer}>
+          <TouchableOpacity style={styles.save} onPress={() => this.save()}>
+            <Text style={styles.textButtonNext}>
+              Simpan Perubahan
             </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputText}
-                value={data[id].start}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChange={(event) => this.changeStart(event.nativeEvent.text, id)}
-                underlineColorAndroid='transparent'
-              />
-              <Text style={[styles.textLabel, { marginLeft: 5, marginRight: 5 }]}>
-                s/d
-              </Text>
-              <TextInput
-                style={styles.inputText}
-                value={data[id].end}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChange={(event) => this.changeEnd(event.nativeEvent.text, id)}
-                underlineColorAndroid='transparent'
-              />
-            </View>
-          </View>
-          <View style={[styles.wholesale, { marginLeft: 30 }]}>
-            <Text style={styles.textLabel}>
-              Harga Produk
-            </Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.inputText}
-                value={this.state.minimalGrosir}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={3}
-                autoCorrect
-                onChangeText={this.changeMinimalGrosir}
-                underlineColorAndroid='transparent'
-              />
-            </View>
-          </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.textDelete}>
-            Hapus
-          </Text>
-        </TouchableOpacity>
-      </View>
-    )
-    tempForm.push(temp)
-    this.setState({
-      form: tempForm
-    })
-    console.log('data: ', this.state.data)
+      )
+    }
   }
 
   render () {
@@ -353,6 +424,7 @@ class EditWholesale extends React.Component {
         <ScrollView>
           {this.renderActivateWholesale()}
           {this.renderWholesale()}
+          {this.renderSaveButton()}
         </ScrollView>
       </View>
     )
@@ -361,11 +433,14 @@ class EditWholesale extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataDetailProduct: state.storeProductDetail,
+    dataUpdateData: state.alterProducts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    updateData: (id, wholesales) => dispatch(productAction.updateProduct({id: id, wholesales: wholesales}))
   }
 }
 

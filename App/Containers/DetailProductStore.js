@@ -43,6 +43,7 @@ class DetailProductStore extends React.Component {
         expeditionServices: nextProps.dataDetailProduct.storeProductDetail.expedition_services,
         wholesaler: nextProps.dataDetailProduct.storeProductDetail.wholesaler,
         product: nextProps.dataDetailProduct.storeProductDetail.product,
+        productName: nextProps.dataDetailProduct.storeProductDetail.product.name,
         price: nextProps.dataDetailProduct.storeProductDetail.product.price,
         category: nextProps.dataDetailProduct.storeProductDetail.category,
         id: nextProps.dataDetailProduct.storeProductDetail.category.parent_id,
@@ -117,7 +118,7 @@ class DetailProductStore extends React.Component {
         <Text style={styles.headerText}>
           {this.state.productName}
         </Text>
-        <TouchableOpacity onPress={() => this.openLaporkan()}>
+        <TouchableOpacity>
           <Image
             source={Images.deletWhite}
             style={styles.imageStyle}
@@ -453,9 +454,10 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changeSale () {
+  changeSale (id) {
     NavigationActions.editwholesale({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      id: id
     })
   }
 
@@ -465,7 +467,7 @@ class DetailProductStore extends React.Component {
         <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
           <View style={[styles.headerMenuRow]}>
             <Text style={styles.titleMenu}>Grosir</Text>
-            <TouchableOpacity onPress={() => this.changeSale()}>
+            <TouchableOpacity onPress={() => this.changeSale(this.state.product.id)}>
               <Text style={styles.buttonChange}>
                 Ubah
               </Text>

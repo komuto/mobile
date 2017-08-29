@@ -115,5 +115,23 @@ export default StyleSheet.create({
   separator: {
     height: 10,
     backgroundColor: Colors.paleGrey
+  },
+  saveContainer: {
+    backgroundColor: Colors.paleGrey,
+    flexDirection: 'row',
+    padding: 20
+  },
+  save: {
+    flex: 1,
+    backgroundColor: Colors.bluesky,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    height: 50
+  },
+  textButtonNext: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.snow
   }
 })

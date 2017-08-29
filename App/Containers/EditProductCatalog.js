@@ -82,8 +82,10 @@ class EditProductCatalog extends React.Component {
       })
     }
     if (nextProps.dataUpdateData.status === 200) {
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }

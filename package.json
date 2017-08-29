@@ -99,9 +99,6 @@
     "babel": "inherit"
   },
   "standard": {
-    "ignore": [
-      "/App/Others/"
-    ],
     "parser": "babel-eslint",
     "globals": [
       "describe",

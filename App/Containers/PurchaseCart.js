@@ -164,6 +164,7 @@ class PurchaseCart extends React.Component {
     if (nextProps.dataCheckout.status === 200) {
       NavigationActions.payment({type: ActionConst.PUSH})
       // ToastAndroid.show('Update keranjang belanja berhasil..', ToastAndroid.LONG)
+      // snap.show()
       this.setState({
         loadingCheckout: false
       })

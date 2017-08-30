@@ -304,5 +304,9 @@ export default StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     maxHeight: (Metrics.screenHeight - 70)
+  },
+  separator: {
+    height: 10,
+    backgroundColor: Colors.paleGrey
   }
 })

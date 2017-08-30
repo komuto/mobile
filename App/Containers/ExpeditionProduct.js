@@ -79,8 +79,8 @@ class ExpeditionProduct extends React.Component {
     this.setState({
       loading: true
     })
-    dataProduk[13] = expeditionServices
-    dataProduk[14] = image
+    dataProduk[15] = expeditionServices
+    dataProduk[16] = image
     this.props.createProduk(
       dataProduk[0],
       dataProduk[1],
@@ -96,7 +96,9 @@ class ExpeditionProduct extends React.Component {
       dataProduk[11],
       dataProduk[12],
       dataProduk[13],
-      dataProduk[14]
+      dataProduk[14],
+      dataProduk[15],
+      dataProduk[16]
     )
     console.log(dataProduk)
   }
@@ -299,7 +301,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getExpedition: () => dispatch(expeditionAction.getExpedition()),
     getServicesExpedition: () => dispatch(expeditionAction.getServices()),
-    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, status, discount, expeditions, images) =>
+    createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, status, discount, isWholesale, wholesales, expeditions, images) =>
     dispatch(productAction.createProduct(
       {
         name: name,
@@ -315,6 +317,8 @@ const mapDispatchToProps = (dispatch) => {
         catalog_id: catalogId,
         status: status,
         discount: discount,
+        is_wholesaler: isWholesale,
+        wholesales: wholesales,
         expeditions: expeditions,
         images: images
       }

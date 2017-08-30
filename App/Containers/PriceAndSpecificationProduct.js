@@ -38,7 +38,8 @@ class PriceAndSpecificationProduct extends React.Component {
       listKatalog: [],
       modalDropshipping: false,
       grosirAktif: false,
-      tambahDaftarGrosir: false,
+      dataGrosir: [],
+      dataGrosirUpload: [],
       dropShippingActive: false,
       sembunyikanBarang: 1,
       modalTambahKatalog: false,
@@ -511,70 +512,79 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   tambahHargaGrosir () {
-    if (this.state.tambahDaftarGrosir) {
-      return (
-        <View style={styles.paddingSix}>
-          <View style={[styles.spesifkasi, {paddingBottom: 20}]}>
-            <View style={styles.flexRow}>
-              <View style={styles.flexOne}>
-                <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Jumlah Produk</Text>
+    const { grosirAktif, dataGrosir } = this.state
+    if (grosirAktif) {
+      const mapFoto = dataGrosir.map((data, i) => {
+        return (
+          <View key={i}>
+            <View style={styles.paddingSix}>
+              <View style={[styles.spesifkasi, {paddingBottom: 20}]}>
                 <View style={styles.flexRow}>
-                  <View style={[styles.flexRow, {justifyContent: 'center'}]}>
-                    <TextInput
-                      style={[styles.inputText, {flex: 1}]}
-                      value={this.state.minimalGrosir}
+                  <View style={styles.flexOne}>
+                    <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Jumlah Produk</Text>
+                    <View style={styles.flexRow}>
+                      <View style={[styles.flexRow, {justifyContent: 'center'}]}>
+                        <TextInput
+                          style={[styles.inputText, {flex: 1}]}
+                          value={data.min.toString()}
+                          keyboardType='numeric'
+                          returnKeyType='done'
+                          autoCapitalize='none'
+                          maxLength={3}
+                          autoCorrect
+                          onChange={(event) => this.changeStart(event.nativeEvent.text, i)}
+                          underlineColorAndroid='transparent'
+                        />
+                        <Text style={{marginLeft: 10, marginRight: 10, flex: 1, textAlign: 'center'}}>s/d</Text>
+                        <TextInput
+                          style={[styles.inputText, {flex: 1}]}
+                          value={data.max.toString()}
+                          keyboardType='numeric'
+                          returnKeyType='done'
+                          autoCapitalize='none'
+                          maxLength={3}
+                          autoCorrect
+                          onChange={(event) => this.changeEnd(event.nativeEvent.text, i)}
+                          underlineColorAndroid='transparent'
+                        />
+                      </View>
+                    </View>
+                  </View>
+                  <View style={{marginLeft: 35}} />
+                  <View style={styles.flexOne}>
+                    <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Harga Produk</Text>
+                    <TextInputMask
+                      style={styles.inputText}
+                      value={data.price.toString()}
                       keyboardType='numeric'
                       returnKeyType='done'
                       autoCapitalize='none'
-                      maxLength={3}
+                      type='money'
+                      maxLength={18}
+                      options={{
+                        unit: 'Rp ',
+                        separator: '.',
+                        delimiter: '.',
+                        precision: 3
+                      }}
                       autoCorrect
-                      onChangeText={this.changeMinimalGrosir}
+                      onChange={(event) => this.changePrice(event.nativeEvent.text, i)}
                       underlineColorAndroid='transparent'
-                    />
-                    <Text style={{marginLeft: 10, marginRight: 10, flex: 1, textAlign: 'center'}}>s/d</Text>
-                    <TextInput
-                      style={[styles.inputText, {flex: 1}]}
-                      value={this.state.maksimalGrosir}
-                      keyboardType='numeric'
-                      returnKeyType='done'
-                      autoCapitalize='none'
-                      maxLength={3}
-                      autoCorrect
-                      onChangeText={this.changeMaksimalGrosir}
-                      underlineColorAndroid='transparent'
+                      placeholder='Harga Produk'
                     />
                   </View>
                 </View>
-              </View>
-              <View style={{marginLeft: 35}} />
-              <View style={styles.flexOne}>
-                <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Harga Produk</Text>
-                <TextInputMask
-                  style={styles.inputText}
-                  value={this.state.hargaGrosir}
-                  keyboardType='numeric'
-                  returnKeyType='done'
-                  autoCapitalize='none'
-                  type='money'
-                  maxLength={18}
-                  options={{
-                    unit: 'Rp ',
-                    separator: '.',
-                    delimiter: '.',
-                    precision: 3
-                  }}
-                  autoCorrect
-                  onChangeText={this.changeHargaGrosir}
-                  underlineColorAndroid='transparent'
-                  placeholder='Harga Produk'
-                />
+                <TouchableOpacity style={styles.hapus} onPress={() => this.removeItem(i)}>
+                  <Text style={[styles.texthapus]}>Hapus</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <TouchableOpacity style={styles.hapus} onPress={() => this.setState({tambahDaftarGrosir: false})}>
-              <Text style={[styles.texthapus]}>Hapus</Text>
-            </TouchableOpacity>
+            <View style={styles.separator} />
           </View>
-        </View>
+        )
+      })
+      return (
+        mapFoto
       )
     } else {
       return (
@@ -586,7 +596,7 @@ class PriceAndSpecificationProduct extends React.Component {
   buttonTambahDaftarHargaGrosir () {
     if (this.state.grosirAktif) {
       return (
-        <TouchableOpacity style={styles.buttonTambahDaftarHargaGrosir} onPress={() => this.setState({tambahDaftarGrosir: true})}>
+        <TouchableOpacity style={styles.buttonTambahDaftarHargaGrosir} onPress={() => this.addSale()}>
           <Text style={[styles.texthapus, {color: Colors.bluesky}]}>+ Tambah Daftar Harga Grosir</Text>
         </TouchableOpacity>
       )
@@ -597,8 +607,73 @@ class PriceAndSpecificationProduct extends React.Component {
     }
   }
 
+  addSale () {
+    const { dataGrosir, dataGrosirUpload } = this.state
+    let tempData = [...dataGrosir]
+    let tempDataUpload = [...dataGrosirUpload]
+    tempData.push({
+      'min': 0,
+      'max': 0,
+      'price': 0
+    })
+    tempDataUpload.push({
+      'min': 0,
+      'max': 0,
+      'price': 0
+    })
+    this.setState({
+      dataGrosir: tempData,
+      dataGrosirUpload: tempDataUpload
+    })
+  }
+
+  removeItem (i) {
+    const { dataGrosir } = this.state
+    let tempData = dataGrosir
+    tempData.splice(i, 1)
+    this.setState({
+      dataGrosir: tempData
+    })
+  }
+
+  changeStart (text, id) {
+    const { dataGrosir, dataGrosirUpload } = this.state
+    let temp = dataGrosir
+    let tempUpload = dataGrosirUpload
+    temp[id].min = text
+    tempUpload[id].min = Number(text.replace(/[^0-9,]+/g, ''))
+    this.setState({
+      dataGrosir: temp,
+      dataGrosirUpload: tempUpload
+    })
+  }
+
+  changeEnd (text, id) {
+    const { dataGrosir, dataGrosirUpload } = this.state
+    let temp = dataGrosir
+    let tempUpload = dataGrosirUpload
+    temp[id].max = text
+    tempUpload[id].max = Number(text.replace(/[^0-9,]+/g, ''))
+    this.setState({
+      dataGrosir: temp,
+      dataGrosirUpload: tempUpload
+    })
+  }
+
+  changePrice (text, id) {
+    const { dataGrosir, dataGrosirUpload } = this.state
+    let temp = dataGrosir
+    let tempUpload = dataGrosirUpload
+    temp[id].price = text
+    tempUpload[id].price = Number(text.replace(/[^0-9,]+/g, ''))
+    this.setState({
+      dataGrosir: temp,
+      dataGrosirUpload: tempUpload
+    })
+  }
+
   nextState () {
-    const {images, sembunyikanBarang, harga, diskon, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir} = this.state
+    const {images, sembunyikanBarang, harga, diskon, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir, grosirAktif, dataGrosirUpload} = this.state
     let detailGrosir = []
     let tempGrosir = []
     detailGrosir[0] = parseInt(minimalGrosir)
@@ -613,9 +688,11 @@ class PriceAndSpecificationProduct extends React.Component {
     dataProduk[9] = dropShippingActive
     dataProduk[10] = idKatalogTerpilih
     dataProduk[11] = sembunyikanBarang
-    dataProduk[12] = diskon
+    dataProduk[12] = parseInt(diskon)
+    dataProduk[13] = grosirAktif
+    dataProduk[14] = dataGrosirUpload
     // dataProduk[11] = tempGrosir
-    console.log(dataProduk)
+    // console.log(dataGrosirUpload)
     NavigationActions.expeditionproduct({
       type: ActionConst.PUSH,
       dataProduk: dataProduk,
@@ -671,18 +748,14 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    dataCatalog: state.getListCatalog,
-    dataCreateCatalog: state.createCatalog
-  }
-}
+const mapStateToProps = (state) => ({
+  dataCatalog: state.getListCatalog,
+  dataCreateCatalog: state.createCatalog
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getCatalog: () => dispatch(katalogAction.getListCatalog()),
-    createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name}))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getCatalog: () => dispatch(katalogAction.getListCatalog()),
+  createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(PriceAndSpecificationProduct)

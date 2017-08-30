@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import CustomRadio from '../Components/CustomRadioCatalog'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -43,7 +43,8 @@ class EditProductCatalog extends React.Component {
       namaKatalog: '',
       dataProduct: this.props.dataProduk,
       imageAndExpedition: this.props.imageAndExpedition,
-      isFromDropshipper: this.props.isFromDropshipper || false
+      isFromDropshipper: this.props.isFromDropshipper || false,
+      callback: this.props.callback
     }
   }
 
@@ -68,13 +69,6 @@ class EditProductCatalog extends React.Component {
       this.setState({
         loading: false
       })
-      NavigationActions.notification({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'succestambahproduk',
-        hideNavBar: true,
-        hideBackImage: true
-      })
-      nextProps.dataCreateProdukDropshipper.status = 0
     }
     if (nextProps.dataCreateProdukDropshipper.status > 200) {
       this.setState({
@@ -83,7 +77,8 @@ class EditProductCatalog extends React.Component {
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)

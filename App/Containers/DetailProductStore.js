@@ -31,11 +31,20 @@ class DetailProductStore extends React.Component {
       imageProduct: [],
       nameCategory: '',
       id: '',
-      isRefreshing: false
+      isRefreshing: false,
+      callback: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.refresh()
+        this.setState({
+          callback: nextProps.callback
+        })
+      }
+    }
     if (nextProps.dataDetailProduct.status === 200) {
       this.setState({
         brand: nextProps.dataDetailProduct.storeProductDetail.brand,
@@ -206,7 +215,8 @@ class DetailProductStore extends React.Component {
   changePhotos (id) {
     NavigationActions.editproductphoto({
       type: ActionConst.PUSH,
-      id: id
+      id: id,
+      callback: this.state.callback
     })
   }
 
@@ -272,7 +282,8 @@ class DetailProductStore extends React.Component {
       type: ActionConst.PUSH,
       nameProduct: this.state.productName,
       id: id,
-      description: this.state.product.description
+      description: this.state.product.description,
+      callback: this.state.callback
     })
     console.log(id)
     this.props.allCategory()
@@ -381,7 +392,8 @@ class DetailProductStore extends React.Component {
       discount: discount,
       weight: weight,
       insurance: insurance,
-      condition: condition
+      condition: condition,
+      callback: this.state.callback
     })
   }
 
@@ -422,7 +434,8 @@ class DetailProductStore extends React.Component {
     console.log(id)
     NavigationActions.editproductcatalog({
       type: ActionConst.PUSH,
-      id: id
+      id: id,
+      callback: this.state.callback
     })
   }
 
@@ -457,7 +470,8 @@ class DetailProductStore extends React.Component {
   changeSale (id) {
     NavigationActions.editwholesale({
       type: ActionConst.PUSH,
-      id: id
+      id: id,
+      callback: this.state.callback
     })
   }
 
@@ -499,7 +513,8 @@ class DetailProductStore extends React.Component {
   changeExpedition (id) {
     NavigationActions.editproductexpedition({
       type: ActionConst.PUSH,
-      id: id
+      id: id,
+      callback: this.state.callback
     })
   }
 

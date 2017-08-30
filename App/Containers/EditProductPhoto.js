@@ -23,7 +23,8 @@ class EditProductPhoto extends React.Component {
       showModalCamera: false,
       count: 0,
       images: [],
-      id: this.props.id
+      id: this.props.id,
+      callback: this.props.callback
     }
   }
 
@@ -37,8 +38,9 @@ class EditProductPhoto extends React.Component {
       nextProps.dataPhoto.status = 0
     }
     if (nextProps.dataUpdateData.status === 200) {
-      this.props.resetAlterProduct()
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      nextProps.dataUpdateData.status = 0
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       this.props.resetAlterProduct()
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)

@@ -55,7 +55,8 @@ class EditProductPriceAndSpecification extends React.Component {
       minimalGrosir: '0',
       maksimalGrosir: '0',
       hargaGrosir: '0',
-      normalizePrice: 0
+      normalizePrice: 0,
+      callback: this.props.callback
     }
   }
 
@@ -69,8 +70,9 @@ class EditProductPriceAndSpecification extends React.Component {
       this.props.getCatalog()
     }
     if (nextProps.dataUpdateData.status === 200) {
-      nextProps.dataCreateProdukDropshipper.status = 0
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      nextProps.dataUpdateData.status = 0
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       nextProps.dataCreateProdukDropshipper.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)

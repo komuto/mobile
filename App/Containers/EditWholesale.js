@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TextInput, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -21,13 +22,15 @@ class EditWholesale extends React.Component {
       form: [],
       lengthDefaultForm: this.props.dataDetailProduct.storeProductDetail.wholesaler.length,
       data: [...this.props.dataDetailProduct.storeProductDetail.wholesaler],
-      dataUpload: [...this.props.dataDetailProduct.storeProductDetail.wholesaler]
+      dataUpload: [...this.props.dataDetailProduct.storeProductDetail.wholesaler],
+      callback: this.props.callback
     }
   }
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)

@@ -118,7 +118,8 @@ class EditProductNameAndCategory extends React.Component {
       brandCheck: false,
       height: 0,
       dataProduk: [],
-      colorCheckbox: Colors.snow
+      colorCheckbox: Colors.snow,
+      callback: this.props.callback
     }
   }
 
@@ -150,8 +151,9 @@ class EditProductNameAndCategory extends React.Component {
       })
     }
     if (nextProps.dataUpdateData.status === 200) {
-      this.props.resetAlterProduct()
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      nextProps.dataUpdateData.status = 0
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       this.props.resetAlterProduct()
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)

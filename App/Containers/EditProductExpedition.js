@@ -3,6 +3,7 @@ import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndi
 import { connect } from 'react-redux'
 import * as expeditionAction from '../actions/expedition'
 import * as productAction from '../actions/product'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 
 import { Images, Fonts } from '../Themes'
 
@@ -26,7 +27,8 @@ class EditProductExpedition extends React.Component {
       imageCentang: false,
       idTerpilih: '',
       dataProduk: this.props.dataProduk,
-      image: this.props.image
+      image: this.props.image,
+      callback: this.props.callback
     }
   }
 
@@ -55,7 +57,8 @@ class EditProductExpedition extends React.Component {
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
-      ToastAndroid.show('Produk berhasil diubah silahkan refresh halaman detail data untuk melihat hasil', ToastAndroid.LONG)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status > 200) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
@@ -113,7 +116,7 @@ class EditProductExpedition extends React.Component {
     const mapChild = services.map((dataService, i) => {
       this.centang = services[i].is_checked ? Images.centang : null
       return (
-        <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId)}>
+        <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId, dataService.id)}>
           <View style={styles.childEkspedisi}>
             <View style={styles.box}>
               <Image
@@ -133,7 +136,8 @@ class EditProductExpedition extends React.Component {
     )
   }
 
-  onClickPengiriman = (selected, parentId) => (e) => {
+  onClickPengiriman = (selected, parentId, id) => (e) => {
+    console.log(id)
     const {dataListEkspedisi, filterPengiriman, expeditionServices} = this.state
     let dummy = filterPengiriman
     let temp = expeditionServices
@@ -141,9 +145,15 @@ class EditProductExpedition extends React.Component {
     if (dataListEkspedisi[parentId].services[selected].is_checked) {
       var i = dummy.indexOf(dataListEkspedisi[parentId].services[selected].id)
       if (i !== 0) {
-        dummy[selected].status = 2
-        temp[selected].status = 2
-        console.log('masuk')
+        var k
+        for (k = 0; k < this.state.expeditionServices.length; k++) {
+          console.log('olala', dummy[selected].expedition_service_id)
+          if (this.state.expeditionServices[k].expedition_service_id === id) {
+            dummy[k].status = 2
+            temp[k].status = 2
+            break
+          }
+        }
       }
       dataListEkspedisi[parentId].services[selected].is_checked = false
       const newDataSource = dataListEkspedisi.map(data => {
@@ -156,8 +166,14 @@ class EditProductExpedition extends React.Component {
       })
       console.log('expeditionServices False', this.state.expeditionServices)
     } else {
-      dummy[selected].status = 1
-      temp[selected].status = 1
+      for (k = 0; k < this.state.expeditionServices.length; k++) {
+        console.log('olala', dummy[selected].expedition_service_id)
+        if (this.state.expeditionServices[k].expedition_service_id === id) {
+          dummy[k].status = 1
+          temp[k].status = 1
+          break
+        }
+      }
       dataListEkspedisi[parentId].services[selected].is_checked = true
       const newDataSource = dataListEkspedisi.map(data => {
         return {...data}
@@ -188,7 +204,6 @@ class EditProductExpedition extends React.Component {
         }
       })
       this.setState({dataListEkspedisi: dataListEkspedisi})
-      console.log(this.state.dataListEkspedisi)
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
           console.log('in')

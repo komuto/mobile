@@ -55,7 +55,7 @@ class ProductList extends React.Component {
       this.setState({
         product: nextProps.dataProduk.storeProducts,
         katalog: nextProps.dataProduk.storeProducts,
-        productHidden: nextProps.dataProductHidden.hiddenStoreProducts,
+        productHidden: nextProps.dataProductHidden.products,
         loading: false
       })
     }

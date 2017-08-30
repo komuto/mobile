@@ -15,6 +15,7 @@ import * as cartReducers from './cart'
 import * as paymentReducers from './payment'
 import * as transactionReducers from './transaction'
 import * as messageReducers from './message'
+import * as otherReducers from './other'
 
 const user = {
   user: userReducers.auth,
@@ -36,7 +37,9 @@ const user = {
   sendOTPPhone: userReducers.sendOTPPhone,
   verifyPhone: userReducers.verifyPhone,
   sendOTPBank: userReducers.sendOTPBank,
-  wishlist: userReducers.wishlist
+  wishlist: userReducers.wishlist,
+  alterUser: userReducers.alterUser,
+  notifSettings: userReducers.notifSettings
 }
 
 const home = {
@@ -45,7 +48,9 @@ const home = {
   filterProduct: homeReducers.filterProduct,
   allCategory: homeReducers.allCategory,
   category: homeReducers.categoryList,
-  subCategory: homeReducers.subCategory
+  subCategory: homeReducers.subCategory,
+  subCategory2: homeReducers.subCategory2,
+  subCategory3: homeReducers.subCategory3
 }
 
 const product = {
@@ -62,7 +67,8 @@ const product = {
   alterProducts: productReducers.alterProducts,
   productExpeditions: productReducers.getProductExpeditions,
   addDropshipProducts: productReducers.addDropshipProducts,
-  tempCreateProduct: productReducers.tempCreateProduct
+  tempCreateProduct: productReducers.tempCreateProduct,
+  dropshipProducts: productReducers.getDropshipProducts
 }
 
 const store = {
@@ -81,11 +87,13 @@ const store = {
   updateStore: storeReducers.updateStore,
   storeAddress: storeReducers.getStoreAddress,
   updateStoreAddress: storeReducers.updateStoreAddress,
-  hiddenStoreProducts: storeReducers.getHiddenStoreProducts
+  hiddenStoreProducts: storeReducers.getHiddenStoreProducts,
+  storeDiscussions: storeReducers.getStoreDiscussions,
+  storeProductsByCatalog: storeReducers.getStoreProductsByCatalog
 }
 
 const address = {
-  address: addressReducers.address,
+  address: addressReducers.getAddressDetail,
   updateAddress: addressReducers.updateAddress,
   deleteAddress: addressReducers.deleteAddress,
   addAddress: addressReducers.addAddress,
@@ -149,7 +157,15 @@ const message = {
   sellerMessages: messageReducers.getSellerMessages,
   buyerDetailMessage: messageReducers.getBuyerDetailMessage,
   sellerDetailMessage: messageReducers.getSellerDetailMessage,
-  archiveMessage: messageReducers.archiveMessage
+  archiveBuyerMessages: messageReducers.getArchiveBuyerMessages,
+  archiveSellerMessages: messageReducers.getArchiveSellerMessages,
+  updateMessage: messageReducers.updateMessage,
+  replyMessage: messageReducers.replyMessage,
+  deleteMessage: messageReducers.deleteMessage
+}
+
+const other = {
+  commission: otherReducers.getCommission
 }
 
 const payment = {
@@ -187,7 +203,8 @@ const komutoApps = storage.reducer(combineReducers({
   ...review,
   ...payment,
   ...transaction,
-  ...message
+  ...message,
+  ...other
 }))
 
 export default komutoApps

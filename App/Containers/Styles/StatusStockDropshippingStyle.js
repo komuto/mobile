@@ -25,6 +25,13 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.snow
   },
+  maskedPhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 2,
+    marginRight: 14,
+    backgroundColor: Colors.paleGreyFive
+  },
   image: {
     width: 40,
     height: 40,

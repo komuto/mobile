@@ -91,6 +91,12 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed
   },
+  maskedPhoto: {
+    height: 40,
+    width: 40,
+    borderRadius: 200,
+    backgroundColor: Colors.paleGreyFive
+  },
   photo: {
     height: 40,
     width: 40,
@@ -130,7 +136,7 @@ export default StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 20,
     paddingLeft: 20,
-    paddingRight: 40 + 20 + 10
+    paddingRight: 20
   },
   spinner: {
     position: 'absolute',

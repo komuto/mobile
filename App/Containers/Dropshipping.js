@@ -161,7 +161,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDropshipper: (dropshipper) => dispatch(productAction.listProductByCategory({is_dropship: dropshipper}))
+    getDropshipper: (dropshipper) => dispatch(productAction.getDropshipProducts({is_dropship: dropshipper}))
   }
 }
 

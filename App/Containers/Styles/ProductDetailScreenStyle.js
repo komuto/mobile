@@ -6,6 +6,16 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.paleGrey
   },
+  spinnerProduk: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   headerTextContainer: {
     height: Metrics.navBarHeight,
     flexDirection: 'row',

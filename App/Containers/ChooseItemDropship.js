@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   ListView,
   View,
@@ -9,7 +8,8 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -43,6 +43,7 @@ class ChooseItemDropship extends React.Component {
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       search: '',
+      data: [],
       listDataSource: [],
       rowDataSource: [],
       header: this.props.header || 'search',
@@ -59,7 +60,11 @@ class ChooseItemDropship extends React.Component {
       terlarisCek: 0,
       sortData: menu,
       filter: false,
-      loading: true
+      loading: true,
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false
     }
   }
 
@@ -73,11 +78,24 @@ class ChooseItemDropship extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products,
-        loading: false
-      })
+      if (nextProps.dataProduk.products.length > 0) {
+        let data = [...this.state.listDataSource, ...nextProps.dataProduk.products]
+        this.setState({
+          listDataSource: data,
+          rowDataSource: data,
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          loading: false
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
+      nextProps.dataProduk.status === 0
     } if (nextProps.dataFilter.status === 200) {
       this.setState({
         listDataSource: nextProps.dataFilter.products,
@@ -481,26 +499,90 @@ class ChooseItemDropship extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
+        <View style={{flex: 1}}>
           <ListView
             contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            enableEmptySections
             dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
             renderRow={this.renderRowGrid.bind(this)}
-          />
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+            }
+            onEndReached={this.loadMore.bind(this)}
+            renderFooter={() => {
+              if (this.state.loadmore) {
+                return (
+                  <ActivityIndicator
+                    style={[styles.loadingStyle, { height: 50 }]}
+                    size='small'
+                    color='#ef5656'
+                  />
+                )
+              }
+              return <View />
+            }}
+            enableEmptySections
+            style={styles.listView}
+              />
         </View>
       )
     }
     return (
-      <View style={styles.listViewContainer}>
+      <View style={{flex: 1}}>
         <ListView
           contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          enableEmptySections
           dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
           renderRow={this.renderRowList.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+          style={styles.listView}
         />
       </View>
     )
+  }
+
+  loadMore () {
+    const { page, loadmore, isLoading } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getDropshipper(true, page)
+      }
+    }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshing: true, listDataSource: [], page: 1, isLoading: true })
+    this.props.getDropshipper(true, 1)
   }
 
   renderImageTypeView () {
@@ -570,9 +652,7 @@ class ChooseItemDropship extends React.Component {
         </View>
         {this.renderSearch()}
         {this.renderilihKategori()}
-        <ScrollView>
-          {this.viewProduk()}
-        </ScrollView>
+        {this.viewProduk()}
         <View style={styles.footerMenu}>
           <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>
@@ -601,25 +681,22 @@ class ChooseItemDropship extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    dataProduk: state.productByCategory,
-    dataFilter: state.filterProduct
-  }
-}
+const mapStateToProps = (state) => ({
+  dataProduk: state.dropshipProducts,
+  dataFilter: state.filterProduct
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
-      condition: condition,
-      services: services,
-      price: price,
-      address: address,
-      brands: brands,
-      other: other
-    })),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
+    condition: condition,
+    services: services,
+    price: price,
+    address: address,
+    brands: brands,
+    other: other
+  })),
+  getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+  getDropshipper: (dropshipper, page) => dispatch(produkAction.getDropshipProducts({is_dropship: dropshipper, page: page}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChooseItemDropship)

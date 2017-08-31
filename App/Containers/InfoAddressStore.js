@@ -89,7 +89,7 @@ class InfoAddressStore extends React.Component {
 
   componentDidMount () {
     this.props.getAlamat()
-    this.props.getProvinsi(this.state.idProvinsiTerpilih)
+    this.props.getProvinsi()
   }
 
   handleChangeAlamat = (text) => {
@@ -224,16 +224,16 @@ class InfoAddressStore extends React.Component {
         <View style={styles.rowContainer}>
           <TouchableOpacity activeOpacity={1} style={styles.bgModal} onPress={() => this.setState({modalAlamatLain: false})} />
           <View style={styles.renderRowContainer}>
-            <View style={[styles.titlePilihAlamat, {height: 53}]}>
-              <Text style={styles.textTitleAlamat}>Pilih Alamat</Text>
+            <View style={[styles.titlePilihAlamat]}>
+              <Text style={[styles.textTitleAlamat, {paddingTop: 15, paddingBottom: 15}]}>Pilih Alamat</Text>
+              <ScrollView>
+                <ListView
+                  enableEmptySections
+                  dataSource={this.dataSource.cloneWithRows(this.state.alamatLain)}
+                  renderRow={this.renderRowAlamat.bind(this)}
+                />
+              </ScrollView>
             </View>
-            <ScrollView style={{marginBottom: 50}}>
-              <ListView
-                enableEmptySections
-                dataSource={this.dataSource.cloneWithRows(this.state.alamatLain)}
-                renderRow={this.renderRowAlamat.bind(this)}
-              />
-            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -501,7 +501,7 @@ class InfoAddressStore extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataAlamats: state.address,
+    dataAlamats: state.listAddress,
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,

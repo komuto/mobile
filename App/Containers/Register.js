@@ -10,7 +10,7 @@ import {
   Alert
 } from 'react-native'
 import { connect } from 'react-redux'
-// import FCM from 'react-native-fcm'
+import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
@@ -45,7 +45,6 @@ class Register extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataRegister.status === 200) {
-      console.log(nextProps.dataRegister)
       this.setState({
         loading: false
       })
@@ -56,7 +55,6 @@ class Register extends React.Component {
         type: ActionConst.RESET
       })
     } else if (nextProps.dataRegister.status > 200) {
-      console.log('anu')
       this.setState({
         loading: false
       })
@@ -102,11 +100,6 @@ class Register extends React.Component {
   }
 
   handlePressRegister = () => {
-    // FCM.getFCMToken().then(tokenFCM => {
-    //   if (tokenFCM !== null && tokenFCM !== undefined) {
-    //     console.log('token', tokenFCM)
-    //   }
-    // })
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
     if (EmailValidator.validate(email)) {
       if (name === '') {
@@ -125,7 +118,12 @@ class Register extends React.Component {
         this.setState({
           loading: true
         })
-        this.props.registers(name, phoneNumber, email, gender, password)
+        FCM.getFCMToken().then(tokenFCM => {
+          if (tokenFCM !== null && tokenFCM !== undefined) {
+            console.log('token', tokenFCM)
+            this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+          }
+        })
       }
     } else {
       this.onError('emailNotValid')
@@ -133,8 +131,6 @@ class Register extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field')
-    console.tron.log(field)
     switch (field) {
       case 'emailNotValid':
         window.alert('Email tidak valid')
@@ -320,8 +316,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    registers: (name, phoneNumber, email, gender, password) => dispatch(registerAction.register({
-      name, phone_number: phoneNumber, email, gender, password, reg_token: 'asdf'})),
+    registers: (name, phoneNumber, email, gender, password, tokenFCM) => dispatch(registerAction.register({
+      name, phone_number: phoneNumber, email, gender, password, reg_token: tokenFCM})),
     stateLogin: (login) => dispatch(registerAction.stateLogin({login})),
     getProfile: (login) => dispatch(registerAction.getProfile())
   }

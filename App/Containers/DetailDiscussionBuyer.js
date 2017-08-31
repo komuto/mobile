@@ -1,10 +1,13 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView, TextInput, ActivityIndicator } from 'react-native'
+import { ScrollView, ToastAndroid, Text, View, TouchableOpacity, Image, BackAndroid, ListView, TextInput, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { MaskService } from 'react-native-masked-text'
+import moment from 'moment'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import * as produkAction from '../actions/product'
+import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/DetailDiscussionBuyerScreenStyle'
@@ -16,25 +19,14 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
+      idProduct: this.props.idProduct,
+      nameProduct: this.props.nameProduct,
+      imageProduct: this.props.imageProduct,
+      priceProduct: this.props.priceProduct,
+      idDiscussion: this.props.idDiscussion,
       loading: false,
       discussionMessages: '',
-      data: [
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        }
-      ]
+      data: []
     }
   }
 
@@ -44,6 +36,21 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
       NavigationActions.detailproduct({
         type: ActionConst.PUSH
       })
+      nextProps.dataDetailProduk.status = 0
+    } if (nextProps.dataDetailDiscussion.status === 200) {
+      this.setState({
+        loading: false,
+        data: nextProps.dataDetailDiscussion.comments
+      })
+      nextProps.dataDetailDiscussion.status = 0
+    } if (nextProps.dataNewComent.status === 200) {
+      this.setState({loading: false})
+      this.props.getDetailDiscussion(this.state.idDiscussion)
+      nextProps.dataNewComent.status = 0
+    } if (nextProps.dataDetailProduk.status === 406) {
+      this.setState({loading: false})
+      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
+      nextProps.dataDetailProduk.status = 0
     }
   }
 
@@ -65,6 +72,12 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
   }
 
   renderHeader () {
+    const priceMasked = MaskService.toMask('money', this.state.priceProduct, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
     return (
       <View style={styles.headerTextContainer}>
         <TouchableOpacity onPress={() => this.backButton()}>
@@ -74,27 +87,30 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
           />
         </TouchableOpacity>
         <Image
-          source={Images.contohproduct}
+          source={{uri: this.state.imageProduct}}
           style={styles.imageProduct}
         />
         <View style={styles.containerProduct}>
-          <Text style={styles.textProduct}>Blue Training Kit Machester United</Text>
-          <Text style={styles.priceProduct}>Rp 1.685.000</Text>
+          <Text style={styles.textProduct}>{this.state.nameProduct}</Text>
+          <Text style={styles.priceProduct}>{priceMasked}</Text>
         </View>
       </View>
     )
   }
 
   renderRowMessage (rowData) {
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
     return (
       <View style={styles.containerMessage}>
-        <Image source={rowData.photoUser} style={styles.photo} />
-        <View style={{marginLeft: 20}}>
+        <View style={styles.maskedPhoto}>
+          <Image source={{uri: rowData.user.photo}} style={styles.photo} />
+        </View>
+        <View style={{marginLeft: 20, flex: 1}}>
           <View style={styles.flexRow}>
-            <Text style={styles.title}>{rowData.storeName}</Text>
-            <Text style={styles.date}>{rowData.date}</Text>
+            <Text style={styles.title}>{rowData.user.name}</Text>
+            <Text style={styles.date}>{timeStampToDate}</Text>
           </View>
-          <Text style={styles.messageText}>{rowData.message}</Text>
+          <Text style={styles.messageText}>{rowData.content}</Text>
         </View>
       </View>
     )
@@ -102,7 +118,12 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
 
   handleDetailProduct () {
     this.setState({loading: true})
-    this.props.getDetailProduct(93)
+    this.props.getDetailProduct(this.state.idProduct)
+  }
+
+  sendComent () {
+    this.setState({discussionMessages: ''})
+    this.props.createDisscussionComent(this.state.idDiscussion, this.state.discussionMessages)
   }
 
   render () {
@@ -127,19 +148,18 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
           />
         </ScrollView>
         <TextInput
-          style={[styles.inputText, {height: Math.max(30, this.state.heightMessage)}]}
+          style={[styles.inputText]}
           value={this.state.discussionMessages}
-          multiline
           keyboardType='default'
-          returnKeyType='next'
+          returnKeyType='done'
           autoCapitalize='none'
           autoCorrect
           onChange={(event) => {
             this.setState({
-              discussionMessages: event.nativeEvent.text,
-              heightMessage: event.nativeEvent.contentSize.height
+              discussionMessages: event.nativeEvent.text
             })
           }}
+          onSubmitEditing={() => this.sendComent()}
           underlineColorAndroid='transparent'
           placeholder='Tulis pesan Anda disini'
         />
@@ -152,13 +172,17 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataDetailProduk: state.productDetail
+    dataDetailProduk: state.productDetail,
+    dataDetailDiscussion: state.comments,
+    dataNewComent: state.newComment
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduct: (id) => dispatch(productAction.getProduct({id: id})),
+    createDisscussionComent: (id, content) => dispatch(productAction.newComment({id: id, content: content})),
+    getDetailDiscussion: (id) => dispatch(productAction.getComment({id: id}))
   }
 }
 

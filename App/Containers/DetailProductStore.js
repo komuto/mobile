@@ -142,8 +142,8 @@ class DetailProductStore extends React.Component {
       type: ActionConst.PUSH,
       title: title,
       actionType: action,
-      photoProduct: Images.contohproduct,
-      productName: 'Sepatu Nike Run Orange',
+      photoProduct: this.state.imageProduct,
+      productName: this.state.product.name,
       idProduct: id,
       data: data,
       backgroundContainer: color

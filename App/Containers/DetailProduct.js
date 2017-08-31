@@ -9,7 +9,8 @@ import {
   ActivityIndicator,
   BackAndroid,
   Alert,
-  Modal
+  Modal,
+  ToastAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
@@ -126,6 +127,7 @@ class DetailProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
+      console.log('lala', nextProps.dataDetailProduk.detail)
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -183,8 +185,11 @@ class DetailProduct extends React.Component {
         photoProductDropship: tempPhoto,
         expeditionDropship: tempExpedition
       })
-
+      nextProps.dataDetailProduk.status = 0
       this.props.resetProduk()
+    }
+    if (nextProps.dataDetailProduk.status === 406) {
+      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
@@ -1206,17 +1211,6 @@ class DetailProduct extends React.Component {
   }
 
   renderProduk () {
-    const spinner = this.state.loadingProduk
-    ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='#ef5656' size='small' />
-    </View>) : (<View />)
-    if (this.state.loadingProduk) {
-      return (
-        <View>
-          {spinner}
-        </View>
-      )
-    }
     return (
       <View style={{elevation: 1, backgroundColor: Colors.background}}>
         <ListView
@@ -1331,9 +1325,11 @@ class DetailProduct extends React.Component {
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
           fotoToko: this.state.fotoToko,
+          productName: this.state.title,
           namaToko: this.state.namaToko,
           price: this.state.price,
-          id: this.state.id
+          id: this.state.id,
+          createDropshipper: true
         })
         this.props.getCatalog()
       }
@@ -1343,6 +1339,11 @@ class DetailProduct extends React.Component {
   }
 
   render () {
+    console.log(this.state.loadingProduk)
+    const spinner = this.state.loadingProduk
+    ? (<View style={styles.spinnerProduk}>
+      <ActivityIndicator color='white' size='small' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -1378,6 +1379,7 @@ class DetailProduct extends React.Component {
             </Text>
           </TouchableOpacity>
         </View>
+        {spinner}
         {this.renderModalLaporkan()}
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}
@@ -1389,7 +1391,6 @@ class DetailProduct extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.products,
     dataDetailProduk: state.productDetail,
     dataProvinsi: state.provinces,
     dataKota: state.districts,

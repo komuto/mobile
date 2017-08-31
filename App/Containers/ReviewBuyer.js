@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, Image, ListView, TouchableOpacity } from 'react-native'
+import { Text, View, Image, ListView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
@@ -8,6 +8,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as produkAction from '../actions/product'
+import * as reviewAction from '../actions/review'
 
 // Styles
 import styles from './Styles/ReviewBuyerScreenStyle'
@@ -17,55 +18,35 @@ class ReviewBuyerScreenScreen extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      id: this.props.id,
-      data: [
-        {
-          'id': 0, 'photoProduct': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg', 'storeName': 'bahagia1', 'productName': 'Sepatu balap', 'accuracy': 4, 'quality': 4, 'photoUser': 'https://www.juptr.io/images/default-user.png', 'review': 'lalalalalalalalalalalal'
-        },
-        {
-          'id': 0, 'photoProduct': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg', 'storeName': 'bahagia1', 'productName': 'Sepatu balap', 'accuracy': 4, 'quality': 4, 'photoUser': 'https://www.juptr.io/images/default-user.png', 'review': 'lalalalalalalalalalalal'
-        },
-        {
-          'id': 0, 'photoProduct': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg', 'storeName': 'bahagia1', 'productName': 'Sepatu balap', 'accuracy': 4, 'quality': 4, 'photoUser': 'https://www.juptr.io/images/default-user.png', 'review': 'lalalalalalalalalalalal'
-        },
-        {
-          'id': 0, 'photoProduct': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg', 'storeName': 'bahagia1', 'productName': 'Sepatu balap', 'accuracy': 4, 'quality': 4, 'photoUser': 'https://www.juptr.io/images/default-user.png', 'review': 'lalalalalalalalalalalal'
-        },
-        {
-          'id': 0, 'photoProduct': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg', 'storeName': 'bahagia1', 'productName': 'Sepatu balap', 'accuracy': 4, 'quality': 4, 'photoUser': 'https://www.juptr.io/images/default-user.png', 'review': 'lalalalalalalalalalalal'
-        }
-      ],
-      foto: this.props.foto,
-      price: this.props.price,
-      namaToko: this.props.namaToko,
+      data: [],
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false
+      isLoading: false,
+      loadingPage: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-  //   if (nextProps.dataReview.status === 200) {
-  //     if (nextProps.dataReview.reviews.length > 0) {
-  //       console.log(nextProps.dataReview.reviews)
-  //       let data = [...this.state.data, ...nextProps.dataReview.reviews]
-  //       this.setState({
-  //         data: data,
-  //         page: this.state.page + 1,
-  //         isRefreshing: false,
-  //         isLoading: false,
-  //         loadmore: true
-  //       })
-  //     } else {
-  //       this.setState({
-  //         loadmore: false,
-  //         isLoading: false
-  //       })
-  //     }
-  //   }
+    if (nextProps.dataReview.status === 200) {
+      if (nextProps.dataReview.buyerReview.length > 0) {
+        let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
+        this.setState({
+          data: data,
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
+    }
     if (nextProps.dataDetailProduk.status === 200) {
-      this.setState({loading: false})
+      this.setState({loadingPage: false})
       NavigationActions.detailproduct({
         type: ActionConst.PUSH
       })
@@ -73,18 +54,17 @@ class ReviewBuyerScreenScreen extends React.Component {
   }
 
   loadMore () {
-    const { id, page, loadmore, isLoading } = this.state
+    const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.reviewAction(id, page)
+        this.props.getListReview(page)
       }
     }
   }
 
   refresh = () => {
-    const { id } = this.state
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.reviewAction(id, 1)
+    this.props.getListReview(1)
   }
 
   listViewUlasan () {
@@ -92,31 +72,56 @@ class ReviewBuyerScreenScreen extends React.Component {
       <ListView
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
         enableEmptySections
         style={styles.listView}
       />
     )
   }
 
-  handleDetailProduct () {
-    this.props.getDetailProduct(93)
+  handleDetailProduct (id) {
+    this.setState({loadingPage: true})
+    this.props.getDetailProduct(id)
   }
 
   renderRow (rowData) {
     return (
       <View style={{marginBottom: 20, elevation: 0.1}}>
-        <TouchableOpacity style={styles.border} onPress={() => this.handleDetailProduct()}>
+        <TouchableOpacity style={styles.border} onPress={() => this.handleDetailProduct(rowData.product.id)}>
           <View style={styles.profile}>
             <Image
-              source={{ uri: rowData.photoProduct }}
+              source={{ uri: rowData.product.image }}
               style={styles.styleFotoToko}
             />
             <View style={styles.namaContainer}>
               <Text style={styles.textNama}>
-                {rowData.productName}
+                {rowData.product.name}
               </Text>
               <Text style={styles.textKelola}>
-                {rowData.storeName}
+                {rowData.product.store.name}
               </Text>
             </View>
             <Image
@@ -174,27 +179,30 @@ class ReviewBuyerScreenScreen extends React.Component {
   }
 
   render () {
+    const spinner = this.state.loadingPage
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='white' size='large' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
           {this.listViewUlasan()}
         </View>
+        {spinner}
       </View>
     )
   }
 
 }
 
-const mapStateToProps = (state) => {
-  return {
-    dataDetailProduk: state.productDetail
-  }
-}
+const mapStateToProps = (state) => ({
+  dataReview: state.buyerReview,
+  dataDetailProduk: state.productDetail
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id}))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id})),
+  getListReview: (page) => dispatch(reviewAction.getBuyerReview({ page: page }))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReviewBuyerScreenScreen)

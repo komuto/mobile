@@ -3,8 +3,8 @@ import { View, TextInput, Modal, Text, Image, BackAndroid, TouchableOpacity, Act
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 import CustomRadio from '../Components/CustomRadioCatalog'
-import { Actions as NavigationActions } from 'react-native-router-flux'
 import Dropshipping from './Dropshipping'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -47,7 +47,11 @@ class StatusStockDropshipping extends React.Component {
       this.setState({
         loading: false
       })
-      this.props.getDetailStoreProduct(this.state.idProduct)
+      this.props.getListProduk(false)
+      this.props.getHiddenProduct()
+      NavigationActions.productlist({
+        type: ActionConst.PUSH
+      })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {
       this.setState({
@@ -211,7 +215,9 @@ class StatusStockDropshipping extends React.Component {
     return (
       <View style={[styles.container, {backgroundColor: this.state.backgroundContainer}]}>
         <View style={styles.headerProduct}>
-          <Image source={this.state.photoProduct} style={styles.image} />
+          <View style={styles.maskedPhoto}>
+            <Image source={{uri: this.state.photoProduct[0].file}} style={styles.image} />
+          </View>
           <Text style={styles.textProduct}>{this.state.productName}</Text>
         </View>
         {this.renderOptionDropshipping()}
@@ -241,7 +247,9 @@ const mapDispatchToProps = (dispatch) => {
     updateStatusDropship: (id, data) => dispatch(productAction.updateProduct({id: id, is_dropship: data})),
     updateDisplayProduct: (id, data) => dispatch(productAction.updateProduct({id: id, status: data})),
     setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
+    getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
   }
 }
 

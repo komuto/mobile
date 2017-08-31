@@ -24,7 +24,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.smallMed,
     color: Colors.lightblack,
-    flex: 2
+    flex: 1
   },
   date: {
     fontFamily: Fonts.type.regular,
@@ -42,11 +42,12 @@ export default StyleSheet.create({
     flex: 1
   },
   border: {
+    flex: 1,
     marginLeft: 20,
     borderBottomWidth: 0.5,
     paddingBottom: 20,
     borderBottomColor: Colors.silver,
-    paddingRight: 40 + 20 + 10
+    paddingRight: 20
   },
   messageText: {
     fontFamily: Fonts.type.regular,
@@ -55,5 +56,13 @@ export default StyleSheet.create({
     lineHeight: 22,
     flex: 1,
     paddingRight: 4
+  },
+  listView: {
+    flex: 1
+  },
+  loadingStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8
   }
 })

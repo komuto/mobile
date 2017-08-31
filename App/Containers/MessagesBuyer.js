@@ -11,9 +11,11 @@ import {
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import moment from 'moment'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as messageAction from '../actions/message'
 
 // Styles
 import styles from './Styles/MessagesBuyerScreenStyle'
@@ -25,47 +27,29 @@ class MessagesBuyerScreenScreen extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      loading: false,
+      loading: true,
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
-      dataConversation: [
-        {
-          'id': 1, 'typeMessage': 'conversation', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'conversation', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'conversation', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'conversation', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'conversation', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        }
-      ],
-      dataArchive: [
-        {
-          'id': 1, 'typeMessage': 'archive', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'archive', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'archive', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'archive', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'typeMessage': 'archive', 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        }
-      ],
+      dataConversation: [],
+      dataArchive: [],
       notif: this.props.notif,
       messageNotif: this.props.messageNotif,
       page: this.props.page
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataMessage.status === 200) {
+      this.setState({
+        dataConversation: nextProps.dataMessage.buyerMessages
+      })
+      nextProps.dataMessage.status = 0
+    } if (nextProps.dataArchiveMessage.status === 200) {
+      this.setState({
+        dataArchive: nextProps.dataArchiveMessage.archiveMessages
+      })
+      nextProps.dataArchiveMessage.status = 0
     }
   }
 
@@ -82,24 +66,29 @@ class MessagesBuyerScreenScreen extends React.Component {
     return true
   }
 
-  handelDetailMessage (typeMessage) {
+  handelDetailMessage (id, typeMessage) {
+    this.props.getDetailMessage(id)
     NavigationActions.detailmessage({
       type: ActionConst.PUSH,
+      idMessage: id,
       typeMessage: typeMessage
     })
   }
 
   renderRowMessage (rowData) {
+    var timeStampToDate = moment.unix(rowData.detail_message.created_at).format('DD MMM YYYY').toString()
     return (
-      <TouchableOpacity onPress={() => this.handelDetailMessage(rowData.typeMessage)}activeOpacity={0.5} style={styles.containerMessage}>
-        <Image source={rowData.photoUser} style={styles.photo} />
-        <View style={{marginLeft: 20}}>
+      <TouchableOpacity onPress={() => this.handelDetailMessage(rowData.id)}activeOpacity={0.5} style={styles.containerMessage}>
+        <View style={styles.maskedPhoto}>
+          <Image source={{uri: rowData.store.logo}} style={styles.photo} />
+        </View>
+        <View style={{marginLeft: 20, flex: 1}}>
           <View style={styles.flexRow}>
-            <Text style={styles.title}>{rowData.titleMessage}s</Text>
-            <Text style={styles.date}>{rowData.date}</Text>
+            <Text style={styles.title}>{rowData.subject}</Text>
+            <Text style={styles.date}>{timeStampToDate}</Text>
           </View>
-          <Text style={styles.storesText}>{rowData.storeName}</Text>
-          <Text style={styles.messageText}>{rowData.message}</Text>
+          <Text style={styles.storesText}>{rowData.store.name}</Text>
+          <Text style={styles.messageText}>{rowData.detail_message.content}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -163,11 +152,14 @@ class MessagesBuyerScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataMessage: state.buyerMessages,
+    dataArchiveMessage: state.archiveBuyerMessages
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id}))
   }
 }
 

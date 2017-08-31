@@ -14,15 +14,15 @@ const prepareGetProducts = (data) => {
   return buildQuery(data)
 }
 
-export const getProduct = ({ id }) => {
-  const token = storage.getItem('token')
+export const getProduct = async ({ id }) => {
+  const token = await storage.getItem('token')
   let axios = publicApiKomuto()
   if (token) axios = authApiKomuto()
   return axios.get(`products/${id}`)
 }
 
-export const getProductBy = (data) => {
-  const token = storage.getItem('token')
+export const getProductBy = async (data) => {
+  const token = await storage.getItem('token')
   let axios = publicApiKomuto()
   if (token) axios = authApiKomuto()
   const query = prepareGetProducts(data)

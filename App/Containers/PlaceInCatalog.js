@@ -31,7 +31,6 @@ class PlaceInCatalog extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      data: [],
       listKatalog: [],
       id: this.props.id,
       foto: this.props.fotoToko || null,
@@ -42,20 +41,24 @@ class PlaceInCatalog extends React.Component {
       idCatalog: this.props.catalogId,
       modalTambahKatalog: false,
       namaKatalog: '',
-      statusCreateProduct: this.props.createDropshipper
+      statusCreateProduct: this.props.createDropshipper || false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataCatalog.status === 200) {
-      let temp = this.state.listKatalog
-      nextProps.dataCatalog.catalogs.map((data, i) => {
-        temp[i] = ({'index': data.id, 'label': data.name})
-      })
-      this.setState({
-        listKatalog: temp,
-        idCatalog: nextProps.dataCatalog.catalogs[0].id
-      })
+      if (nextProps.dataCatalog.catalogs.length <= 0) {
+        ToastAndroid.show('Anda tidak memiliki katalog..', ToastAndroid.LONG)
+      } else {
+        let temp = this.state.listKatalog
+        nextProps.dataCatalog.catalogs.map((data, i) => {
+          temp[i] = ({'index': data.id, 'label': data.name})
+        })
+        this.setState({
+          listKatalog: temp,
+          idCatalog: nextProps.dataCatalog.catalogs[0].id
+        })
+      }
       nextProps.dataCatalog.status = 0
     } if (nextProps.dataCreateCatalog.status === 200) {
       this.setState({
@@ -79,6 +82,12 @@ class PlaceInCatalog extends React.Component {
         loading: false
       })
       nextProps.alterProduct.status = 0
+    } if (nextProps.dataCreateProdukDropshipper.status === 400) {
+      ToastAndroid.show('Produk sudah ada di daftar dropship..', ToastAndroid.LONG)
+      this.setState({
+        loading: false
+      })
+      nextProps.dataCreateProdukDropshipper.status = 0
     } if (nextProps.dataCreateProdukDropshipper.status > 200) {
       ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
       this.setState({

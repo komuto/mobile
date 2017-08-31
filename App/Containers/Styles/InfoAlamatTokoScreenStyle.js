@@ -122,6 +122,8 @@ export default StyleSheet.create({
   },
   textTitleAlamat: {
     justifyContent: 'center',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
     paddingLeft: 20,
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.medium

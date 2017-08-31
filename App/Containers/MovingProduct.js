@@ -24,6 +24,7 @@ class MovingProduct extends React.Component {
       textButton: this.props.textButton,
       actionType: this.props.actionType,
       idCatalog: this.props.idCatalog,
+      statusHidden: this.props.statusHidden,
       product: [],
       listKatalog: [],
       addCatalog: [
@@ -51,6 +52,13 @@ class MovingProduct extends React.Component {
         size: nextProps.dataProduk.storeCatalogProducts.products.length
       })
       nextProps.dataProduk.status = 0
+    } else if (nextProps.dataProdukDropship.status === 200) {
+      this.setState({
+        product: nextProps.dataProdukDropship.products,
+        loading: false,
+        size: nextProps.dataProdukDropship.length
+      })
+      nextProps.dataProdukDropship.status = 0
     } else if (nextProps.dataCatalog.status === 200) {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
@@ -60,10 +68,14 @@ class MovingProduct extends React.Component {
       this.setState({
         isChecked: false,
         notification: true,
-        loading: false,
-        messageNotification: 'Berhasil menyembunyikan barang'
+        loading: false
       })
-      this.props.getProductByCatalog(this.state.idCatalog)
+      if (this.props.statusHidden) {
+        this.setState({messageNotification: 'Berhasil menampilkan barang'})
+      } else {
+        this.setState({messageNotification: 'Berhasil menyembunyikan barang'})
+      }
+      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
       nextProps.alterProduct.status = 0
     } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'deleteProduct') {
       this.setState({
@@ -72,7 +84,7 @@ class MovingProduct extends React.Component {
         loading: false,
         messageNotification: 'Berhasil menghapus barang'
       })
-      this.props.getProductByCatalog(this.state.idCatalog)
+      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
       nextProps.alterProduct.status = 0
     } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'moveCatalog') {
       this.setState({
@@ -81,7 +93,16 @@ class MovingProduct extends React.Component {
         notification: true,
         messageNotification: 'Berhasil memindahkan ke katalog lain'
       })
-      this.props.getProductByCatalog(this.state.idCatalog)
+      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
+      nextProps.alterProduct.status = 0
+    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'moveDropship') {
+      this.setState({
+        isChecked: false,
+        loading: false,
+        notification: true,
+        messageNotification: 'Berhasil menjadikan Dropshipping'
+      })
+      this.props.getProductByCatalogDropship(this.state.idCatalog, this.state.statusHidden)
       nextProps.alterProduct.status = 0
     } else if (nextProps.alterProduct.status === 400 && this.props.actionType === 'deleteProduct') {
       this.setState({
@@ -334,9 +355,11 @@ class MovingProduct extends React.Component {
         modalCatalog: true
       })
     } else if (this.state.actionType === 'moveDropship') {
+      let data = this.state.arrayIdProduct
+      console.log('kirim', this.state.arrayIdProduct)
+      this.props.updateProductToDropship(data)
       this.setState({
-        notification: true,
-        messageNotification: 'Berhasil menjadikan dropshipping'
+        loading: true
       })
     }
   }
@@ -387,6 +410,7 @@ class MovingProduct extends React.Component {
   }
 
   render () {
+    console.log(this.state.statusHidden)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -416,6 +440,7 @@ class MovingProduct extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataProduk: state.storeCatalogProducts,
+    dataProdukDropship: state.storeProductsByCatalog,
     dataCatalog: state.getListCatalog,
     alterProduct: state.alterProducts
   }
@@ -423,13 +448,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProductByCAtalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    updateProductToDropship: (data) => dispatch(productAction.updateDropshipStatus({product_ids: data})),
     setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
     setDeleteProduct: (data) => dispatch(productAction.deleteProducts({product_ids: data})),
     changeCatalog: (id, data) => dispatch(productAction.changeCatalogProducts({catalog_id: id, product_ids: data})),
-    getProductByCatalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
+    getProductByCatalog: (id, query) => dispatch(storeAction.getStoreCatalogProducts({id: id, hidden: query})),
     getListProduk: () => dispatch(storeAction.getStoreProducts()),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getProductByCatalogDropship: (id, q) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: q}))
   }
 }
 

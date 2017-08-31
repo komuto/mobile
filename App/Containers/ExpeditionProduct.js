@@ -79,7 +79,15 @@ class ExpeditionProduct extends React.Component {
     this.setState({
       loading: true
     })
-    dataProduk[15] = expeditionServices
+    let expedition = []
+    for (var i = 0; i < expeditionServices.length; i++) {
+      if (expeditionServices[i].status === 1) {
+        expedition.push({
+          'expedition_service_id': expeditionServices[i].expedition_service_id
+        })
+      }
+    }
+    dataProduk[15] = expedition
     dataProduk[16] = image
     this.props.createProduk(
       dataProduk[0],

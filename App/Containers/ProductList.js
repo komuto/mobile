@@ -42,7 +42,8 @@ class ProductList extends React.Component {
         backgroundColor: 'transparent'
       },
       search: '',
-      statusDot: false,
+      statusDotDisplay: false,
+      statusDotHidden: false,
       rowTerpilih: '',
       loading: true,
       modal: false,
@@ -51,10 +52,15 @@ class ProductList extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200 && nextProps.dataProductHidden.status === 200) {
+    if (nextProps.dataProduk.status === 200) {
       this.setState({
         product: nextProps.dataProduk.storeProducts,
         katalog: nextProps.dataProduk.storeProducts,
+        loading: false
+      })
+    }
+    if (nextProps.dataProductHidden.status === 200) {
+      this.setState({
         productHidden: nextProps.dataProductHidden.products,
         loading: false
       })
@@ -191,109 +197,65 @@ class ProductList extends React.Component {
     this.setState({positionCatalog: this.position})
   }
 
-  DaftarProdukDiTampilkan (rowData, sectionId, rowId) {
-    return (
-      <View key={rowId} style={styles.separaator} onLayout={this.onLayout}>
-        <View style={styles.containerProduk}>
-          <View style={styles.headerInfoAlamat}>
-            <Text style={styles.textHeader}>{rowData.catalog.name} ({rowData.catalog.count_product})</Text>
-            <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: rowId})}>
-              <Image source={Images.threeDotSilver} style={styles.imageDot} />
-            </TouchableOpacity>
-          </View>
-          {this.mapSingleProduk(rowData.products, rowId, rowData.catalog.id)}
-        </View>
-        <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(rowData.catalog.id, rowData.catalog.name)}>
-          <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
-          <Image source={Images.rightArrow} style={styles.imageDot} />
-        </TouchableOpacity>
-        {this.containerEdit(rowId, rowData.catalog.id)}
-      </View>
-    )
-  }
-
-  handleListProduk (id, name) {
-    this.props.getProductByCatalog(id)
+  handleListProduk (id, name, hidden) {
+    this.props.getProductByCatalog(id, hidden)
     NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
       title: name
     })
   }
 
-  handleHideProduct (id) {
-    this.setState({statusDot: false})
-    this.props.getProductByCatalog(id)
+  handleHideProduct (id, hidden, textButton) {
+    this.setState({statusDotDisplay: false, statusDotHidden: false})
+    this.props.getProductByCatalog(id, hidden, textButton)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
+      statusHidden: hidden,
       actionType: 'hideProduct',
       title: 'Pindahkan ke Katalog Lain',
-      textButton: 'Sembunyikan Barang Terpilih'
+      textButton: textButton + ' Barang Terpilih'
     })
   }
 
-  handleDeleteProduct (id) {
-    this.setState({statusDot: false})
-    this.props.getProductByCatalog(id)
+  handleDeleteProduct (id, hidden) {
+    this.setState({statusDotDisplay: false, statusDotHidden: false})
+    this.props.getProductByCatalog(id, hidden)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       actionType: 'deleteProduct',
       idCatalog: id,
+      statusHidden: hidden,
       title: 'Hapus Barang',
       textButton: 'Hapus Barang Terpilih'
     })
   }
 
-  handleMoveToCatalog (id) {
-    this.setState({statusDot: false})
-    this.props.getProductByCatalog(id)
+  handleMoveToCatalog (id, hidden) {
+    this.setState({statusDotDisplay: false, statusDotHidden: false})
+    this.props.getProductByCatalog(id, hidden)
     this.props.getCatalog()
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
+      statusHidden: hidden,
       actionType: 'moveCatalog',
       title: 'Pindahkan ke Katalog Lain',
       textButton: 'Pindahkan Barang Terpilih'
     })
   }
 
-  handleMoveToDropshipper (id) {
-    this.setState({statusDot: false})
-    this.props.getProductByCatalog(id)
+  handleMoveToDropshipper (id, hidden) {
+    this.setState({statusDotDisplay: false, statusDotHidden: false})
+    this.props.getProductByCatalogDropship(id, false, hidden)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
-      isDropshipper: true,
+      idCatalog: id,
       actionType: 'moveDropship',
+      statusHidden: hidden,
       title: 'Jadikan Dropshipping',
       textButton: 'Jadikan Dropshipping untuk barang terpilih'
     })
-  }
-
-  containerEdit (i, id) {
-    if (this.state.statusDot && this.state.rowTerpilih === i) {
-      return (
-        <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id)}>
-            <Text style={styles.textEdit}>Sembunyikan Barang</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id)}>
-            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
-          </TouchableOpacity>
-        </View>
-      )
-    }
-    return (
-      <View />
-    )
   }
 
   discountCalculate (price, discount) {
@@ -394,28 +356,101 @@ class ProductList extends React.Component {
     )
   }
 
-  DaftarProdukDiSembunyikan () {
-    const { productHidden } = this.state
-    const mapProduk = productHidden.map((data, i) => {
+  containerEditDisplay (i, id, hidden) {
+    if (this.state.statusDotDisplay && this.state.rowTerpilih === i) {
       return (
-        <View key={i} style={styles.separaator}>
-          <View style={styles.containerProduk}>
-            <View style={styles.headerInfoAlamat}>
-              <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
-            </View>
-            {this.mapSingleProduk(data.products, i, data.catalog.id)}
-          </View>
-          <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(data.catalog.id, data.catalog.name)}>
-            <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
-            <Image source={Images.rightArrow} style={styles.imageDot} />
+        <View elevation={5} style={styles.edit}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Sembunyikan')}>
+            <Text style={styles.textEdit}>Sembunyikan Barang</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id, hidden)}>
+            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id, hidden)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id, hidden)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
           </TouchableOpacity>
         </View>
       )
-    })
+    }
     return (
-      <View>
-        {mapProduk}
+      <View />
+    )
+  }
+
+  containerEditHidden (i, id, hidden) {
+    if (this.state.statusDotHidden && this.state.rowTerpilih === i) {
+      return (
+        <View elevation={5} style={styles.edit}>
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Tampilkan')}>
+            <Text style={styles.textEdit}>Tampilkan Barang</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id, hidden)}>
+            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id, hidden)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
+          </TouchableOpacity>
+          <View style={styles.border} />
+          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id, hidden)}>
+            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    return (
+      <View />
+    )
+  }
+
+  DaftarProdukDiTampilkan (rowData, sectionId, rowId) {
+    return (
+      <View key={rowId} style={styles.separaator} onLayout={this.onLayout}>
+        <View style={styles.containerProduk}>
+          <View style={styles.headerInfoAlamat}>
+            <Text style={styles.textHeader}>{rowData.catalog.name} ({rowData.catalog.count_product})</Text>
+            <TouchableOpacity onPress={() => this.setState({statusDotDisplay: true, rowTerpilih: rowId})}>
+              <Image source={Images.threeDotSilver} style={styles.imageDot} />
+            </TouchableOpacity>
+          </View>
+          {this.mapSingleProduk(rowData.products, rowId, rowData.catalog.id)}
+        </View>
+        <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(rowData.catalog.id, rowData.catalog.name, false)}>
+          <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
+          <Image source={Images.rightArrow} style={styles.imageDot} />
+        </TouchableOpacity>
+        {this.containerEditDisplay(rowId, rowData.catalog.id, false)}
       </View>
+    )
+  }
+
+  DaftarProdukDiSembunyikan (rowData, sectionId, rowId) {
+    return (
+      <TouchableOpacity key={rowId} style={styles.dataListProduk}
+        onPress={() => this.produkDetail(rowData.id, rowData.name, rowData.image, rowData.price, rowData)}>
+        <View style={styles.flexRow}>
+          <Image source={{uri: rowData.image}} style={styles.imageProduk} />
+          <View style={styles.column}>
+            <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+              <Text style={styles.textTitle}>{rowData.name}</Text>
+              <TouchableOpacity>
+                <Image source={Images.diskon} style={styles.imageDot} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+              </TouchableOpacity>
+            </View>
+            {this.labeldaridropshipper(rowData)}
+          </View>
+        </View>
+      </TouchableOpacity>
     )
   }
 
@@ -452,7 +487,7 @@ class ProductList extends React.Component {
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
     return (
-      <View style={styles.container}>
+      <TouchableOpacity activeOpacity={100} onPress={() => this.setState({statusDotDisplay: false, statusDotHidden: false})} style={styles.container}>
         <ScrollableTabView
           prerenderingSiblingsNumber={2}
           style={this.state.tabViewStyle}
@@ -474,33 +509,35 @@ class ProductList extends React.Component {
           </ScrollView>
           <ScrollView tabLabel='Disembunyikan' ref='productHidden' style={styles.scrollView}>
             {this.renderSearch()}
-            {this.DaftarProdukDiSembunyikan()}
+            <ListView
+              enableEmptySections
+              contentContainerStyle={{ flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.productHidden)}
+              renderRow={this.DaftarProdukDiSembunyikan.bind(this)}
+            />
           </ScrollView>
         </ScrollableTabView>
         {this.renderKatalogtButton()}
         {this.renderTambahButton()}
         {this.renderModal()}
         {spinner}
-      </View>
+      </TouchableOpacity>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    dataProduk: state.storeProducts,
-    dataProductHidden: state.hiddenStoreProducts
-  }
-}
+const mapStateToProps = (state) => ({
+  dataProduk: state.storeProducts,
+  dataProductHidden: state.hiddenStoreProducts
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    getProductByCatalog: (id) => dispatch(storeAction.getStoreCatalogProducts({id})),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    getCatalog: () => dispatch(catalogAction.getListCatalog()),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
-    getKategori: (id) => dispatch(categoriAction.subCategory({id: id}))
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getProductByCatalog: (id, query) => dispatch(storeAction.getStoreCatalogProducts({id: id, hidden: query})),
+  getProductByCatalogDropship: (id, isDropShip, hidden) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip, hidden: hidden})),
+  getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+  getCatalog: () => dispatch(catalogAction.getListCatalog()),
+  getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
+  getKategori: (id) => dispatch(categoriAction.subCategory({id: id}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductList)

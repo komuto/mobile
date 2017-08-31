@@ -2,8 +2,11 @@ import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, Image, Modal, BackAndroid, ListView, TextInput } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import moment from 'moment'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as messageAction from '../actions/message'
 
 // Styles
 import styles from './Styles/DetailMessagesScreenStyle'
@@ -17,26 +20,58 @@ class DetailMessagesScreenScreen extends React.Component {
     this.state = {
       loading: false,
       messages: '',
+      idMessage: this.props.idMessage,
       heightDesc: 0,
       modalPopup: false,
-      data: [
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2107 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        },
-        {
-          'id': 1, 'photoUser': Images.contohproduct, 'titleMessage': 'Gundam Biru Special Edition  Stok warna biru habis', 'date': '24 Feb 2017 - 14:30', 'storeName': 'Sports Station Shop', 'message': 'Halo Gan, untuk Gundam yang warna biru habis. apakah mau ditukar dengan barang lain atau gimana enaknya?'
-        }
-      ],
-      typeMessage: this.props.typeMessage
+      data: [],
+      detailMessageUser: [],
+      typeMessage: 'conversation'
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.detailMessage.status === 200) {
+      this.setState({
+        data: nextProps.detailMessage.buyerDetailMessage,
+        typeMessage: nextProps.detailMessage.buyerDetailMessage.type,
+        detailMessageUser: nextProps.detailMessage.buyerDetailMessage.detail_messages
+      })
+      nextProps.detailMessage.status = 0
+    } if (nextProps.dataReplyMessage.status === 200) {
+      nextProps.dataReplyMessage.status = 0
+      this.props.getDetailMessage(this.state.idMessage)
+    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
+      console.log('b')
+      nextProps.dataMoveMessage.status = 0
+      this.props.getListMessages()
+      this.props.getListArchiveMessages()
+      NavigationActions.messagesbuyer({
+        type: ActionConst.POP_AND_REPLACE,
+        notif: true,
+        messageNotif: 'Berhasil memindahkan ke Arsip',
+        page: 1
+      })
+    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
+      console.log('a')
+      nextProps.dataMoveMessage.status = 0
+      this.props.getListMessages()
+      this.props.getListArchiveMessages()
+      NavigationActions.messagesbuyer({
+        type: ActionConst.POP_AND_REPLACE,
+        notif: true,
+        messageNotif: 'Berhasil memindahkan ke Percakapan',
+        page: 0
+      })
+    } if (nextProps.dataDeleteMessage.status === 200) {
+      nextProps.dataDeleteMessage.status = 0
+      this.props.getListMessages()
+      this.props.getListArchiveMessages()
+      NavigationActions.messagesbuyer({
+        type: ActionConst.POP_AND_REPLACE,
+        notif: true,
+        messageNotif: 'Berhasil menghapus Percakapan',
+        page: 0
+      })
     }
   }
 
@@ -95,7 +130,7 @@ class DetailMessagesScreenScreen extends React.Component {
               <Text style={styles.textMenu}>Pindahkan ke {this.text}</Text>
             </TouchableOpacity>
             <View style={styles.border} />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.handleDeleteMessage()}>
               <Text style={styles.textMenu}>Hapus Selamanya</Text>
             </TouchableOpacity>
           </View>
@@ -104,18 +139,33 @@ class DetailMessagesScreenScreen extends React.Component {
     )
   }
 
+  checkMessage (rowData) {
+    if (rowData.store) {
+      return (
+        <Text style={styles.title}>{rowData.user.name}</Text>
+      )
+    } else {
+      return (
+        <Text style={styles.title}>{rowData.user.name}</Text>
+      )
+    }
+  }
+
   renderRowMessage (rowData) {
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
     return (
-      <TouchableOpacity onPress={() => this.handelDetailMessage()}activeOpacity={0.5} style={styles.containerMessage}>
-        <Image source={rowData.photoUser} style={styles.photo} />
-        <View style={{marginLeft: 20}}>
-          <View style={styles.flexRow}>
-            <Text style={styles.title}>{rowData.storeName}</Text>
-            <Text style={styles.date}>{rowData.date}</Text>
-          </View>
-          <Text style={styles.messageText}>{rowData.message}</Text>
+      <View onPress={() => this.handelDetailMessage()}activeOpacity={0.5} style={styles.containerMessage}>
+        <View style={styles.maskedPhoto}>
+          <Image source={{uri: rowData.user.photo}} style={styles.photo} />
         </View>
-      </TouchableOpacity>
+        <View style={{marginLeft: 20, flex: 1}}>
+          <View style={styles.flexRow}>
+            {this.checkMessage(rowData)}
+            <Text style={styles.date}>{timeStampToDate}</Text>
+          </View>
+          <Text style={styles.messageText}>{rowData.content}</Text>
+        </View>
+      </View>
     )
   }
 
@@ -126,20 +176,20 @@ class DetailMessagesScreenScreen extends React.Component {
   handleMoveToArchive () {
     this.setState({ modalPopup: false })
     if (this.state.typeMessage === 'conversation') {
-      NavigationActions.messagesbuyer({
-        type: ActionConst.PUSH,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Arsip',
-        page: 1
-      })
+      this.props.movingMessage(this.state.idMessage, 'archive')
     } else {
-      NavigationActions.messagesbuyer({
-        type: ActionConst.PUSH,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Percakapan',
-        page: 0
-      })
+      this.props.movingMessage(this.state.idMessage, 'conversation')
     }
+  }
+
+  handleDeleteMessage () {
+    this.setState({ modalPopup: false })
+    this.props.deleteMessage(this.state.idMessage)
+  }
+
+  sendReply () {
+    this.setState({messages: ''})
+    this.props.replyMessage(this.state.idMessage, this.state.messages)
   }
 
   render () {
@@ -148,30 +198,29 @@ class DetailMessagesScreenScreen extends React.Component {
         {this.renderHeader()}
         <View style={styles.containerTitle}>
           <Text style={styles.titleMessage}>
-            Gundam Biru Special Edition - Stok warna biru habis. Apakah mau diganti yang lain?
+            {this.state.data.subject}
           </Text>
         </View>
         <ScrollView>
           <ListView
-            dataSource={this.dataSource.cloneWithRows(this.state.data)}
+            dataSource={this.dataSource.cloneWithRows(this.state.detailMessageUser)}
             renderRow={this.renderRowMessage.bind(this)}
             enableEmptySections
           />
         </ScrollView>
         <TextInput
-          style={[styles.inputText, {height: Math.max(30, this.state.heightMessage)}]}
+          style={[styles.inputText]}
           value={this.state.messages}
-          multiline
           keyboardType='default'
-          returnKeyType='next'
+          returnKeyType='done'
           autoCapitalize='none'
           autoCorrect
           onChange={(event) => {
             this.setState({
-              messages: event.nativeEvent.text,
-              heightMessage: event.nativeEvent.contentSize.height
+              messages: event.nativeEvent.text
             })
           }}
+          onSubmitEditing={() => this.sendReply()}
           underlineColorAndroid='transparent'
           placeholder='Tulis pesan Anda disini'
         />
@@ -183,11 +232,21 @@ class DetailMessagesScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    detailMessage: state.buyerDetailMessage,
+    dataReplyMessage: state.replyMessage,
+    dataDeleteMessage: state.deleteMessage,
+    dataMoveMessage: state.updateMessage
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    replyMessage: (id, content) => dispatch(messageAction.buyerReplyMessage({id: id, content: content})),
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
+    deleteMessage: (id) => dispatch(messageAction.buyerDeleteMessage({id})),
+    movingMessage: (id, type) => dispatch(messageAction.updateBuyerMessage({id: id, messageType: type})),
+    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
+    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages())
   }
 }
 

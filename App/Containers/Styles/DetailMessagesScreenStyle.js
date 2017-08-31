@@ -55,7 +55,13 @@ export default StyleSheet.create({
     paddingBottom: 20,
     paddingTop: 20,
     paddingLeft: 20,
-    paddingRight: 40 + 20 + 10
+    paddingRight: 20
+  },
+  maskedPhoto: {
+    height: 40,
+    width: 40,
+    borderRadius: 200,
+    backgroundColor: Colors.paleGreyFive
   },
   photo: {
     height: 40,

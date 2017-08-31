@@ -13,7 +13,8 @@ import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import * as produkAction from '../actions/product'
+import * as catalogAction from '../actions/catalog'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
@@ -78,12 +79,25 @@ class ListProdukByCatalog extends React.Component {
     })
   }
 
-  produkDetail (id) {
-    NavigationActions.detailproduct({
-      type: ActionConst.PUSH,
-      id: id
-    })
-    this.props.getDetailProduk(id)
+  produkDetail (id, name, photo, price, data, catalogId) {
+    if (data.is_dropshipper === true && data.dropship_origin) {
+      NavigationActions.placeincatalog({
+        type: ActionConst.PUSH,
+        title: 'Detail Barang Dropshipper',
+        id: id,
+        catalogId: catalogId,
+        productName: name,
+        fotoToko: photo,
+        price: price
+      })
+      this.props.getCatalog()
+    } else {
+      NavigationActions.detailproductstore({
+        type: ActionConst.PUSH,
+        productName: name
+      })
+      this.props.getDetailStoreProduct(id)
+    }
   }
 
   discountCalculate (price, discount) {
@@ -154,11 +168,12 @@ class ListProdukByCatalog extends React.Component {
     }
   }
 
-  mapSingleProduk (data, id) {
+  mapSingleProduk () {
     const { produk } = this.state
     const mapProduk = produk.map((data, i) => {
       return (
-        <TouchableOpacity key={i} activeOpacity={0.5} style={styles.dataListProduk} onPress={() => this.produkDetail(data.id)}>
+        <TouchableOpacity key={i} activeOpacity={0.5} style={styles.dataListProduk}
+          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -219,7 +234,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getCatalog: () => dispatch(catalogAction.getListCatalog()),
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
   }
 }
 

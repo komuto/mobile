@@ -33,7 +33,8 @@ class Notification extends React.Component {
   }
 
   handleDaftarProduk () {
-    this.props.getListProduk()
+    this.props.getListProduk(false)
+    this.props.getHiddenProduct()
     NavigationActions.productlist({
       type: ActionConst.RESET
     })
@@ -226,7 +227,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListProduk: () => dispatch(storeAction.getStoreProducts())
+    getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
   }
 }
 

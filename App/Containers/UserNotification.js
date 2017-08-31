@@ -2,6 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as messageAction from '../actions/message'
+import * as userAction from '../actions/user'
+import * as reviewAction from '../actions/review'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -25,19 +28,23 @@ class UserNotification extends React.Component {
     return true
   }
 
-  handleReview (id) {
+  handleReview () {
+    this.props.getListReview()
     NavigationActions.reviewbuyer({
       type: ActionConst.PUSH
     })
   }
 
-  handleMessages (id) {
+  handleMessages () {
+    this.props.getListMessages()
+    this.props.getListArchiveMessages()
     NavigationActions.messagesbuyer({
       type: ActionConst.PUSH
     })
   }
 
   handleDiscussion () {
+    this.props.getListDiscussion()
     NavigationActions.discussionbuyer({
       type: ActionConst.PUSH
     })
@@ -86,6 +93,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
+    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
+    getListDiscussion: () => dispatch(userAction.getDiscussion()),
+    getListReview: () => dispatch(reviewAction.getBuyerReview())
   }
 }
 

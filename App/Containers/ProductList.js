@@ -361,6 +361,7 @@ class ProductList extends React.Component {
     if (this.state.statusDotDisplay && this.state.rowTerpilih === i) {
       return (
         <TouchableOpacity style={styles.editContainer} onPress={() => this.setState({statusDotDisplay: false})}>
+          <View style={{ flex: 1 }} />
           <View elevation={5} style={styles.edit}>
             <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Sembunyikan')}>
               <Text style={styles.textEdit}>Sembunyikan Barang</Text>

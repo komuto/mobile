@@ -42,7 +42,7 @@
                 <action android:name="fcm.ACTION.HELLO" />
                 <action android:name="SELLER_MESSAGE" />
                 <action android:name="SELLER_DISCUSSION" />
-                <action android:name="'SELLER_REVIEW" />
+                <action android:name="SELLER_REVIEW" />
                 <action android:name="SELLER_RESOLUTION" />
                 <action android:name="BUYER_MESSAGE" />
                 <action android:name="BUYER_DISCUSSION" />

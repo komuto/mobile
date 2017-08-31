@@ -40,25 +40,24 @@ class MovingProduct extends React.Component {
       loading: true,
       isChecked: false,
       arrayIdProduct: [],
-      size: ''
+      data: [],
+      size: '',
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
+      console.log(nextProps.dataProduk.products.length)
       this.setState({
-        product: nextProps.dataProduk.storeCatalogProducts.products,
+        product: nextProps.dataProduk.products,
         loading: false,
-        size: nextProps.dataProduk.storeCatalogProducts.products.length
+        size: nextProps.dataProduk.products.length
       })
       nextProps.dataProduk.status = 0
-    } else if (nextProps.dataProdukDropship.status === 200) {
-      this.setState({
-        product: nextProps.dataProdukDropship.products,
-        loading: false,
-        size: nextProps.dataProdukDropship.length
-      })
-      nextProps.dataProdukDropship.status = 0
     } else if (nextProps.dataCatalog.status === 200) {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
@@ -410,7 +409,6 @@ class MovingProduct extends React.Component {
   }
 
   render () {
-    console.log(this.state.statusHidden)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -439,8 +437,7 @@ class MovingProduct extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.storeCatalogProducts,
-    dataProdukDropship: state.storeProductsByCatalog,
+    dataProduk: state.storeProductsByCatalog,
     dataCatalog: state.getListCatalog,
     alterProduct: state.alterProducts
   }

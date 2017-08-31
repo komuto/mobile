@@ -208,7 +208,7 @@ class ProductList extends React.Component {
 
   handleHideProduct (id, hidden, textButton) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalog(id, hidden, textButton)
+    this.props.getProductByCatalogs(id)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
@@ -221,7 +221,7 @@ class ProductList extends React.Component {
 
   handleDeleteProduct (id, hidden) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalog(id, hidden)
+    this.props.getProductByCatalogs(id)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       actionType: 'deleteProduct',
@@ -234,7 +234,7 @@ class ProductList extends React.Component {
 
   handleMoveToCatalog (id, hidden) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalog(id, hidden)
+    this.props.getProductByCatalogs(id)
     this.props.getCatalog()
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
@@ -248,7 +248,7 @@ class ProductList extends React.Component {
 
   handleMoveToDropshipper (id, hidden) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalogDropship(id, false, hidden)
+    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
@@ -536,8 +536,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getProductByCatalog: (id, query) => dispatch(storeAction.getStoreCatalogProducts({id: id, hidden: query})),
-  getProductByCatalogDropship: (id, isDropShip, hidden) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip, hidden: hidden})),
+  getProductByCatalogs: (id) => dispatch(storeAction.getStoreProductsByCatalog({id: id})),
+  getProductByCatalogDropship: (id, isDropShip) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip})),
   getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
   getCatalog: () => dispatch(catalogAction.getListCatalog()),
   getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),

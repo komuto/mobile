@@ -7,6 +7,7 @@ import * as loginaction from '../actions/user'
 import FCM from 'react-native-fcm'
 import * as messageAction from '../actions/message'
 import * as reviewAction from '../actions/review'
+import * as productAction from '../actions/product'
 
 // Styles
 
@@ -28,13 +29,15 @@ class Splash extends React.Component {
           case 'BUYER_MESSAGE':
             console.log('BUYER_MESSAGE')
             this.setState({
-              notificationAction: 'BUYER_MESSAGE'
+              notificationAction: 'BUYER_MESSAGE',
+              redirectId: notif.id
             })
             break
           case 'BUYER_DISCUSSION':
             console.log('BUYER_DISCUSSION')
             this.setState({
-              notificationAction: 'BUYER_DISCUSSION'
+              notificationAction: 'BUYER_DISCUSSION',
+              redirectId: notif.id
             })
             break
           case 'BUYER_REVIEW':
@@ -68,21 +71,22 @@ class Splash extends React.Component {
         switch (this.state.notificationAction) {
           case 'BUYER_MESSAGE':
             console.log('ee BUYER_MESSAGE')
-            this.props.getListMessages()
-            this.props.getListArchiveMessages()
-            NavigationActions.messagesbuyer()
+            this.props.getDetailMessage(this.state.redirectId)
+            NavigationActions.messagesbuyer({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
             break
           case 'BUYER_DISCUSSION':
             console.log('ee BUYER_DISCUSSION')
-            NavigationActions.discussionbuyer()
+            this.props.getDetailDiscussion(this.state.redirectId)
+            NavigationActions.discussionbuyer({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
             break
           case 'BUYER_REVIEW':
             console.log('ee BUYER_REVIEW')
-            NavigationActions.reviewbuyer()
+            this.props.getListReview()
+            NavigationActions.reviewbuyer({ type: ActionConst.REPLACE })
             break
           case 'BUYER_RESOLUTION':
             console.log('ee BUYER_RESOLUTION')
-            NavigationActions.resolutioncenter()
+            NavigationActions.resolutioncenter({ type: ActionConst.REPLACE })
             break
           default:
             NavigationActions.backtab({ type: ActionConst.REPLACE })
@@ -109,10 +113,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
-    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
-    getListDiscussion: () => dispatch(loginaction.getDiscussion()),
-    getListReview: () => dispatch(reviewAction.getBuyerReview())
+    getListReview: () => dispatch(reviewAction.getBuyerReview()),
+    getDetailDiscussion: (id) => dispatch(productAction.getComment({id})),
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id}))
   }
 }
 

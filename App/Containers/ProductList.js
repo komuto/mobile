@@ -25,7 +25,7 @@ import * as categoriAction from '../actions/home'
 
 // Styles
 import styles from './Styles/DaftarProdukScreenStyle'
-import { Colors, Images } from '../Themes/'
+import { Colors, Images, Metrics } from '../Themes/'
 
 class ProductList extends React.Component {
 
@@ -117,6 +117,7 @@ class ProductList extends React.Component {
           <View style={styles.listViewModal}>
             <ListView
               enableEmptySections
+              style={{ maxHeight: (Metrics.screenHeight / 2) + 50 }}
               contentContainerStyle={{ flexWrap: 'wrap' }}
               dataSource={this.dataSource.cloneWithRows(this.state.katalog)}
               renderRow={this.renderCatalogModal.bind(this)}
@@ -359,23 +360,25 @@ class ProductList extends React.Component {
   containerEditDisplay (i, id, hidden) {
     if (this.state.statusDotDisplay && this.state.rowTerpilih === i) {
       return (
-        <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Sembunyikan')}>
-            <Text style={styles.textEdit}>Sembunyikan Barang</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id, hidden)}>
-            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id, hidden)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id, hidden)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.editContainer} onPress={() => this.setState({statusDotDisplay: false})}>
+          <View elevation={5} style={styles.edit}>
+            <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Sembunyikan')}>
+              <Text style={styles.textEdit}>Sembunyikan Barang</Text>
+            </TouchableOpacity>
+            <View style={styles.border} />
+            <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id, hidden)}>
+              <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
+            </TouchableOpacity>
+            <View style={styles.border} />
+            <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id, hidden)}>
+              <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
+            </TouchableOpacity>
+            <View style={styles.border} />
+            <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id, hidden)}>
+              <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
       )
     }
     return (

@@ -189,12 +189,17 @@ export default StyleSheet.create({
   },
   edit: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    right: 0,
     height: 212,
     width: 243,
     borderRadius: 3,
     backgroundColor: Colors.snow
+  },
+  editContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: Metrics.screenWidth - 60
   },
   border: {
     borderBottomColor: Colors.silver,

@@ -56,10 +56,11 @@ class DiscussionBuyerScreenScreen extends React.Component {
   }
 
   loadMore () {
-    const { loadmore, isLoading } = this.state
+    const { page, loadmore, isLoading } = this.state
+    console.log(page)
     if (!isLoading) {
       if (loadmore) {
-        // this.props.getListDiscussion(page)
+        this.props.getListDiscussion(page)
       }
     }
   }

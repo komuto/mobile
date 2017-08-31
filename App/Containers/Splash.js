@@ -72,12 +72,12 @@ class Splash extends React.Component {
           case 'BUYER_MESSAGE':
             console.log('ee BUYER_MESSAGE')
             this.props.getDetailMessage(this.state.redirectId)
-            NavigationActions.messagesbuyer({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
+            NavigationActions.detailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
             break
           case 'BUYER_DISCUSSION':
             console.log('ee BUYER_DISCUSSION')
             this.props.getDetailDiscussion(this.state.redirectId)
-            NavigationActions.discussionbuyer({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
+            NavigationActions.detaildiscussionbuyer({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
             break
           case 'BUYER_REVIEW':
             console.log('ee BUYER_REVIEW')

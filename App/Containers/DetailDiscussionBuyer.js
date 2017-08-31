@@ -19,10 +19,10 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      idProduct: this.props.idProduct,
-      nameProduct: this.props.nameProduct,
-      imageProduct: this.props.imageProduct,
-      priceProduct: this.props.priceProduct,
+      idProduct: this.props.idProduct || 93,
+      nameProduct: this.props.nameProduct || 'Sepatu',
+      imageProduct: this.props.imageProduct || null,
+      priceProduct: this.props.priceProduct || 100000,
       idDiscussion: this.props.idDiscussion,
       loading: false,
       discussionMessages: '',

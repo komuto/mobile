@@ -8,6 +8,7 @@ import {
   ToastAndroid,
   ActivityIndicator
 } from 'react-native'
+import FCM from 'react-native-fcm'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as EmailValidator from 'email-validator'
@@ -76,7 +77,11 @@ class Login extends React.Component {
         this.setState({
           loading: true
         })
-        this.props.attemptLogin(email, password)
+        FCM.getFCMToken().then(tokenFCM => {
+          if (tokenFCM !== null && tokenFCM !== undefined) {
+            this.props.attemptLogin(email, password, tokenFCM)
+          }
+        })
       }
     } else {
       this.onError('emailNotValid')
@@ -254,7 +259,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    attemptLogin: (email, password) => dispatch(loginAction.login({email, password})),
+    attemptLogin: (email, password, token) => dispatch(loginAction.login({
+      email: email,
+      password: password,
+      reg_token: token
+    })),
     stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
     getProfile: (login) => dispatch(loginAction.getProfile())
   }

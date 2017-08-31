@@ -33,14 +33,14 @@ export const getArchiveSellerMessages = () => {
   return axios.get(`users/store/messages?is_archived=true`)
 }
 
-export const updateBuyerMessage = ({ id, ...data }) => {
+export const updateBuyerMessage = ({ id, messageType }) => {
   const axios = authApiKomuto()
-  return axios.put(`users/messages/${id}`, data)
+  return axios.put(`users/messages/${id}`, { type: messageType })
 }
 
-export const updateSellerMessage = ({ id, ...data }) => {
+export const updateSellerMessage = ({ id, messageType }) => {
   const axios = authApiKomuto()
-  return axios.put(`users/store/messages/${id}`, data)
+  return axios.put(`users/store/messages/${id}`, { type: messageType })
 }
 
 export const buyerReplyMessage = ({ id, ...data }) => {

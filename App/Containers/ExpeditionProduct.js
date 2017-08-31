@@ -143,7 +143,7 @@ class ExpeditionProduct extends React.Component {
     const mapChild = services.map((dataService, i) => {
       this.centang = services[i].is_checked ? Images.centang : null
       return (
-        <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId)}>
+        <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId, dataService.id)}>
           <View style={styles.childEkspedisi}>
             <View style={styles.box}>
               <Image
@@ -163,7 +163,8 @@ class ExpeditionProduct extends React.Component {
     )
   }
 
-  onClickPengiriman = (selected, parentId) => (e) => {
+  onClickPengiriman = (selected, parentId, id) => (e) => {
+    console.log(id)
     const {dataListEkspedisi, filterPengiriman, expeditionServices} = this.state
     let dummy = filterPengiriman
     let temp = expeditionServices
@@ -171,11 +172,22 @@ class ExpeditionProduct extends React.Component {
     if (dataListEkspedisi[parentId].services[selected].is_checked) {
       var i = dummy.indexOf(dataListEkspedisi[parentId].services[selected].id)
       if (i !== 0) {
-        dummy[selected].status = 2
-        temp[selected].status = 2
-        console.log('masuk')
+        var k, j
+        for (k = 0; k < this.state.expeditionServices.length; k++) {
+          console.log('olala', dummy[selected].expedition_service_id)
+          if (this.state.expeditionServices[k].expedition_service_id === id) {
+            dummy[k].status = 2
+            temp[k].status = 2
+            for (j = 0; j < dataListEkspedisi.length; j++) {
+              if (this.state.expeditionServices[k].parent === dataListEkspedisi[j].id) {
+                dataListEkspedisi[j].is_checked = false
+                dataListEkspedisi[parentId].services[selected].is_checked = false
+              }
+            }
+            break
+          }
+        }
       }
-      dataListEkspedisi[parentId].services[selected].is_checked = false
       const newDataSource = dataListEkspedisi.map(data => {
         return {...data}
       })
@@ -186,8 +198,14 @@ class ExpeditionProduct extends React.Component {
       })
       console.log('expeditionServices False', this.state.expeditionServices)
     } else {
-      dummy[selected].status = 1
-      temp[selected].status = 1
+      for (k = 0; k < this.state.expeditionServices.length; k++) {
+        console.log('olala', dummy[selected].expedition_service_id)
+        if (this.state.expeditionServices[k].expedition_service_id === id) {
+          dummy[k].status = 1
+          temp[k].status = 1
+          break
+        }
+      }
       dataListEkspedisi[parentId].services[selected].is_checked = true
       const newDataSource = dataListEkspedisi.map(data => {
         return {...data}
@@ -211,18 +229,17 @@ class ExpeditionProduct extends React.Component {
         dataListEkspedisi[i].is_checked = false
       }
       dataListEkspedisi[i].services.filter(function (data) {
-        if (data.is_checked === false) {
+        if (dataListEkspedisi[i].is_checked) {
           data.is_checked = true
         } else {
           data.is_checked = false
         }
       })
       this.setState({dataListEkspedisi: dataListEkspedisi})
-      console.log(this.state.dataListEkspedisi)
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
           console.log('in')
-          if (data.status === 2) {
+          if (dataListEkspedisi[i].is_checked) {
             data.status = 1
           } else {
             data.status = 2

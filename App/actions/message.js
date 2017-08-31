@@ -49,13 +49,15 @@ export const getArchiveSellerMessages = () => buildAction(typeReq(GET_ARCHIVE_SE
 
 /**
  * @params id {int} message id
- * @state updateBuyerMessage
+ * @params messageType {string}
+ * @state updateMessage
  */
 export const updateBuyerMessage = params => buildAction(typeReq(UPDATE_BUYER_MESSAGE), params)
 
 /**
  * @params id {int} message id
- * @state updateSellerMessage
+ * @params messageType {string}
+ * @state updateMessage
  */
 export const updateSellerMessage = params => buildAction(typeReq(UPDATE_SELLER_MESSAGE), params)
 

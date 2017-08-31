@@ -233,6 +233,7 @@ const review = function* () {
 const transaction = function* () {
   yield takeEvery(typeReq(transactionActions.LIST_TRANSACTIONS), transactionSaga.listTransactions)
   yield takeEvery(typeReq(transactionActions.GET_TRANSACTION), transactionSaga.getTransaction)
+  yield takeEvery(typeReq(transactionActions.GET_SALDO_HISTORY), transactionSaga.getSaldoHistory)
 }
 
 export default dataSaga

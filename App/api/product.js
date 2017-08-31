@@ -1,6 +1,5 @@
 import { publicApiKomuto, authApiKomuto } from './api'
-import {AsyncStorage} from 'react-native'
-import { buildQuery, filterUpdate } from '../config'
+import { buildQuery, filterUpdate, storage } from '../config'
 
 const prepareGetProducts = (data) => {
   if (Array.isArray(data.price) && data.price.length > 0) {
@@ -16,14 +15,14 @@ const prepareGetProducts = (data) => {
 }
 
 export const getProduct = ({ id }) => {
-  const token = AsyncStorage.getItem('token')
+  const token = storage.getItem('token')
   let axios = publicApiKomuto()
   if (token) axios = authApiKomuto()
   return axios.get(`products/${id}`)
 }
 
 export const getProductBy = (data) => {
-  const token = AsyncStorage.getItem('token')
+  const token = storage.getItem('token')
   let axios = publicApiKomuto()
   if (token) axios = authApiKomuto()
   const query = prepareGetProducts(data)

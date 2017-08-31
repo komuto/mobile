@@ -145,17 +145,22 @@ class EditProductExpedition extends React.Component {
     if (dataListEkspedisi[parentId].services[selected].is_checked) {
       var i = dummy.indexOf(dataListEkspedisi[parentId].services[selected].id)
       if (i !== 0) {
-        var k
+        var k, j
         for (k = 0; k < this.state.expeditionServices.length; k++) {
           console.log('olala', dummy[selected].expedition_service_id)
           if (this.state.expeditionServices[k].expedition_service_id === id) {
             dummy[k].status = 2
             temp[k].status = 2
+            for (j = 0; j < dataListEkspedisi.length; j++) {
+              if (this.state.expeditionServices[k].parent === dataListEkspedisi[j].id) {
+                dataListEkspedisi[j].is_checked = false
+                dataListEkspedisi[parentId].services[selected].is_checked = false
+              }
+            }
             break
           }
         }
       }
-      dataListEkspedisi[parentId].services[selected].is_checked = false
       const newDataSource = dataListEkspedisi.map(data => {
         return {...data}
       })
@@ -197,7 +202,7 @@ class EditProductExpedition extends React.Component {
         dataListEkspedisi[i].is_checked = false
       }
       dataListEkspedisi[i].services.filter(function (data) {
-        if (data.is_checked === false) {
+        if (dataListEkspedisi[i].is_checked) {
           data.is_checked = true
         } else {
           data.is_checked = false
@@ -207,7 +212,7 @@ class EditProductExpedition extends React.Component {
       filterPengiriman.filter(function (data) {
         if (data.parent === parentId) {
           console.log('in')
-          if (data.status === 2) {
+          if (dataListEkspedisi[i].is_checked) {
             data.status = 1
           } else {
             data.status = 2

@@ -1,8 +1,9 @@
 import { delay } from 'redux-saga'
 import { put, call, select } from 'redux-saga/effects'
-
+import {AsyncStorage} from 'react-native'
 export const serviceUrl = 'https://private-f0902d-komuto.apiary-mock.com'
 export const apiKomuto = 'https://api.komuto.skyshi.com/4690fa4c3d68f93b/'
+export const storage = AsyncStorage
 
 export function errorHandling (actionType, res) {
   const errorOffline = {
@@ -118,7 +119,6 @@ export const buildAction = (type, params = false) => {
  * @param customState {array}
  */
 export const buildReducer = (state, action, type, name, customState) => {
-  console.log(action)
   switch (action.type) {
     case typeReq(type):
       return !customState[0] ? reqState(state) : customState[0](state, action)
@@ -174,9 +174,12 @@ export const buildQuery = (params) => Object.keys(params)
  */
 export const buildSaga = (callApi, actionType, getState = false) => function* ({ type, ...params }) {
   try {
-    let res
-    if (getState) res = yield select(getState(params))
-    else if (!res) {
+    let res, fromState
+    if (getState) {
+      fromState = yield select(getState(params))
+      res = { data: fromState }
+    }
+    if (!fromState) {
       const { data } = yield callApi(params)
       res = data
     }
@@ -188,10 +191,13 @@ export const buildSaga = (callApi, actionType, getState = false) => function* ({
 
 export const buildSagaDelay = (callApi, actionType, delayCount = 200, getState = false) => function* ({ type, ...params }) {
   try {
-    let res
     yield call(delay, delayCount)
-    if (getState) res = yield select(getState(params))
-    else {
+    let res, fromState
+    if (getState) {
+      fromState = yield select(getState(params))
+      res = { data: fromState }
+    }
+    if (!fromState) {
       const { data } = yield callApi(params)
       res = data
     }
@@ -265,3 +271,21 @@ export const createReducer = (initState) => {
     }
   }
 }
+
+/**
+ * Get state from another state
+ * @param from {function} state to search
+ * @param get {string} amount to get
+ * @param match {string/array}
+ */
+export const getState = ({ from, get, match = 'id' }) => (params) => (state) => {
+  let toMatch
+  const result = from(state).filter(value => {
+    if (!Array.isArray(match)) toMatch = value[match]
+    else toMatch = match.reduce((value, prop) => value[prop], value)
+    return toMatch === params.id
+  })
+  if (get === 'all') return result[0] ? result : false
+  return result[0]
+}
+

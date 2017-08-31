@@ -185,7 +185,8 @@ const review = {
 
 const transaction = {
   listTransactions: transactionReducers.listTransactions,
-  transaction: transactionReducers.getTransaction
+  transaction: transactionReducers.getTransaction,
+  saldoHistory: transactionReducers.getSaldoHistory
 }
 
 const komutoApps = storage.reducer(combineReducers({

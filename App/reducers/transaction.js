@@ -13,3 +13,9 @@ export const getTransaction = createReducer(buildInitState({ transaction: {} }))
     resultName: 'transaction'
   }).run()
 
+export const getSaldoHistory = createReducer(buildInitState({ history: [] }))
+  .addReducer({
+    type: actions.GET_SALDO_HISTORY,
+    resultName: 'history'
+  }).run()
+

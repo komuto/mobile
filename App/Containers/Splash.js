@@ -24,30 +24,25 @@ class Splash extends React.Component {
     SplashScreen.show()
     FCM.getInitialNotification().then(notif => {
       if (notif && notif.fcm && notif.fcm.action) {
-        console.log(notif.type)
         switch (notif.type) {
           case 'BUYER_MESSAGE':
-            console.log('BUYER_MESSAGE')
             this.setState({
               notificationAction: 'BUYER_MESSAGE',
               redirectId: notif.id
             })
             break
           case 'BUYER_DISCUSSION':
-            console.log('BUYER_DISCUSSION')
             this.setState({
               notificationAction: 'BUYER_DISCUSSION',
               redirectId: notif.id
             })
             break
           case 'BUYER_REVIEW':
-            console.log('BUYER_REVIEW')
             this.setState({
               notificationAction: 'BUYER_REVIEW'
             })
             break
           case 'BUYER_RESOLUTION':
-            console.log('BUYER_RESOLUTION')
             this.setState({
               notificationAction: 'BUYER_RESOLUTION'
             })
@@ -67,25 +62,20 @@ class Splash extends React.Component {
       if (value === null || value === undefined || value === '') {
       } else {
         this.props.stateLogin(true)
-        console.log('state', this.state.notificationAction)
         switch (this.state.notificationAction) {
           case 'BUYER_MESSAGE':
-            console.log('ee BUYER_MESSAGE')
             this.props.getDetailMessage(this.state.redirectId)
             NavigationActions.detailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
             break
           case 'BUYER_DISCUSSION':
-            console.log('ee BUYER_DISCUSSION')
             this.props.getDetailDiscussion(this.state.redirectId)
             NavigationActions.detaildiscussionbuyer({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
             break
           case 'BUYER_REVIEW':
-            console.log('ee BUYER_REVIEW')
             this.props.getListReview()
             NavigationActions.reviewbuyer({ type: ActionConst.REPLACE })
             break
           case 'BUYER_RESOLUTION':
-            console.log('ee BUYER_RESOLUTION')
             NavigationActions.resolutioncenter({ type: ActionConst.REPLACE })
             break
           default:
@@ -94,8 +84,8 @@ class Splash extends React.Component {
         SplashScreen.hide()
         console.log(value)
       }
-      console.log('ee masuk')
       SplashScreen.hide()
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
     })
   }
 

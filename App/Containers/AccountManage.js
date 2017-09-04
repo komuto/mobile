@@ -90,6 +90,7 @@ class AccountManage extends React.Component {
   }
 
   handlePengaturan () {
+    this.props.getNotificationUser()
     NavigationActions.notificationsetting({
       type: ActionConst.PUSH
     })
@@ -238,7 +239,8 @@ const mapDispatchToProps = (dispatch) => {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     logout: (login) => dispatch(loginaction.logout()),
     getAlamat: () => dispatch(addressAction.getListAddress()),
-    getListRekening: () => dispatch(bankAction.getBankAccounts())
+    getListRekening: () => dispatch(bankAction.getBankAccounts()),
+    getNotificationUser: () => dispatch(loginaction.getNotifSettings())
   }
 }
 

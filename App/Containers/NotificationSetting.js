@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as loginaction from '../actions/user'
 
 // Styles
 import styles from './Styles/PengaturanNotifikasiScreenStyle'
@@ -14,9 +15,23 @@ class NotificationSetting extends React.Component {
 
   constructor (props) {
     super(props)
+    this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      notif: false
+      notif: false,
+      listNotifications: []
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataNotifications.status === 200) {
+      this.setState({
+        listNotifications: nextProps.dataNotifications.settings
+      })
+    }
+  }
+
+  componentDidMount () {
+    this.props.getNotificationUser()
   }
 
   notif () {
@@ -36,6 +51,50 @@ class NotificationSetting extends React.Component {
     }
   }
 
+  SwitchChanges (types) {
+    const {listNotifications} = this.state
+    for (var j = 0; j < listNotifications.length; j++) {
+      if (listNotifications[j].type === types) {
+        if (listNotifications[j].is_active) {
+          listNotifications[j].is_active = false
+        } else {
+          listNotifications[j].is_active = true
+        }
+      }
+    }
+    const newDataSource = listNotifications.map(data => {
+      return {...data}
+    })
+    this.setState({
+      listNotifications: newDataSource
+    })
+    console.log(listNotifications)
+  }
+
+  renderNotification (rowData) {
+    return (
+      <View style={[styles.menu]}>
+        <Text style={[styles.textMenu, {paddingTop: 22, paddingBottom: 22, lineHeight: 23}]}>{rowData.content}</Text>
+        <Switch
+          width={42}
+          height={21}
+          value={rowData.is_active}
+          circleColor={Colors.teal}
+          circleColorInactive={Colors.red}
+          backgroundActive={'rgba(0, 148, 133, 0.5)'}
+          backgroundInactive={'#42221f1f'}
+          onSyncPress={() => this.SwitchChanges(rowData.type)} />
+      </View>
+    )
+  }
+
+  handleUpdataNotification () {
+    let temp = this.state.listNotifications
+    console.log(temp)
+    this.props.updateNotificationUser(temp)
+    this.setState({notif: true})
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -44,28 +103,13 @@ class NotificationSetting extends React.Component {
           <Text style={styles.textHeader}>Pilih Notifikasi yang ingin dikirimkan ke akun Anda</Text>
         </View>
         <View style={styles.containerMain}>
-          <View style={[styles.menu, {height: 88}]}>
-            <Text style={[styles.textMenu, {lineHeight: 23}]}>Setiap pesan pribadi dari admin{'\n'}saya terima</Text>
-            <Switch width={34} height={16} circleColor={Colors.teal} backgroundActive={'rgba(0, 148, 133, 0.5)'} />
-          </View>
-          <View style={[styles.menu, {height: 62}]}>
-            <Text style={styles.textMenu}>Setiap Pesan Berita dari Komuto.</Text>
-            <Switch width={34} height={16} circleColor={Colors.teal} backgroundActive={'rgba(0, 148, 133, 0.5)'} />
-          </View>
-          <View style={[styles.menu, {height: 62}]}>
-            <Text style={styles.textMenu}>Setiap Review dan komentar saya terima.</Text>
-            <Switch width={34} height={16} circleColor={Colors.teal} backgroundActive={'rgba(0, 148, 133, 0.5)'} />
-          </View>
-          <View style={[styles.menu, {height: 86}]}>
-            <Text style={[styles.textMenu, {lineHeight: 23}]}>Setiap Diskusi produk dan komentar saya {'\n'}terima.</Text>
-            <Switch width={34} height={16} circleColor={Colors.teal} backgroundActive={'rgba(0, 148, 133, 0.5)'} />
-          </View>
-          <View style={[styles.menu, {height: 64}]}>
-            <Text style={styles.textMenu}>Setiap Pesan Pribadi saya terima.</Text>
-            <Switch width={34} height={16} circleColor={Colors.teal} backgroundActive={'rgba(0, 148, 133, 0.5)'} />
-          </View>
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.listNotifications)}
+            renderRow={this.renderNotification.bind(this)}
+            enableEmptySections
+          />
         </View>
-        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.setState({notif: true})}>
+        <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdataNotification()}>
           <Text style={styles.textButtonNext}>
             Simpan Perubahan
           </Text>
@@ -78,11 +122,14 @@ class NotificationSetting extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataNotifications: state.notifSettings
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getNotificationUser: () => dispatch(loginaction.getNotifSettings()),
+    updateNotificationUser: (data) => dispatch(loginaction.updateNotifSettings({notifications: data}))
   }
 }
 

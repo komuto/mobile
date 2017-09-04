@@ -32,6 +32,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     height: 62,
     alignItems: 'center',
+    justifyContent: 'center',
     borderBottomWidth: 0.5,
     paddingRight: 20,
     borderBottomColor: Colors.silver

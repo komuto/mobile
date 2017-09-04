@@ -14,7 +14,6 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors } from '../Themes'
-import * as wishlistAction from '../actions/user'
 import * as produkAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -44,18 +43,28 @@ class Wishlist extends React.Component {
       terbaruCek: 0,
       termurahCek: 0,
       termahalCek: 0,
-      terlarisCek: 0
+      terlarisCek: 0,
+      empty: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataWishlist.status === 200) {
-      console.log(nextProps.dataWishlist.wishlist)
-      this.setState({
-        listDataSource: nextProps.dataWishlist.wishlist,
-        rowDataSource: nextProps.dataWishlist.wishlist,
-        loading: false
-      })
+      if (nextProps.dataWishlist.wishlist.length === 0) {
+        this.setState({
+          listDataSource: nextProps.dataWishlist.wishlist,
+          rowDataSource: nextProps.dataWishlist.wishlist,
+          loading: false,
+          empty: true
+        })
+      } else {
+        this.setState({
+          listDataSource: nextProps.dataWishlist.wishlist,
+          rowDataSource: nextProps.dataWishlist.wishlist,
+          loading: false,
+          empty: false
+        })
+      }
     } else if (nextProps.dataWishlist.status > 200) {
       this.setState({
         loading: false
@@ -386,41 +395,80 @@ class Wishlist extends React.Component {
     )
   }
 
-  render () {
-    return (
-      <View style={styles.container}>
-        <View style={styles.floatingSearch}>
-          <Image source={Images.searchGrey} style={styles.searchImage} />
-          <View style={styles.textInputContainer}>
-            <TextInput
-              ref='search'
-              style={styles.inputText}
-              value={this.state.search}
-              keyboardType='default'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleTextSearch}
-              underlineColorAndroid='transparent'
-              placeholder='Cari Produk Favorit Anda disini'
-              onSubmitEditing={() => this.search()}
-            />
+  renderView () {
+    const { empty } = this.state
+    if (empty) {
+      return (
+        <View style={styles.notFoundContainer}>
+          <Image
+            source={Images.emptyWishlist}
+            style={styles.image}
+          />
+          <Text style={styles.textTitle}>
+            Wishlist Anda Kosong
+          </Text>
+          <Text style={styles.textLabel}>
+            Anda belum memasukkan barang apapun
+            ke dalam wishlist Anda
+          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity style={styles.buttonChange} onPress={() => this.newproduct()}>
+              <Text style={styles.textButton}>
+                Mulai Lihat Barang
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <ScrollView>
-          {this.viewProduk()}
-        </ScrollView>
-        <View style={styles.menuBottomContainer}>
-          <TouchableOpacity style={styles.urutkanContainer} onPress={() => this.setSortModal(true)}>
-            <Image source={Images.sort} style={styles.searchImage} />
-            <Text style={styles.textMenuBawah}>Urutkan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.urutkanContainer} onPress={() => this.changeView()}>
-            {this.renderImageTypeView()}
-            <Text style={styles.textMenuBawah}>Tampilan</Text>
-          </TouchableOpacity>
+      )
+    } else {
+      return (
+        <View style={styles.container}>
+          <View style={styles.floatingSearch}>
+            <Image source={Images.searchGrey} style={styles.searchImage} />
+            <View style={styles.textInputContainer}>
+              <TextInput
+                ref='search'
+                style={styles.inputText}
+                value={this.state.search}
+                keyboardType='default'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleTextSearch}
+                underlineColorAndroid='transparent'
+                placeholder='Cari Produk Favorit Anda disini'
+                onSubmitEditing={() => this.search()}
+              />
+            </View>
+          </View>
+          <ScrollView>
+            {this.viewProduk()}
+          </ScrollView>
+          <View style={styles.menuBottomContainer}>
+            <TouchableOpacity style={styles.urutkanContainer} onPress={() => this.setSortModal(true)}>
+              <Image source={Images.sort} style={styles.searchImage} />
+              <Text style={styles.textMenuBawah}>Urutkan</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.urutkanContainer} onPress={() => this.changeView()}>
+              {this.renderImageTypeView()}
+              <Text style={styles.textMenuBawah}>Tampilan</Text>
+            </TouchableOpacity>
+          </View>
+          {this.renderModalSort()}
         </View>
-        {this.renderModalSort()}
-      </View>
+      )
+    }
+  }
+
+  newproduct () {
+    NavigationActions.newproduct({
+      type: ActionConst.PUSH,
+      header: 'Produk Terbaru'
+    })
+  }
+
+  render () {
+    return (
+      this.renderView()
     )
   }
 }
@@ -433,7 +481,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getWishlist: dispatch(wishlistAction.wishlist()),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }

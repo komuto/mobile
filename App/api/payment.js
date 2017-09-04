@@ -2,12 +2,12 @@ import { authApiKomuto } from './api'
 
 export const getPaymentMethods = () => {
   const axios = authApiKomuto()
-  return axios.get('payment-methods').catch((err) => { throw err })
+  return axios.get('payment-methods')
 }
 
 export const confirmTransfer = ({ id, ...action }) => {
   const axios = authApiKomuto()
-  return axios.post(`buckets/${id}/bank`, action).catch((err) => { throw err })
+  return axios.post(`buckets/${id}/bank`, action)
 }
 
 export const getDokuInvoice = () => {
@@ -23,4 +23,9 @@ export const payDoku = (data) => {
 export const withdraw = (data) => {
   const axios = authApiKomuto()
   return axios.post('users/saldo/withdraw', data)
+}
+
+export const getMidtransToken = () => {
+  const axios = authApiKomuto()
+  return axios.get('payments')
 }

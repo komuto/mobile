@@ -5,6 +5,7 @@ export const CONFIRM_TRANSFER = 'CONFIRM_TRANSFER'
 export const GET_DOKU_INVOICE = 'GET_DOKU_INVOICE'
 export const PAY_DOKU = 'PAY_DOKU'
 export const WITHDRAW = 'WITHDRAW'
+export const GET_MIDTRANS_TOKEN = 'GET_MIDTRANS_TOKEN'
 
 /**
  * @state paymentMethods
@@ -34,3 +35,8 @@ export const payDoku = params => buildAction(typeReq(PAY_DOKU), params)
  * @state withdrawal
  */
 export const withdraw = params => buildAction(typeReq(WITHDRAW), params)
+
+/**
+ * @state snapToken
+ */
+export const getMidtransToken = () => buildAction(typeReq(GET_MIDTRANS_TOKEN))

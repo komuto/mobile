@@ -96,7 +96,7 @@ const product = function* () {
   yield takeLatest(typeReq(productActions.LIST_PRODUCT_BY_CATEGORY), productSaga.productByCategory)
   yield takeLatest(typeReq(productActions.LIST_PRODUCT_BY_SEARCH), productSaga.productBySearch)
   yield takeEvery(typeReq(productActions.ADD_TO_WISHLIST), productSaga.addToWishlist)
-  yield takeEvery(typeReq(productActions.ADD_TO_WISHLIST_HOME), productSaga.addToWishlist)
+  yield takeEvery(typeReq(productActions.ADD_TO_WISHLIST_HOME), productSaga.addToWishlistHome)
   yield takeEvery(typeReq(productActions.GET_DISCUSSION), productSaga.getDiscussion)
   yield takeEvery(typeReq(productActions.NEW_DISCUSSION), productSaga.newDiscussion)
   yield takeEvery(typeReq(productActions.GET_COMMENT), productSaga.getComment)
@@ -221,6 +221,7 @@ const payment = function* () {
   yield takeEvery(typeReq(paymentActions.GET_PAYMENT_METHODS), paymentSaga.getPaymentMethods)
   yield takeEvery(typeReq(paymentActions.CONFIRM_TRANSFER), paymentSaga.confirmTransfer)
   yield takeEvery(typeReq(paymentActions.WITHDRAW), paymentSaga.withdraw)
+  yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN), paymentSaga.getMidtransToken)
 }
 
 const review = function* () {

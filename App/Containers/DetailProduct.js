@@ -127,7 +127,6 @@ class DetailProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
-      console.log('lala', nextProps.dataDetailProduk.detail)
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -216,7 +215,6 @@ class DetailProduct extends React.Component {
       })
     }
     if (nextProps.dataWishlist.status === 200) {
-      console.log(this.state.like)
       if (this.state.like) {
         this.setState({
           like: false
@@ -1339,7 +1337,6 @@ class DetailProduct extends React.Component {
   }
 
   render () {
-    console.log(this.state.loadingProduk)
     const spinner = this.state.loadingProduk
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='white' size='small' />

@@ -7,8 +7,7 @@ import {
   TextInput,
   ListView,
   TouchableOpacity,
-  Alert,
-  ActivityIndicator
+  Alert
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -28,9 +27,9 @@ class Search extends React.Component {
     this.state = {
       search: this.props.search,
       query: this.props.search,
-      loadingSearch: true,
       dataSource: dataSource.cloneWithRows([]),
-      from: this.props.from
+      from: this.props.from,
+      notFound: false
     }
   }
 
@@ -44,25 +43,22 @@ class Search extends React.Component {
     }
     if (nextProps.dataSearch.status === 200) {
       const result = nextProps.dataSearch.products
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(result),
-        loadingSearch: false
-      })
+      if (result.length === 0) {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(result),
+          notFound: true
+        })
+      } else {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(result),
+          notFound: false
+        })
+      }
     } else if (nextProps.dataSearch.status > 200) {
-      this.setState({
-        loadingSearch: true
-      })
       Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
     } else if (nextProps.dataSearch.status === 'ENOENT') {
-      this.setState({
-        loadingSearch: true
-      })
       Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
     }
-  }
-
-  componentDidMount () {
-    this.props.getSearch(this.state.query)
   }
 
   handleTextSearch = (text) => {
@@ -97,11 +93,53 @@ class Search extends React.Component {
     NavigationActions.pop()
   }
 
+  search () {
+    this.setState({
+      notFound: false,
+      search: ''
+    })
+    this.refs.search.focus()
+  }
+
+  renderResult () {
+    const { notFound } = this.state
+    if (notFound) {
+      return (
+        <View style={styles.notFoundContainer}>
+          <Image
+            source={Images.notFound}
+            style={styles.image}
+          />
+          <Text style={styles.textTitle}>
+            Hasil Pencarian tidak ditemukan
+          </Text>
+          <Text style={styles.textLabel}>
+            Kami tidak bisa menemukan barang dari
+            kata kunci yang Anda masukkan
+          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity style={styles.buttonChange} onPress={() => this.search()}>
+              <Text style={styles.textButton}>
+                Ubah Pencarian
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    } else {
+      return (
+        <ScrollView>
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={this.renderRow.bind(this)}
+            enableEmptySections
+          />
+        </ScrollView>
+      )
+    }
+  }
+
   render () {
-    const spinner = this.state.loadingSearch
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
     const { search } = this.state
     return (
       <View style={styles.container}>
@@ -127,16 +165,7 @@ class Search extends React.Component {
             />
           </View>
         </View>
-        <ScrollView>
-          <View style={styles.listViewContainer}>
-            <ListView
-              dataSource={this.state.dataSource}
-              renderRow={this.renderRow.bind(this)}
-              enableEmptySections
-            />
-          </View>
-        </ScrollView>
-        {spinner}
+        {this.renderResult()}
       </View>
     )
   }

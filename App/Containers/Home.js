@@ -20,6 +20,7 @@ import { connect } from 'react-redux'
 import * as homeAction from '../actions/home'
 import * as produkAction from '../actions/product'
 import * as cartAction from '../actions/cart'
+import * as wishlistAction from '../actions/user'
 
 // Styles
 import styles from './Styles/HomeStyle'
@@ -264,6 +265,7 @@ class Home extends React.Component {
 
   wishlist () {
     if (this.state.isLogin) {
+      this.props.getWishlist()
       NavigationActions.wishlist({ type: ActionConst.PUSH })
     } else {
       Alert.alert('Pesan', 'Anda belum login')
@@ -419,7 +421,8 @@ const mapDispatchToProps = (dispatch) => {
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
-    getCart: () => dispatch(cartAction.getCart())
+    getCart: () => dispatch(cartAction.getCart()),
+    getWishlist: () => dispatch(wishlistAction.wishlist())
   }
 }
 

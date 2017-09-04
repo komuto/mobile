@@ -94,7 +94,7 @@ class Splash extends React.Component {
         SplashScreen.hide()
         console.log(value)
       }
-      console.log('ee masuk')
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
       SplashScreen.hide()
     })
   }

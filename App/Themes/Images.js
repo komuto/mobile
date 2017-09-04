@@ -130,7 +130,9 @@ const images = {
   review: require('../Images/review.png'),
   complain: require('../Images/complain.png'),
   messageBuyer: require('../Images/Icons/icon-envelope.png'),
-  deletWhite: require('../Images/Icons/icon-delete-white.png')
+  deletWhite: require('../Images/Icons/icon-delete-white.png'),
+  notFound: require('../Images/not-found.png'),
+  emptyWishlist: require('../Images/empty-wishlist.png')
 }
 
 export default images

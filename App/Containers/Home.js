@@ -37,9 +37,12 @@ class Home extends React.Component {
       loadingProduk: true,
       productSource: [],
       kategoriSource: [],
-      isLogin: this.props.datalogin.login
+      isLogin: this.props.datalogin.login,
+      cartItems: 0,
+      getCartHome: true
     }
     this.props.getProdukTerbaru(6)
+    this.props.getCart()
   }
 
   componentWillReceiveProps (nextProps) {
@@ -70,6 +73,17 @@ class Home extends React.Component {
     if (nextProps.dataWishlist.status === 200) {
       this.props.resetAddToWishlist()
       this.props.getProdukTerbaru(6)
+    }
+    if (nextProps.dataCart.status === 200) {
+      if (this.state.getCartHome) {
+        if (nextProps.dataCart.cart.items.length > 0) {
+          this.setState({
+            cartItems: nextProps.dataCart.cart.items.length,
+            getCartHome: false
+          })
+          this.props.getCartReset()
+        }
+      }
     }
   }
 
@@ -314,6 +328,19 @@ class Home extends React.Component {
   }
 
   render () {
+    const { cartItems } = this.state
+    let cartNumber
+    if (cartItems > 0) {
+      cartNumber = (
+        <View style={styles.containerNumber}>
+          <Text style={styles.number}>
+            {String(cartItems)}
+          </Text>
+        </View>
+      )
+    } else {
+      cartNumber = null
+    }
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
@@ -335,11 +362,7 @@ class Home extends React.Component {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonHeader} onPress={() => this.keranjang()}>
                   <Image source={Images.shoppingCart} style={styles.imagestyle} />
-                  <View style={styles.containerNumber}>
-                    <Text style={styles.number}>
-                      {String(4)}
-                    </Text>
-                  </View>
+                  {cartNumber}
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.searchContainer} onPress={() => this.search()}>
@@ -410,7 +433,8 @@ const mapStateToProps = (state) => {
     dataKategori: state.category,
     dataProduk: state.products,
     datalogin: state.isLogin,
-    dataWishlist: state.addWishlistHome
+    dataWishlist: state.addWishlistHome,
+    dataCart: state.cart
   }
 }
 
@@ -421,8 +445,9 @@ const mapDispatchToProps = (dispatch) => {
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
+    getWishlist: () => dispatch(wishlistAction.wishlist()),
     getCart: () => dispatch(cartAction.getCart()),
-    getWishlist: () => dispatch(wishlistAction.wishlist())
+    getCartReset: () => dispatch(cartAction.getCartReset())
   }
 }
 

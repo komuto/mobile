@@ -13,7 +13,7 @@ import * as productAction from '../actions/product'
 import styles from './Styles/DetailDiscussionBuyerScreenStyle'
 import { Images } from '../Themes'
 
-class DetailDiscussionBuyerScreenScreen extends React.Component {
+class BuyerDetailDiscussion extends React.Component {
 
   constructor (props) {
     super(props)
@@ -31,13 +31,7 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataDetailProduk.status === 200) {
-      this.setState({loading: false})
-      NavigationActions.detailproduct({
-        type: ActionConst.PUSH
-      })
-      nextProps.dataDetailProduk.status = 0
-    } if (nextProps.dataDetailDiscussion.status === 200) {
+    if (nextProps.dataDetailDiscussion.status === 200) {
       this.setState({
         loading: false,
         data: nextProps.dataDetailDiscussion.comments
@@ -117,7 +111,10 @@ class DetailDiscussionBuyerScreenScreen extends React.Component {
   }
 
   handleDetailProduct () {
-    this.setState({loading: true})
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: this.state.idProduct
+    })
     this.props.getDetailProduct(this.state.idProduct)
   }
 
@@ -180,10 +177,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduct: (id) => dispatch(productAction.getProduct({id: id})),
+    getDetailProduct: (id) => dispatch(productAction.getProduct({id})),
     createDisscussionComent: (id, content) => dispatch(productAction.newComment({id: id, content: content})),
     getDetailDiscussion: (id) => dispatch(productAction.getComment({id: id}))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailDiscussionBuyerScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerDetailDiscussion)

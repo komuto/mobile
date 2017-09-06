@@ -6,6 +6,8 @@ import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as messageAction from '../actions/message'
+import * as reviewAction from '../actions/review'
 
 // Styles
 import styles from './Styles/TokoDashboardScreenStyle'
@@ -110,6 +112,34 @@ class StoreDashboard extends React.Component {
     )
   }
 
+  openMessageNotification () {
+    this.props.getListMessages()
+    this.props.getListArchiveMessages()
+    NavigationActions.sellernotificationmessage({
+      type: ActionConst.PUSH
+    })
+  }
+
+  openDiscussionNotification () {
+    this.props.getStoreDiscussions(1)
+    NavigationActions.sellernotificationdiscussion({
+      type: ActionConst.PUSH
+    })
+  }
+
+  openReviewNotification () {
+    this.props.getListReview(1)
+    NavigationActions.sellernotificationreview({
+      type: ActionConst.PUSH
+    })
+  }
+
+  openResolutionNotification () {
+    NavigationActions.sellernotificationresolution({
+      type: ActionConst.PUSH
+    })
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -165,7 +195,7 @@ class StoreDashboard extends React.Component {
             Notifikasi
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openMessageNotification()}>
               <View style={styles.profile}>
                 <Image source={Images.chat} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -178,7 +208,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openDiscussionNotification()}>
               <View style={styles.profile}>
                 <Image source={Images.komentar} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -191,7 +221,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openReviewNotification()}>
               <View style={styles.profile}>
                 <Image source={Images.diReview} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -204,7 +234,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openResolutionNotification()}>
               <View style={styles.profile}>
                 <Image source={Images.help} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -233,7 +263,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getListMessages: () => dispatch(messageAction.getSellerMessages()),
+    getListArchiveMessages: () => dispatch(messageAction.getArchiveSellerMessages()),
+    getStoreDiscussions: (page) => dispatch(storeAction.getStoreDiscussions({page: page})),
+    getListReview: (page) => dispatch(reviewAction.getSellerReview({ page: page }))
   }
 }
 

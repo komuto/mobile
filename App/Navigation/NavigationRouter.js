@@ -106,6 +106,11 @@ import EditProductPriceAndSpecification from '../Containers/EditProductPriceAndS
 import EditProductExpedition from '../Containers/EditProductExpedition'
 import EditProductCatalog from '../Containers/EditProductCatalog'
 import EditWholesale from '../Containers/EditWholesale'
+import SellerNotificationMessage from '../Containers/SellerNotificationMessage'
+import SellerNotificationMessageDetail from '../Containers/SellerNotificationMessageDetail'
+import SellerNotificationDiscussion from '../Containers/SellerNotificationDiscussion'
+import SellerNotificationReview from '../Containers/SellerNotificationReview'
+import SellerNotificationResolution from '../Containers/SellerNotificationResolution'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -903,6 +908,41 @@ class NavigationRouter extends Component {
             component={EditWholesale}
             navBar={CustomNavBar}
             title='Harga Grosir'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationmessage'
+            component={SellerNotificationMessage}
+            navBar={CustomNavBar}
+            title='Pesan'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationmessagedetail'
+            component={SellerNotificationMessageDetail}
+            title=''
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='sellernotificationdiscussion'
+            component={SellerNotificationDiscussion}
+            navBar={CustomNavBar}
+            title='Diskusi Product'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationreview'
+            component={SellerNotificationReview}
+            navBar={CustomNavBar}
+            title='Review Product'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationresolution'
+            component={SellerNotificationResolution}
+            navBar={CustomNavBar}
+            title='Pusat Resolusi'
             hideNavBar={false}
             hideBackImage={false} />
         </Scene>

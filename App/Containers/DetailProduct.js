@@ -78,7 +78,7 @@ class DetailProduct extends React.Component {
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
-      loadingProduk: true,
+      loadingProduk: false,
       sizeUlasan: 2,
       modalLaporkan: false,
       estimasi: 0,
@@ -127,6 +127,7 @@ class DetailProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
+      console.log('masuk')
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -1319,7 +1320,6 @@ class DetailProduct extends React.Component {
         })
         this.props.getDetailProduk(this.state.id)
       } else {
-        console.log(this.state.id)
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
           fotoToko: this.state.fotoToko,

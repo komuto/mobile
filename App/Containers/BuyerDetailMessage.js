@@ -9,10 +9,10 @@ import moment from 'moment'
 import * as messageAction from '../actions/message'
 
 // Styles
-import styles from './Styles/DetailMessagesScreenStyle'
+import styles from './Styles/BuyerDetailMessageStyle'
 import { Images } from '../Themes'
 
-class DetailMessagesScreenScreen extends React.Component {
+class BuyerDetailMessage extends React.Component {
 
   constructor (props) {
     super(props)
@@ -45,7 +45,7 @@ class DetailMessagesScreenScreen extends React.Component {
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
-      NavigationActions.messagesbuyer({
+      NavigationActions.buyermessage({
         type: ActionConst.POP_AND_REPLACE,
         notif: true,
         messageNotif: 'Berhasil memindahkan ke Arsip',
@@ -56,7 +56,7 @@ class DetailMessagesScreenScreen extends React.Component {
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
-      NavigationActions.messagesbuyer({
+      NavigationActions.buyermessage({
         type: ActionConst.POP_AND_REPLACE,
         notif: true,
         messageNotif: 'Berhasil memindahkan ke Percakapan',
@@ -66,7 +66,7 @@ class DetailMessagesScreenScreen extends React.Component {
       nextProps.dataDeleteMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
-      NavigationActions.messagesbuyer({
+      NavigationActions.buyermessage({
         type: ActionConst.POP_AND_REPLACE,
         notif: true,
         messageNotif: 'Berhasil menghapus Percakapan',
@@ -250,4 +250,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailMessagesScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerDetailMessage)

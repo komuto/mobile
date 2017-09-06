@@ -18,9 +18,10 @@ import * as userAction from '../actions/user'
 import * as productAction from '../actions/product'
 
 // Styles
-import styles from './Styles/DiscussionBuyerScreenStyle'
-import { Colors } from '../Themes/'
-class DiscussionBuyerScreenScreen extends React.Component {
+import styles from './Styles/BuyerDiscussionStyle'
+import { Colors, Images } from '../Themes/'
+
+class BuyerDiscussion extends React.Component {
 
   constructor (props) {
     super(props)
@@ -30,7 +31,7 @@ class DiscussionBuyerScreenScreen extends React.Component {
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false,
+      isLoading: true,
       loadingPage: false
     }
   }
@@ -57,7 +58,6 @@ class DiscussionBuyerScreenScreen extends React.Component {
 
   loadMore () {
     const { page, loadmore, isLoading } = this.state
-    console.log(page)
     if (!isLoading) {
       if (loadmore) {
         this.props.getListDiscussion(page)
@@ -72,7 +72,7 @@ class DiscussionBuyerScreenScreen extends React.Component {
 
   handelDetailDiscussion (idDiscussion, idProduct, name, image, price) {
     this.props.getDetailDiscussion(idDiscussion)
-    NavigationActions.detaildiscussionbuyer({
+    NavigationActions.buyerdetaildiscussion({
       type: ActionConst.PUSH,
       idProduct: idProduct,
       idDiscussion: idDiscussion,
@@ -98,46 +98,62 @@ class DiscussionBuyerScreenScreen extends React.Component {
     )
   }
 
-  listViewDiscussion () {
-    return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
-        renderRow={this.renderRowDiscussion.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
-        onEndReached={this.loadMore.bind(this)}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
+  checkStateDiscussion (data) {
+    if (this.state.isLoading) {
+      return (
+        <View />
+      )
+    } else {
+      if (data.length > 0) {
+        return (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(data)}
+            renderRow={this.renderRowDiscussion.bind(this)}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
               />
-            )
-          }
-          return <View />
-        }}
-        enableEmptySections
-        style={styles.listView}
-      />
-    )
+            }
+            onEndReached={this.loadMore.bind(this)}
+            renderFooter={() => {
+              if (this.state.loadmore) {
+                return (
+                  <ActivityIndicator
+                    style={[styles.loadingStyle, { height: 50 }]}
+                    size='small'
+                    color='#ef5656'
+                  />
+                )
+              }
+              return <View />
+            }}
+            enableEmptySections
+            style={styles.listView}
+          />
+        )
+      } else {
+        return (
+          <View style={styles.containerEmpty}>
+            <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
+            <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
+            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
+          </View>
+        )
+      }
+    }
   }
 
   render () {
     return (
       <View style={styles.container}>
         <View style={{flex: 1}}>
-          {this.listViewDiscussion()}
+          {this.checkStateDiscussion(this.state.data)}
         </View>
       </View>
     )
@@ -154,4 +170,4 @@ const mapDispatchToProps = (dispatch) => ({
   getDetailDiscussion: (id) => dispatch(productAction.getComment({id: id}))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(DiscussionBuyerScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerDiscussion)

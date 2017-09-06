@@ -16,10 +16,10 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
-import styles from './Styles/DetailResolutionStyle'
+import styles from './Styles/BuyerDetailResolutionStyle'
 import { Colors, Images } from '../Themes/'
 
-class DetailResolutionScreenScreen extends React.Component {
+class BuyerDetailResolution extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
@@ -103,9 +103,9 @@ class DetailResolutionScreenScreen extends React.Component {
     )
   }
 
-  renderInfo (infotext, infoValue) {
+  renderInfo (infotext, infoValue, border) {
     return (
-      <View style={styles.row}>
+      <View style={[styles.row, {borderBottomWidth: border}]}>
         <Text style={styles.textInfo}>{infotext}</Text>
         <Text style={styles.textInfoValue}>{infoValue}</Text>
       </View>
@@ -123,9 +123,8 @@ class DetailResolutionScreenScreen extends React.Component {
       )
     })
     return (
-      <View style={{paddingLeft: 20, paddingTop: 20, paddingBottom: 10}}>
-        <Text style={styles.textInfo}>Foto barang yang diterima</Text>
-        <View>
+      <View style={{paddingLeft: 20, paddingBottom: 20, backgroundColor: Colors.snow}}>
+        <View style={{borderTopColor: Colors.silver, borderTopWidth: 0.5, paddingTop: 20}}>
           <ScrollView horizontal contentContainerStyle={{paddingBottom: 12}}>
             {mapFoto}
           </ScrollView>
@@ -149,16 +148,24 @@ class DetailResolutionScreenScreen extends React.Component {
           initialPage={this.state.page}
         >
           <ScrollView tabLabel='Informasi' ref='information' style={styles.scrollView}>
-            {this.renderInfo('Status', 'Dalam Tahap Review')}
-            {this.renderInfo('Produk', 'Sepatu Jogging Nike Hitam')}
-            {this.renderInfo('Seller', 'Sports Station Shop')}
-            {this.renderInfo('Buyer', 'Dwinawan Hariwijaya')}
-            {this.renderInfo('Solusi yang diinginkan', 'Refund Dana')}
-            {this.renderPhotoProduct()}
-            <View style={{paddingLeft: 20, paddingTop: 20, paddingRight: 20, paddingBottom: 20, borderTopColor: Colors.silver, borderTopWidth: 0.5}}>
-              <Text style={styles.textInfo}>Keterangan</Text>
+            <View style={styles.containerInfo}>
+              {this.renderInfo('Status', 'Dalam Tahap Review')}
+              {this.renderInfo('Prioritas', 'High', 0)}
+            </View>
+            <View style={styles.tabWaiting}>
+              <View style={styles.containerResolution}>
+                <Text style={styles.textResolution}>Uang Refund saya belum juga masuk saldo, padahal di menu transaksinya sudah di refund oleh seller</Text>
+                <View style={styles.label}>
+                  <Text style={styles.textStatus}>Transaksi</Text>
+                </View>
+              </View>
+              <Text style={styles.date2}>23 Agustus 2017</Text>
+            </View>
+            <View style={styles.tabWaiting}>
+              <Text style={styles.textInfo}>Keluhan</Text>
               <Text style={[styles.textInfoValue, {lineHeight: 23, textAlign: 'left'}]}>Sepatunya tidak sesuai dengan yang di gambar dan deskripsi. Saya ingin merefund dana saja. Saya takut kalau ganti barang, barangnya tetap tidak sesuai. Takut buang2 waktu untuk menunggu</Text>
             </View>
+            {this.renderPhotoProduct()}
           </ScrollView>
           <View tabLabel='Diskusi Solusi' ref='discussionSolution' style={{marginBottom: 47}}>
             <ListView
@@ -201,4 +208,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailResolutionScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerDetailResolution)

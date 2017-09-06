@@ -30,7 +30,7 @@ class UserNotification extends React.Component {
 
   handleReview () {
     this.props.getListReview()
-    NavigationActions.reviewbuyer({
+    NavigationActions.buyerreview({
       type: ActionConst.PUSH
     })
   }
@@ -38,20 +38,20 @@ class UserNotification extends React.Component {
   handleMessages () {
     this.props.getListMessages()
     this.props.getListArchiveMessages()
-    NavigationActions.messagesbuyer({
+    NavigationActions.buyermessage({
       type: ActionConst.PUSH
     })
   }
 
   handleDiscussion () {
     this.props.getListDiscussion()
-    NavigationActions.discussionbuyer({
+    NavigationActions.buyerdiscussion({
       type: ActionConst.PUSH
     })
   }
 
   handleResolution () {
-    NavigationActions.resolutioncenter({
+    NavigationActions.buyerresolution({
       type: ActionConst.PUSH
     })
   }

@@ -21,6 +21,11 @@ class Splash extends React.Component {
   }
 
   componentWillMount () {
+    FCM.getFCMToken().then(tokenFCM => {
+      if (tokenFCM !== null && tokenFCM !== undefined) {
+        console.log('fcm', tokenFCM)
+      }
+    })
     SplashScreen.show()
     FCM.getInitialNotification().then(notif => {
       if (notif && notif.fcm && notif.fcm.action) {
@@ -65,20 +70,21 @@ class Splash extends React.Component {
         switch (this.state.notificationAction) {
           case 'BUYER_MESSAGE':
             this.props.getDetailMessage(this.state.redirectId)
-            NavigationActions.detailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
+            NavigationActions.buyerdetailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
             break
           case 'BUYER_DISCUSSION':
             this.props.getDetailDiscussion(this.state.redirectId)
-            NavigationActions.detaildiscussionbuyer({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
+            NavigationActions.buyerdetaildiscussion({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
             break
           case 'BUYER_REVIEW':
             this.props.getListReview()
-            NavigationActions.reviewbuyer({ type: ActionConst.REPLACE })
+            NavigationActions.buyerreview({ type: ActionConst.REPLACE })
             break
           case 'BUYER_RESOLUTION':
-            NavigationActions.resolutioncenter({ type: ActionConst.REPLACE })
+            NavigationActions.buyerresolution({ type: ActionConst.REPLACE })
             break
           default:
+            console.log('lalal')
             NavigationActions.backtab({ type: ActionConst.REPLACE })
         }
         SplashScreen.hide()

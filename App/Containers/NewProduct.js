@@ -620,7 +620,6 @@ class NewProduct extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.products,
     dataFilter: state.productBySearch
   }
 }

@@ -78,7 +78,7 @@ class DetailProduct extends React.Component {
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
-      loadingProduk: true,
+      loadingProduk: false,
       sizeUlasan: 2,
       modalLaporkan: false,
       estimasi: 0,
@@ -127,7 +127,7 @@ class DetailProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
-      console.log('lala', nextProps.dataDetailProduk.detail)
+      console.log('masuk')
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -216,7 +216,6 @@ class DetailProduct extends React.Component {
       })
     }
     if (nextProps.dataWishlist.status === 200) {
-      console.log(this.state.like)
       if (this.state.like) {
         this.setState({
           like: false
@@ -1321,7 +1320,6 @@ class DetailProduct extends React.Component {
         })
         this.props.getDetailProduk(this.state.id)
       } else {
-        console.log(this.state.id)
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
           fotoToko: this.state.fotoToko,
@@ -1339,7 +1337,6 @@ class DetailProduct extends React.Component {
   }
 
   render () {
-    console.log(this.state.loadingProduk)
     const spinner = this.state.loadingProduk
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='white' size='small' />

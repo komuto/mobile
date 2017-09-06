@@ -6,7 +6,8 @@ import {
   View,
   TouchableOpacity,
   ListView,
-  BackAndroid
+  BackAndroid,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -18,10 +19,10 @@ import moment from 'moment'
 import * as messageAction from '../actions/message'
 
 // Styles
-import styles from './Styles/MessagesBuyerScreenStyle'
+import styles from './Styles/BuyerMessageStyle'
 import { Colors, Images } from '../Themes/'
 
-class MessagesBuyerScreenScreen extends React.Component {
+class BuyerMessage extends React.Component {
 
   constructor (props) {
     super(props)
@@ -40,15 +41,13 @@ class MessagesBuyerScreenScreen extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataMessage.status === 200) {
+    if (nextProps.dataMessage.status === 200 && nextProps.dataArchiveMessage.status === 200) {
       this.setState({
-        dataConversation: nextProps.dataMessage.buyerMessages
+        dataConversation: nextProps.dataMessage.buyerMessages,
+        dataArchive: nextProps.dataArchiveMessage.archiveMessages,
+        loading: false
       })
       nextProps.dataMessage.status = 0
-    } if (nextProps.dataArchiveMessage.status === 200) {
-      this.setState({
-        dataArchive: nextProps.dataArchiveMessage.archiveMessages
-      })
       nextProps.dataArchiveMessage.status = 0
     }
   }
@@ -68,7 +67,7 @@ class MessagesBuyerScreenScreen extends React.Component {
 
   handelDetailMessage (id, typeMessage) {
     this.props.getDetailMessage(id)
-    NavigationActions.detailmessage({
+    NavigationActions.buyerdetailmessage({
       type: ActionConst.PUSH,
       idMessage: id,
       typeMessage: typeMessage
@@ -111,10 +110,63 @@ class MessagesBuyerScreenScreen extends React.Component {
     }
   }
 
-  fileView () {
+  checkStateMessage (data) {
+    if (this.state.loading) {
+      return (
+        <View style={styles.containerLoading} />
+      )
+    } else {
+      if (data.length > 0) {
+        return (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(data)}
+            renderRow={this.renderRowMessage.bind(this)}
+            enableEmptySections
+          />
+        )
+      } else {
+        return (
+          <View style={styles.containerEmpty}>
+            <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
+            <Text style={styles.textTitleEmpty}>Belum ada Percakapan</Text>
+            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
+          </View>
+        )
+      }
+    }
+  }
+
+  checkStateArchive (data) {
+    if (this.state.loading) {
+      return (
+        <View style={styles.containerLoading} />
+      )
+    } else {
+      if (data.length > 0) {
+        return (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(data)}
+            renderRow={this.renderRowMessage.bind(this)}
+            enableEmptySections
+          />
+        )
+      } else {
+        return (
+          <View style={styles.containerEmpty}>
+            <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
+            <Text style={styles.textTitleEmpty}>Tidak ada Arsip</Text>
+            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
+          </View>
+        )
+      }
+    }
   }
 
   render () {
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color='#ef5656' size='large' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -130,19 +182,13 @@ class MessagesBuyerScreenScreen extends React.Component {
         >
           <ScrollView tabLabel='Percakapan' ref='conversation' style={styles.scrollView}>
             {this.notif()}
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.dataConversation)}
-              renderRow={this.renderRowMessage.bind(this)}
-              enableEmptySections
-            />
+            {spinner}
+            {this.checkStateMessage(this.state.dataConversation)}
           </ScrollView>
           <ScrollView tabLabel='Arsip' ref='files' style={styles.scrollView}>
             {this.notif()}
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.dataArchive)}
-              renderRow={this.renderRowMessage.bind(this)}
-              enableEmptySections
-            />
+            {spinner}
+            {this.checkStateArchive(this.state.dataArchive)}
           </ScrollView>
         </ScrollableTabView>
       </View>
@@ -163,4 +209,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesBuyerScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerMessage)

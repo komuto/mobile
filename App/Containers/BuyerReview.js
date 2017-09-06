@@ -11,7 +11,7 @@ import * as produkAction from '../actions/product'
 import * as reviewAction from '../actions/review'
 
 // Styles
-import styles from './Styles/ReviewBuyerScreenStyle'
+import styles from './Styles/BuyerReviewStyle'
 
 class BuyerReview extends React.Component {
   constructor (props) {

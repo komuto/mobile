@@ -128,7 +128,7 @@ class CartDetailItem extends React.Component {
           address: shipping.address.address,
           province: shipping.address.province.name,
           phone: shipping.address.phone_number,
-          originId: item.store.district.ro_id,
+          originId: item.location.district.ro_id,
           roIdDistrict: shipping.address.district.ro_id,
           courier: shipping.expedition_service.expedition.name,
           idKurir: shipping.expedition_service.expedition.id,

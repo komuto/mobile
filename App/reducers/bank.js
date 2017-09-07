@@ -45,5 +45,5 @@ export const getKomutoBankAccounts = createReducer(buildInitState({ komutoAccoun
   .addReducer({
     type: actions.GET_KOMUTO_BANK_ACCOUNTS,
     resultName: 'komutoAccounts'
-  })
+  }).run()
 

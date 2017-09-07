@@ -75,7 +75,7 @@ class PurchaseCart extends React.Component {
                 'address_id': obj.shipping.address.id,
                 'is_insurance': obj.shipping.is_insurance,
                 'service': obj.shipping.expedition_service.name,
-                'origin_ro_id': obj.product.store.district.ro_id,
+                'origin_ro_id': obj.product.location.district.ro_id,
                 'destination_ro_id': obj.shipping.address.district.ro_id
               })
             )
@@ -169,7 +169,7 @@ class PurchaseCart extends React.Component {
         loadingCheckout: false
       })
       this.props.resetUpdateCart()
-    } else if (nextProps.dataCheckout.status > 200) {
+    } else if (nextProps.dataCheckout.status > 200 || nextProps.dataCheckout.status === 'ENOENT') {
       this.setState({
         loadingCheckout: false
       })

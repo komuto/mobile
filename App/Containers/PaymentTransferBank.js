@@ -5,6 +5,7 @@ import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
 import * as cartAction from '../actions/cart'
+import * as bankAction from '../actions/bank'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -64,11 +65,19 @@ class PaymentTransferBank extends React.Component {
       })
     }
     if (nextProps.dataCheckout.status === 200) {
+      const { total, diskon, kodeUnik, kode } = this.state
+      const sisaBayar = total - diskon + kodeUnik
       this.setState({
         loading: false
       })
+      this.props.getTransferBank()
       NavigationActions.paymenttransferbankdetail({
-        type: ActionConst.RESET
+        type: ActionConst.RESET,
+        totalPayment: sisaBayar,
+        total: total,
+        discount: diskon,
+        kode: kode,
+        kodeUnik: kodeUnik
       })
     }
   }
@@ -176,9 +185,9 @@ class PaymentTransferBank extends React.Component {
       )
     } else {
       viewButton = (
-        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
+        <View style={styles.button} onPress={() => this.transferBank()}>
           <Spinner />
-        </TouchableOpacity>
+        </View>
       )
     }
     return (
@@ -224,7 +233,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCart: dispatch(cartAction.getCart()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
-    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))
+    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment})),
+    getTransferBank: () => dispatch(bankAction.getKomutoBankAccounts())
   }
 }
 

@@ -3,10 +3,22 @@ import { ActivityIndicator } from 'react-native'
 import { Colors } from '../Themes'
 
 export default class Spinner extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      color: this.props.color
+    }
+  }
 
   render () {
+    let warna
+    if (this.state.color === null || this.state.color === undefined) {
+      warna = Colors.snow
+    } else {
+      warna = this.state.color
+    }
     return (
-      <ActivityIndicator color={Colors.snow} size='large' />
+      <ActivityIndicator color={warna} size='large' />
     )
   }
 }

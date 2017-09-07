@@ -10,8 +10,11 @@ import {
   Picker,
   BackAndroid
 } from 'react-native'
+import Spinner from '../Components/Spinner'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import CameraModal from '../Components/CameraModal'
 import { connect } from 'react-redux'
+import * as storeAction from '../actions/stores'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -24,47 +27,24 @@ class TransactionPaymentConfirmation extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      nominal: 'Rp 250.257',
+      nominal: this.props.totalPayment,
       tanggal: 'Pilih Tanggal',
-      idBank: -1,
+      idBank: 1,
       labelBank: 'Pilih Bank',
-      idBankPengirim: -1,
+      idBankPengirim: 0,
       labelBankPengirim: 'Pilih Bank',
       timestamp: '',
       rekening: '',
       bukti: null,
       image: '',
-      bankSeller: [
-        {
-          'id': 1,
-          'name': 'Bank Mandiri'
-        },
-        {
-          'id': 2,
-          'name': 'Bank BCA'
-        }
-      ],
-      bank: [
-        {
-          'id': 1,
-          'name': 'Bank Mandiri'
-        },
-        {
-          'id': 2,
-          'name': 'Bank BCA'
-        },
-        {
-          'id': 3,
-          'name': 'Bank BRI'
-        },
-        {
-          'id': 4,
-          'name': 'Bank BNI'
-        }
-      ],
+      bankSeller: this.props.dataBankKomuto.komutoAccounts,
+      bank: [],
       days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-        'Agustus', 'September', 'Oktober', 'November', 'Desember']
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      showModalCamera: false,
+      loading: false,
+      payloadImage: ''
     }
   }
 
@@ -79,6 +59,25 @@ class TransactionPaymentConfirmation extends React.Component {
   handleBack = () => {
     if (NavigationActions.pop()) {
       return true
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataBank.status === 200) {
+      this.setState({
+        bank: nextProps.dataBank.banks
+      })
+    }
+    if (nextProps.dataPhoto.status === 200) {
+      console.log(nextProps.dataPhoto.payload.images[0].name)
+      this.setState({
+        loading: false,
+        payloadImage: nextProps.dataPhoto.payload.images[0].name
+      })
+    } else if (nextProps.dataPhoto.status > 200) {
+      this.setState({
+        loading: false
+      })
     }
   }
 
@@ -146,7 +145,7 @@ class TransactionPaymentConfirmation extends React.Component {
   bankPicker () {
     const { bankSeller } = this.state
     const bankList = bankSeller.map(bank =>
-    (<Picker.Item key={bank.name} label={bank.name} value={bank.id} />)
+    (<Picker.Item key={bank.bank.name} label={bank.bank.name} value={bank.bank.id} />)
   )
     return (
       <Picker
@@ -233,37 +232,84 @@ class TransactionPaymentConfirmation extends React.Component {
   }
 
   renderImages () {
-    const { bukti } = this.state
-    if (bukti !== null) {
+    const { bukti, loading } = this.state
+    if (loading) {
       return (
-        <View style={{ paddingTop: 12, width: 110, marginTop: 25 }}>
-          <Image
-            source={{ uri: bukti }}
-            style={styles.images}
-          />
-          <TouchableOpacity style={styles.deleteImage}>
-            <Image source={Images.closeCircleBack} style={styles.imageX} />
-          </TouchableOpacity>
+        <View style={styles.defaultImage}>
+          <Spinner />
         </View>
       )
+    } else {
+      if (bukti !== null) {
+        return (
+          <View style={{ paddingTop: 12, width: 110, marginTop: 25 }}>
+            <Image
+              source={{ uri: bukti }}
+              style={styles.images}
+            />
+            <TouchableOpacity style={styles.deleteImage} onPress={() => this.setState({bukti: null})}>
+              <Image source={Images.closeCircleBack} style={styles.imageX} />
+            </TouchableOpacity>
+          </View>
+        )
+      } else {
+        return (
+          <TouchableOpacity
+            style={styles.defaultImage}
+            onPress={() => this.setState({showModalCamera: true})}
+          >
+            <Image source={Images.plus} style={styles.imagePlus} />
+          </TouchableOpacity>
+        )
+      }
     }
-    return (
-      <TouchableOpacity style={styles.defaultImage}>
-        <Image source={Images.plus} style={styles.imagePlus} />
-      </TouchableOpacity>
-    )
   }
 
   renderButton () {
     return (
       <View style={[styles.rowLabel, { marginTop: 30 }]}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => this.send()}>
           <Text style={styles.textButton}>
             Konfirmasikan Pembayaran
           </Text>
         </TouchableOpacity>
       </View>
     )
+  }
+
+  renderCameraModal () {
+    return (
+      <CameraModal
+        visible={this.state.showModalCamera}
+        onClose={() => {
+          this.setState({showModalCamera: false})
+        }}
+        onPhotoCaptured={(path) => {
+          this.addPhoto(path)
+        }}
+      />
+    )
+  }
+
+  addPhoto (photo, i) {
+    this.setState({bukti: photo, showModalCamera: false})
+    const postData = new FormData()
+    postData.append('images', { uri: photo, type: 'image/jpg', name: 'image.jpg' })
+    postData.append('type', 'payment')
+    this.props.photoUpload(postData)
+    this.setState({loading: true})
+  }
+
+  send () {
+    const { idBank, timestamp, nominal, payloadImage, labelBankPengirim, bank, rekening } = this.state
+    let label
+    if (labelBankPengirim !== 'Pilih Bank') {
+      label = bank[labelBankPengirim - 1].name
+    } else {
+      label = bank[0].name
+    }
+    // this.props.pay(idBank, timestamp, nominal, label, rekening, payloadImage)
+    console.log(idBank, timestamp, nominal, label, rekening, payloadImage)
   }
 
   render () {
@@ -277,6 +323,7 @@ class TransactionPaymentConfirmation extends React.Component {
           {this.renderRekeningPengirim()}
           {this.renderBuktiTransfer()}
           {this.renderButton()}
+          {this.renderCameraModal()}
         </ScrollView>
       </View>
     )
@@ -285,11 +332,15 @@ class TransactionPaymentConfirmation extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataBankKomuto: state.komutoAccounts,
+    dataBank: state.banks,
+    dataPhoto: state.upload
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data}))
   }
 }
 

@@ -8,6 +8,7 @@ import { MaskService } from 'react-native-masked-text'
 import { Images } from '../Themes'
 // Styles
 import styles from './Styles/PembayaranTransferBankDetailStyle'
+import * as bankAction from '../actions/bank'
 
 class PaymentTransferBankDetail extends React.Component {
 
@@ -16,28 +17,13 @@ class PaymentTransferBankDetail extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       invoice: 'Invoice-83273847492/04/2017',
-      sisaPembayaran: 308582,
-      total: 320000,
-      kode: 'BELANJAENAK',
-      diskon: 10000,
-      kodeUnik: 2000,
+      sisaPembayaran: this.props.totalPayment,
+      total: this.props.total,
+      kode: this.props.kode,
+      diskon: this.props.discount,
+      kodeUnik: this.props.kodeUnik,
       expand: false,
-      data: [
-        {
-          'nameBank': 'Bank Mandiri',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'name': 'PT Aptamedia Indonesia',
-          'rekening': '8179  8387  28',
-          'cabang': 'Yogyakarta'
-        },
-        {
-          'nameBank': 'Bank BNI',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'name': 'PT Aptamedia Indonesia',
-          'rekening': '8179  8387  28',
-          'cabang': 'Jakarta'
-        }
-      ],
+      data: [],
       dataBarang: [
         {
           'name': 'Sepatu Jogging Nike Hitam',
@@ -68,6 +54,15 @@ class PaymentTransferBankDetail extends React.Component {
       this.setState({ modalTransaksi: true })
     }
     return true
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataBanks.status === 200) {
+      console.log(nextProps.dataBanks.komutoAccounts)
+      this.setState({
+        data: nextProps.dataBanks.komutoAccounts
+      })
+    }
   }
 
   renderNavigator () {
@@ -205,8 +200,8 @@ class PaymentTransferBankDetail extends React.Component {
     return (
       <View style={styles.bankContainer}>
         <View style={styles.namaBankContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>{rowData.nameBank}</Text>
-          <Image source={{ uri: rowData.image }} style={styles.imageBank} />
+          <Text style={[styles.bold, { flex: 1 }]}>{rowData.bank.name}</Text>
+          <Image source={{ uri: rowData.bank.logo }} style={styles.imageBank} />
         </View>
         <View style={styles.rekeningContainerRow}>
           <View style={[styles.rekeningContainerColumn, { marginRight: 20 }]}>
@@ -215,9 +210,9 @@ class PaymentTransferBankDetail extends React.Component {
             <Text style={[styles.time, { marginBottom: 5 }]}>Cabang</Text>
           </View>
           <View style={styles.rekeningContainerColumn}>
-            <Text style={[styles.textTitle, { marginBottom: 5 }]}>:{'   '}{rowData.rekening}</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.name}</Text>
-            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.cabang}</Text>
+            <Text style={[styles.textTitle, { marginBottom: 5 }]}>:{'   '}{rowData.holder_account_number}</Text>
+            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.holder_name}</Text>
+            <Text style={[styles.time, { marginBottom: 5 }]}>:{'   '}{rowData.bank_branch_office_name}</Text>
           </View>
         </View>
       </View>
@@ -370,8 +365,10 @@ class PaymentTransferBankDetail extends React.Component {
   }
 
   konfirmasi () {
+    this.props.getBank()
     NavigationActions.transactionpaymentconfirmation({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      totalPayment: this.state.sisaPembayaran
     })
   }
 
@@ -398,11 +395,13 @@ class PaymentTransferBankDetail extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataBanks: state.komutoAccounts
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getBank: () => dispatch(bankAction.listBank())
   }
 }
 

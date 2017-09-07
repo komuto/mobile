@@ -71,7 +71,7 @@ class PurchaseAddToCart extends React.Component {
       ongkirSatuan: 0,
       diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
       total: '0',
-      originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+      originId: this.props.dataDetailProduk.detail.location.district.ro_id,
       dataKurir: this.props.dataDetailProduk.detail.expeditions,
       dataCost: [],
       expeditionFee: '',
@@ -127,7 +127,7 @@ class PurchaseAddToCart extends React.Component {
         weight: this.props.dataDetailProduk.detail.product.weight,
         subtotal: this.props.dataDetailProduk.detail.product.price * 1,
         diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
-        originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+        originId: this.props.dataDetailProduk.detail.location.district.ro_id,
         dataKurir: this.props.dataDetailProduk.detail.expeditions
       })
     }
@@ -183,13 +183,15 @@ class PurchaseAddToCart extends React.Component {
     }
     if (nextProps.dataCart.status === 200) {
       if (this.state.activeScene) {
-        this.setState({ loadingCart: false, modalNotifikasi: true })
+        this.setState({ loadingCart: false, modalNotifikasi: true, activeScene: false })
+        this.props.resetCreateStatus()
       }
-      this.props.resetCreateStatus()
-    } else if (nextProps.dataCart.status > 200) {
-      this.setState({ loadingCart: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
-      this.props.resetCreateStatus()
+    } else if (nextProps.dataCart.status > 200 || nextProps.dataCart.status === 'ENOENT') {
+      if (this.state.activeScene) {
+        this.setState({ loadingCart: false })
+        ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
+        this.props.resetCreateStatus()
+      }
     }
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
@@ -685,13 +687,10 @@ class PurchaseAddToCart extends React.Component {
 
   keranjang () {
     this.setState({ modalNotifikasi: false })
-    NavigationActions.purchasecart({
-      type: ActionConst.PUSH
-    })
-    this.setState({
-      activeScene: false
-    })
     this.props.getCart()
+    NavigationActions.purchasecart({
+      type: ActionConst.REPLACE
+    })
   }
 
   home () {

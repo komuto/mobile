@@ -111,6 +111,7 @@ import SellerNotificationMessageDetail from '../Containers/SellerNotificationMes
 import SellerNotificationDiscussion from '../Containers/SellerNotificationDiscussion'
 import SellerNotificationReview from '../Containers/SellerNotificationReview'
 import SellerNotificationResolution from '../Containers/SellerNotificationResolution'
+import PaymentMidtrans from '../Containers/PaymentMidtrans'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -944,6 +945,12 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             title='Pusat Resolusi'
             hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='paymentmidtrans'
+            component={PaymentMidtrans}
+            navBar={CustomNavBar}
+            hideNavBar
             hideBackImage={false} />
         </Scene>
       </Router>

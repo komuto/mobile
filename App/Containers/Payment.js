@@ -1,13 +1,14 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView } from 'react-native'
+import { AsyncStorage, Text, View, TouchableOpacity, Image, BackAndroid, ListView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import Spinner from '../Components/Spinner'
 import { MaskService } from 'react-native-masked-text'
 import * as paymentAction from '../actions/payment'
 import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/PembayaranStyle'
 
@@ -21,8 +22,18 @@ class Payment extends React.Component {
       saldo: '300000',
       data: [],
       getCartPayment: true,
-      idCart: this.props.idCart
+      idCart: this.props.idCart,
+      token: '',
+      loading: false
     }
+  }
+
+  componentWillMount () {
+    AsyncStorage.getItem('token').then(token => {
+      this.setState({
+        token
+      })
+    }).done()
   }
 
   componentDidMount () {
@@ -66,6 +77,14 @@ class Payment extends React.Component {
         })
         this.props.getCartReset()
       }
+    } if (nextProps.dataCheckout.status === 200) {
+      this.setState({
+        loading: false
+      })
+      NavigationActions.paymentmidtrans({
+        type: ActionConst.PUSH,
+        token: this.state.token
+      })
     }
   }
 
@@ -116,12 +135,25 @@ class Payment extends React.Component {
   }
 
   renderListPayment () {
+    const { loading } = this.state
+    if (!loading) {
+      return (
+        <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer} onPress={() => this.midtrans()}>
+          <View style={styles.total}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLabel}>Metode Pembayaran Lain</Text>
+            </View>
+            <Image source={Images.rightArrow} style={styles.imagePicker} />
+          </View>
+        </TouchableOpacity>
+      )
+    }
     return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
-        renderRow={this.renderRow.bind(this)}
-        enableEmptySections
-      />
+      <View activeOpacity={0.5} style={styles.totalContainer}>
+        <View style={[styles.total, { justifyContent: 'center' }]}>
+          <Spinner color={Colors.red} />
+        </View>
+      </View>
     )
   }
 
@@ -194,6 +226,13 @@ class Payment extends React.Component {
     })
   }
 
+  midtrans () {
+    this.setState({
+      loading: true
+    })
+    this.props.checkout(1)
+  }
+
   atm () {
     NavigationActions.paymentvirtualaccount({
       type: ActionConst.PUSH
@@ -203,11 +242,9 @@ class Payment extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {this.renderTotal()}
-          {this.renderSaldo()}
-          {this.renderListPayment()}
-        </ScrollView>
+        {this.renderTotal()}
+        {this.renderSaldo()}
+        {this.renderListPayment()}
       </View>
     )
   }
@@ -216,7 +253,8 @@ class Payment extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataPaymentMethod: state.paymentMethods,
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataCheckout: state.checkout
   }
 }
 
@@ -224,7 +262,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     paymentAction: dispatch(paymentAction.getPaymentMethods()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
-    getCart: dispatch(cartAction.getCart())
+    getCart: dispatch(cartAction.getCart()),
+    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))
   }
 }
 

@@ -18,4 +18,3 @@ export const getSaldoHistory = createReducer(buildInitState({ history: [] }))
     type: actions.GET_SALDO_HISTORY,
     resultName: 'history'
   }).run()
-

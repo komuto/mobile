@@ -57,4 +57,3 @@ export const updateCart = createReducer(buildInitState({ items: [] }))
     resultName: 'items',
     includeNonSaga: true
   }).run()
-

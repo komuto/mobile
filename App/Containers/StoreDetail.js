@@ -86,7 +86,7 @@ class StoreDetail extends React.Component {
   }
 
   kirimPesan () {
-    NavigationActions.sendmessage({
+    NavigationActions.sendmessagestore({
       type: ActionConst.PUSH,
       id: this.state.id,
       foto: this.state.fotoToko,

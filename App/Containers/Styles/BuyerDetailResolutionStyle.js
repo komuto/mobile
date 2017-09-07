@@ -10,6 +10,12 @@ export default StyleSheet.create({
   scrollView: {
     paddingBottom: 10
   },
+  maskedPhoto: {
+    height: 40,
+    width: 40,
+    borderRadius: 200,
+    backgroundColor: Colors.paleGreyFive
+  },
   containerInfo: {
     paddingLeft: 20,
     backgroundColor: Colors.snow
@@ -17,10 +23,7 @@ export default StyleSheet.create({
   containerMessage: {
     flexDirection: 'row',
     flex: 1,
-    paddingBottom: 20,
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 40 + 20 + 10
+    padding: 20
   },
   photo: {
     height: 40,
@@ -176,5 +179,9 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     color: Colors.labelgrey
+  },
+  messages: {
+    backgroundColor: Colors.snow,
+    flex: 1
   }
 })

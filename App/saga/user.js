@@ -3,7 +3,7 @@ import * as actions from '../actions/user'
 import * as apis from '../api/user'
 import { errorHandling, typeSucc, typeFail, buildSaga, storage } from '../config'
 
-export const register = function* (action) {
+export const register = function * (action) {
   try {
     const {data} = yield apis.register(action)
     yield storage.setItem('token', data.data.token)
@@ -13,7 +13,7 @@ export const register = function* (action) {
   }
 }
 
-export const login = function* login (action) {
+export const login = function * login (action) {
   try {
     const {data} = yield apis.login(action)
     yield storage.setItem('token', data.data.token)
@@ -23,7 +23,7 @@ export const login = function* login (action) {
   }
 }
 
-export const logout = function* (action) {
+export const logout = function * (action) {
   try {
     const data = yield apis.logout(action)
     yield storage.removeItem('token')
@@ -37,7 +37,7 @@ export const logout = function* (action) {
   }
 }
 
-export const loginSocial = function* login (action) {
+export const loginSocial = function * login (action) {
   try {
     const {data} = yield apis.loginSocial(action)
     yield storage.setItem('token', data.data.token)
@@ -68,3 +68,8 @@ export const sendOTPBank = buildSaga(apis.sendOTPBank, actions.SEND_BANK_OTP)
 export const updateFirebaseToken = buildSaga(apis.updateFirebaseToken, actions.UPDATE_FIREBASE_REG_TOKEN)
 export const getNotifSettings = buildSaga(apis.getNotifSettings, actions.GET_NOTIF_SETTINGS)
 export const updateNotifSettings = buildSaga(apis.updateNotifSettings, actions.UPDATE_NOTIF_SETTINGS)
+export const getResolvedResolutions = buildSaga(apis.getResolvedResolutions, actions.GET_RESOLVED_RESOLUTIONS)
+export const getUnresolvedResolutions = buildSaga(apis.getUnresolvedResolutions, actions.GET_UNRESOLVED_RESOLUTIONS)
+export const getResolutionDetail = buildSaga(apis.getResolutionDetail, actions.GET_RESOLUTION_DETAIL)
+export const createResolution = buildSaga(apis.createResolution, actions.CREATE_RESOLUTION)
+export const replyResolution = buildSaga(apis.replyResolution, actions.REPLY_RESOLUTION)

@@ -26,6 +26,11 @@ export const GET_WISHLIST = 'GET_WISHLIST'
 export const UPDATE_FIREBASE_REG_TOKEN = 'UPDATE_FIREBASE_REG_TOKEN'
 export const GET_NOTIF_SETTINGS = 'GET_NOTIF_SETTINGS'
 export const UPDATE_NOTIF_SETTINGS = 'UPDATE_NOTIF_SETTINGS'
+export const GET_RESOLVED_RESOLUTIONS = 'GET_RESOLVED_RESOLUTIONS'
+export const GET_UNRESOLVED_RESOLUTIONS = 'GET_UNRESOLVED_RESOLUTIONS'
+export const GET_RESOLUTION_DETAIL = 'GET_RESOLUTION_DETAIL'
+export const CREATE_RESOLUTION = 'CREATE_RESOLUTION'
+export const REPLY_RESOLUTION = 'REPLY_RESOLUTION'
 
 /**
  * @param params are the same as the api
@@ -172,3 +177,31 @@ export const getNotifSettings = () => buildAction(typeReq(GET_NOTIF_SETTINGS))
  * @state notifSettings
  */
 export const updateNotifSettings = params => buildAction(typeReq(UPDATE_NOTIF_SETTINGS), params)
+
+/**
+ * @state resolvedResolutions
+ */
+export const getResolvedResolutions = () => buildAction(typeReq(GET_RESOLVED_RESOLUTIONS))
+
+/**
+ * @state unresolvedResolutions
+ */
+export const getUnresolvedResolutions = () => buildAction(typeReq(GET_UNRESOLVED_RESOLUTIONS))
+
+/**
+ * @params id {int} resolution id
+ * @state resolutionDetail
+ */
+export const getResolutionDetail = params => buildAction(typeReq(GET_RESOLUTION_DETAIL), params)
+
+/**
+ * @params params are the same as the api
+ * @state resolution
+ */
+export const createResolution = params => buildAction(typeReq(CREATE_RESOLUTION), params)
+
+/**
+ * @params id {int} resolution id
+ * @state resolution
+ */
+export const replyResolution = params => buildAction(typeReq(REPLY_RESOLUTION), params)

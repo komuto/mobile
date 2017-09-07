@@ -153,8 +153,8 @@ class DetailProduct extends React.Component {
         kategori: nextProps.dataDetailProduk.detail.category.name,
         deskripsi: nextProps.dataDetailProduk.detail.product.description,
         termcondition: nextProps.dataDetailProduk.detail.store.term_condition,
-        idLokasiPenjual: nextProps.dataDetailProduk.detail.store.province.id,
-        lokasiPenjual: nextProps.dataDetailProduk.detail.store.province.name,
+        idLokasiPenjual: nextProps.dataDetailProduk.detail.location.province.id,
+        lokasiPenjual: nextProps.dataDetailProduk.detail.location.province.name,
         namaToko: nextProps.dataDetailProduk.detail.store.name,
         service: nextProps.dataDetailProduk.detail.expeditions,
         jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
@@ -210,7 +210,7 @@ class DetailProduct extends React.Component {
       this.setState({
         dataServices: nextProps.dataServis.charges
       })
-    } else if (nextProps.dataServis.status === 400) {
+    } else if (nextProps.dataServis.status > 200) {
       this.setState({
         messageServices: nextProps.dataServis.message
       })
@@ -671,7 +671,8 @@ class DetailProduct extends React.Component {
   }
 
   renderRowService (rowData) {
-    const money = MaskService.toMask('money', rowData.cost * parseInt(this.state.totalWeight), {
+    const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.totalWeight / 1000) * rowData.cost
+    const money = MaskService.toMask('money', temp2, {
       unit: '',
       separator: '.',
       delimiter: '.',
@@ -957,7 +958,7 @@ class DetailProduct extends React.Component {
         onPress={() => {
           this.setState({
             kabTerpilih: rowData.name,
-            idKabTerpilih: rowData.id,
+            idKabTerpilih: rowData.ro_id,
             kecTerpilih: 'Semua Wilayah',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)

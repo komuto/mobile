@@ -36,4 +36,3 @@ export const getListCatalog = () => buildAction(typeReq(GET_LIST_CATALOG))
  * @state deleteCatalog
  */
 export const deleteCatalog = params => buildAction(typeReq(DELETE_CATALOG), params)
-

@@ -20,16 +20,20 @@ class BuyerReview extends React.Component {
     this.state = {
       data: [],
       page: 1,
-      loadmore: true,
+      loadmore: false,
       isRefreshing: false,
-      isLoading: true,
-      loadingPage: false
+      isLoading: false,
+      loadingPage: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataReview.status === 200) {
+      this.setState({
+        loadingPage: false
+      })
       if (nextProps.dataReview.buyerReview.length > 0) {
+        console.log('if')
         let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
         this.setState({
           data: data,
@@ -45,12 +49,6 @@ class BuyerReview extends React.Component {
         })
       }
     }
-    if (nextProps.dataDetailProduk.status === 200) {
-      this.setState({loadingPage: false})
-      NavigationActions.detailproduct({
-        type: ActionConst.PUSH
-      })
-    }
   }
 
   loadMore () {
@@ -63,12 +61,15 @@ class BuyerReview extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: true })
     this.props.getListReview(1)
   }
 
   handleDetailProduct (id) {
-    this.setState({loadingPage: true})
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
     this.props.getDetailProduct(id)
   }
 
@@ -144,7 +145,7 @@ class BuyerReview extends React.Component {
   }
 
   checkStateReview (data) {
-    if (this.state.isLoading) {
+    if (this.state.loadingPage) {
       return (
         <View />
       )
@@ -195,16 +196,11 @@ class BuyerReview extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loadingPage
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
           {this.checkStateReview(this.state.data)}
         </View>
-        {spinner}
       </View>
     )
   }

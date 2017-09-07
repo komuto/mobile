@@ -6,8 +6,8 @@ export const apiKomuto = 'https://api.komuto.skyshi.com/4690fa4c3d68f93b/'
 export const storage = AsyncStorage
 
 export function errorHandling (actionType, res) {
-  const errorOffline = {
-    message: 'Your device is offline',
+  const errorTimeout = {
+    message: 'Timeout reached!',
     code: 'ENOENT',
     isOnline: false
   }
@@ -19,15 +19,15 @@ export function errorHandling (actionType, res) {
       data.isOnline = true
       return put({ type: actionType, ...data })
     } else {
-      let errorBadGateway = {
+      const errorBadRequest = {
         message: res.response.statusText,
         code: res.response.status,
         isOnline: true
       }
-      return put({ type: actionType, ...errorBadGateway })
+      return put({ type: actionType, ...errorBadRequest })
     }
   } else {
-    return put({ type: actionType, ...errorOffline })
+    return put({ type: actionType, ...errorTimeout })
   }
 }
 
@@ -173,7 +173,7 @@ export const buildQuery = (params) => Object.keys(params)
  * @param actionType {string}
  * @param getState {function} Get result from other state
  */
-export const buildSaga = (callApi, actionType, getState = false) => function* ({ type, ...params }) {
+export const buildSaga = (callApi, actionType, getState = false) => function * ({ type, ...params }) {
   try {
     let res, fromState
     if (getState) {
@@ -190,7 +190,7 @@ export const buildSaga = (callApi, actionType, getState = false) => function* ({
   }
 }
 
-export const buildSagaDelay = (callApi, actionType, delayCount = 200, getState = false) => function* ({ type, ...params }) {
+export const buildSagaDelay = (callApi, actionType, delayCount = 200, getState = false) => function * ({ type, ...params }) {
   try {
     yield call(delay, delayCount)
     let res, fromState
@@ -289,4 +289,3 @@ export const getState = ({ from, get, match = 'id' }) => (params) => (state) => 
   if (get === 'all') return result[0] ? result : false
   return result[0]
 }
-

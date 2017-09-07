@@ -43,4 +43,3 @@ export const getListAddress = () => buildAction(typeReq(GET_LIST_ADDRESS))
  */
 export const getPrimaryAddress = () => buildAction(typeReq(GET_PRIMARY_ADDRESS))
 export const resetPrimaryAddress = () => buildAction(typeReset(GET_PRIMARY_ADDRESS))
-

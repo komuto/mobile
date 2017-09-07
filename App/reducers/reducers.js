@@ -39,7 +39,11 @@ const user = {
   sendOTPBank: userReducers.sendOTPBank,
   wishlist: userReducers.wishlist,
   alterUser: userReducers.alterUser,
-  notifSettings: userReducers.notifSettings
+  notifSettings: userReducers.notifSettings,
+  resolvedResolutions: userReducers.getResolvedResolutions,
+  unresolvedResolutions: userReducers.getUnresolvedResolutions,
+  resolutionDetail: userReducers.getResolutionDetail,
+  resolution: userReducers.resolution
 }
 
 const home = {
@@ -169,11 +173,11 @@ const other = {
 }
 
 const payment = {
-  dokuPayment: paymentReducers.payDoku,
-  invoice: paymentReducers.getDokuInvoice,
   paymentMethods: paymentReducers.getPaymentMethods,
   confirmation: paymentReducers.confirmTransfer,
-  withdrawal: paymentReducers.withdraw
+  withdrawal: paymentReducers.withdraw,
+  snapToken: paymentReducers.getMidtransToken,
+  snapToken2: paymentReducers.getMidtransToken2
 }
 
 const review = {

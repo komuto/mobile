@@ -32,12 +32,15 @@ class BuyerDiscussion extends React.Component {
       loadmore: true,
       isRefreshing: false,
       isLoading: true,
-      loadingPage: false
+      loadingPage: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.listDiscussion.status === 200) {
+      this.setState({
+        loadingPage: false
+      })
       if (nextProps.listDiscussion.discussions.length > 0) {
         let data = [...this.state.data, ...nextProps.listDiscussion.discussions]
         this.setState({
@@ -66,7 +69,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: false })
     this.props.getListDiscussion(1)
   }
 
@@ -99,7 +102,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   checkStateDiscussion (data) {
-    if (this.state.isLoading) {
+    if (this.state.loadingPage) {
       return (
         <View />
       )

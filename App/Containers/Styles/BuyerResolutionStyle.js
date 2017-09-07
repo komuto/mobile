@@ -10,6 +10,34 @@ export default StyleSheet.create({
   border: {
     marginLeft: 19.5
   },
+  notif: {
+    flexDirection: 'row',
+    backgroundColor: Colors.duckEggBlue,
+    alignItems: 'center',
+    paddingRight: 19,
+    position: 'relative'
+  },
+  textNotif: {
+    flex: 1,
+    padding: 20,
+    color: Colors.greenish,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed
+  },
+  image: {
+    height: 25,
+    width: 25
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    opacity: 0.5
+  },
   profile: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -169,7 +197,6 @@ export default StyleSheet.create({
   },
   modalContainer: {
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
     backgroundColor: Colors.snow
   },
   scrollViewModal: {

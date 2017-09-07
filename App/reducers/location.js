@@ -68,4 +68,3 @@ export const village = createReducer(buildInitState({ villages: [] }))
     type: actions.GET_VILLAGE,
     resultName: 'villages'
   }).run()
-

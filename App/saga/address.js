@@ -9,4 +9,3 @@ export const getListAddress = buildSaga(apis.getListAddress, actions.GET_LIST_AD
 export const getAddressDetail = buildSaga(apis.getAddressDetail, actions.GET_ADDRESS_DETAIL,
   getState({ from: (state) => state.listAddress.address }))
 export const getPrimaryAddress = buildSaga(apis.getPrimaryAddress, actions.GET_PRIMARY_ADDRESS)
-

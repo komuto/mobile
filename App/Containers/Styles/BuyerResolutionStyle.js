@@ -166,6 +166,33 @@ export default StyleSheet.create({
     paddingTop: 3.5,
     paddingBottom: 3.5
   },
+  containerStatus: {
+    paddingBottom: 16.5,
+    paddingTop: 16.5,
+    backgroundColor: Colors.iceBlue,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 19
+  },
+  circle: {
+    height: 20,
+    width: 20,
+    borderRadius: 200,
+    backgroundColor: 'rgba(71, 191, 126, 0.27)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10.5
+  },
+  label2: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.small,
+    color: Colors.darkMint
+  },
+  label3: {
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkMint
+  },
   date: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,

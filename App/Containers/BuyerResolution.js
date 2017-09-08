@@ -528,14 +528,22 @@ class BuyerResolution extends React.Component {
   renderRowResolveResolution (rowData) {
     var timeStampToDate = moment.unix(rowData.created_at).format('DD MMMM YYYY').toString()
     return (
-      <TouchableOpacity style={styles.tabWaiting} onPress={() => this.handleDetailResolution(rowData.id)}>
-        <View style={styles.containerResolution}>
-          <Text style={styles.textResolution}>{rowData.title}</Text>
-          <View style={styles.label}>
-            {this.checkTopic(rowData.topic)}
+      <TouchableOpacity onPress={() => this.handleDetailResolution(rowData.id)}>
+        <View style={styles.tabWaiting}>
+          <View style={styles.containerResolution}>
+            <Text style={styles.textResolution}>{rowData.title}</Text>
+            <View style={styles.label}>
+              {this.checkTopic(rowData.topic)}
+            </View>
           </View>
+          <Text style={styles.date}>{timeStampToDate}</Text>
         </View>
-        <Text style={styles.date}>{timeStampToDate}</Text>
+        <View style={styles.containerStatus}>
+          <View style={styles.circle} >
+            <Text style={styles.label2}>i</Text>
+          </View>
+          <Text style={styles.label3}>Dinyatakan selesai oleh Admin</Text>
+        </View>
       </TouchableOpacity>
     )
   }

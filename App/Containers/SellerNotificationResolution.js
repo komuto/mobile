@@ -70,7 +70,7 @@ class SellerNotificationResolution extends React.Component {
   }
 
   handleResolution (typeMessage) {
-    NavigationActions.detailresolution({
+    NavigationActions.buyerdetailresolution({
       type: ActionConst.PUSH
     })
   }

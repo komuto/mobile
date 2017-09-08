@@ -186,7 +186,7 @@ class PurchaseAddToCart extends React.Component {
         this.setState({ loadingCart: false, modalNotifikasi: true, activeScene: false })
         this.props.resetCreateStatus()
       }
-    } else if (nextProps.dataCart.status > 200 || nextProps.dataCart.status === 'ENOENT') {
+    } else if (nextProps.dataCart.status > 200 || nextProps.dataCart.status === 'ETIMEOUT') {
       if (this.state.activeScene) {
         this.setState({ loadingCart: false })
         ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
@@ -680,7 +680,7 @@ class PurchaseAddToCart extends React.Component {
     if (tipeKurir !== '' && !dataKosong && !errorKurir && !errorSubKurir) {
       this.setState({ loadingCart: true })
       setTimeout(() => {
-        this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, service, originId, roIdDistrict)
+        this.props.addCart(String(idProduct), idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, service, originId, roIdDistrict)
       }, 200)
     }
   }

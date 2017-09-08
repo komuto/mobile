@@ -6,7 +6,6 @@ export const apiKomuto = 'https://api.komuto.skyshi.com/4690fa4c3d68f93b/'
 export const storage = localStorage
 
 export function errorHandling (actionType, err) {
-  console.log(err)
   if (err.response) {
     const data = err.response
     if (data.status !== 502) {
@@ -126,6 +125,7 @@ export const buildAction = (type, params = false) => {
  * @param customState {array}
  */
 export const buildReducer = (state, action, type, name, customState) => {
+  console.log(action)
   switch (action.type) {
     case typeReq(type):
       return !customState[0] ? reqState(state) : customState[0](state, action)
@@ -193,7 +193,6 @@ export const buildSaga = (callApi, actionType, getState = false, combine = false
     }
     yield put({ type: typeSucc(actionType), ...res })
   } catch (e) {
-    console.log(e)
     yield errorHandling(typeFail(actionType), e)
   }
 }

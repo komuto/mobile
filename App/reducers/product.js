@@ -57,7 +57,7 @@ export const addToWishlistHome = createReducer(buildInitState({ wishlist: [] }))
 export const getDiscussion = createReducer(buildInitState({ discussions: [] }, true))
   .addReducer({
     type: actions.GET_DISCUSSION,
-    resultName: true
+    resultName: 'discussions'
   }).run()
 
 export const newDiscussion = createReducer(buildInitState({ discussion: {} }))

@@ -73,7 +73,7 @@ class SellerNotificationDiscussion extends React.Component {
   handelDetailDiscussion (idDiscussion, idProduct, name, image, price) {
     console.log(idProduct)
     this.props.getDetailDiscussion(idDiscussion)
-    NavigationActions.detaildiscussionbuyer({
+    NavigationActions.buyerdetaildiscussion({
       type: ActionConst.PUSH,
       idProduct: idProduct,
       idDiscussion: idDiscussion,

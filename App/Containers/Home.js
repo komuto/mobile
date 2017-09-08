@@ -74,14 +74,15 @@ class Home extends React.Component {
       this.props.resetAddToWishlist()
       this.props.getProdukTerbaru(6)
     }
-    if (nextProps.dataCart.status === 200) {
-      if (this.state.getCartHome) {
+    if (this.state.getCartHome) {
+      if (nextProps.dataCart.status === 200) {
+        console.log('enak')
         if (nextProps.dataCart.cart.items.length > 0) {
           this.setState({
             cartItems: nextProps.dataCart.cart.items.length,
             getCartHome: false
           })
-          this.props.getCartReset()
+          // this.props.getCartReset()
         }
       }
     }

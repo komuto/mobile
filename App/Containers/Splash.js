@@ -67,26 +67,27 @@ class Splash extends React.Component {
       if (value === null || value === undefined || value === '') {
       } else {
         this.props.stateLogin(true)
-        switch (this.state.notificationAction) {
-          case 'BUYER_MESSAGE':
-            this.props.getDetailMessage(this.state.redirectId)
-            NavigationActions.buyerdetailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
-            break
-          case 'BUYER_DISCUSSION':
-            this.props.getDetailDiscussion(this.state.redirectId)
-            NavigationActions.buyerdetaildiscussion({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
-            break
-          case 'BUYER_REVIEW':
-            this.props.getListReview()
-            NavigationActions.buyerreview({ type: ActionConst.REPLACE })
-            break
-          case 'BUYER_RESOLUTION':
-            NavigationActions.buyerresolution({ type: ActionConst.REPLACE })
-            break
-          default:
-            console.log('lalal')
-            NavigationActions.backtab({ type: ActionConst.REPLACE })
-        }
+        // switch (this.state.notificationAction) {
+        //   case 'BUYER_MESSAGE':
+        //     this.props.getDetailMessage(this.state.redirectId)
+        //     NavigationActions.buyerdetailmessage({ type: ActionConst.REPLACE, idMessage: this.state.redirectId })
+        //     break
+        //   case 'BUYER_DISCUSSION':
+        //     this.props.getDetailDiscussion(this.state.redirectId)
+        //     NavigationActions.buyerdetaildiscussion({ type: ActionConst.REPLACE, idDiscussion: this.state.redirectId })
+        //     break
+        //   case 'BUYER_REVIEW':
+        //     this.props.getListReview()
+        //     NavigationActions.buyerreview({ type: ActionConst.REPLACE })
+        //     break
+        //   case 'BUYER_RESOLUTION':
+        //     NavigationActions.buyerresolution({ type: ActionConst.REPLACE })
+        //     break
+        //   default:
+        //     console.log('lalal')
+        //     NavigationActions.backtab({ type: ActionConst.REPLACE })
+        // }
+        NavigationActions.backtab({ type: ActionConst.REPLACE })
         SplashScreen.hide()
         console.log(value)
       }

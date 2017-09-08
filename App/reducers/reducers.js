@@ -39,7 +39,12 @@ const user = {
   sendOTPBank: userReducers.sendOTPBank,
   wishlist: userReducers.wishlist,
   alterUser: userReducers.alterUser,
-  notifSettings: userReducers.notifSettings
+  notifSettings: userReducers.notifSettings,
+  resolvedResolutions: userReducers.getResolvedResolutions,
+  unresolvedResolutions: userReducers.getUnresolvedResolutions,
+  resolutionDetail: userReducers.getResolutionDetail,
+  createResolution: userReducers.createResolution,
+  replyResolution: userReducers.replyResolution
 }
 
 const home = {
@@ -169,12 +174,11 @@ const other = {
 }
 
 const payment = {
-  dokuPayment: paymentReducers.payDoku,
-  invoice: paymentReducers.getDokuInvoice,
   paymentMethods: paymentReducers.getPaymentMethods,
   confirmation: paymentReducers.confirmTransfer,
   withdrawal: paymentReducers.withdraw,
-  snapToken: paymentReducers.getMidtransToken
+  snapToken: paymentReducers.getMidtransToken,
+  snapToken2: paymentReducers.getMidtransToken2
 }
 
 const review = {
@@ -187,7 +191,8 @@ const review = {
 const transaction = {
   listTransactions: transactionReducers.listTransactions,
   transaction: transactionReducers.getTransaction,
-  saldoHistory: transactionReducers.getSaldoHistory
+  saldoHistory: transactionReducers.getSaldoHistory,
+  buyerInvoiceDetail: transactionReducers.getBuyerInvoiceDetail
 }
 
 const komutoApps = storage.reducer(combineReducers({

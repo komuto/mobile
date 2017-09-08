@@ -90,13 +90,13 @@ import UpdateStoreAddress from '../Containers/UpdateStoreAddress'
 import ManageStoreExpedition from '../Containers/ManageStoreExpedition'
 import TransactionItemReceived from '../Containers/TransactionItemReceived'
 import TransactionNotification from '../Containers/TransactionNotification'
-import ReviewBuyer from '../Containers/ReviewBuyer'
-import MessagesBuyer from '../Containers/MessagesBuyer'
-import DetailMessages from '../Containers/DetailMessages'
-import DiscussionBuyer from '../Containers/DiscussionBuyer'
-import DetailDiscussionBuyer from '../Containers/DetailDiscussionBuyer'
-import ResolutionCenter from '../Containers/ResolutionCenter'
-import DetailResolution from '../Containers/DetailResolution'
+import BuyerReview from '../Containers/BuyerReview'
+import BuyerMessages from '../Containers/BuyerMessage'
+import BuyerDetailMessage from '../Containers/BuyerDetailMessage'
+import BuyerDiscussion from '../Containers/BuyerDiscussion'
+import BuyerDetailDiscussion from '../Containers/BuyerDetailDiscussion'
+import BuyerResolution from '../Containers/BuyerResolution'
+import BuyerDetailResolution from '../Containers/BuyerDetailResolution'
 import MovingProduct from '../Containers/MovingProduct'
 import DetailProductStore from '../Containers/DetailProductStore'
 import StatusStockDropshipping from '../Containers/StatusStockDropshipping'
@@ -797,56 +797,49 @@ class NavigationRouter extends Component {
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='reviewbuyer'
-            component={ReviewBuyer}
+            key='buyerreview'
+            component={BuyerReview}
             title='Review'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='messagesbuyer'
-            component={MessagesBuyer}
+            key='buyermessage'
+            component={BuyerMessages}
             title='Pesan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='detailmessage'
-            component={DetailMessages}
+            key='buyerdetailmessage'
+            component={BuyerDetailMessage}
             title=''
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
           <Scene
-            key='discussionbuyer'
-            component={DiscussionBuyer}
+            key='buyerdiscussion'
+            component={BuyerDiscussion}
             title='Diskusi Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='detaildiscussionbuyer'
-            component={DetailDiscussionBuyer}
+            key='buyerdetaildiscussion'
+            component={BuyerDetailDiscussion}
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
           <Scene
-            key='resolutioncenter'
-            component={ResolutionCenter}
+            key='buyerresolution'
+            component={BuyerResolution}
             title='Pusat Resolusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='detailresolution'
-            component={DetailResolution}
-            title='Detail Resolusi'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
-          <Scene
-            key='detailresolution'
-            component={DetailResolution}
+            key='buyerdetailresolution'
+            component={BuyerDetailResolution}
             title='Detail Resolusi'
             navBar={CustomNavBar}
             hideNavBar={false}

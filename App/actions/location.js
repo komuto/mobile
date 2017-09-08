@@ -27,4 +27,3 @@ export const getSubDistrict = params => buildAction(typeReq(GET_SUBDISTRICT), pa
  * @state villages
  */
 export const getVillage = params => buildAction(typeReq(GET_VILLAGE), params)
-

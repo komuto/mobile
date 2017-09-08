@@ -22,6 +22,10 @@ export const getProduct = createReducer(buildInitState({ detail: {} }))
     resultName: 'detail',
     includeNonSaga: true,
     resetPrevState: { state: 0 }
+  })
+  .addReducer({
+    type: actions.GET_DROPSHIP_PRODUCT_DETAIL,
+    resultName: 'detail'
   }).run()
 
 export const productByCategory = createReducer(buildInitState({ products: [] }, true))

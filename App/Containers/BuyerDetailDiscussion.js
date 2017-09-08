@@ -10,7 +10,7 @@ import moment from 'moment'
 import * as productAction from '../actions/product'
 
 // Styles
-import styles from './Styles/DetailDiscussionBuyerScreenStyle'
+import styles from './Styles/BuyerDetailDiscussionStyle'
 import { Images } from '../Themes'
 
 class BuyerDetailDiscussion extends React.Component {

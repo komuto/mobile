@@ -13,4 +13,3 @@ export const getBrand = () => buildAction(typeReq(GET_BRAND))
  * @state brandsByCategory
  */
 export const getBrandByCategory = params => buildAction(typeReq(BRAND_BY_CATEGORY), params)
-

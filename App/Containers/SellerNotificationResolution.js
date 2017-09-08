@@ -7,7 +7,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
-import styles from './Styles/ResolutionCenterStyle'
+import styles from './Styles/BuyerResolutionStyle'
 
 class SellerNotificationResolution extends React.Component {
 

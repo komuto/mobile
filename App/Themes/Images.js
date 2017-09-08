@@ -132,7 +132,11 @@ const images = {
   messageBuyer: require('../Images/Icons/icon-envelope.png'),
   deletWhite: require('../Images/Icons/icon-delete-white.png'),
   notFound: require('../Images/not-found.png'),
-  emptyWishlist: require('../Images/empty-wishlist.png')
+  emptyWishlist: require('../Images/empty-wishlist.png'),
+  emptyMessage: require('../Images/empty-message.png'),
+  emptyDiscussion: require('../Images/empty-discussion.png'),
+  emptyReview: require('../Images/empty-review.png'),
+  emptyResolution: require('../Images/empty-resolution.png')
 }
 
 export default images

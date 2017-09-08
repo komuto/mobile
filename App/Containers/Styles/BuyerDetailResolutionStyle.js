@@ -4,19 +4,26 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.snow,
+    backgroundColor: Colors.paleGrey,
     marginTop: Metrics.navBarHeight
   },
   scrollView: {
     paddingBottom: 10
   },
+  maskedPhoto: {
+    height: 40,
+    width: 40,
+    borderRadius: 200,
+    backgroundColor: Colors.paleGreyFive
+  },
+  containerInfo: {
+    paddingLeft: 20,
+    backgroundColor: Colors.snow
+  },
   containerMessage: {
     flexDirection: 'row',
     flex: 1,
-    paddingBottom: 20,
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 40 + 20 + 10
+    padding: 20
   },
   photo: {
     height: 40,
@@ -85,15 +92,19 @@ export default StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    padding: 20,
+    paddingBottom: 20,
+    paddingTop: 20,
+    paddingRight: 20,
     borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
+    borderBottomColor: Colors.silver,
+    backgroundColor: Colors.background
   },
   textInfo: {
     flex: 1,
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.semiBolds,
-    color: Colors.lightblack
+    color: Colors.lightblack,
+    paddingBottom: 5
   },
   textInfoValue: {
     flex: 1,
@@ -103,7 +114,6 @@ export default StyleSheet.create({
     textAlign: 'right'
   },
   foto: {
-    marginTop: 25,
     marginRight: 18
   },
   containerDiskon: {
@@ -133,5 +143,45 @@ export default StyleSheet.create({
     color: Colors.lightblack,
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed
+  },
+  tabWaiting: {
+    backgroundColor: Colors.snow,
+    marginTop: 10,
+    padding: 20
+  },
+  containerResolution: {
+    flexDirection: 'row',
+    alignItems: 'flex-start'
+  },
+  textResolution: {
+    flex: 1,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    lineHeight: 21,
+    paddingBottom: 10
+  },
+  textStatus: {
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.bluesky
+  },
+  label: {
+    backgroundColor: 'rgba(86, 170, 239, 0.11)',
+    marginLeft: 30,
+    borderRadius: 5,
+    paddingRight: 15.5,
+    paddingLeft: 12.5,
+    paddingTop: 3.5,
+    paddingBottom: 3.5
+  },
+  date2: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.labelgrey
+  },
+  messages: {
+    backgroundColor: Colors.snow,
+    flex: 1
   }
 })

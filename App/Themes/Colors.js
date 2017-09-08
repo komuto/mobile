@@ -66,7 +66,8 @@ const colors = {
   backgroundVerified: '#f1f5fa',
   backgroundKadaluarsa: '#f3eced',
   fullOrange: '#f4bc50',
-  violet: '#c36ce8'
+  violet: '#c36ce8',
+  iceBlue: '#f6f9ff'
 }
 
 export default colors

@@ -11,25 +11,29 @@ import * as produkAction from '../actions/product'
 import * as reviewAction from '../actions/review'
 
 // Styles
-import styles from './Styles/ReviewBuyerScreenStyle'
+import styles from './Styles/BuyerReviewStyle'
 
-class ReviewBuyerScreenScreen extends React.Component {
+class BuyerReview extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       data: [],
       page: 1,
-      loadmore: true,
+      loadmore: false,
       isRefreshing: false,
       isLoading: false,
-      loadingPage: false
+      loadingPage: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataReview.status === 200) {
+      this.setState({
+        loadingPage: false
+      })
       if (nextProps.dataReview.buyerReview.length > 0) {
+        console.log('if')
         let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
         this.setState({
           data: data,
@@ -45,12 +49,6 @@ class ReviewBuyerScreenScreen extends React.Component {
         })
       }
     }
-    if (nextProps.dataDetailProduk.status === 200) {
-      this.setState({loadingPage: false})
-      NavigationActions.detailproduct({
-        type: ActionConst.PUSH
-      })
-    }
   }
 
   loadMore () {
@@ -63,47 +61,15 @@ class ReviewBuyerScreenScreen extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: true })
     this.props.getListReview(1)
   }
 
-  listViewUlasan () {
-    return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
-        renderRow={this.renderRow.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
-        onEndReached={this.loadMore.bind(this)}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
-              />
-            )
-          }
-          return <View />
-        }}
-        enableEmptySections
-        style={styles.listView}
-      />
-    )
-  }
-
   handleDetailProduct (id) {
-    this.setState({loadingPage: true})
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
     this.props.getDetailProduct(id)
   }
 
@@ -178,17 +144,63 @@ class ReviewBuyerScreenScreen extends React.Component {
     )
   }
 
+  checkStateReview (data) {
+    if (this.state.loadingPage) {
+      return (
+        <View />
+      )
+    } else {
+      if (data.length > 0) {
+        return (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(data)}
+            renderRow={this.renderRow.bind(this)}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+            }
+            onEndReached={this.loadMore.bind(this)}
+            renderFooter={() => {
+              if (this.state.loadmore) {
+                return (
+                  <ActivityIndicator
+                    style={[styles.loadingStyle, { height: 50 }]}
+                    size='small'
+                    color='#ef5656'
+                  />
+                )
+              }
+              return <View />
+            }}
+            enableEmptySections
+            style={styles.listView}
+          />
+        )
+      } else {
+        return (
+          <View style={styles.containerEmpty}>
+            <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
+            <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
+            <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
+          </View>
+        )
+      }
+    }
+  }
+
   render () {
-    const spinner = this.state.loadingPage
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
-          {this.listViewUlasan()}
+          {this.checkStateReview(this.state.data)}
         </View>
-        {spinner}
       </View>
     )
   }
@@ -205,4 +217,4 @@ const mapDispatchToProps = (dispatch) => ({
   getListReview: (page) => dispatch(reviewAction.getBuyerReview({ page: page }))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReviewBuyerScreenScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerReview)

@@ -30,7 +30,7 @@ class UserNotification extends React.Component {
 
   handleReview () {
     this.props.getListReview()
-    NavigationActions.reviewbuyer({
+    NavigationActions.buyerreview({
       type: ActionConst.PUSH
     })
   }
@@ -38,20 +38,22 @@ class UserNotification extends React.Component {
   handleMessages () {
     this.props.getListMessages()
     this.props.getListArchiveMessages()
-    NavigationActions.messagesbuyer({
+    NavigationActions.buyermessage({
       type: ActionConst.PUSH
     })
   }
 
   handleDiscussion () {
     this.props.getListDiscussion()
-    NavigationActions.discussionbuyer({
+    NavigationActions.buyerdiscussion({
       type: ActionConst.PUSH
     })
   }
 
   handleResolution () {
-    NavigationActions.resolutioncenter({
+    this.props.getListResolutionResolve()
+    this.props.getListResolutionUnresolve()
+    NavigationActions.buyerresolution({
       type: ActionConst.PUSH
     })
   }
@@ -96,7 +98,9 @@ const mapDispatchToProps = (dispatch) => {
     getListMessages: () => dispatch(messageAction.getBuyerMessages()),
     getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
     getListDiscussion: () => dispatch(userAction.getDiscussion()),
-    getListReview: () => dispatch(reviewAction.getBuyerReview())
+    getListReview: () => dispatch(reviewAction.getBuyerReview()),
+    getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
+    getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions())
   }
 }
 

@@ -13,29 +13,18 @@ export default StyleSheet.create({
   containerMessage: {
     flexDirection: 'row',
     flex: 1,
-    paddingBottom: 20,
-    paddingTop: 20,
-    paddingLeft: 20,
-    paddingRight: 20,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
-  },
-  maskedPhoto: {
-    height: 40,
-    width: 40,
-    borderRadius: 200,
-    backgroundColor: Colors.paleGreyFive
+    paddingTop: 26,
+    paddingLeft: 20
   },
   photo: {
-    height: 40,
-    width: 40,
-    borderRadius: 200
+    height: 45,
+    width: 45
   },
   title: {
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.smallMed,
     color: Colors.lightblack,
-    flex: 2
+    flex: 1
   },
   date: {
     fontFamily: Fonts.type.regular,
@@ -43,7 +32,7 @@ export default StyleSheet.create({
     color: Colors.lightblack,
     opacity: 0.50,
     marginLeft: 14,
-    paddingTop: 2,
+    paddingTop: 1,
     flex: 1,
     textAlign: 'right'
   },
@@ -52,43 +41,48 @@ export default StyleSheet.create({
     alignItems: 'flex-start',
     flex: 1
   },
+  border: {
+    flex: 1,
+    marginLeft: 20,
+    borderBottomWidth: 0.5,
+    paddingBottom: 20,
+    borderBottomColor: Colors.silver,
+    paddingRight: 20
+  },
   messageText: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
-    color: Colors.lightblack,
+    color: Colors.lightgrey,
     lineHeight: 22,
     flex: 1,
     paddingRight: 4
   },
-  storesText: {
-    fontFamily: Fonts.type.regular,
-    fontSize: Fonts.size.small,
-    color: Colors.lightblack,
-    opacity: 0.50,
-    paddingTop: 5
+  listView: {
+    flex: 1
   },
-  notif: {
-    flexDirection: 'row',
-    backgroundColor: Colors.duckEggBlue,
+  loadingStyle: {
     alignItems: 'center',
-    paddingRight: 19,
-    position: 'relative'
+    justifyContent: 'center',
+    padding: 8
   },
-  textNotif: {
-    flex: 1,
-    padding: 20,
-    color: Colors.greenish,
-    fontFamily: Fonts.type.semiBolds,
-    fontSize: Fonts.size.smallMed
+  containerEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 63
   },
-  image: {
-    height: 25,
-    width: 25
+  textTitleEmpty: {
+    paddingTop: 27.5,
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    textAlign: 'center',
+    color: Colors.darkgrey
   },
-  textTab: {
+  textTitleEmpty2: {
+    paddingTop: 5,
+    lineHeight: 22,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
-    fontFamily: Fonts.type.semiBolds,
-    letterSpacing: 0.22,
-    marginTop: 5
+    textAlign: 'center',
+    color: Colors.lightgrey
   }
 })

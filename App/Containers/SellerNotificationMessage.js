@@ -18,7 +18,7 @@ import moment from 'moment'
 import * as messageAction from '../actions/message'
 
 // Styles
-import styles from './Styles/MessagesBuyerScreenStyle'
+import styles from './Styles/BuyerMessageStyle'
 import { Colors, Images } from '../Themes/'
 
 class SellerNotificationMessage extends React.Component {

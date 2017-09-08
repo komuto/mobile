@@ -18,7 +18,7 @@ import * as storeAction from '../actions/stores'
 import * as productAction from '../actions/product'
 
 // Styles
-import styles from './Styles/DiscussionBuyerScreenStyle'
+import styles from './Styles/BuyerDiscussionStyle'
 import { Colors } from '../Themes/'
 class SellerNotificationDiscussion extends React.Component {
 

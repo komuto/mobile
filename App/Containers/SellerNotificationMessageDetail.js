@@ -9,7 +9,7 @@ import moment from 'moment'
 import * as messageAction from '../actions/message'
 
 // Styles
-import styles from './Styles/DetailMessagesScreenStyle'
+import styles from './Styles/BuyerDetailMessageStyle'
 import { Images } from '../Themes'
 
 class SellerNotificationMessageDetail extends React.Component {

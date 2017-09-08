@@ -19,3 +19,8 @@ export const getSaldoHistory = createReducer(buildInitState({ history: [] }))
     resultName: 'history'
   }).run()
 
+export const getBuyerInvoiceDetail = createReducer(buildInitState({ invoice: {} }))
+  .addReducer({
+    type: actions.GET_BUYER_INVOICE_DETAIL,
+    resultName: 'invoice'
+  }).run()

@@ -32,7 +32,9 @@ class SendMessageStore extends React.Component {
       // ToastAndroid.show('Pesan berhasil dikirimkan...', ToastAndroid.LONG)
       this.setState({
         loading: false,
-        notification: true
+        notification: true,
+        judul: '',
+        pertanyaan: ''
       })
       this.props.resetSendMessage()
     } else if (nextProps.dataPesan.status > 200) {

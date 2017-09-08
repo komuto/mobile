@@ -55,4 +55,3 @@ export const getBankAccountDetail = params => buildAction(typeReq(GET_BANK_ACCOU
  * @state komutoAccounts
  */
 export const getKomutoBankAccounts = () => buildAction(typeReq(GET_KOMUTO_BANK_ACCOUNTS))
-

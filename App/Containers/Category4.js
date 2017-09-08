@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   ListView,
   View,
@@ -9,13 +8,13 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as homeAction from '../actions/home'
 import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -26,18 +25,12 @@ import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Metrics } from '../Themes'
 
 class Category4 extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-    ]
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
@@ -56,9 +49,20 @@ class Category4 extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      sortData: menu,
       filter: false,
-      catalogId: this.props.id
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false,
+      kondisi: '',
+      pengiriman: '',
+      price: '',
+      address: '',
+      brand: '',
+      other: '',
+      statusFilter: false,
+      sort: 'newest',
+      categoryId: this.props.id
     }
   }
 
@@ -72,34 +76,58 @@ class Category4 extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products
-        // loadingProduk: false
-      })
+      if (!this.state.statusFilter) {
+        if (nextProps.dataProduk.products.length > 0) {
+          let data = [...this.state.listDataSource, ...nextProps.dataProduk.products]
+          this.setState({
+            listDataSource: data,
+            rowDataSource: data,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1
+          })
+        } else {
+          this.setState({
+            loadmore: false,
+            isLoading: false
+          })
+        }
+      } else {
+        this.setState({
+          listDataSource: nextProps.dataProduk.products,
+          rowDataSource: nextProps.dataProduk.products,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          statusFilter: false,
+          page: 1
+        })
+      }
     } else if (nextProps.dataProduk.status > 200) {
+      console.log(nextProps.dataProduk.status)
       this.setState({
-        loadingProduk: true
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: true
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    } else if (nextProps.dataProduk.status === 'ENOENT') {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
-    }
-    if (nextProps.dataFilter.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products
-      })
-    } else if (nextProps.dataFilter.status > 200) {
-      console.log(nextProps.dataFilter.status)
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
+    this.props.getProduckKategori(this.state.categoryId, kondisi, pengiriman, price, address, brand, other, 0, sort)
+    this.setState({
+      filter: false,
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other,
+      statusFilter: true,
+      isRefreshing: true
+    })
   }
 
   handleBack = () => {
@@ -127,15 +155,19 @@ class Category4 extends React.Component {
     })
   }
 
-  renderImageTypeView () {
-    if (this.state.tipeView === 'grid') {
-      return (
-        <Image source={Images.grid} style={styles.searchImage} />
-      )
+  loadMore () {
+    const { categoryId, page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, page)
+      }
     }
-    return (
-      <Image source={Images.list} style={styles.searchImage} />
-    )
+  }
+
+  refresh = () => {
+    const { categoryId, kondisi, pengiriman, price, address, brand, other, sort } = this.state
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, 1, sort)
   }
 
   renderHeader () {
@@ -204,41 +236,22 @@ class Category4 extends React.Component {
     this.setState({sortModal: visible})
   }
 
-  sortArrayAsc (array, key, field) {
-    const {bluesky, lightblack} = Colors
-    switch (field) {
-      case 'terbaru':
-        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
-        }).reverse()
-      case 'termurah':
-        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        }).reverse()
-      case 'termahal':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        })
-      case 'terlaris':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
-        return array.sort(function (a, b) {
-          return b.product.stock - a.product.stock
-        })
-      default:
-        window.alert('Internal Error')
-        break
-    }
-  }
-
   _onPress (field) {
-    const {listDataSource} = this.state
-    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
-    this.setState({
-      listDataSource: sortedData
-    })
+    const {bluesky, lightblack} = Colors
+    const {categoryId, kondisi, pengiriman, price, address, brand, other} = this.state
+    if (field === 'terbaru') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
+      this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, 0, 'newest')
+    } else if (field === 'termahal') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
+      this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, 0, 'expensive')
+    } else if (field === 'termurah') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
+      return this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, 0, 'cheapest')
+    } else if (field === 'terlaris') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
+      this.props.getProduckKategori(categoryId, kondisi, pengiriman, price, address, brand, other, 0, 'selling')
+    }
   }
 
   renderModalSort () {
@@ -285,7 +298,7 @@ class Category4 extends React.Component {
   }
 
   openSearch () {
-    NavigationActions.searchbycategory({ type: ActionConst.PUSH, from: 'product', catalogId: this.state.catalogId })
+    NavigationActions.searchbycategory({ type: ActionConst.PUSH, from: 'product', categoryId: this.state.categoryId })
   }
 
   produkDetail (id) {
@@ -349,9 +362,11 @@ class Category4 extends React.Component {
   }
 
   renderRowList (rowData) {
-    if (rowData.product.is_discount) {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
+      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -381,7 +396,7 @@ class Category4 extends React.Component {
             </Text>
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
-          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -401,9 +416,11 @@ class Category4 extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.is_discount) {
+    if (rowData.product.discount > 0) {
+      this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
+      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -431,7 +448,7 @@ class Category4 extends React.Component {
           </Text>
           {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
@@ -460,25 +477,82 @@ class Category4 extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
-          <ListView
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            enableEmptySections
-            dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
-            renderRow={this.renderRowGrid.bind(this)}
-          />
-        </View>
+        <ListView
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          enableEmptySections
+          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          renderRow={this.renderRowGrid.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+        }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50, marginLeft: Metrics.screenWidth / 2 - 20 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          style={styles.listView}
+        />
       )
     }
     return (
-      <View style={styles.listViewContainer}>
-        <ListView
-          contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          enableEmptySections
-          dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
-          renderRow={this.renderRowList.bind(this)}
-        />
-      </View>
+      <ListView
+        contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
+        enableEmptySections
+        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        renderRow={this.renderRowList.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        style={styles.listView}
+      />
+    )
+  }
+
+  renderImageTypeView () {
+    if (this.state.tipeView === 'grid') {
+      return (
+        <Image source={Images.grid} style={styles.searchImage} />
+      )
+    }
+    return (
+      <Image source={Images.list} style={styles.searchImage} />
     )
   }
 
@@ -494,9 +568,7 @@ class Category4 extends React.Component {
         <View style={[styles.headerContainer, background]}>
           {this.renderHeader()}
         </View>
-        <ScrollView style={styles.listViewContainer}>
-          {this.viewProduk()}
-        </ScrollView>
+        {this.viewProduk()}
         <View style={styles.footerMenu}>
           <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>
@@ -548,20 +620,22 @@ class Category4 extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.productByCategory,
-    dataFilter: state.filterProduct
+    dataProduk: state.productByCategory
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
+    getProduckKategori: (categoryId, condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductByCategory({
+      category_id: categoryId,
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
-      other: other
+      other: other,
+      page: page,
+      sort: sort
     })),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }

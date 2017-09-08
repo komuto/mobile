@@ -78,13 +78,19 @@ class Payment extends React.Component {
         this.props.getCartReset()
       }
     } if (nextProps.dataCheckout.status === 200) {
+      nextProps.dataCheckout.status = 0
+      NavigationActions.paymentmidtrans({
+        type: ActionConst.PUSH,
+        token: nextProps.dataToken.token
+      })
+    }
+    if (nextProps.dataToken.status === 200) {
+      nextProps.dataToken.status = 0
       this.setState({
         loading: false
       })
-      NavigationActions.paymentmidtrans({
-        type: ActionConst.PUSH,
-        token: this.state.token
-      })
+      console.log('snap token', nextProps.dataToken.token)
+      this.props.checkout(1)
     }
   }
 
@@ -230,7 +236,7 @@ class Payment extends React.Component {
     this.setState({
       loading: true
     })
-    this.props.checkout(1)
+    this.props.getSnapToken()
   }
 
   atm () {
@@ -254,13 +260,14 @@ const mapStateToProps = (state) => {
   return {
     dataPaymentMethod: state.paymentMethods,
     dataCart: state.cart,
-    dataCheckout: state.checkout
+    dataCheckout: state.checkout,
+    dataToken: state.snapToken
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    paymentAction: dispatch(paymentAction.getPaymentMethods()),
+    getSnapToken: () => dispatch(paymentAction.getMidtransToken()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
     checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))

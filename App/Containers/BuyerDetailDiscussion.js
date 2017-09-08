@@ -177,7 +177,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduct: (id) => dispatch(productAction.getProduct({id})),
+    getDetailProduct: (id) => dispatch(productAction.getProduct({id: id})),
     createDisscussionComent: (id, content) => dispatch(productAction.newComment({id: id, content: content})),
     getDetailDiscussion: (id) => dispatch(productAction.getComment({id: id}))
   }

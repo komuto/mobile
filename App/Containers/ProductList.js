@@ -199,7 +199,7 @@ class ProductList extends React.Component {
   }
 
   handleListProduk (id, name, hidden) {
-    this.props.getProductByCatalog(id, hidden)
+    this.props.getProductByCatalogs(id, 100)
     NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
       title: name
@@ -208,7 +208,7 @@ class ProductList extends React.Component {
 
   handleHideProduct (id, hidden, textButton) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalogs(id)
+    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
@@ -221,7 +221,7 @@ class ProductList extends React.Component {
 
   handleDeleteProduct (id, hidden) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalogs(id)
+    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       actionType: 'deleteProduct',
@@ -234,7 +234,7 @@ class ProductList extends React.Component {
 
   handleMoveToCatalog (id, hidden) {
     this.setState({statusDotDisplay: false, statusDotHidden: false})
-    this.props.getProductByCatalogs(id)
+    this.props.getProductByCatalogDropship(id, false)
     this.props.getCatalog()
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
@@ -283,7 +283,7 @@ class ProductList extends React.Component {
   }
 
   labeldaridropshipper (data) {
-    if (data.is_dropshipper === true && data.dropship_origin) {
+    if (data.is_dropship === true && data.dropship_origin) {
       var maskedCommision = this.maskedMoney(data.dropship_origin.commission)
       return (
         <View>
@@ -298,7 +298,7 @@ class ProductList extends React.Component {
           <Text style={styles.textDetail}>Komisi yang diterima : {maskedCommision}</Text>
         </View>
       )
-    } if (data.is_dropshipper) {
+    } if (data.is_dropship) {
       var maskedPrice = this.maskedMoney(data.price)
       return (
         <View>
@@ -465,7 +465,7 @@ class ProductList extends React.Component {
   }
 
   produkDetail (id, name, photo, price, data, catalogId) {
-    if (data.is_dropshipper === true && data.dropship_origin) {
+    if (data.is_dropship === true && data.dropship_origin) {
       NavigationActions.placeincatalog({
         type: ActionConst.PUSH,
         title: 'Detail Barang Dropshipper',
@@ -536,7 +536,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getProductByCatalogs: (id) => dispatch(storeAction.getStoreProductsByCatalog({id: id})),
+  getProductByCatalogs: (id) => dispatch(storeAction.getStoreCatalogProducts({id: id, limit: 100})),
   getProductByCatalogDropship: (id, isDropShip) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip})),
   getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
   getCatalog: () => dispatch(catalogAction.getListCatalog()),

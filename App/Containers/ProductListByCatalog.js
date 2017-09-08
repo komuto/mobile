@@ -80,7 +80,7 @@ class ListProdukByCatalog extends React.Component {
   }
 
   produkDetail (id, name, photo, price, data, catalogId) {
-    if (data.is_dropshipper === true && data.dropship_origin) {
+    if (data.is_dropship === true && data.dropship_origin) {
       NavigationActions.placeincatalog({
         type: ActionConst.PUSH,
         title: 'Detail Barang Dropshipper',
@@ -124,7 +124,7 @@ class ListProdukByCatalog extends React.Component {
   }
 
   labeldaridropshipper (data) {
-    if (data.is_dropshipper === true && data.dropship_origin) {
+    if (data.is_dropship === true && data.dropship_origin) {
       var maskedCommision = this.maskedMoney(data.dropship_origin.commission)
       return (
         <View>
@@ -139,7 +139,7 @@ class ListProdukByCatalog extends React.Component {
           <Text style={styles.textDetail}>Komisi yang diterima : {maskedCommision}</Text>
         </View>
       )
-    } if (data.is_dropshipper) {
+    } if (data.is_dropship) {
       var maskedPrice = this.maskedMoney(data.price)
       return (
         <View>

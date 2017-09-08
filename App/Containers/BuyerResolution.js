@@ -106,6 +106,8 @@ class BuyerResolution extends React.Component {
       nextProps.dataCreateResolution.status = 0
     } if (nextProps.dataPhoto.status > 200 || nextProps.dataCreateResolution.status > 200) {
       this.setState({buttonDisable: false})
+    } if (nextProps.dataResolutionResolve.status > 200 && nextProps.dataResolutionUnresolve.status > 200) {
+      ToastAndroid.show('Request Time Out..', ToastAndroid.SHORT)
     }
   }
 
@@ -600,7 +602,7 @@ const mapStateToProps = (state) => ({
   dataResolutionResolve: state.resolvedResolutions,
   dataResolutionUnresolve: state.unresolvedResolutions,
   dataPhoto: state.upload,
-  dataCreateResolution: state.resolution
+  dataCreateResolution: state.createResolution
 })
 
 const mapDispatchToProps = (dispatch) => ({

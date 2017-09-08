@@ -287,7 +287,7 @@ class BuyerDetailResolution extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataDetailResolution: state.resolutionDetail,
-    dataReplyResolutions: state.resolution
+    dataReplyResolutions: state.replyResolution
   }
 }
 

@@ -99,6 +99,14 @@ class StatusStockDropshipping extends React.Component {
     )
   }
 
+  SwitchChanges (types) {
+    if (types) {
+      this.setState({isDropship: false})
+    } else {
+      this.setState({isDropship: true})
+    }
+  }
+
   renderOptionDropshipping () {
     if (this.state.actionType === 'dropshippingAction') {
       return (
@@ -107,14 +115,11 @@ class StatusStockDropshipping extends React.Component {
             <Text style={styles.textDropshipping}>Dropshipping untuk barang ini</Text>
             <Switch
               value={this.state.isDropship}
-              defaultValue={this.state.isDropship}
               width={34}
               height={16}
               circleColor={Colors.teal}
               backgroundActive={'rgba(0, 148, 133, 0.5)'}
-              onAsyncPress={(callback) => {
-                callback(true, value => this.setState({isDropship: value}))
-              }}
+              onSyncPress={() => this.SwitchChanges(this.state.isDropship)}
             />
           </View>
           <TouchableOpacity onPress={() => this.setState({modalDropshipping: true})}>

@@ -25,7 +25,8 @@ class StoreDashboard extends React.Component {
       status: '1',
       email: '',
       foto: 'default',
-      statusVerifikasi: true
+      statusVerifikasi: true,
+      complainItems: 6
     }
   }
 
@@ -236,11 +237,16 @@ class StoreDashboard extends React.Component {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.openResolutionNotification()}>
               <View style={styles.profile}>
-                <Image source={Images.help} style={styles.imageCategory} />
+                <Image source={Images.laporkan} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
                   <View style={styles.namaContainer}>
                     <Text style={styles.textNama}>
-                      Pusat Resolusi
+                      Komplain Barang
+                    </Text>
+                  </View>
+                  <View style={styles.containerNumber}>
+                    <Text style={styles.number}>
+                      {String(this.state.complainItems)}
                     </Text>
                   </View>
                   <Image source={Images.rightArrow} style={styles.rightArrow} />

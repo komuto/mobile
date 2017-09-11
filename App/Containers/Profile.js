@@ -196,7 +196,10 @@ class Profile extends React.Component {
               {this.verifikasiNoHp()}
               <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.profile, {marginBottom: 1}]}>
+            <TouchableOpacity
+              style={[styles.profile, {marginBottom: 1}]}
+              onPress={() => this.saldo()}
+            >
               <Image source={Images.saldo} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
@@ -254,6 +257,12 @@ class Profile extends React.Component {
 
   handleKelolaAkun () {
     NavigationActions.accountmanage({
+      type: ActionConst.PUSH
+    })
+  }
+
+  saldo () {
+    NavigationActions.balance({
       type: ActionConst.PUSH
     })
   }

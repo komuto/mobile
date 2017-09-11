@@ -136,7 +136,12 @@ const images = {
   emptyMessage: require('../Images/empty-message.png'),
   emptyDiscussion: require('../Images/empty-discussion.png'),
   emptyReview: require('../Images/empty-review.png'),
-  emptyResolution: require('../Images/empty-resolution.png')
+  emptyResolution: require('../Images/empty-resolution.png'),
+  getBalance: require('../Images/Icons/icon-get-balance.png'),
+  status: require('../Images/Icons/icon-status.png'),
+  pullBalance: require('../Images/Icons/icon-pull-balance.png'),
+  statusPullBalance: require('../Images/Icons/icon-status-balance.png'),
+  iconHistory: require('../Images/Icons/icon-history.png')
 }
 
 export default images

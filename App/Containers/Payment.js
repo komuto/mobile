@@ -90,7 +90,7 @@ class Payment extends React.Component {
         loading: false
       })
       console.log('snap token', nextProps.dataToken.token)
-      this.props.checkout(1)
+      this.props.checkout(false)
     }
   }
 
@@ -270,7 +270,7 @@ const mapDispatchToProps = (dispatch) => {
     getSnapToken: () => dispatch(paymentAction.getMidtransToken()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
-    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))
+    checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet}))
   }
 }
 

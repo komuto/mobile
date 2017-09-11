@@ -112,6 +112,10 @@ import SellerNotificationDiscussion from '../Containers/SellerNotificationDiscus
 import SellerNotificationReview from '../Containers/SellerNotificationReview'
 import SellerNotificationResolution from '../Containers/SellerNotificationResolution'
 import PaymentMidtrans from '../Containers/PaymentMidtrans'
+import Balance from '../Containers/Balance'
+import BalanceRefill from '../Containers/BalanceRefill'
+import BalanceStatusRefill from '../Containers/BalanceStatusRefill'
+import BalancePull from '../Containers/BalancePull'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -944,6 +948,35 @@ class NavigationRouter extends Component {
             component={PaymentMidtrans}
             navBar={CustomNavBar}
             hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='balance'
+            component={Balance}
+            navBar={CustomNavBar}
+            title='Saldo'
+            initial
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancerefill'
+            component={BalanceRefill}
+            navBar={CustomNavBar}
+            title='Pilih Nominal Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancestatusrefill'
+            component={BalanceStatusRefill}
+            navBar={CustomNavBar}
+            title='Status Pengisian Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancepull'
+            component={BalancePull}
+            navBar={CustomNavBar}
+            title='Tarik Saldo'
+            hideNavBar={false}
             hideBackImage={false} />
         </Scene>
       </Router>

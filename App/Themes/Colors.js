@@ -67,7 +67,8 @@ const colors = {
   backgroundKadaluarsa: '#f3eced',
   fullOrange: '#f4bc50',
   violet: '#c36ce8',
-  iceBlue: '#f6f9ff'
+  iceBlue: '#f6f9ff',
+  textYellow: '#ffcd00'
 }
 
 export default colors

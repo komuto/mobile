@@ -45,7 +45,7 @@ class BalanceStatusRefill extends React.Component {
     if (rowData.status === 0) {
       status = (
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end' }}>
-          <Image source={Images.waktu} style={styles.icon} />
+          <Image source={Images.waiting} style={styles.icon} />
           <Text style={styles.textWaiting}>Menunggu</Text>
         </View>
       )

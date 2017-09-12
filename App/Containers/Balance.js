@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -116,6 +117,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getPhone: dispatch(userAction.getPhone())
   }
 }
 

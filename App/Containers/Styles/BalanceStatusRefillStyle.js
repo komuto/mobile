@@ -40,6 +40,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     fontSize: 13,
     letterSpacing: 0.22,
+    marginTop: -1,
     color: Colors.textYellow
   },
   textFailed: {
@@ -51,6 +52,7 @@ export default StyleSheet.create({
   textSuccess: {
     fontFamily: Fonts.type.bold,
     fontSize: 13,
+    marginTop: -1,
     letterSpacing: 0.22,
     color: Colors.darkMint
   }

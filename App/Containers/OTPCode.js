@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, Modal, ActivityIndicator, Image } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, Modal, ActivityIndicator, Image, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
@@ -84,6 +84,13 @@ class OTPCode extends React.Component {
         pesanNotif: 'mengubah rekening'
       })
       nextProps.createRek.status = 0
+    }
+    if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'newaccountbalance') {
+      ToastAndroid.show('Rekening berhasil ditambah..', ToastAndroid.LONG)
+      this.setState({loading: false})
+      NavigationActions.popTo('balancepull')
+      this.props.getListRekening()
+      nextProps.dataOTP.status = 0
     }
   }
 
@@ -280,6 +287,16 @@ class OTPCode extends React.Component {
         tempOTp,
         this.state.idBank
       )
+    } else if (typeVerifikasi === 'newaccountbalance') {
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.createRekening(
+        tempOTp,
+        this.state.idBank,
+        this.state.namaPemilik,
+        this.state.nomerRek,
+        this.state.namaCabang
+      )
     }
   }
 
@@ -295,6 +312,8 @@ class OTPCode extends React.Component {
       this.props.sendOtpEmail()
     } else if (typeVerifikasi === 'verificationdeleteaccount') {
       this.props.sendOtpEmail()
+    } else if (typeVerifikasi === 'newaccountbalance') {
+      this.props.sentOTPCode()
     }
   }
 

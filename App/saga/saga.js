@@ -14,6 +14,7 @@ import * as paymentActions from '../actions/payment'
 import * as transactionActions from '../actions/transaction'
 import * as messageActions from '../actions/message'
 import * as otherActions from '../actions/other'
+import * as saldoActions from '../actions/saldo'
 import * as userSaga from './user'
 import * as homeSaga from './home'
 import * as brandSaga from './brand'
@@ -30,6 +31,7 @@ import * as paymentSaga from './payment'
 import * as transactionSaga from './transaction'
 import * as messageSaga from './message'
 import * as otherSaga from './other'
+import * as saldoSaga from './saldo'
 import { takeEvery, takeLatest } from 'redux-saga/effects'
 import { typeReq } from '../config'
 
@@ -50,6 +52,7 @@ function * dataSaga () {
   yield * transaction()
   yield * message()
   yield * other()
+  yield * saldo()
 }
 
 const user = function * () {
@@ -224,23 +227,29 @@ const other = function * () {
 const payment = function * () {
   yield takeEvery(typeReq(paymentActions.GET_PAYMENT_METHODS), paymentSaga.getPaymentMethods)
   yield takeEvery(typeReq(paymentActions.CONFIRM_TRANSFER), paymentSaga.confirmTransfer)
-  yield takeEvery(typeReq(paymentActions.WITHDRAW), paymentSaga.withdraw)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN), paymentSaga.getMidtransToken)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN_2), paymentSaga.getMidtransToken2)
 }
 
 const review = function * () {
   yield takeEvery(typeReq(reviewActions.GET_REVIEWS), reviewSaga.getReviews)
-  yield takeEvery(typeReq(reviewActions.ADD_REVIEW), reviewSaga.addReview)
+  yield takeEvery(typeReq(reviewActions.ADD_REVIEWS), reviewSaga.addReviews)
   yield takeEvery(typeReq(reviewActions.GET_BUYER_REVIEW), reviewSaga.getBuyerReview)
   yield takeEvery(typeReq(reviewActions.GET_SELLER_REVIEW), reviewSaga.getSellerReview)
+}
+
+const saldo = function * () {
+  yield takeEvery(typeReq(saldoActions.GET_SALDO_TOKEN), saldoSaga.getSaldoToken)
+  yield takeEvery(typeReq(saldoActions.GET_SALDO_HISTORY), saldoSaga.getSaldoHistory)
+  yield takeEvery(typeReq(saldoActions.WITHDRAW), saldoSaga.withdraw)
+  yield takeEvery(typeReq(saldoActions.GET_NOMINALS), saldoSaga.getNominals)
 }
 
 const transaction = function * () {
   yield takeEvery(typeReq(transactionActions.LIST_TRANSACTIONS), transactionSaga.listTransactions)
   yield takeEvery(typeReq(transactionActions.GET_TRANSACTION), transactionSaga.getTransaction)
-  yield takeEvery(typeReq(transactionActions.GET_SALDO_HISTORY), transactionSaga.getSaldoHistory)
   yield takeEvery(typeReq(transactionActions.GET_BUYER_INVOICE_DETAIL), transactionSaga.getBuyerInvoiceDetail)
+  yield takeEvery(typeReq(transactionActions.ADD_COMPLAINT), transactionSaga.addComplaint)
 }
 
 export default dataSaga

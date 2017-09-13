@@ -117,6 +117,7 @@ import BalanceRefill from '../Containers/BalanceRefill'
 import BalanceStatusRefill from '../Containers/BalanceStatusRefill'
 import BalancePull from '../Containers/BalancePull'
 import BalanceNewAccount from '../Containers/BalanceNewAccount'
+import BalanceNotification from '../Containers/BalanceNotification'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -955,7 +956,6 @@ class NavigationRouter extends Component {
             component={Balance}
             navBar={CustomNavBar}
             title='Saldo'
-            initial
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
@@ -984,6 +984,12 @@ class NavigationRouter extends Component {
             component={BalanceNewAccount}
             navBar={CustomNavBar}
             title='Tambah Data Rekening'
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='balancenotification'
+            component={BalanceNotification}
+            navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
         </Scene>

@@ -142,7 +142,8 @@ const images = {
   pullBalance: require('../Images/Icons/icon-pull-balance.png'),
   statusPullBalance: require('../Images/Icons/icon-status-balance.png'),
   iconHistory: require('../Images/Icons/icon-history.png'),
-  waiting: require('../Images/Icons/icon-waiting.png')
+  waiting: require('../Images/Icons/icon-waiting.png'),
+  saldoNotification: require('../Images/saldo.png')
 }
 
 export default images

@@ -13,14 +13,14 @@ export const getTransaction = createReducer(buildInitState({ transaction: {} }))
     resultName: 'transaction'
   }).run()
 
-export const getSaldoHistory = createReducer(buildInitState({ history: [] }))
-  .addReducer({
-    type: actions.GET_SALDO_HISTORY,
-    resultName: 'history'
-  }).run()
-
 export const getBuyerInvoiceDetail = createReducer(buildInitState({ invoice: {} }))
   .addReducer({
     type: actions.GET_BUYER_INVOICE_DETAIL,
     resultName: 'invoice'
+  }).run()
+
+export const addComplaint = createReducer(buildInitState({ complaint: {} }))
+  .addReducer({
+    type: actions.ADD_COMPLAINT,
+    resultName: 'complaint'
   }).run()

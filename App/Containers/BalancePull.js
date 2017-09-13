@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, Modal, ListView } from 'react-native'
+import { ScrollView, View, Text, TextInput, TouchableOpacity, ToastAndroid, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
@@ -20,7 +20,7 @@ class BalancePull extends React.Component {
     this.state = {
       dateData: '29 Maret 2017',
       balance: 1280000,
-      nominal: '',
+      nominal: null,
       branch: '',
       account: '',
       name: '',
@@ -40,11 +40,12 @@ class BalancePull extends React.Component {
       dataAccount: [],
       modalBank: false,
       statusBank: false,
-      haveAccount: false,
+      haveAccount: true,
       modalAccount: false,
       accountBank: 'Pilih Rekening',
       loadingAccount: false,
-      phone: this.props.dataPhone.phone
+      phone: this.props.dataPhone.phone,
+      id: null
     }
     this.props.getBankAccount()
   }
@@ -70,6 +71,22 @@ class BalancePull extends React.Component {
         })
       }
       nextProps.dataAccountBank.status = 0
+    }
+    if (nextProps.codeOtp.status === 200) {
+      const { id, nominal } = this.state
+      this.setState({
+        loading: false
+      })
+      NavigationActions.otpcode({
+        type: ActionConst.PUSH,
+        typeVerifikasi: 'withdraw',
+        fieldPass: this.props.dataPhone.phone,
+        idBankAccount: id,
+        amount: nominal,
+        title: 'Withdraw',
+        textButton: 'Verifikasi kode OTP'
+      })
+      nextProps.codeOtp.status = 0
     }
   }
 
@@ -216,7 +233,7 @@ class BalancePull extends React.Component {
 
   renderButton () {
     return (
-      <TouchableOpacity style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={() => this.withdraw()}>
         <Text style={styles.textButton}>Tarik Saldo</Text>
       </TouchableOpacity>
     )
@@ -295,13 +312,21 @@ class BalancePull extends React.Component {
         </View>
       )
     } else {
-      listview = (
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.dataAccount)}
-          renderRow={this.renderListAccount.bind(this)}
-          enableEmptySections
-        />
-      )
+      if (this.state.dataAccount.length > 0) {
+        listview = (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.dataAccount)}
+            renderRow={this.renderListAccount.bind(this)}
+            enableEmptySections
+          />
+        )
+      } else {
+        listview = (
+          <View style={[styles.menuLaporkan, { padding: 15 }]}>
+            <Text style={[styles.textBagikan, { marginLeft: 0 }]}>Belum ada data</Text>
+          </View>
+        )
+      }
     }
     return (
       <Modal
@@ -313,7 +338,7 @@ class BalancePull extends React.Component {
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalAccount: false })}>
           <ScrollView style={styles.menuModalContainer}>
             <View style={styles.headerListView}>
-              <Text style={styles.headerTextListView}>Pilih Alamat Pengiriman</Text>
+              <Text style={styles.headerTextListView}>Pilih Rekening Tujuan</Text>
             </View>
             {listview}
             <TouchableOpacity
@@ -344,7 +369,8 @@ class BalancePull extends React.Component {
         onPress={() => {
           this.setState({
             accountBank: rowData.bank.name + ' ' + rowData.holder_account_number,
-            modalAccount: false
+            modalAccount: false,
+            id: rowData.id
           })
         }}
       >
@@ -353,6 +379,15 @@ class BalancePull extends React.Component {
         <Text style={[styles.textBagikan, { marginLeft: 0 }]}>{rowData.holder_name}</Text>
       </TouchableOpacity>
     )
+  }
+
+  withdraw () {
+    const { id, nominal } = this.state
+    if (id === null || id === '' || nominal === null || nominal === '') {
+      ToastAndroid.show('Bank dan nomimal penarikan tidak boleh kosong..', ToastAndroid.LONG)
+    } else {
+      this.props.sendOtp()
+    }
   }
 
   renderView () {
@@ -398,7 +433,8 @@ const mapStateToProps = (state) => {
   return {
     dataBanks: state.banks,
     dataAccountBank: state.listBankAccounts,
-    dataPhone: state.phone
+    dataPhone: state.phone,
+    codeOtp: state.sendOTPBank
   }
 }
 

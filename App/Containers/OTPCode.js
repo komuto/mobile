@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
 import * as bankAction from '../actions/bank'
+import * as saldoAction from '../actions/saldo'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -38,7 +39,9 @@ class OTPCode extends React.Component {
       idBank: this.props.idBank,
       namaCabang: this.props.cabangBank,
       loading: false,
-      textButton: this.props.textButton || 'Verifikasi Nomor Telepon'
+      textButton: this.props.textButton || 'Verifikasi Nomor Telepon',
+      amount: this.props.amount,
+      idBankAccount: this.props.idBankAccount
     }
   }
 
@@ -91,6 +94,15 @@ class OTPCode extends React.Component {
       NavigationActions.popTo('balancepull')
       this.props.getListRekening()
       nextProps.dataOTP.status = 0
+    }
+    if (nextProps.dataSaldo.status === 200) {
+      this.setState({loading: false})
+      NavigationActions.balancenotification({
+        type: ActionConst.REPLACE
+      })
+    } else if (nextProps.dataSaldo.status === 400) {
+      this.setState({loading: false})
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataSaldo.message, ToastAndroid.LONG)
     }
   }
 
@@ -297,6 +309,11 @@ class OTPCode extends React.Component {
         this.state.nomerRek,
         this.state.namaCabang
       )
+    } else if (typeVerifikasi === 'withdraw') {
+      const { idBankAccount, amount } = this.state
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.withdraw(idBankAccount, amount, tempOTp)
     }
   }
 
@@ -313,6 +330,8 @@ class OTPCode extends React.Component {
     } else if (typeVerifikasi === 'verificationdeleteaccount') {
       this.props.sendOtpEmail()
     } else if (typeVerifikasi === 'newaccountbalance') {
+      this.props.sentOTPCode()
+    } else if (typeVerifikasi === 'withdraw') {
       this.props.sentOTPCode()
     }
   }
@@ -337,7 +356,8 @@ const mapStateToProps = (state) => {
   return {
     dataOTP: state.verifyPhone,
     createRek: state.bankAccount,
-    deleteAccount: state.bankAccount
+    deleteAccount: state.bankAccount,
+    dataSaldo: state.withdrawal
   }
 }
 
@@ -365,7 +385,12 @@ const mapDispatchToProps = (dispatch) => {
     })),
     deleteAccounts: (code, id) => dispatch(bankAction.deleteBankAccount({code: code, id: id})),
     getListRekening: () => dispatch(bankAction.getBankAccounts()),
-    getProfile: (login) => dispatch(userAction.getProfile())
+    getProfile: (login) => dispatch(userAction.getProfile()),
+    withdraw: (id, amount, code) => dispatch(saldoAction.withdraw({
+      bank_account_id: id,
+      amount: amount,
+      code: code
+    }))
   }
 }
 

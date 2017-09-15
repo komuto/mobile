@@ -17,6 +17,7 @@ export const GET_COMPLAINED_ORDER_DETAIL_BUYER = 'GET_COMPLAINED_ORDER_DETAIL_BU
 export const GET_COMPLAINED_ORDER_DETAIL_SELLER = 'GET_COMPLAINED_ORDER_DETAIL_SELLER'
 export const CREATE_COMPLAINT_DISCUSSION_BUYER = 'CREATE_COMPLAINT_DISCUSSION_BUYER'
 export const CREATE_COMPLAINT_DISCUSSION_SELLER = 'CREATE_COMPLAINT_DISCUSSION_SELLER'
+export const UPDATE_AIRWAY_BILL = 'UPDATE_AIRWAY_BILL'
 
 /**
  * @state listTransactions
@@ -122,3 +123,10 @@ export const createComplaintDiscussionBuyer = params => buildAction(typeReq(CREA
  * @state sellerComplaintDiscussion
  */
 export const createComplaintDiscussionSeller = params => buildAction(typeReq(CREATE_COMPLAINT_DISCUSSION_SELLER), params)
+
+/**
+ * @params id {int} dispute id
+ * @params params are the same as the api
+ * @state updateStatus
+ */
+export const updateAirwayBill = params => buildAction(typeReq(UPDATE_AIRWAY_BILL), params)

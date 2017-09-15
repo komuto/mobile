@@ -58,6 +58,9 @@ export const updateStatus = createReducer(buildInitState())
   })
   .addReducer({
     type: actions.INPUT_AIRWAY_BILL
+  })
+  .addReducer({
+    type: actions.UPDATE_AIRWAY_BILL
   }).run()
 
 export const getComplainedOrdersBuyer = createReducer(buildInitState({ orders: [] }))

@@ -87,3 +87,8 @@ export const createComplaintDiscussionSeller = ({ id, ...data }) => {
   const axios = authApiKomuto()
   return axios.post(`users/store/disputes/${id}/discussions`, data)
 }
+
+export const updateAirwayBill = ({ id, ...data }) => {
+  const axios = authApiKomuto()
+  return axios.put(`users/store/disputes/${id}/airway-bill`, data)
+}

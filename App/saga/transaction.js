@@ -20,3 +20,4 @@ export const getComplainedOrderDetailBuyer = buildSaga(apis.getComplainedOrderDe
 export const getComplainedOrderDetailSeller = buildSaga(apis.getComplainedOrderDetailSeller, actions.GET_COMPLAINED_ORDER_DETAIL_SELLER)
 export const createComplaintDiscussionBuyer = buildSaga(apis.createComplaintDiscussionBuyer, actions.CREATE_COMPLAINT_DISCUSSION_BUYER)
 export const createComplaintDiscussionSeller = buildSaga(apis.createComplaintDiscussionSeller, actions.CREATE_COMPLAINT_DISCUSSION_SELLER)
+export const updateAirwayBill = buildSaga(apis.updateAirwayBill, actions.UPDATE_AIRWAY_BILL)

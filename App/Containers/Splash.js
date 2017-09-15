@@ -87,12 +87,12 @@ class Splash extends React.Component {
         //     console.log('lalal')
         //     NavigationActions.backtab({ type: ActionConst.REPLACE })
         // }
-        NavigationActions.salesdasboard({ type: ActionConst.REPLACE })
+        NavigationActions.backtab({ type: ActionConst.REPLACE })
         SplashScreen.hide()
         console.log(value)
       }
       SplashScreen.hide()
-      NavigationActions.salesdasboard({ type: ActionConst.REPLACE })
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
     })
   }
 

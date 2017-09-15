@@ -58,6 +58,12 @@ class StoreDashboard extends React.Component {
     })
   }
 
+  handleSales () {
+    NavigationActions.salesdasboard({
+      type: ActionConst.PUSH
+    })
+  }
+
   handleKelolaToko () {
     NavigationActions.managestore({
       type: ActionConst.PUSH
@@ -178,7 +184,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            < TouchableOpacity onPress={() => this.handleSales()}>
               <View style={styles.profile}>
                 <Image source={Images.penjualan} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>

@@ -81,7 +81,8 @@ class Payment extends React.Component {
       nextProps.dataCheckout.status = 0
       NavigationActions.paymentmidtrans({
         type: ActionConst.PUSH,
-        token: nextProps.dataToken.token
+        token: nextProps.dataToken.token,
+        from: 'payment'
       })
     }
     if (nextProps.dataToken.status === 200) {

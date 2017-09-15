@@ -45,7 +45,8 @@ class BalancePull extends React.Component {
       accountBank: 'Pilih Rekening',
       loadingAccount: false,
       phone: this.props.dataPhone.phone,
-      id: null
+      id: null,
+      active: false
     }
     this.props.getBankAccount()
   }
@@ -62,31 +63,32 @@ class BalancePull extends React.Component {
       if (nextProps.dataAccountBank.listBankAccounts.length > 0) {
         this.setState({
           dataAccount: nextProps.dataAccountBank.listBankAccounts,
-          loadingAccount: false,
-          haveAccount: true
+          loadingAccount: false
         })
       } else {
         this.setState({
-          haveAccount: false
+          loadingAccount: false
         })
       }
       nextProps.dataAccountBank.status = 0
     }
     if (nextProps.codeOtp.status === 200) {
-      const { id, nominal } = this.state
-      this.setState({
-        loading: false
-      })
-      NavigationActions.otpcode({
-        type: ActionConst.PUSH,
-        typeVerifikasi: 'withdraw',
-        fieldPass: this.props.dataPhone.phone,
-        idBankAccount: id,
-        amount: nominal,
-        title: 'Withdraw',
-        textButton: 'Verifikasi kode OTP'
-      })
-      nextProps.codeOtp.status = 0
+      if (this.state.active) {
+        const { id, nominal } = this.state
+        this.setState({
+          loading: false
+        })
+        NavigationActions.otpcode({
+          type: ActionConst.PUSH,
+          typeVerifikasi: 'withdraw',
+          fieldPass: this.props.dataPhone.phone,
+          idBankAccount: id,
+          amount: nominal,
+          title: 'Withdraw',
+          textButton: 'Verifikasi kode OTP'
+        })
+        nextProps.codeOtp.status = 0
+      }
     }
   }
 
@@ -346,7 +348,8 @@ class BalancePull extends React.Component {
               activeOpacity={0.8}
               onPress={() => {
                 this.setState({
-                  modalAccount: false
+                  modalAccount: false,
+                  active: false
                 })
                 NavigationActions.balancenewaccount({
                   type: ActionConst.PUSH
@@ -386,6 +389,9 @@ class BalancePull extends React.Component {
     if (id === null || id === '' || nominal === null || nominal === '') {
       ToastAndroid.show('Bank dan nomimal penarikan tidak boleh kosong..', ToastAndroid.LONG)
     } else {
+      this.setState({
+        active: true
+      })
       this.props.sendOtp()
     }
   }

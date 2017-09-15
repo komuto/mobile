@@ -31,7 +31,8 @@ class BalanceRefill extends React.Component {
     if (nextProps.dataSaldoToken.status === 200) {
       NavigationActions.paymentmidtrans({
         type: ActionConst.PUSH,
-        token: nextProps.dataSaldoToken.token
+        token: nextProps.dataSaldoToken.token,
+        from: 'balance'
       })
     }
   }

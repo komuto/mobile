@@ -95,6 +95,10 @@ class OTPCode extends React.Component {
       this.props.getListRekening()
       nextProps.dataOTP.status = 0
     }
+    if (nextProps.createRek.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.createRek.message, ToastAndroid.LONG)
+      this.setState({ loading: false })
+    }
     if (nextProps.dataSaldo.status === 200) {
       this.setState({loading: false})
       NavigationActions.balancenotification({

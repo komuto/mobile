@@ -10,16 +10,24 @@ import styles from './Styles/PembayaranBerhasilStyle'
 
 class PaymentSuccess extends React.Component {
 
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
+  constructor (props) {
+    super(props)
+    this.state = {
+      from: this.props.from
+    }
+  }
 
   transaksi () {
-    NavigationActions.backtab({
-      type: ActionConst.RESET
-    })
-    NavigationActions.transaction()
+    if (this.state.from === 'payment') {
+      NavigationActions.backtab({
+        type: ActionConst.RESET
+      })
+      NavigationActions.transaction()
+    } else {
+      NavigationActions.balancestatusrefill({
+        type: ActionConst.REPLACE
+      })
+    }
   }
 
   render () {

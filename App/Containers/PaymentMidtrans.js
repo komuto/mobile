@@ -13,7 +13,8 @@ class PaymentMidtrans extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      token: this.props.token
+      token: this.props.token,
+      from: this.props.from
     }
   }
 
@@ -21,9 +22,17 @@ class PaymentMidtrans extends React.Component {
     const address = String(webViewState.url)
     console.log(address)
     if (address.includes('success')) {
-      NavigationActions.paymentsuccess({
-        type: ActionConst.PUSH
-      })
+      if (this.state.from === 'payment') {
+        NavigationActions.paymentsuccess({
+          type: ActionConst.REPLACE,
+          from: 'payment'
+        })
+      } else {
+        NavigationActions.paymentsuccess({
+          type: ActionConst.REPLACE,
+          from: 'balance'
+        })
+      }
     } else if (address.includes('error')) {
       ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Error', ToastAndroid.LONG)
       NavigationActions.pop()

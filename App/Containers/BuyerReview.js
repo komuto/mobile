@@ -33,7 +33,6 @@ class BuyerReview extends React.Component {
         loadingPage: false
       })
       if (nextProps.dataReview.buyerReview.length > 0) {
-        console.log('if')
         let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
         this.setState({
           data: data,

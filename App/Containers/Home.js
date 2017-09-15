@@ -46,7 +46,6 @@ class Home extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(nextProps.dataProduk)
     if (nextProps.dataProduk.status === 200) {
       const newKategori = nextProps.dataKategori.categories
       var kategoriInital = newKategori.filter(function (country) {

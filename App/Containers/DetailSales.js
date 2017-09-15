@@ -16,6 +16,7 @@ import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
+import StarRating from 'react-native-star-rating'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -56,7 +57,52 @@ class DetailSales extends React.Component {
         ],
         problem: 'Barang tidak sesuai deskripsi, Produk tidak lengkap, Barang rusak',
         solution: 'Refund Dana'
-      }]
+      }],
+      dataReview: [
+        {
+          'id': 142,
+          'review': 'Mantap gan barangnya',
+          'quality': 5,
+          'accuracy': 5,
+          'created_at': 1505433716,
+          'product': {
+            'id': 96.42,
+            'name': 'TV Kecil',
+            'image': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg',
+            'store': {
+              'id': 42,
+              'name': 'Toko TV',
+              'logo': 'https://komutodev.aptmi.com/uploads/toko/5c36c93e1e5246008eb520b0e1d2372202e10da3_YouTube-icon-full_color.png'
+            }
+          },
+          'user': {
+            'id': 32,
+            'name': 'bleble',
+            'photo': 'https://komutodev.aptmi.com/uploads/user/https://scontent.xx.fbcdn.net/v/t1.0-1/s200x200/12190927_1051452451551693_3353738072722896044_n.jpg?oh=1a89bdfda8446cc6b3c82a4536970ba3&oe=599E476F'
+          }
+        },
+        {
+          'id': 141,
+          'review': 'Mantap gan barangnya',
+          'quality': 5,
+          'accuracy': 5,
+          'created_at': 1505433486,
+          'product': {
+            'id': 96.42,
+            'name': 'TV Kecil',
+            'image': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg',
+            'store': {
+              'id': 42,
+              'name': 'Toko TV',
+              'logo': 'https://komutodev.aptmi.com/uploads/toko/5c36c93e1e5246008eb520b0e1d2372202e10da3_YouTube-icon-full_color.png'
+            }
+          },
+          'user': {
+            'id': 32,
+            'name': 'bleble',
+            'photo': 'https://komutodev.aptmi.com/uploads/user/https://scontent.xx.fbcdn.net/v/t1.0-1/s200x200/12190927_1051452451551693_3353738072722896044_n.jpg?oh=1a89bdfda8446cc6b3c82a4536970ba3&oe=599E476F'
+          }
+        }]
     }
   }
 
@@ -485,14 +531,78 @@ class DetailSales extends React.Component {
       return (
         <View>
           <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-          <View style={styles.viewColumn}>
-            <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
-              <Text style={[styles.textRegularSlate]}>Review menjadi milik Reseller</Text>
-            </View>
-          </View>
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.dataReview)}
+            renderRow={this.renderRow.bind(this)}
+            enableEmptySections
+          />
         </View>
       )
     }
+  }
+
+  renderRow (rowData) {
+    return (
+      <View style={{marginBottom: 20, elevation: 0.1}}>
+        <View style={styles.border2}>
+          <View style={styles.profile}>
+            <Image
+              source={{ uri: rowData.product.image }}
+              style={styles.styleFotoToko}
+            />
+            <View style={styles.namaContainer}>
+              <Text style={styles.textNama}>
+                {rowData.product.name}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View>
+          {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
+        </View>
+      </View>
+    )
+  }
+
+  renderRatingUlasan (starAccurate, starQuantity, isiulasan) {
+    return (
+      <View style={{backgroundColor: Colors.snow}}>
+        <View style={styles.qualityNoBorderContainer}>
+          <View style={styles.eachQualiy}>
+            <Text style={[styles.qualityText]}> Kualitas Produk </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{paddingTop: 4, marginLeft: 3}}>
+                <StarRating
+                  disabled
+                  maxStars={5}
+                  starColor={'#ffcd00'}
+                  emptyStarColor={'#d9e1e9'}
+                  starSize={16}
+                  rating={starQuantity}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={styles.separator} />
+          <View style={[styles.eachQualiy]}>
+            <Text style={styles.qualityText}> Akurasi Produk </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={{paddingTop: 4, marginLeft: 3}}>
+                <StarRating
+                  disabled
+                  maxStars={5}
+                  starColor={'#ffcd00'}
+                  emptyStarColor={'#d9e1e9'}
+                  starSize={16}
+                  rating={starAccurate}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+        <Text style={styles.isiUlasan}>{isiulasan}</Text>
+      </View>
+    )
   }
 
   renderItemproblem (status) {

@@ -34,6 +34,7 @@ class BalanceRefill extends React.Component {
         token: nextProps.dataSaldoToken.token,
         from: 'balance'
       })
+      nextProps.dataSaldoToken.status = 0
     }
   }
 

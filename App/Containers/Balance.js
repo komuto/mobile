@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, Text, Image, TouchableOpacity } from 'react-native'
+import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -18,6 +18,20 @@ class Balance extends React.Component {
     this.state = {
       balance: 500000,
       balanceItems: 10
+    }
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    if (NavigationActions.pop()) {
+      return true
     }
   }
 

@@ -218,6 +218,9 @@ const message = function * () {
   yield takeEvery(typeReq(messageActions.SELLER_REPLY_MESSAGE), messageSaga.sellerReplyMessage)
   yield takeEvery(typeReq(messageActions.BUYER_DELETE_MESSAGE), messageSaga.buyerDeleteMessage)
   yield takeEvery(typeReq(messageActions.SELLER_DELETE_MESSAGE), messageSaga.sellerDeleteMessage)
+  yield takeEvery(typeReq(messageActions.MESSAGE_BUYER), messageSaga.messageBuyer)
+  yield takeEvery(typeReq(messageActions.MESSAGE_SELLER), messageSaga.messageSeller)
+  yield takeEvery(typeReq(messageActions.MESSAGE_RESELLER), messageSaga.messageReseller)
 }
 
 const other = function * () {
@@ -250,6 +253,19 @@ const transaction = function * () {
   yield takeEvery(typeReq(transactionActions.GET_TRANSACTION), transactionSaga.getTransaction)
   yield takeEvery(typeReq(transactionActions.GET_BUYER_INVOICE_DETAIL), transactionSaga.getBuyerInvoiceDetail)
   yield takeEvery(typeReq(transactionActions.ADD_COMPLAINT), transactionSaga.addComplaint)
+  yield takeEvery(typeReq(transactionActions.GET_NEW_ORDERS), transactionSaga.getNewOrders)
+  yield takeEvery(typeReq(transactionActions.GET_NEW_ORDER_DETAIL), transactionSaga.getNewOrderDetail)
+  yield takeEvery(typeReq(transactionActions.GET_PROCESSING_ORDERS), transactionSaga.getProcessingOrders)
+  yield takeEvery(typeReq(transactionActions.GET_PROCESSING_ORDER_DETAIL), transactionSaga.getProcessingOrderDetail)
+  yield takeEvery(typeReq(transactionActions.ACCEPT_ORDER), transactionSaga.acceptOrder)
+  yield takeEvery(typeReq(transactionActions.REJECT_ORDER), transactionSaga.rejectOrder)
+  yield takeEvery(typeReq(transactionActions.INPUT_AIRWAY_BILL), transactionSaga.inputAirwayBill)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_BUYER), transactionSaga.getComplainedOrdersBuyer)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_SELLER), transactionSaga.getComplainedOrdersSeller)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDER_DETAIL_BUYER), transactionSaga.getComplainedOrderDetailBuyer)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDER_DETAIL_SELLER), transactionSaga.getComplainedOrderDetailSeller)
+  yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_BUYER), transactionSaga.createComplaintDiscussionBuyer)
+  yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_SELLER), transactionSaga.createComplaintDiscussionSeller)
 }
 
 export default dataSaga

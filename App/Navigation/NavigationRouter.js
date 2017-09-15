@@ -118,6 +118,13 @@ import BalanceStatusRefill from '../Containers/BalanceStatusRefill'
 import BalancePull from '../Containers/BalancePull'
 import BalanceNewAccount from '../Containers/BalanceNewAccount'
 import BalanceNotification from '../Containers/BalanceNotification'
+import SalesDashboard from '../Containers/SalesDashboard'
+import ListNewOrder from '../Containers/ListNewOrder'
+import DetailOrder from '../Containers/DetailOrder'
+import DeliveryConfirmation from '../Containers/DeliveryConfirmation'
+import InputShippingInfo from '../Containers/InputShippingInfo'
+import SalesList from '../Containers/SalesList'
+import DetailSales from '../Containers/DetailSales'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -992,6 +999,54 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
+            key='salesdasboard'
+            component={SalesDashboard}
+            title='Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='listneworder'
+            component={ListNewOrder}
+            title='Penjualan Baru'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailorder'
+            component={DetailOrder}
+            title='Detail Pesanan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='deliveryConfirmation'
+            component={DeliveryConfirmation}
+            title='Konfirmasi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='inputshippinginfo'
+            component={InputShippingInfo}
+            title='Masukan Informasi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='saleslist'
+            component={SalesList}
+            title='Daftar Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailsales'
+            component={DetailSales}
+            title='Detail Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
         </Scene>
       </Router>
     )

@@ -3,6 +3,7 @@ const type = {
   bold: 'NunitoSans-Bold',
   semiBolds: 'NunitoSans-SemiBold',
   light: 'NunitoSans-Light',
+  italic: 'NunitoSans-Italic',
   regular: 'NunitoSans-Regular',
   emphasis: 'NunitoSans-Regular',
   extrabold: 'NunitoSans-ExtraBold'

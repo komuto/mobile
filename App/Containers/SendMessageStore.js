@@ -23,7 +23,8 @@ class SendMessageStore extends React.Component {
       height: 50,
       heightJudul: 50,
       loading: false,
-      notification: false
+      notification: false,
+      titles: this.props.title || 'Kirim Pesan'
     }
   }
 
@@ -123,7 +124,7 @@ class SendMessageStore extends React.Component {
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.textTitle}>Kirim Pesan</Text>
+            <Text style={styles.textTitle}>{this.state.titles}</Text>
           </View>
           <TouchableOpacity onPress={() => this.back()}>
             <Image

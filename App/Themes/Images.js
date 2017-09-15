@@ -143,7 +143,14 @@ const images = {
   statusPullBalance: require('../Images/Icons/icon-status-balance.png'),
   iconHistory: require('../Images/Icons/icon-history.png'),
   waiting: require('../Images/Icons/icon-waiting.png'),
-  saldoNotification: require('../Images/saldo.png')
+  saldoNotification: require('../Images/saldo.png'),
+  rejectOrder: require('../Images/reject-order.png'),
+  confrimOrder: require('../Images/confrim-order.png'),
+  listOrder: require('../Images/Icons/icon-daftar-penjualan.png'),
+  confrimDelivery: require('../Images/Icons/icon-konfirmasi-pengiriman.png'),
+  newOrder: require('../Images/Icons/icon-pesanan-baru.png'),
+  infoBlue: require('../Images/Icons/icon-info-blue.png'),
+  receiptSend: require('../Images/resi-send.png')
 }
 
 export default images

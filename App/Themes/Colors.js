@@ -68,7 +68,9 @@ const colors = {
   fullOrange: '#f4bc50',
   violet: '#c36ce8',
   iceBlue: '#f6f9ff',
-  textYellow: '#ffcd00'
+  textYellow: '#ffcd00',
+  whiteThree: '#f0f0f0',
+  pumpkinOrange: '#fe8224'
 }
 
 export default colors

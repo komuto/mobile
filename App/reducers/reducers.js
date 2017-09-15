@@ -167,7 +167,8 @@ const message = {
   archiveSellerMessages: messageReducers.getArchiveSellerMessages,
   updateMessage: messageReducers.updateMessage,
   replyMessage: messageReducers.replyMessage,
-  deleteMessage: messageReducers.deleteMessage
+  deleteMessage: messageReducers.deleteMessage,
+  transactionMessage: messageReducers.transactionMessage
 }
 
 const other = {
@@ -199,7 +200,18 @@ const transaction = {
   listTransactions: transactionReducers.listTransactions,
   transaction: transactionReducers.getTransaction,
   buyerInvoiceDetail: transactionReducers.getBuyerInvoiceDetail,
-  addComplaint: transactionReducers.addComplaint
+  addComplaint: transactionReducers.addComplaint,
+  newOrders: transactionReducers.getNewOrders,
+  newOrderDetail: transactionReducers.getNewOrderDetail,
+  processingOrders: transactionReducers.getProcessingOrders,
+  processingOrderDetail: transactionReducers.getProcessingOrderDetail,
+  updateStatus: transactionReducers.updateStatus,
+  buyerComplainedOrders: transactionReducers.getComplainedOrdersBuyer,
+  sellerComplainedOrders: transactionReducers.getComplainedOrdersSeller,
+  buyerComplainedOrderDetail: transactionReducers.getComplainedOrderDetailBuyer,
+  sellerComplainedOrderDetail: transactionReducers.getComplainedOrderDetailSeller,
+  buyerComplaintDiscussion: transactionReducers.createComplaintDiscussionBuyer,
+  sellerComplaintDiscussion: transactionReducers.createComplaintDiscussionSeller
 }
 
 const komutoApps = storage.reducer(combineReducers({

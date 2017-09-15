@@ -1,6 +1,6 @@
 import { delay } from 'redux-saga'
 import { put, call, select } from 'redux-saga/effects'
-import {AsyncStorage as localStorage} from 'react-native'
+import {localStorage} from './localStorage'
 export const serviceUrl = 'https://private-f0902d-komuto.apiary-mock.com'
 export const apiKomuto = 'https://api.komuto.skyshi.com/4690fa4c3d68f93b/'
 export const storage = localStorage
@@ -136,7 +136,6 @@ export const buildAction = (type, params = false) => {
  * @param customState {array}
  */
 export const buildReducer = (state, action, type, name, customState) => {
-  console.log(action)
   switch (action.type) {
     case typeReq(type):
       return !customState[0] ? reqState(state) : customState[0](state, action)

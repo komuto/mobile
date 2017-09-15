@@ -46,6 +46,7 @@ class Home extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    console.log(nextProps.dataProduk)
     if (nextProps.dataProduk.status === 200) {
       const newKategori = nextProps.dataKategori.categories
       var kategoriInital = newKategori.filter(function (country) {
@@ -57,13 +58,13 @@ class Home extends React.Component {
         loadingKategori: false,
         loadingProduk: false
       })
-    } else if (nextProps.dataKategori.status > 200) {
+    } else if (nextProps.dataProduk.status > 200) {
       this.setState({
         loadingKategori: true,
         loadingProduk: true
       })
       Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
-    } else if (nextProps.dataKategori.status === 'ENOENT') {
+    } else if (nextProps.dataProduk.status === 'ETIMEOUT' || nextProps.dataKategori.status === 'EOFFLINE' || nextProps.dataKategori.status === 'EUNKNOWN' || nextProps.dataProduk.status === undefined) {
       this.setState({
         loadingKategori: true,
         loadingProduk: true
@@ -76,7 +77,6 @@ class Home extends React.Component {
     }
     if (this.state.getCartHome) {
       if (nextProps.dataCart.status === 200) {
-        console.log('enak')
         if (nextProps.dataCart.cart.items.length > 0) {
           this.setState({
             cartItems: nextProps.dataCart.cart.items.length,

@@ -999,7 +999,7 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
-            key='salesdasboard'
+          <Scene key='salesdasboard'
             component={SalesDashboard}
             title='Penjualan'
             navBar={CustomNavBar}

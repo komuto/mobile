@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text, View, Image, TouchableOpacity } from 'react-native'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import { Images } from '../Themes'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -48,9 +48,7 @@ class BalanceNotification extends React.Component {
   }
 
   backToBalance () {
-    NavigationActions.balance({
-      type: ActionConst.POP_TO
-    })
+    NavigationActions.popTo('balance')
   }
 
   render () {

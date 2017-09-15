@@ -104,6 +104,7 @@ class OTPCode extends React.Component {
       NavigationActions.balancenotification({
         type: ActionConst.REPLACE
       })
+      this.props.getProfile()
     } else if (nextProps.dataSaldo.status === 400) {
       this.setState({loading: false})
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataSaldo.message, ToastAndroid.LONG)

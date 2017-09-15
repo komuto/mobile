@@ -3,6 +3,7 @@ import { WebView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Metrics } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -32,6 +33,7 @@ class PaymentMidtrans extends React.Component {
           type: ActionConst.REPLACE,
           from: 'balance'
         })
+        this.props.getProfile()
       }
     } else if (address.includes('error')) {
       ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Error', ToastAndroid.LONG)
@@ -62,6 +64,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getProfile: (login) => dispatch(userAction.getProfile())
   }
 }
 

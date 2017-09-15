@@ -19,7 +19,7 @@ class BalancePull extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dateData: '29 Maret 2017',
-      balance: 1280000,
+      balance: String(this.props.dataProfile.user.user.saldo_wallet),
       nominal: null,
       branch: '',
       account: '',
@@ -89,6 +89,11 @@ class BalancePull extends React.Component {
         })
         nextProps.codeOtp.status = 0
       }
+    }
+    if (nextProps.dataProfile.status === 200) {
+      this.setState({
+        balance: String(nextProps.dataProfile.user.user.saldo_wallet)
+      })
     }
   }
 
@@ -440,7 +445,8 @@ const mapStateToProps = (state) => {
     dataBanks: state.banks,
     dataAccountBank: state.listBankAccounts,
     dataPhone: state.phone,
-    codeOtp: state.sendOTPBank
+    codeOtp: state.sendOTPBank,
+    dataProfile: state.profile
   }
 }
 

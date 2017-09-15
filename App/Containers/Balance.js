@@ -16,8 +16,16 @@ class Balance extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      balance: 500000,
+      balance: String(this.props.dataProfile.user.user.saldo_wallet),
       balanceItems: 10
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataProfile.status === 200) {
+      this.setState({
+        balance: String(nextProps.dataProfile.user.user.saldo_wallet)
+      })
     }
   }
 
@@ -126,6 +134,7 @@ class Balance extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataProfile: state.profile
   }
 }
 

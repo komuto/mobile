@@ -119,7 +119,8 @@ const product = function * () {
   yield takeEvery(typeReq(productActions.ADD_DROPSHIP_PRODUCTS), productSaga.addDropshipProducts)
   yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCTS), productSaga.getDropshipProducts)
   yield takeEvery(typeReq(productActions.UPDATE_DROPSHIP_STATUS), productSaga.updateDropshipStatus)
-  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCT_DETAIL), productSaga.getDropshipProductDetail)
+  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCT_FOR_ADD), productSaga.getDropshipProductForAdd)
+  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCT_FOR_MANAGE), productSaga.getDropshipProductForManage)
 }
 
 const store = function * () {
@@ -267,6 +268,8 @@ const transaction = function * () {
   yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_BUYER), transactionSaga.createComplaintDiscussionBuyer)
   yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_SELLER), transactionSaga.createComplaintDiscussionSeller)
   yield takeEvery(typeReq(transactionActions.UPDATE_AIRWAY_BILL), transactionSaga.updateAirwayBill)
+  yield takeEvery(typeReq(transactionActions.BUYER_DISPUTE_RECEIVED), transactionSaga.buyerDisputeReceived)
+  yield takeEvery(typeReq(transactionActions.SELLER_DISPUTE_RECEIVED), transactionSaga.sellerDisputeReceived)
 }
 
 export default dataSaga

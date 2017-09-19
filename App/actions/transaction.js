@@ -18,6 +18,8 @@ export const GET_COMPLAINED_ORDER_DETAIL_SELLER = 'GET_COMPLAINED_ORDER_DETAIL_S
 export const CREATE_COMPLAINT_DISCUSSION_BUYER = 'CREATE_COMPLAINT_DISCUSSION_BUYER'
 export const CREATE_COMPLAINT_DISCUSSION_SELLER = 'CREATE_COMPLAINT_DISCUSSION_SELLER'
 export const UPDATE_AIRWAY_BILL = 'UPDATE_AIRWAY_BILL'
+export const BUYER_DISPUTE_RECEIVED = 'BUYER_DISPUTE_RECEIVED'
+export const SELLER_DISPUTE_RECEIVED = 'SELLER_DISPUTE_RECEIVED'
 
 /**
  * @state listTransactions
@@ -130,3 +132,16 @@ export const createComplaintDiscussionSeller = params => buildAction(typeReq(CRE
  * @state updateStatus
  */
 export const updateAirwayBill = params => buildAction(typeReq(UPDATE_AIRWAY_BILL), params)
+
+/**
+ * @params id {int} dispute id
+ * @params data {[object]} params are the same as the api
+ * @state buyerReceived
+ */
+export const buyerDisputeReceived = params => buildAction(typeReq(BUYER_DISPUTE_RECEIVED), params)
+
+/**
+ * @params id {int} dispute id
+ * @state sellerReceived
+ */
+export const sellerDisputeReceived = params => buildAction(typeReq(SELLER_DISPUTE_RECEIVED), params)

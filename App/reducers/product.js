@@ -24,7 +24,11 @@ export const getProduct = createReducer(buildInitState({ detail: {} }))
     resetPrevState: { state: 0 }
   })
   .addReducer({
-    type: actions.GET_DROPSHIP_PRODUCT_DETAIL,
+    type: actions.GET_DROPSHIP_PRODUCT_FOR_ADD,
+    resultName: 'detail'
+  })
+  .addReducer({
+    type: actions.GET_DROPSHIP_PRODUCT_FOR_MANAGE,
     resultName: 'detail'
   }).run()
 

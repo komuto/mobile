@@ -125,6 +125,7 @@ import DeliveryConfirmation from '../Containers/DeliveryConfirmation'
 import InputShippingInfo from '../Containers/InputShippingInfo'
 import SalesList from '../Containers/SalesList'
 import DetailSales from '../Containers/DetailSales'
+import TransactionDetailStatusPurchase from '../Containers/TransactionDetailStatusPurchase'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1044,6 +1045,13 @@ class NavigationRouter extends Component {
             key='detailsales'
             component={DetailSales}
             title='Detail Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transactiondetailstatuspurchase'
+            component={TransactionDetailStatusPurchase}
+            title='Detail Pesanan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

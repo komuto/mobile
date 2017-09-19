@@ -5,14 +5,17 @@ import {
   Text,
   ListView,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  RefreshControl
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import Spinner from '../Components/Spinner'
+import * as transactionAction from '../actions/transaction'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/TransaksiStyle'
 
@@ -22,401 +25,36 @@ class Transaction extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      data: [
-        {
-          'id': 1,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'wait',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 2,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'wait',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 3,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'wait',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 4,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 4,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 5,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'wait',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 1,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Verifikasi',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 2,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Verifikasi',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 3,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Verifikasi',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 4,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 4,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 5,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Verifikasi',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 1,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Kadaluarsa',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 2,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Kadaluarsa',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 3,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Kadaluarsa',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 4,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 4,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 5,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Kadaluarsa',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 1,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Sudah dibayar',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 2,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Sudah dibayar',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 3,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Sudah dibayar',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        },
-        {
-          'id': 4,
-          'product': [
-            {
-              'id': 1,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 2,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 3,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 4,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            },
-            {
-              'id': 5,
-              'image': 'http://id-live-03.slatic.net/p/7/yutaka-sepatu-slip-on-polkadot-hitam-1476693724-13899501-a70106543eb579371127dab2bbb5db35-catalog_233.jpg',
-              'nama': 'Sepatu',
-              'toko': 'Nike Just Do It!'
-            }
-          ],
-          'status': 'Sudah dibayar',
-          'harga': 250000,
-          'time': '1 hari : 20 jam : 30 menit'
-        }
-      ]
+      data: [],
+      isRefreshing: true,
+      loading: true
     }
+    this.props.getListTransaction()
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataListTransaction.status === 200) {
+      let temp = []
+      const tempData = nextProps.dataListTransaction.listTransactions
+      let i
+      for (i = 0; i < tempData.length; i++) {
+        if (tempData[i].bucket.status === 1 || tempData[i].bucket.status === 2 || tempData[i].bucket.status === 7) {
+
+        } else {
+          temp.push(tempData[i])
+        }
+      }
+      this.setState({
+        data: temp,
+        loading: false,
+        isRefreshing: false
+      })
+    }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshing: true, data: [], loading: true })
+    this.props.getListTransaction()
   }
 
   renderListViewTransaksi () {
@@ -426,35 +64,46 @@ class Transaction extends React.Component {
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
         style={styles.listView}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
       />
     )
   }
 
   renderRow (rowData) {
-    if (rowData.status === 'Verifikasi') {
+    if (rowData.bucket.status === 4) {
       return (
         <TouchableOpacity
           style={styles.rowContainerVerified}
-          onPress={() => this.pembayaranDetail(rowData.status)}
+          onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
         >
           {this.renderData(rowData)}
-          {this.renderPembayaran(rowData.status, rowData.time)}
+          {this.renderPembayaran(rowData.bucket.status, rowData.summary_transaction.time_left)}
         </TouchableOpacity>
       )
     }
     return (
       <TouchableOpacity
         style={styles.rowContainer}
-        onPress={() => this.pembayaranDetail(rowData.status)}
+        onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
       >
         {this.renderData(rowData)}
-        {this.renderPembayaran(rowData.status, rowData.time)}
+        {this.renderPembayaran(rowData.bucket.status, rowData.summary_transaction.time_left)}
       </TouchableOpacity>
     )
   }
 
   renderPembayaran (status, time) {
-    if (status === 'wait') {
+    if (status === 3) {
       return (
         <View style={styles.pembayaranContainer}>
           <Text style={styles.titlePembayaran}>
@@ -469,18 +118,24 @@ class Transaction extends React.Component {
   }
 
   renderData (rowData) {
-    const data = rowData.product
-    const money = MaskService.toMask('money', rowData.harga, {
+    const data = rowData.products
+    const money = MaskService.toMask('money', rowData.summary_transaction.total_price, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
     let status
-    if (rowData.status === 'wait') {
+    if (rowData.bucket.status === 3) {
       status = null
     } else {
-      status = rowData.status
+      if (rowData.bucket.status === 4) {
+        status = 'Verifikasi'
+      } else if (rowData.bucket.status === 5) {
+        status = 'Kadaluarsa'
+      } else if (rowData.bucket.status === 6) {
+        status = 'Sudah Dibayar'
+      }
     }
     if (data.length === 1) {
       return (
@@ -488,10 +143,10 @@ class Transaction extends React.Component {
           <Image source={{ uri: data[0].image }} style={styles.imageStyle} />
           <View style={styles.productContainer}>
             <Text style={styles.textTitle}>
-              {data[0].nama}
+              {data[0].name}
             </Text>
             <Text style={styles.textTitle}>
-              {data[0].toko}
+              {data[0].name}
             </Text>
           </View>
           <View style={styles.hargaContainer}>
@@ -546,7 +201,7 @@ class Transaction extends React.Component {
             <Image
               source={{ uri: data[2].image }}
               style={styles.imageRowStyle}
-              resizeMode='contain'
+              resizeMode='cover'
               borderRadius={7}
             >
               <View style={styles.morePictures}>
@@ -581,19 +236,31 @@ class Transaction extends React.Component {
     )
   }
 
-  pembayaranDetail (status) {
-    if (status === 'wait') {
-      NavigationActions.paymenttransferbankdetail({ type: ActionConst.PUSH })
-    } else if (status === 'Verifikasi') {
+  pembayaranDetail (status, id) {
+    if (status === 3) {
+      NavigationActions.payment({ type: ActionConst.PUSH })
+    } else if (status === 4) {
+      this.props.getDetailTransaction(id)
       NavigationActions.transactionverification({ type: ActionConst.PUSH })
-    } else if (status === 'Kadaluarsa') {
+    } else if (status === 5) {
+      this.props.getDetailTransaction(id)
       NavigationActions.transactionexpired({ type: ActionConst.PUSH })
-    } else if (status === 'Sudah dibayar') {
+    } else if (status === 6) {
+      this.props.getDetailTransaction(id)
       NavigationActions.transactionpaid({ type: ActionConst.PUSH })
     }
   }
 
   render () {
+    const { loading } = this.state
+    if (loading) {
+      return (
+        <View style={styles.container}>
+          <View style={{ marginTop: 10 }} />
+          <Spinner color={Colors.red} />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -606,11 +273,14 @@ class Transaction extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataListTransaction: state.listTransactions
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getListTransaction: () => dispatch(transactionAction.listTransactions()),
+    getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id}))
   }
 }
 

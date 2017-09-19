@@ -79,7 +79,7 @@ export default StyleSheet.create({
     color: Colors.darkgrey
   },
   textTitle: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.regular,
     lineHeight: 21,
     letterSpacing: 0.22,
@@ -217,20 +217,31 @@ export default StyleSheet.create({
     color: Colors.snow
   },
   containerBarang: {
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
     backgroundColor: Colors.snow,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver,
-    flexDirection: 'row'
+    flexDirection: 'column'
+  },
+  items: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   namaBarangContainer: {
-    marginLeft: 15,
-    flexDirection: 'column',
+    flexDirection: 'row',
+    marginTop: -3,
     flex: 1
   },
   imageBarang: {
-    height: 60,
-    width: 60
+    height: 35,
+    width: 35,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
   },
   modalContainer: {
     position: 'absolute',
@@ -277,18 +288,19 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.bold
   },
-  buyAgainContainer: {
-    width: 80,
-    height: 30,
-    justifyContent: 'center',
+  morePictures: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 5,
+    height: 45,
+    width: 45,
     alignItems: 'center',
-    backgroundColor: Colors.bluesky,
-    borderRadius: 5
+    justifyContent: 'center'
   },
-  textBeli: {
-    fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.small,
-    letterSpacing: 0.4,
+  textTitleWhite: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    lineHeight: 21,
+    letterSpacing: 0.2,
     color: Colors.snow
   }
 })

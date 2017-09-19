@@ -97,7 +97,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
-    resizeMode: 'contain'
+    resizeMode: 'cover'
   },
   imageRowStyle2: {
     height: 45,

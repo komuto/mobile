@@ -70,7 +70,8 @@ const colors = {
   iceBlue: '#f6f9ff',
   textYellow: '#ffcd00',
   whiteThree: '#f0f0f0',
-  pumpkinOrange: '#fe8224'
+  pumpkinOrange: '#fe8224',
+  pink: '#ff639b'
 }
 
 export default colors

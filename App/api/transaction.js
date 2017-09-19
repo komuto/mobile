@@ -92,3 +92,13 @@ export const updateAirwayBill = ({ id, ...data }) => {
   const axios = authApiKomuto()
   return axios.put(`users/store/disputes/${id}/airway-bill`, data)
 }
+
+export const buyerDisputeReceived = ({ id, data }) => {
+  const axios = authApiKomuto()
+  return axios.post(`users/disputes/${id}/received`, data)
+}
+
+export const sellerDisputeReceived = ({ id }) => {
+  const axios = authApiKomuto()
+  return axios.put(`users/store/disputes/${id}/received`)
+}

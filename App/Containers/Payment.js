@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
 import { MaskService } from 'react-native-masked-text'
 import * as paymentAction from '../actions/payment'
+import * as transactionAction from '../actions/transaction'
 import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -24,7 +25,8 @@ class Payment extends React.Component {
       getCartPayment: true,
       idCart: this.props.idCart,
       token: '',
-      loading: false
+      loading: false,
+      transaction: this.props.transaction
     }
   }
 
@@ -57,33 +59,32 @@ class Payment extends React.Component {
       })
     }
     if (nextProps.dataCart.status === 200) {
-      if (this.state.getCartPayment) {
-        let temp = 0
-        nextProps.dataCart.cart.items.map((obj, i) =>
-          (
-            temp = temp + obj.total_price
+      if (!this.state.transaction) {
+        if (this.state.getCartPayment) {
+          let temp = 0
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              temp = temp + obj.total_price
+            )
           )
-        )
-        if (nextProps.dataCart.cart.promo !== null) {
-          if (nextProps.dataCart.cart.promo.type === 0) {
-            temp = temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
-          } else {
-            temp = temp - parseInt(nextProps.dataCart.cart.promo.nominal)
+          if (nextProps.dataCart.cart.promo !== null) {
+            if (nextProps.dataCart.cart.promo.type === 0) {
+              temp = temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
+            } else {
+              temp = temp - parseInt(nextProps.dataCart.cart.promo.nominal)
+            }
           }
+          this.setState({
+            idCart: nextProps.dataCart.cart.id,
+            total: temp,
+            getCartPayment: false
+          })
+          this.props.getCartReset()
         }
-        this.setState({
-          total: temp,
-          getCartPayment: false
-        })
-        this.props.getCartReset()
       }
     } if (nextProps.dataCheckout.status === 200) {
       nextProps.dataCheckout.status = 0
-      NavigationActions.paymentmidtrans({
-        type: ActionConst.PUSH,
-        token: nextProps.dataToken.token,
-        from: 'payment'
-      })
+      this.props.getSnapToken(this.state.idCart)
     }
     if (nextProps.dataToken.status === 200) {
       nextProps.dataToken.status = 0
@@ -91,7 +92,37 @@ class Payment extends React.Component {
         loading: false
       })
       console.log('snap token', nextProps.dataToken.token)
-      this.props.checkout(false)
+      NavigationActions.paymentmidtrans({
+        type: ActionConst.PUSH,
+        token: nextProps.dataToken.token,
+        from: 'payment'
+      })
+    }
+
+    if (nextProps.dataTransaction.status === 200) {
+      if (this.state.transaction) {
+        const discount = nextProps.dataTransaction.transaction.bucket.promo
+        if (discount === '' || discount === undefined || discount === null) {
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price + nextProps.dataTransaction.transaction.bucket.unique_code,
+            getCartPayment: false,
+            idCart: nextProps.dataTransaction.transaction.bucket.id
+          })
+        } else {
+          const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
+          let nominalDiscount = 0
+          if (typeDiscount === 0) {
+            nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100
+          } else {
+            nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal)
+          }
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount + nextProps.dataTransaction.transaction.bucket.unique_code,
+            getCartPayment: false,
+            idCart: nextProps.dataTransaction.transaction.bucket.id
+          })
+        }
+      }
     }
   }
 
@@ -222,8 +253,12 @@ class Payment extends React.Component {
   }
 
   detail () {
+    if (this.state.transaction) {
+      this.props.getDetailTransaction(this.state.idCart)
+    }
     NavigationActions.paymentcart({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      transaction: this.state.transaction
     })
   }
 
@@ -234,10 +269,17 @@ class Payment extends React.Component {
   }
 
   midtrans () {
-    this.setState({
-      loading: true
-    })
-    this.props.getSnapToken()
+    if (this.state.transaction) {
+      this.setState({
+        loading: true
+      })
+      this.props.getSnapToken(this.state.idCart)
+    } else {
+      this.setState({
+        loading: true
+      })
+      this.props.checkout(false)
+    }
   }
 
   atm () {
@@ -262,16 +304,18 @@ const mapStateToProps = (state) => {
     dataPaymentMethod: state.paymentMethods,
     dataCart: state.cart,
     dataCheckout: state.checkout,
-    dataToken: state.snapToken
+    dataToken: state.snapToken,
+    dataTransaction: state.transaction
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getSnapToken: () => dispatch(paymentAction.getMidtransToken()),
+    getSnapToken: (id) => dispatch(paymentAction.getMidtransToken({id: id})),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
-    checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet}))
+    checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet})),
+    getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id}))
   }
 }
 

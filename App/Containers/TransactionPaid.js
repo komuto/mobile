@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as transactionAction from '../actions/transaction'
@@ -58,7 +59,6 @@ class TransactionPaid extends React.Component {
         })
       }
     }
-    nextProps.dataTransaction.status = 0
   }
 
   renderInfo () {
@@ -166,7 +166,7 @@ class TransactionPaid extends React.Component {
   renderBarang () {
     const { dataBarang } = this.state
     return (
-      <View style={[styles.tagihanContainer, { marginTop: 20 }]}>
+      <View style={[styles.tagihanContainer, { backgroundColor: Colors.paleGrey, marginTop: 20 }]}>
         <View style={styles.rowContainer}>
           <Text style={[styles.bold, { flex: 1 }]}>Daftar Barang yang dibeli</Text>
         </View>
@@ -182,26 +182,30 @@ class TransactionPaid extends React.Component {
   renderRowBarang (rowData) {
     if (rowData.items.length > 1) {
       if (rowData.items.length <= 4) {
+        const image = rowData.items.map((data, i) => {
+          return (
+            <Image key={i} source={{ uri: data.product.image }} style={styles.imageBarang} />
+          )
+        })
         return (
-          <View style={styles.containerStatusItem}>
-            <TouchableOpacity style={styles.containerBarang} onPress={() => this.detailBarang(rowData.id)}>
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+            <View style={styles.containerBarang}>
               <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
               <View style={styles.items}>
-                <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
-                <Image source={{ uri: rowData.items[1].product.image }} style={styles.imageBarang} />
-                <Image source={{ uri: rowData.items[2].product.image }} style={styles.imageBarang} />
-                <Image source={{ uri: rowData.items[3].product.image }} style={styles.imageBarang} />
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                  {image}
+                </View>
                 <Image source={Images.rightArrow} style={styles.arrow} />
               </View>
-            </TouchableOpacity>
-            {this.renderStatus(rowData.status)}
-          </View>
+            </View>
+            {this.renderStatus(rowData.transaction_status)}
+          </TouchableOpacity>
         )
       } else {
         const gambar = rowData.items.length - 4
         return (
-          <View style={styles.containerStatusItem}>
-            <TouchableOpacity style={styles.containerBarang} onPress={() => this.detailBarang(rowData.id)}>
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+            <View style={styles.containerBarang}>
               <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
               <View style={styles.items}>
                 <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
@@ -220,15 +224,15 @@ class TransactionPaid extends React.Component {
                 </Image>
                 <Image source={Images.rightArrow} style={styles.arrow} />
               </View>
-            </TouchableOpacity>
-            {this.renderStatus(rowData.status)}
-          </View>
+            </View>
+            {this.renderStatus(rowData.transaction_status)}
+          </TouchableOpacity>
         )
       }
     } else {
       return (
-        <View style={styles.containerStatusItem}>
-          <TouchableOpacity style={styles.containerBarang} onPress={() => this.detailBarang(rowData.id)}>
+        <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+          <View style={styles.containerBarang}>
             <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
             <View style={styles.items}>
               <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
@@ -237,9 +241,9 @@ class TransactionPaid extends React.Component {
               </View>
               <Image source={Images.rightArrow} style={styles.arrow} />
             </View>
-          </TouchableOpacity>
-          {this.renderStatus(rowData.status)}
-        </View>
+          </View>
+          {this.renderStatus(rowData.transaction_status)}
+        </TouchableOpacity>
       )
     }
   }
@@ -288,12 +292,14 @@ class TransactionPaid extends React.Component {
     }
   }
 
-  detailBarang (invoiceId) {
+  detailBarang (invoiceId, status) {
     const { id } = this.state
     this.props.getDetailInvoice(id, invoiceId)
-    // NavigationActions.transactiondetailstatuspurchase({
-    //   type: ActionConst.PUSH
-    // })
+    NavigationActions.transactiondetailstatus({
+      type: ActionConst.PUSH,
+      statusBarang: status,
+      idBucket: this.state.id
+    })
   }
 
   render () {

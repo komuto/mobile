@@ -20,11 +20,14 @@ export const CREATE_COMPLAINT_DISCUSSION_SELLER = 'CREATE_COMPLAINT_DISCUSSION_S
 export const UPDATE_AIRWAY_BILL = 'UPDATE_AIRWAY_BILL'
 export const BUYER_DISPUTE_RECEIVED = 'BUYER_DISPUTE_RECEIVED'
 export const SELLER_DISPUTE_RECEIVED = 'SELLER_DISPUTE_RECEIVED'
+export const GET_SALES = 'GET_SALES'
+export const GET_SALE_DETAIL = 'GET_SALE_DETAIL'
 
 /**
+ * @params params are the same as the api query
  * @state listTransactions
  */
-export const listTransactions = () => buildAction(typeReq(LIST_TRANSACTIONS))
+export const listTransactions = params => buildAction(typeReq(LIST_TRANSACTIONS), params)
 
 /**
  * @params id {int} transaction id
@@ -48,9 +51,10 @@ export const getBuyerInvoiceDetail = params => buildAction(typeReq(GET_BUYER_INV
 export const addComplaint = params => buildAction(typeReq(ADD_COMPLAINT), params)
 
 /**
+ * @params params are the same as the api query
  * @state newOrders
  */
-export const getNewOrders = () => buildAction(typeReq(GET_NEW_ORDERS))
+export const getNewOrders = params => buildAction(typeReq(GET_NEW_ORDERS), params)
 
 /**
  * @params id {int} invoice id
@@ -59,9 +63,10 @@ export const getNewOrders = () => buildAction(typeReq(GET_NEW_ORDERS))
 export const getNewOrderDetail = params => buildAction(typeReq(GET_NEW_ORDER_DETAIL), params)
 
 /**
+ * @params params are the same as the api query
  * @state processingOrders
  */
-export const getProcessingOrders = () => buildAction(typeReq(GET_PROCESSING_ORDERS))
+export const getProcessingOrders = params => buildAction(typeReq(GET_PROCESSING_ORDERS), params)
 
 /**
  * @params id {int} invoice id
@@ -145,3 +150,15 @@ export const buyerDisputeReceived = params => buildAction(typeReq(BUYER_DISPUTE_
  * @state sellerReceived
  */
 export const sellerDisputeReceived = params => buildAction(typeReq(SELLER_DISPUTE_RECEIVED), params)
+
+/**
+ * @params params are the same as the api query
+ * @state sales
+ */
+export const getSales = params => buildAction(typeReq(GET_SALES), params)
+
+/**
+ * @params id {int} invoice id
+ * @state saleDetail
+ */
+export const getSaleDetail = params => buildAction(typeReq(GET_SALE_DETAIL), params)

@@ -2,6 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, TextInput, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
+import moment from 'moment'
 import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -16,14 +17,12 @@ class TransactionItemReceived extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
-      nama: 'Sepatu Jogging',
-      namaToko: 'Sport Station Shop',
-      image: 'http://www.tokomesin.com/wp-content/uploads/2015/08/Sate-Ayam-Madura-tokomesin.jpeg',
-      invoice: 'Invoice-72342382320/01/2017',
-      status: this.props.statusBarang,
-      resi: '238423423',
-      alamat: 'Jakarta Selatan, DKI Jakarta',
-      countProduct: 2,
+      invoice: this.props.dataInvoice.invoice.invoice_number,
+      date: this.props.dataInvoice.invoice.created_at,
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      data: this.props.dataInvoice.invoice.items,
+      id: this.props.dataInvoice.invoice.id,
       vote: 0,
       quality: 0,
       accuracy: 0,
@@ -47,19 +46,44 @@ class TransactionItemReceived extends React.Component {
         }
       ],
       dataPhotos: [],
-      showModalCamera: false
+      showModalCamera: false,
+      dataReview: []
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataInvoice.status === 200) {
+      this.setState({
+        dataReview: nextProps.dataInvoice.invoice.items
+      })
     }
   }
 
   renderItem () {
-    const { nama, countProduct, image } = this.state
+    const { invoice, date, months } = this.state
+    const time = moment.unix(date)
+    const month = months[moment(time).format('M') - 1]
+    const day = moment(time).format('DD')
+    const year = moment(time).format('YYYY')
+    const textDate = day + ' ' + month + ' ' + year
     return (
       <View style={styles.barangContainer}>
-        <Image source={{ uri: image }} style={styles.image} />
-        <View style={styles.barang}>
-          <Text style={[styles.textTitle, { marginBottom: 3 }]}>{nama}</Text>
-          <Text style={styles.namaToko}>Jumlah: {countProduct}</Text>
+        {this.renderData('No Invoice', invoice)}
+        {this.renderData('Tanggal Transaksi', textDate)}
+        <View style={styles.dataContainer}>
+          <Text style={[styles.textTitle, { flex: 1 }]}>Status</Text>
+          <View style={styles.warna} />
+          <Text style={styles.textTitle}>Barang Sudah Dikirim</Text>
         </View>
+      </View>
+    )
+  }
+
+  renderData (label, content) {
+    return (
+      <View style={styles.dataContainer}>
+        <Text style={[styles.textTitle, { flex: 1 }]}>{label}</Text>
+        <Text style={styles.textTitle}>{content}</Text>
       </View>
     )
   }
@@ -69,16 +93,18 @@ class TransactionItemReceived extends React.Component {
     if (vote === 0) {
       return (
         <View style={styles.voteContainer}>
-          <Text style={styles.textTitle}>Apakah barang yang anda terima sesuai?</Text>
+          <Text style={styles.textTitle}>
+            Apakah Anda memiliki komplain terhadap barang yang Anda terima?
+          </Text>
           <View style={styles.vote}>
             <TouchableOpacity style={styles.voteNoDefault} onPress={() => this.setState({vote: 1})}>
               <Image source={Images.thumbDownRed} style={styles.imageVote} />
-              <Text style={styles.textRed}>Tidak</Text>
+              <Text style={styles.textRed}>Ya</Text>
             </TouchableOpacity>
             <View style={styles.separatorVote} />
             <TouchableOpacity style={styles.voteYesDefault} onPress={() => this.setState({vote: 2})}>
               <Image source={Images.thumbUpGreen} style={styles.imageVote} />
-              <Text style={styles.textGreen}>Ya</Text>
+              <Text style={styles.textGreen}>Tidak</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -86,16 +112,18 @@ class TransactionItemReceived extends React.Component {
     } else if (vote === 1) {
       return (
         <View style={styles.voteContainer}>
-          <Text style={styles.textTitle}>Apakah barang yang anda terima sesuai?</Text>
+          <Text style={styles.textTitle}>
+            Apakah Anda memiliki komplain terhadap barang yang Anda terima?
+          </Text>
           <View style={styles.vote}>
             <TouchableOpacity style={styles.voteNo} onPress={() => this.setState({vote: 1})}>
               <Image source={Images.thumbDown} style={styles.imageVote} />
-              <Text style={styles.textWhite}>Tidak</Text>
+              <Text style={styles.textWhite}>Ya</Text>
             </TouchableOpacity>
             <View style={styles.separatorVote} />
             <TouchableOpacity style={styles.voteYesDefault} onPress={() => this.setState({vote: 2})}>
               <Image source={Images.thumbUpGreen} style={styles.imageVote} />
-              <Text style={styles.textGreen}>Ya</Text>
+              <Text style={styles.textGreen}>Tidak</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -103,16 +131,18 @@ class TransactionItemReceived extends React.Component {
     } else if (vote === 2) {
       return (
         <View style={styles.voteContainer}>
-          <Text style={styles.textTitle}>Apakah barang yang anda terima sesuai?</Text>
+          <Text style={styles.textTitle}>
+            Apakah Anda memiliki komplain terhadap barang yang Anda terima?
+          </Text>
           <View style={styles.vote}>
             <TouchableOpacity style={styles.voteNoDefault} onPress={() => this.setState({vote: 1})}>
               <Image source={Images.thumbDownRed} style={styles.imageVote} />
-              <Text style={styles.textRed}>Tidak</Text>
+              <Text style={styles.textRed}>Ya</Text>
             </TouchableOpacity>
             <View style={styles.separatorVote} />
             <TouchableOpacity style={styles.voteYes} onPress={() => this.setState({vote: 2})}>
               <Image source={Images.thumbUp} style={styles.imageVote} />
-              <Text style={styles.textWhite}>Ya</Text>
+              <Text style={styles.textWhite}>Tidak</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -268,6 +298,12 @@ class TransactionItemReceived extends React.Component {
             <View style={styles.triangle} />
           </View>
         </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.textTitle}>
+            Silahkan memberi review untuk barang yang telah
+            Anda terima
+          </Text>
+        </View>
         <View style={styles.content}>
           <Text style={styles.textTitle}>Kualitas Produk</Text>
           <View style={styles.rateContainer}>
@@ -388,6 +424,7 @@ class TransactionItemReceived extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataInvoice: state.buyerInvoiceDetail
   }
 }
 

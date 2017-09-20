@@ -59,7 +59,6 @@ class TransactionExpired extends React.Component {
         })
       }
     }
-    nextProps.dataTransaction.status = 0
   }
 
   renderInfo () {
@@ -180,14 +179,18 @@ class TransactionExpired extends React.Component {
   renderRowBarang (rowData) {
     if (rowData.items.length > 1) {
       if (rowData.items.length <= 4) {
+        const image = rowData.items.map((data, i) => {
+          return (
+            <Image key={i} source={{ uri: data.product.image }} style={styles.imageBarang} />
+          )
+        })
         return (
           <TouchableOpacity style={styles.containerBarang} onPress={() => this.detailBarang(rowData.id)}>
             <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
             <View style={styles.items}>
-              <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
-              <Image source={{ uri: rowData.items[1].product.image }} style={styles.imageBarang} />
-              <Image source={{ uri: rowData.items[2].product.image }} style={styles.imageBarang} />
-              <Image source={{ uri: rowData.items[3].product.image }} style={styles.imageBarang} />
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                {image}
+              </View>
               <Image source={Images.rightArrow} style={styles.arrow} />
             </View>
           </TouchableOpacity>
@@ -245,7 +248,7 @@ class TransactionExpired extends React.Component {
   detailBarang (invoiceId) {
     const { id } = this.state
     this.props.getDetailInvoice(id, invoiceId)
-    NavigationActions.transactiondetailstatuspurchase({
+    NavigationActions.transactiondetailitem({
       type: ActionConst.PUSH
     })
   }

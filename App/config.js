@@ -39,7 +39,7 @@ export function errorHandling (actionType, err) {
       return put({ type: actionType, ...errorOffline })
     default:
       const errorUnknown = {
-        message: err.message,
+        message: err.message || err.response || err,
         code: 'EUNKNOWN',
         isOnline: true,
         isLoading: false

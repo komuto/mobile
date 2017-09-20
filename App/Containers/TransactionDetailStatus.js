@@ -26,10 +26,14 @@ class TransactionDetailStatus extends React.Component {
           tabBarUnderlineStyle={{ backgroundColor: Colors.snow, height: 2 }}
           tabBarInactiveTextColor={Colors.paleGrey}
           tabBarTextStyle={styles.textTab}
+          prerenderingSiblingsNumber={2}
           locked
         >
           <ScrollView tabLabel='Status' ref='Barang' style={styles.scrollView}>
-            <TransactionDetailStatusItem statusBarang={this.props.statusBarang} />
+            <TransactionDetailStatusItem
+              statusBarang={this.props.statusBarang}
+              idBucket={this.props.idBucket}
+            />
           </ScrollView>
           <ScrollView tabLabel='Detail Pembelian' ref='Pembelian' style={styles.scrollView}>
             <TransactionDetailStatusPurchase />

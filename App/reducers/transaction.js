@@ -110,3 +110,15 @@ export const sellerDisputeReceived = createReducer(buildInitState({ dispute: {} 
     type: actions.SELLER_DISPUTE_RECEIVED,
     resultName: 'dispute'
   }).run()
+
+export const getSales = createReducer(buildInitState({ sales: [] }))
+  .addReducer({
+    type: actions.GET_SALES,
+    resultName: 'sales'
+  }).run()
+
+export const getSaleDetail = createReducer(buildInitState({ sale: {} }))
+  .addReducer({
+    type: actions.GET_SALE_DETAIL,
+    resultName: 'sale'
+  }).run()

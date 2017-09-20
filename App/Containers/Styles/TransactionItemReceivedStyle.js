@@ -8,11 +8,16 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey
   },
   barangContainer: {
+    flexDirection: 'column',
+    backgroundColor: Colors.snow
+  },
+  dataContainer: {
     flexDirection: 'row',
     backgroundColor: Colors.snow,
     padding: 20,
+    borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver
+    alignItems: 'center'
   },
   image: {
     width: 45,
@@ -238,5 +243,19 @@ export default StyleSheet.create({
   imageplus: {
     height: 30,
     width: 30
+  },
+  warna: {
+    marginRight: 10,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: Colors.bluesky,
+    marginTop: 8
+  },
+  titleContainer: {
+    padding: 20,
+    backgroundColor: Colors.snow,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5
   }
 })

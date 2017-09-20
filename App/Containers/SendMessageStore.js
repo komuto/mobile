@@ -18,7 +18,7 @@ class SendMessageStore extends React.Component {
       foto: this.props.foto,
       namaToko: this.props.namaToko,
       alamat: this.props.alamat,
-      judul: '',
+      judul: this.props.title,
       pertanyaan: '',
       height: 50,
       heightJudul: 50,

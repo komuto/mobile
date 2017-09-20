@@ -311,8 +311,8 @@ export default StyleSheet.create({
   warnaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 12,
-    paddingBottom: 5,
+    paddingTop: 15,
+    paddingBottom: 15,
     paddingLeft: 20,
     paddingRight: 20
   },

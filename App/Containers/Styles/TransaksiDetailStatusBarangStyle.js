@@ -9,16 +9,21 @@ export default StyleSheet.create({
   barangContainer: {
     flexDirection: 'row',
     padding: 20,
+    alignItems: 'center',
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
   },
   image: {
-    width: 45,
-    height: 45
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    resizeMode: 'cover'
   },
   barang: {
     marginLeft: 20,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    justifyContent: 'center',
+    flex: 1
   },
   textTitle: {
     fontFamily: Fonts.type.bold,
@@ -52,6 +57,7 @@ export default StyleSheet.create({
     marginRight: 20
   },
   buttonContainer: {
+    marginTop: 30,
     flexDirection: 'row',
     padding: 20
   },
@@ -119,5 +125,34 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     letterSpacing: 0.22,
     color: Colors.blueText
+  },
+  titleContainer: {
+    backgroundColor: Colors.paleGrey,
+    paddingLeft: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    paddingRight: 20
+  },
+  buttonSendMessage: {
+    width: 100,
+    height: 30,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: Colors.bluesky,
+    backgroundColor: Colors.snow,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  disputeContainer: {
+    flexDirection: 'row',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
+    padding: 20
+  },
+  imageRow: {
+    width: 30,
+    height: 30,
+    borderRadius: 5,
+    marginRight: 10
   }
 })

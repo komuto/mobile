@@ -19,43 +19,76 @@ class PaymentCart extends React.Component {
       total: 0,
       namaDiskon: '',
       diskon: 0,
-      getCartPaymentDetail: true
+      getCartPaymentDetail: true,
+      transaction: this.props.transaction
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataCart.status === 200) {
-      if (this.state.getCartPaymentDetail) {
-        let temp = 0
-        nextProps.dataCart.cart.items.map((obj, i) =>
-          (
-            temp = temp + obj.total_price
+      if (!this.state.transaction) {
+        if (this.state.getCartPaymentDetail) {
+          let temp = 0
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              temp = temp + obj.total_price
+            )
           )
-        )
-        this.setState({
-          dataPembayaran: nextProps.dataCart.cart.items,
-          getCartPaymentDetail: false
-        })
-        if (nextProps.dataCart.cart.promo !== null) {
-          if (nextProps.dataCart.cart.promo.type === 0) {
+          this.setState({
+            dataPembayaran: nextProps.dataCart.cart.items,
+            getCartPaymentDetail: false
+          })
+          if (nextProps.dataCart.cart.promo !== null) {
+            if (nextProps.dataCart.cart.promo.type === 0) {
+              this.setState({
+                diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
+                total: temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
+                namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              })
+            } else {
+              this.setState({
+                diskon: nextProps.dataCart.cart.promo.nominal,
+                total: temp - parseInt(nextProps.dataCart.cart.promo.nominal),
+                namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              })
+            }
+          } else {
             this.setState({
-              diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
-              total: temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
-              namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              total: temp
+            })
+          }
+          this.props.getCartReset()
+        }
+      }
+    }
+    if (nextProps.dataTransaction.status === 200) {
+      if (this.state.transaction) {
+        this.setState({
+          dataPembayaran: nextProps.dataTransaction.transaction.invoices[0].items,
+          getCartPaymentDetail: false
+        }) //
+        const discount = nextProps.dataTransaction.transaction.bucket.promo
+        if (discount === '' || discount === undefined || discount === null) {
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price + nextProps.dataTransaction.transaction.bucket.unique_code
+          })
+        } else {
+          const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
+          const tempTotal = nextProps.dataTransaction.transaction.summary_transaction.total_price
+          if (typeDiscount === 0) {
+            this.setState({
+              diskon: parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100,
+              total: tempTotal - parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100,
+              namaDiskon: nextProps.dataTransaction.transaction.bucket.promo.promo_code
             })
           } else {
             this.setState({
-              diskon: nextProps.dataCart.cart.promo.nominal,
-              total: temp - parseInt(nextProps.dataCart.cart.promo.nominal),
-              namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              diskon: parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal),
+              total: tempTotal - parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal),
+              namaDiskon: nextProps.dataTransaction.transaction.bucket.promo.promo_code
             })
           }
-        } else {
-          this.setState({
-            total: temp
-          })
         }
-        this.props.getCartReset()
       }
     }
   }
@@ -249,7 +282,8 @@ class PaymentCart extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataTransaction: state.transaction
   }
 }
 

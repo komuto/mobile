@@ -238,7 +238,8 @@ class Transaction extends React.Component {
 
   pembayaranDetail (status, id) {
     if (status === 3) {
-      NavigationActions.payment({ type: ActionConst.PUSH })
+      NavigationActions.payment({ type: ActionConst.PUSH, transaction: true })
+      this.props.getDetailTransaction(id)
     } else if (status === 4) {
       this.props.getDetailTransaction(id)
       NavigationActions.transactionverification({ type: ActionConst.PUSH })

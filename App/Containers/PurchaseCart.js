@@ -162,9 +162,10 @@ class PurchaseCart extends React.Component {
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCheckout.status === 200) {
-      NavigationActions.payment({type: ActionConst.PUSH})
-      // ToastAndroid.show('Update keranjang belanja berhasil..', ToastAndroid.LONG)
-      // snap.show()
+      NavigationActions.payment({
+        type: ActionConst.PUSH,
+        idCart: this.props.dataCart.cart.id
+      })
       this.setState({
         loadingCheckout: false
       })

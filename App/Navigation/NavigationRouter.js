@@ -1000,7 +1000,7 @@ class NavigationRouter extends Component {
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
-          <Scene key='salesdasboard'
+          <Scene key='salesdashboard'
             component={SalesDashboard}
             title='Penjualan'
             navBar={CustomNavBar}

@@ -91,7 +91,8 @@ class StoreDetail extends React.Component {
       id: this.state.id,
       foto: this.state.fotoToko,
       namaToko: this.state.namaToko,
-      alamat: this.state.alamat
+      alamat: this.state.alamat,
+      typeMessage: 'sendMessageStore'
     })
   }
 

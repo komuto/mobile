@@ -19,6 +19,7 @@ import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as salesAction from '../actions/transaction'
 
 // Styles
 import styles from './Styles/InputShippingInfoStyle'
@@ -30,27 +31,66 @@ class InputShippingInfo extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      loading: false,
+      loading: true,
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
       notif: this.props.notif,
       messageNotif: this.props.messageNotif,
       page: this.props.page,
-      invoiceNumber: 'Invoice-83273847492/04/2017',
-      dateTransaction: 1505088000,
-      storePhoto: Images.contohproduct,
-      storeName: 'Dropshop Quality',
-      priceProduct: 1250000,
-      isDropship: this.props.isDropship || false,
-      isWholeSale: this.props.isWholeSale || false,
       modalNumberReceive: false,
+      idInvoice: this.props.idInvoice,
       receipeNumber: '',
+      invoiceNumber: '',
+      dateTransaction: 0,
+      storePhoto: null,
+      storeName: '',
+      priceProduct: 0,
+      modalOrderReceived: false,
+      modalOrderReject: false,
+      modalConfrimOrderReject: false,
+      modalLoading: false,
+      isDropship: false,
+      isWholeSale: false,
+      detailOrder: [],
+      invoice: [],
+      buyer: [],
+      items: [],
+      seller: [],
+      reseller: [],
+      expeditionName: '',
+      expeditionServices: '',
+      isInsurance: '',
+      addressBuyer: '',
+      addressSeller: '',
+      statusConfrim: false,
       photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDetail.status === 200) {
+      this.setState({
+        detailOrder: nextProps.dataDetail.orderDetail,
+        buyer: nextProps.dataDetail.orderDetail.buyer,
+        invoice: nextProps.dataDetail.orderDetail.invoice,
+        items: nextProps.dataDetail.orderDetail.items,
+        seller: nextProps.dataDetail.orderDetail.seller,
+        reseller: nextProps.dataDetail.orderDetail.reseller,
+        invoiceNumber: nextProps.dataDetail.orderDetail.invoice.invoice_number,
+        dateTransaction: nextProps.dataDetail.orderDetail.invoice.created_at,
+        expeditionName: nextProps.dataDetail.orderDetail.invoice.expedition.expedition.name,
+        expeditionServices: nextProps.dataDetail.orderDetail.invoice.expedition.name,
+        isInsurance: nextProps.dataDetail.orderDetail.invoice.is_insurance,
+        addressBuyer: nextProps.dataDetail.orderDetail.buyer.address,
+        addressSeller: nextProps.dataDetail.orderDetail.seller.address,
+        loading: false,
+        typeInvoice: nextProps.dataDetail.orderDetail.invoice.type
+      })
+    } if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
+      this.setState({modalNumberReceive: true, modalLoading: false, statusConfrim: false})
+      nextProps.dataProcessDeliveryOrder.status = 0
+    }
   }
 
   componentDidMount () {
@@ -85,22 +125,26 @@ class InputShippingInfo extends React.Component {
     this.setState({ receipeNumber: text })
   }
 
-  renderPhoto (photo) {
-    if (this.state.photo.length > 4) {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+  renderPhoto (products) {
+    if (products.length > 4) {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         if (i === 3) {
           return (
-            <View key={i} style={styles.maskedSmallImageProduct}>
-              <Image source={data.name} style={styles.imageSmallProduct} />
-              <View style={styles.placeholder}>
-                <Text style={{padding: 5, color: Colors.snow, fontFamily: Fonts.type.bold, fontSize: Fonts.size.medium}}>+{this.state.photo - 4}</Text>
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedSmallImageProduct}>
+                <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
+                <View style={styles.placeholder}>
+                  <Text style={styles.textPlaceHolder}>+{products.length - 4}</Text>
+                </View>
               </View>
             </View>
           )
         } else {
           return (
-            <View key={i} style={styles.maskedSmallImageProduct}>
-              <Image source={data.name} style={styles.imageSmallProduct} />
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedSmallImageProduct}>
+                <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
+              </View>
             </View>
           )
         }
@@ -111,10 +155,10 @@ class InputShippingInfo extends React.Component {
         </View>
       )
     } else {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         return (
           <View key={i} style={styles.maskedSmallImageProduct}>
-            <Image source={data.name} style={styles.imageSmallProduct} />
+            <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
           </View>
         )
       })
@@ -127,17 +171,16 @@ class InputShippingInfo extends React.Component {
   }
 
   renderInfoBuyer () {
-    console.log('reseller', this.state.isWholeSale)
-    if (this.state.isWholeSale) {
+    if (!this.state.detailOrder.reseller) {
       return (
         <View>
-          <Text style={styles.bigTitle}>Info Reseller</Text>
+          <Text style={styles.bigTitle}>Info Pembeli</Text>
           <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
             <View style={styles.maskedImageProfile}>
-              <Image source={Images.contohproduct} style={styles.imageProfile} />
+              <Image source={{uri: this.state.buyer.photo}} style={styles.imageProfile} />
             </View>
-            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.storeName}</Text>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Reseller')}>
+            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.buyer.name}</Text>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Pembeli', this.state.invoice.id, this.state.buyer, 'Pembeli', 'sendMessageBuyer')}>
               <Text style={styles.labelButtonFav}>Kirim Pesan</Text>
             </TouchableOpacity>
           </View>
@@ -146,13 +189,13 @@ class InputShippingInfo extends React.Component {
     } else {
       return (
         <View>
-          <Text style={styles.bigTitle}>Info Pembeli</Text>
+          <Text style={styles.bigTitle}>Info Reseller</Text>
           <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
             <View style={styles.maskedImageProfile}>
-              <Image source={Images.contohproduct} style={styles.imageProfile} />
+              <Image source={{uri: this.state.reseller.store.photo}} style={styles.imageProfile} />
             </View>
-            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.storeName}</Text>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Pembeli')}>
+            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.reseller.store.name}</Text>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Reseller', this.state.invoice.id, this.state.reseller.store, 'Reseller', 'sendMessageReseller')}>
               <Text style={styles.labelButtonFav}>Kirim Pesan</Text>
             </TouchableOpacity>
           </View>
@@ -161,41 +204,19 @@ class InputShippingInfo extends React.Component {
     }
   }
 
-  renderListProductBuyer () {
-    var moneyMasked = this.maskedMoney(250000)
+  renderRowProduct (rowData, x, y) {
+    var moneyMasked = this.maskedMoney(rowData.total_price)
     return (
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
           <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
+            <Image source={{uri: rowData.image}} style={styles.imageProduct} />
           </View>
           <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
+            <Text style={styles.labelProduct}>{rowData.product.name}</Text>
             <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
-          </View>
-        </View>
-        <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-          <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
-          </View>
-          <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
-            <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
-          </View>
-        </View>
-        <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-          <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
-          </View>
-          <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
-            <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
+            <Text style={styles.labelProduct2}>Jumlah: {rowData.qty}</Text>
+            <Text style={styles.labelMessage}>{rowData.note}</Text>
           </View>
         </View>
       </View>
@@ -203,50 +224,37 @@ class InputShippingInfo extends React.Component {
   }
 
   renderShippingInformation () {
-    if (this.state.isWholeSale) {
+    const {buyer, addressBuyer, addressSeller, seller, reseller} = this.state
+    if (this.state.detailOrder.reseller) {
       return (
         <View style={{backgroundColor: Colors.snow}}>
           <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Dwinawan Hariwijaya
-              Kemanggisan Jakarta Barat,
-              DKI Jakarta, 55673
-              Telp: 0821 - 1310 - 1585</Text>
+                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}
+              </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.informationReseller}>
-            <Text style={styles.textInfoReseller}>Barang ini terjual dari reseller. Sehingga nama
+          <View style={styles.information}>
+            <Text style={styles.textInfo}>Barang ini terjual dari reseller. Sehingga nama
             toko reseller disertakan.</Text>
           </View>
           <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
             <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Alamat Penjual</Text>
+              <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Samantha William (Dropshop Quality)
-              Jalan Wates km 11.
-              Bantul. Yogyakarta, 55752</Text>
+                {seller.name} ({reseller.store.name}){'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+              </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>JNE</Text>
-          </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Paket Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Reguler</Text>
-          </View>
-          <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <Text style={styles.labelStyle}>Asuransi</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Ya</Text>
-          </View>
+          {this.renderExpedition()}
         </View>
       )
     } else {
@@ -256,10 +264,8 @@ class InputShippingInfo extends React.Component {
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Dwinawan Hariwijaya
-              Kemanggisan Jakarta Barat,
-              DKI Jakarta, 55673
-              Telp: 0821 - 1310 - 1585</Text>
+                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}
+              </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
@@ -267,39 +273,58 @@ class InputShippingInfo extends React.Component {
           </View>
           <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
             <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Alamat Penjual</Text>
+              <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Samantha William
-              Jalan Wates km 11.
-              Bantul. Yogyakarta, 55752</Text>
+                {seller.name}{'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+              </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>JNE</Text>
-          </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Paket Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Reguler</Text>
-          </View>
-          <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <Text style={styles.labelStyle}>Asuransi</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Ya</Text>
-          </View>
+          {this.renderExpedition()}
         </View>
       )
     }
   }
 
-  renderPriceDetail () {
-    var subTotal = this.maskedMoney(250000)
-    var insuranceFee = this.maskedMoney(25000)
-    var postalFee = this.maskedMoney(2500)
+  checkInsurance (data) {
+    if (data) {
+      this.status = 'Ya'
+    } else {
+      this.status = 'Tidak'
+    }
+    return (
+      <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{this.status}</Text>
+    )
+  }
 
-    var total = 250000 + 25000 + 2500
+  renderExpedition () {
+    const {expeditionName, expeditionServices, isInsurance} = this.state
+    return (
+      <View>
+        <View style={styles.continerOrder}>
+          <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
+          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{expeditionName}</Text>
+        </View>
+        <View style={styles.continerOrder}>
+          <Text style={styles.labelStyle}>Paket Pengiriman</Text>
+          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{expeditionServices}</Text>
+        </View>
+        <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
+          <Text style={styles.labelStyle}>Asuransi</Text>
+          {this.checkInsurance(isInsurance)}
+        </View>
+      </View>
+    )
+  }
+
+  renderPriceDetail (data) {
+    var subTotal = this.maskedMoney(data.total_bill)
+    var insuranceFee = this.maskedMoney(data.insurance_fee)
+    var postalFee = this.maskedMoney(data.delivery_cost)
+
+    var total = data.total_bill + data.insurance_fee + data.delivery_cost
     var totalMasked = this.maskedMoney(total)
 
     return (
@@ -325,15 +350,19 @@ class InputShippingInfo extends React.Component {
   }
 
   finalAction () {
-    if (this.state.isDropship) {
+    if (this.state.typeInvoice === 'seller') {
       return (
         <View style={[styles.buttonContainer, {backgroundColor: Colors.snow, marginTop: 20}]}>
-          <TouchableOpacity style={styles.buttonReset} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Seller')}>
+          <TouchableOpacity style={styles.buttonReset} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Seller', this.state.invoice.id, this.state.seller, 'Seller', 'sendMessageSeller')}>
             <Text style={styles.labelButtonReset}>
                 Kirim Pesan ke Seller
             </Text>
           </TouchableOpacity>
         </View>
+      )
+    } else {
+      return (
+        <View />
       )
     }
   }
@@ -356,10 +385,10 @@ class InputShippingInfo extends React.Component {
                 Order ini dipindahkan ke daftar penjualan.{'\n'}
                 Silahkan cek untuk melihat status{'\n'}
                 transaksi Anda</Text>
-              <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.setState({modalNumberReceive: false})}>
+              <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleListSales()}>
                 <Text style={styles.textVerifikasiButton}>Lihat Daftar Penjualan</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.batalButton} onPress={() => this.setState({modalNumberReceive: false})}>
+              <TouchableOpacity style={styles.batalButton} onPress={() => this.handleListDelivery()}>
                 <Text style={styles.textBatalButton}>Kembali ke  Konfirmasi Pengiriman</Text>
               </TouchableOpacity>
             </View>
@@ -369,8 +398,41 @@ class InputShippingInfo extends React.Component {
     )
   }
 
+  handleListSales () {
+    this.setState({
+      modalNumberReceive: false
+    })
+    NavigationActions.saleslist({
+      type: ActionConst.PUSH })
+  }
+
+  handleListDelivery () {
+    this.setState({
+      modalNumberReceive: false
+    })
+    NavigationActions.deliveryConfirmation({
+      type: ActionConst.POP_AND_REPLACE })
+  }
+
+  modalLoading () {
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={this.state.modalLoading}
+        onRequestClose={() => this.setState({ modalLoading: false })}
+        >
+        <View style={[styles.containerLoading]}>
+          <View style={styles.loading}>
+            <ActivityIndicator color='white' size='large' />
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
   renderDetail () {
-    var timeStampToDate = this.maskedDate(1505088000)
+    var timeStampToDate = this.maskedDate(this.state.dateTransaction)
     return (
       <ScrollView>
         <View style={styles.continerOrder}>
@@ -383,56 +445,77 @@ class InputShippingInfo extends React.Component {
         </View>
         {this.renderInfoBuyer()}
         <Text style={styles.bigTitle}>Daftar Barang yang dibeli</Text>
-        {this.renderListProductBuyer()}
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.items)}
+          renderRow={this.renderRowProduct.bind(this)}
+          enableEmptySections
+        />
         <Text style={styles.bigTitle}>Informasi Pengiriman</Text>
         {this.renderShippingInformation()}
         <Text style={styles.bigTitle}>Detail Harga</Text>
-        {this.renderPriceDetail()}
+        {this.renderPriceDetail(this.state.invoice)}
         {this.finalAction()}
       </ScrollView>
     )
   }
 
+  checkInsurances (data) {
+    if (data) {
+      this.status = 'Ya'
+    } else {
+      this.status = 'Tidak'
+    }
+    return (
+      <Text style={[styles.textRegularSlate]}>{this.status}</Text>
+    )
+  }
+
+  renderExpeditions () {
+    const {expeditionName, expeditionServices, isInsurance} = this.state
+    return (
+      <View style={styles.viewColumn}>
+        <View style={styles.border}>
+          <Text style={[styles.textBold]}>Info Pengiriman</Text>
+        </View>
+        <View style={styles.borderRow}>
+          <Text style={[styles.textSemiBoldslate]}>Kurir Pengiriman</Text>
+          <Text style={[styles.textRegularSlate]}>{expeditionName}</Text>
+        </View>
+        <View style={styles.borderRow}>
+          <Text style={[styles.textSemiBoldslate]}>Paket Pengiriman</Text>
+          <Text style={[styles.textRegularSlate]}>{expeditionServices}</Text>
+        </View>
+        <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
+          <Text style={[styles.textSemiBoldslate]}>Asuransi</Text>
+          {this.checkInsurances(isInsurance)}
+        </View>
+      </View>
+    )
+  }
+
   renderInputReceiptNumber () {
+    var tempTransactionDate = this.maskedDate(this.state.dateTransaction)
+    var dayLeft = moment(tempTransactionDate, 'DD MMMM YYYY').add(3, 'days').format('DD MMMM YYYY').toString()
     return (
       <ScrollView>
         <View style={styles.information}>
           <Image source={Images.infoBlue} style={styles.iconInfoBlue} />
-          <Text style={styles.textInfo}>Anda memiliki waktu 3 hari sampai tanggal
-          17 Oktober 2017 untuk menginformasikan
-          nomor resi. Jika tidak kami akan membatalkan
-          pesanan ini </Text>
+          <Text style={styles.textInfo}>Anda memiliki waktu 3 hari sampai tanggal {dayLeft} untuk menginformasikan nomor resi. Jika tidak kami akan membatalkan pesanan ini </Text>
         </View>
         <View style={styles.containerBuyer}>
-          <Text style={[styles.textSemiBold, styles.flexOne]}>Jonathan Hope</Text>
+          <Text style={[styles.textSemiBold, styles.flexOne]}>{this.state.buyer.name}</Text>
           <View style={styles.containerPhoto}>
-            {this.renderPhoto(this.state.photo)}
+            {this.renderPhoto(this.state.items)}
           </View>
         </View>
-        <View style={styles.viewColumn}>
-          <View style={styles.border}>
-            <Text style={[styles.textBold]}>Info Pengiriman</Text>
-          </View>
-          <View style={styles.borderRow}>
-            <Text style={[styles.textSemiBoldslate]}>Kurir Pengiriman</Text>
-            <Text style={[styles.textRegularSlate]}>JNE</Text>
-          </View>
-          <View style={styles.borderRow}>
-            <Text style={[styles.textSemiBoldslate]}>Paket Pengiriman</Text>
-            <Text style={[styles.textRegularSlate]}>Reguler</Text>
-          </View>
-          <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
-            <Text style={[styles.textSemiBoldslate]}>Asuransi</Text>
-            <Text style={[styles.textRegularSlate]}>Ya</Text>
-          </View>
-        </View>
+        {this.renderExpeditions()}
         {this.renderReceiptNumber()}
       </ScrollView>
     )
   }
 
   renderReceiptNumber () {
-    if (this.state.isDropship) {
+    if (this.state.typeInvoice === 'seller') {
       return (
         <View>
           <View style={[styles.viewColumn, {marginBottom: 0}]}>
@@ -442,7 +525,7 @@ class InputShippingInfo extends React.Component {
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonReset} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Seller')}>
+            <TouchableOpacity style={styles.buttonReset} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Seller', this.state.invoice.id, this.state.seller, 'Seller', 'sendMessageSeller')}>
               <Text style={styles.labelButtonReset}>
                   Kirim Pesan ke Seller
               </Text>
@@ -474,7 +557,7 @@ class InputShippingInfo extends React.Component {
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.buttonReset, {backgroundColor: Colors.bluesky}]} onPress={() => this.setState({modalNumberReceive: true})}>
+            <TouchableOpacity style={[styles.buttonReset, {backgroundColor: Colors.bluesky}]} onPress={() => this.onclickProcessInfoDelivery()}>
               <Text style={[styles.labelButtonReset, {color: Colors.snow}]}>
                   Proses Info Pengiriman
               </Text>
@@ -485,22 +568,31 @@ class InputShippingInfo extends React.Component {
     }
   }
 
-  sendMessageToSaller (titles) {
+  onclickProcessInfoDelivery (data) {
+    this.setState({statusConfrim: true, modalLoading: true})
+    this.props.processDeliveryConfrim(this.state.invoice.id, +this.state.receipeNumber)
+  }
+
+  sendMessageToSaller (titles, invoiceId, data, type, actionType) {
     NavigationActions.sendmessagestore({
       type: ActionConst.PUSH,
       title: titles,
-      id: 28,
-      foto: null,
-      namaToko: 'Dummy toko',
-      alamat: 'Dummy Alamat'
+      id: invoiceId,
+      foto: data.photo,
+      namaToko: data.name,
+      alamat: type,
+      typeMessage: actionType
     })
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='large' />
-    </View>) : (<View />)
+    if (this.state.loading) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -515,23 +607,25 @@ class InputShippingInfo extends React.Component {
         >
           <View tabLabel='Nomer Resi' ref='receiptNumber'>
             {this.renderInputReceiptNumber()}
-            {spinner}
           </View>
           <View tabLabel='Detail' ref='detail'>
             {this.renderDetail()}
-            {spinner}
             {this.modalNumberReceive()}
           </View>
         </ScrollableTabView>
+        {this.modalLoading()}
       </View>
     )
   }
 }
 
 const mapStateToProps = (state) => ({
+  dataDetail: state.processingOrderDetail,
+  dataProcessDeliveryOrder: state.updateStatus
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  processDeliveryConfrim: (id, receipeNumber) => dispatch(salesAction.inputAirwayBill({id: id, airway_bill: receipeNumber}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputShippingInfo)

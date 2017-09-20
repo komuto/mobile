@@ -12,6 +12,14 @@ export default StyleSheet.create({
     margin: 10,
     borderRadius: 3
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight
+  },
   labelOrder: {
     flexDirection: 'row',
     paddingTop: 15,
@@ -74,9 +82,9 @@ export default StyleSheet.create({
     flexDirection: 'row'
   },
   laberDropShipping: {
-    width: 180,
+    width: 130,
     backgroundColor: Colors.veryLighBlue,
-    height: 40,
+    height: 30,
     borderTopLeftRadius: 2,
     borderBottomLeftRadius: 2,
     justifyContent: 'center'

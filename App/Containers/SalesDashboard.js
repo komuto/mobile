@@ -1,7 +1,9 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, BackAndroid, Image } from 'react-native'
+import {View, Text, ToastAndroid, TouchableOpacity, BackAndroid, Image} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as salesAction from '../actions/transaction'
+import * as loginaction from '../actions/user'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -16,14 +18,38 @@ class SalesDashboard extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      newOrder: 30,
-      deliveryConfirmation: 12,
-      salesList: 5
+      newOrder: 0,
+      deliveryConfirmation: 0,
+      salesList: 0
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataOrder.status === 200) {
+      this.setState({
+        newOrder: nextProps.dataOrder.orders.length
+      })
+    } if (nextProps.dataProcessingOrder.status === 200) {
+      this.setState({
+        deliveryConfirmation: nextProps.dataProcessingOrder.orders.length
+      })
+    } if (nextProps.dataSales.status === 200) {
+      this.setState({
+        salesList: nextProps.dataSales.sales.length
+      })
+    } if (nextProps.dataOrder.status > 200 ||
+      nextProps.dataProcessingOrder.status > 200 ||
+      nextProps.dataSales.status > 200) {
+      ToastAndroid.show(nextProps.dataOrder.message || nextProps.dataProcessingOrder.message || nextProps.dataSales.message, ToastAndroid.SHORT)
     }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    this.props.getProfile()
+    this.props.getListOrder()
+    this.props.getListProcessingOrder()
+    this.props.getListSales()
   }
 
   componentWillUnmount () {
@@ -37,7 +63,8 @@ class SalesDashboard extends React.Component {
 
   handleNewOrders () {
     NavigationActions.listneworder({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      actionPop: false
     })
   }
 
@@ -117,14 +144,17 @@ class SalesDashboard extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => ({
+  dataOrder: state.newOrders,
+  dataProcessingOrder: state.processingOrders,
+  dataSales: state.sales
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getListOrder: () => dispatch(salesAction.getNewOrders()),
+  getListProcessingOrder: () => dispatch(salesAction.getProcessingOrders()),
+  getListSales: () => dispatch(salesAction.getSales()),
+  getProfile: () => dispatch(loginaction.getProfile())
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesDashboard)

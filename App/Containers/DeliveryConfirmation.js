@@ -1,5 +1,14 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, ListView, BackAndroid, Image, ScrollView } from 'react-native'
+import {
+  View,
+  Text,
+  RefreshControl,
+  TouchableOpacity,
+  ListView,
+  BackAndroid,
+  Image,
+  ActivityIndicator
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
@@ -7,10 +16,11 @@ import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as salesAction from '../actions/transaction'
 
 // Styles
 import styles from './Styles/DeliveryConfirmationStyle'
-import { Images, Fonts, Colors } from '../Themes'
+import { Fonts, Colors } from '../Themes'
 
 class DeliveryConfirmation extends React.Component {
 
@@ -18,17 +28,38 @@ class DeliveryConfirmation extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      data: [
-        {'userOrder': 'Test biasa', 'date': 1505088000, 'isDropship': false, 'isWholeSale': false, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'Test dropship', 'date': 1505088000, 'isDropship': true, 'isWholeSale': false, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'Test reseler', 'date': 1505088000, 'isDropship': false, 'isWholeSale': true, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'Test', 'date': 1505088000, 'isDropship': false, 'isWholeSale': false, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'Test', 'date': 1505088000, 'isDropship': false, 'isWholeSale': false, 'origin': 'mamba', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}]}
-      ]
+      stateConfrimOrder: [],
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: true,
+      loadingPage: true
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataListConfrimOrder.status === 200) {
+      if (nextProps.dataListConfrimOrder.orders.length > 0) {
+        let data = [...this.state.stateConfrimOrder, ...nextProps.dataListConfrimOrder.orders]
+        this.setState({
+          stateConfrimOrder: data,
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          loadingPage: false
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
     }
   }
 
   componentDidMount () {
+    this.props.getListProcessingOrder(1)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -37,8 +68,24 @@ class DeliveryConfirmation extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.salesdashboard({
+      type: ActionConst.RESET
+    })
     return true
+  }
+
+  loadMore () {
+    const { page, loadmore, isLoading } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getListProcessingOrder(page)
+      }
+    }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshing: true, stateConfrimOrder: [], page: 1, isLoading: true })
+    this.props.getListProcessingOrder(1)
   }
 
   maskedMoney (value) {
@@ -57,9 +104,9 @@ class DeliveryConfirmation extends React.Component {
   }
 
   labeldaridropshipper (data, y) {
-    if (data) {
+    if (data === 'seller') {
       return (
-        <View key={y} style={{marginLeft: 15}}>
+        <View key={y}>
           <View style={[styles.flexRow, {marginTop: 10}]}>
             <View style={[styles.laberDropShipping, {backgroundColor: Colors.lightBlueGrey}]}>
               <Text style={[styles.textDropShipping, {color: Colors.darkMintTwo}]}>
@@ -75,30 +122,34 @@ class DeliveryConfirmation extends React.Component {
     }
   }
 
-  onClickInputNoResi (data) {
+  onClickInputNoResi (id) {
+    this.props.getDetailConfrimOrder(id)
     NavigationActions.inputshippinginfo({
       type: ActionConst.PUSH,
-      isDropship: data.isDropship,
-      isWholeSale: data.isWholeSale
+      idInvoice: id
     })
   }
 
-  renderPhoto (photo) {
-    if (photo.length > 4) {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+  renderPhoto (products) {
+    if (products.length > 4) {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         if (i === 3) {
           return (
-            <View key={i} style={styles.maskedImage}>
-              <Image source={data.name} style={styles.image} />
-              <View style={styles.placeholder}>
-                <Text style={styles.textPlaceHolder}>+{photo.length - 4}</Text>
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedImage}>
+                <Image source={{uri: data.image}} style={styles.image} />
+                <View style={styles.placeholder}>
+                  <Text style={styles.textPlaceHolder}>+{products.length - 4}</Text>
+                </View>
               </View>
             </View>
           )
         } else {
           return (
-            <View key={i} style={styles.maskedImage}>
-              <Image source={data.name} style={styles.image} />
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedImage}>
+                <Image source={{uri: data.image}} style={styles.image} />
+              </View>
             </View>
           )
         }
@@ -109,10 +160,10 @@ class DeliveryConfirmation extends React.Component {
         </View>
       )
     } else {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         return (
           <View key={i} style={styles.maskedImage}>
-            <Image source={data.name} style={styles.image} />
+            <Image source={{uri: data.image}} style={styles.image} />
           </View>
         )
       })
@@ -124,12 +175,12 @@ class DeliveryConfirmation extends React.Component {
     }
   }
 
-  checkProduct (data) {
-    if (data.isDropship) {
+  checkProduct (data, id) {
+    if (data === 'seller') {
       return (
         <TouchableOpacity
           style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}
-          onPress={() => this.onClickInputNoResi(data)}>
+          onPress={() => this.onClickInputNoResi(id)}>
           <Text style={[styles.labelTextWaitInput]}>Menunggu Input No Resi dari Seller</Text>
         </TouchableOpacity>
       )
@@ -137,56 +188,103 @@ class DeliveryConfirmation extends React.Component {
       return (
         <TouchableOpacity
           style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}
-          onPress={() => this.onClickInputNoResi(data)}>
+          onPress={() => this.onClickInputNoResi(id)}>
           <Text style={[styles.labelTextInput]}>Masukkan No Resi Pengiriman</Text>
         </TouchableOpacity>
       )
     }
   }
 
+  renderProductName (products) {
+    const mapProductName = products.slice(0, 4).map((data, i) => {
+      if (products.length === 1) {
+        return (
+          <Text key={i} ellipsizeMode={'tail'} numberOfLines={1} style={[styles.labelText, {marginLeft: 5, fontFamily: Fonts.type.regular}]}>{data.name}</Text>
+        )
+      } else {
+        return (
+          <View key={i} />
+        )
+      }
+    })
+    return (
+      <View style={{flexDirection: 'row', flex: 1}}>
+        {mapProductName}
+      </View>
+    )
+  }
+
   renderRowOrder (rowData, x, y) {
-    var timeStampToDate = this.maskedDate(rowData.date)
-    var moneyMasked = this.maskedMoney(rowData.price)
+    var timeStampToDate = this.maskedDate(rowData.invoice.created_at)
+    var moneyMasked = this.maskedMoney(rowData.invoice.total_price)
     return (
       <View style={styles.listOrder}>
-        {this.labeldaridropshipper(rowData.isDropship, y)}
+        {this.labeldaridropshipper(rowData.invoice.type, y)}
         <View style={styles.labelOrder}>
-          <Text style={styles.labelText}>{rowData.userOrder}</Text>
+          <Text style={styles.labelText}>{rowData.user.name}</Text>
           <Text style={styles.labelDate}>{timeStampToDate}</Text>
         </View>
         <View style={styles.containerOrder}>
-          {this.renderPhoto(rowData.photo)}
-          <Text ellipsizeMode={'tail'} numberOfLines={1} style={[styles.labelText, {marginLeft: 5, fontFamily: Fonts.type.regular}]}>{rowData.productOrder}</Text>
+          {this.renderPhoto(rowData.products)}
+          {this.renderProductName(rowData.products)}
           <Text style={styles.labelMoney}>{moneyMasked}</Text>
         </View>
-        {this.checkProduct(rowData)}
+        {this.checkProduct(rowData.invoice.type, rowData.invoice.id)}
       </View>
     )
   }
 
   render () {
+    if (this.state.loadingPage) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(this.state.data)}
-            renderRow={this.renderRowOrder.bind(this)}
-            enableEmptySections
-          />
-        </ScrollView>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.stateConfrimOrder)}
+          renderRow={this.renderRowOrder.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+      />
       </View>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => ({
+  dataListConfrimOrder: state.processingOrders
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getDetailConfrimOrder: (id) => dispatch(salesAction.getProcessingOrderDetail({id: id})),
+  getListProcessingOrder: (page) => dispatch(salesAction.getProcessingOrders({page: page}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryConfirmation)

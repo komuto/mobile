@@ -23,7 +23,6 @@ class Splash extends React.Component {
   componentWillMount () {
     FCM.getFCMToken().then(tokenFCM => {
       if (tokenFCM !== null && tokenFCM !== undefined) {
-        console.log('fcm', tokenFCM)
       }
     })
     SplashScreen.show()
@@ -84,15 +83,13 @@ class Splash extends React.Component {
         //     NavigationActions.buyerresolution({ type: ActionConst.REPLACE })
         //     break
         //   default:
-        //     console.log('lalal')
         //     NavigationActions.backtab({ type: ActionConst.REPLACE })
         // }
-        NavigationActions.backtab({ type: ActionConst.REPLACE })
+        NavigationActions.salesdashboard({ type: ActionConst.REPLACE })
         SplashScreen.hide()
-        console.log(value)
       }
       SplashScreen.hide()
-      NavigationActions.backtab({ type: ActionConst.REPLACE })
+      NavigationActions.salesdashboard({ type: ActionConst.REPLACE })
     })
   }
 

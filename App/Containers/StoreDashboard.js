@@ -59,7 +59,7 @@ class StoreDashboard extends React.Component {
   }
 
   handleSales () {
-    NavigationActions.salesdasboard({
+    NavigationActions.salesdashboard({
       type: ActionConst.PUSH
     })
   }

@@ -78,7 +78,7 @@ class DetailProduct extends React.Component {
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
-      loadingProduk: false,
+      loadingProduk: true,
       sizeUlasan: 2,
       modalLaporkan: false,
       estimasi: 0,
@@ -1338,10 +1338,11 @@ class DetailProduct extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loadingProduk
-    ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='white' size='small' />
-    </View>) : (<View />)
+    if (this.state.loadingProduk) {
+      return (
+        <ActivityIndicator color='white' size='small' />
+      )
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -1377,7 +1378,6 @@ class DetailProduct extends React.Component {
             </Text>
           </TouchableOpacity>
         </View>
-        {spinner}
         {this.renderModalLaporkan()}
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}

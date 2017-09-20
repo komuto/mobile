@@ -1,13 +1,13 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   Image,
   View,
   TouchableOpacity,
   ListView,
   BackAndroid,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -17,10 +17,11 @@ import { MaskService } from 'react-native-masked-text'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as salesAction from '../actions/transaction'
 
 // Styles
 import styles from './Styles/SalesListStyle'
-import { Images, Fonts, Colors } from '../Themes'
+import { Fonts, Colors } from '../Themes'
 
 class SalesList extends React.Component {
 
@@ -32,26 +33,38 @@ class SalesList extends React.Component {
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
-      dataRead: [
-        {'userOrder': 'Test biasa', 'date': 1505088000, 'type': 1, 'isDropship': false, 'isWholeSale': false, 'status': 1, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'Test dropship', 'date': 1505088000, 'type': 1, 'isDropship': true, 'isWholeSale': false, 'status': 3, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]}
-      ],
-      dataUnread: [
-        {'userOrder': 'lolo', 'date': 1505088000, 'type': 2, 'isDropship': false, 'isWholeSale': true, 'status': 1, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'lolo', 'date': 1505088000, 'type': 2, 'isDropship': false, 'isWholeSale': false, 'status': 2, 'origin': 'mamba', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}]}
-      ],
-      dataDropship: [
-        {'userOrder': 'lolo', 'date': 1505088000, 'type': 3, 'isDropship': false, 'isWholeSale': false, 'status': 1, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}]},
-        {'userOrder': 'lolo', 'date': 1505088000, 'type': 3, 'isDropship': false, 'isWholeSale': false, 'status': 2, 'origin': 'mamba', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}]},
-        {'userOrder': 'Test dropship', 'date': 1505088000, 'type': 3, 'isDropship': true, 'isWholeSale': false, 'status': 3, 'origin': '', 'productOrder': 'Sepatu Nike Casual Brown', 'price': 250000, photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]}
-      ]
+      saleList: [],
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: true,
+      loadingPage: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.dataSales.status === 200) {
+      if (nextProps.dataSales.sales.length > 0) {
+        let data = [...this.state.saleList, ...nextProps.dataSales.sales]
+        this.setState({
+          saleList: data,
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          loadingPage: false
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
+    }
   }
 
   componentDidMount () {
+    this.props.getListSales(1)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -60,8 +73,24 @@ class SalesList extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.salesdashboard({
+      type: ActionConst.RESET
+    })
     return true
+  }
+
+  loadMore () {
+    const { page, loadmore, isLoading } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getListSales(page)
+      }
+    }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
+    this.props.getListSales(1)
   }
 
   maskedMoney (value) {
@@ -80,9 +109,9 @@ class SalesList extends React.Component {
   }
 
   labeldaridropshipper (data, y) {
-    if (data) {
+    if (data === 'seller') {
       return (
-        <View key={y} style={{marginLeft: 15}}>
+        <View key={y}>
           <View style={[styles.flexRow, {marginTop: 10}]}>
             <View style={[styles.laberDropShipping, {backgroundColor: Colors.whiteThree}]}>
               <Text style={[styles.textDropShipping, {color: Colors.lightgrey}]}>
@@ -98,22 +127,26 @@ class SalesList extends React.Component {
     }
   }
 
-  renderPhoto (photo) {
-    if (photo.length > 4) {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+  renderPhoto (products) {
+    if (products.length > 4) {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         if (i === 3) {
           return (
-            <View key={i} style={styles.maskedImage}>
-              <Image source={data.name} style={styles.image} />
-              <View style={styles.placeholder}>
-                <Text style={styles.textPlaceHolder}>+{photo.length - 4}</Text>
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedImage}>
+                <Image source={{uri: data.image}} style={styles.image} />
+                <View style={styles.placeholder}>
+                  <Text style={styles.textPlaceHolder}>+{products.length - 4}</Text>
+                </View>
               </View>
             </View>
           )
         } else {
           return (
-            <View key={i} style={styles.maskedImage}>
-              <Image source={data.name} style={styles.image} />
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedImage}>
+                <Image source={{uri: data.image}} style={styles.image} />
+              </View>
             </View>
           )
         }
@@ -124,10 +157,10 @@ class SalesList extends React.Component {
         </View>
       )
     } else {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         return (
           <View key={i} style={styles.maskedImage}>
-            <Image source={data.name} style={styles.image} />
+            <Image source={{uri: data.image}} style={styles.image} />
           </View>
         )
       })
@@ -140,83 +173,132 @@ class SalesList extends React.Component {
   }
 
   checkProduct (data) {
-    if (data === 1) {
+    if (data === 0) {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
-          <View style={[styles.round, {backgroundColor: Colors.darkMint}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Barang sudah diterima</Text>
+          <View style={[styles.round, {backgroundColor: Colors.lightblack}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>REJECTED</Text>
+        </View>
+      )
+    } if (data === 1) {
+      return (
+        <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
+          <View style={[styles.round, {backgroundColor: Colors.lightBlue}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>WAITING</Text>
         </View>
       )
     } if (data === 2) {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
-          <View style={[styles.round, {backgroundColor: Colors.bluesky}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Menunggu Konfirmasi Pembeli</Text>
+          <View style={[styles.round, {backgroundColor: Colors.lightBlueGrey}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>PROCEED</Text>
         </View>
       )
     } if (data === 3) {
+      return (
+        <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
+          <View style={[styles.round, {backgroundColor: Colors.bluesky}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Menunggu Konfrimasi Pembeli</Text>
+        </View>
+      )
+    } if (data === 4) {
+      return (
+        <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
+          <View style={[styles.round, {backgroundColor: Colors.darkMint}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Barrang sudah diterima</Text>
+        </View>
+      )
+    } if (data === 5) {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.pumpkinOrange}]} />
           <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Terdapat barang bermasalah</Text>
         </View>
       )
+    } if (data === 6) {
+      return (
+        <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
+          <View style={[styles.round, {backgroundColor: Colors.orange}]} />
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>COMPLAINT_DONE</Text>
+        </View>
+      )
     }
   }
 
-  renderMystuff (rowData, x, y) {
-    var timeStampToDate = this.maskedDate(rowData.date)
-    var moneyMasked = this.maskedMoney(rowData.price)
+  renderProductName (products) {
+    const mapProductName = products.slice(0, 4).map((data, i) => {
+      if (products.length === 1) {
+        return (
+          <Text key={i} ellipsizeMode={'tail'} numberOfLines={1} style={[styles.labelText, {marginLeft: 5, fontFamily: Fonts.type.regular}]}>{data.name}</Text>
+        )
+      } else {
+        return (
+          <View key={i} />
+        )
+      }
+    })
     return (
-      <TouchableOpacity onPress={() => this.onClickDetailSale(rowData)} style={styles.listOrder}>
-        {this.labeldaridropshipper(rowData.isWholeSale, y)}
+      <View style={{flexDirection: 'row', flex: 1}}>
+        {mapProductName}
+      </View>
+    )
+  }
+
+  renderMystuff (rowData, x, y) {
+    var timeStampToDate = this.maskedDate(rowData.invoice.created_at)
+    var moneyMasked = this.maskedMoney(rowData.invoice.total_price)
+    return (
+      <TouchableOpacity onPress={() => this.onClickDetailSales(rowData.invoice.id)} style={styles.listOrder}>
+        {this.labeldaridropshipper(rowData.invoice.type, y)}
         <View style={styles.labelOrder}>
-          <Text style={styles.labelText}>{rowData.userOrder}</Text>
+          <Text style={styles.labelText}>{rowData.user.name}</Text>
           <Text style={styles.labelDate}>{timeStampToDate}</Text>
         </View>
         <View style={styles.containerOrder}>
-          {this.renderPhoto(rowData.photo)}
-          <Text ellipsizeMode={'tail'} numberOfLines={1} style={[styles.labelText, {marginLeft: 5, fontFamily: Fonts.type.regular}]}>{rowData.productOrder}</Text>
+          {this.renderPhoto(rowData.products)}
+          {this.renderProductName(rowData.products)}
           <Text style={styles.labelMoney}>{moneyMasked}</Text>
         </View>
-        {this.checkProduct(rowData.status)}
+        {this.checkProduct(rowData.invoice.transaction_status)}
       </TouchableOpacity>
     )
   }
 
   renderDropshipper (rowData, x, y) {
-    var timeStampToDate = this.maskedDate(rowData.date)
-    var moneyMasked = this.maskedMoney(rowData.price)
+    var timeStampToDate = this.maskedDate(rowData.invoice.created_at)
+    var moneyMasked = this.maskedMoney(rowData.invoice.total_price)
     return (
-      <TouchableOpacity onPress={() => this.onClickDetailSale(rowData)} style={styles.listOrder}>
+      <TouchableOpacity onPress={() => this.onClickDetailSales(rowData.invoice.id)} style={styles.listOrder}>
+        {this.labeldaridropshipper(rowData.invoice.is_drophship, y)}
         <View style={styles.labelOrder}>
-          <Text style={styles.labelText}>{rowData.userOrder}</Text>
+          <Text style={styles.labelText}>{rowData.user.name}</Text>
           <Text style={styles.labelDate}>{timeStampToDate}</Text>
         </View>
         <View style={styles.containerOrder}>
-          {this.renderPhoto(rowData.photo)}
-          <Text ellipsizeMode={'tail'} numberOfLines={1} style={[styles.labelText, {marginLeft: 5, fontFamily: Fonts.type.regular}]}>{rowData.productOrder}</Text>
+          {this.renderPhoto(rowData.products)}
+          {this.renderProductName(rowData.products)}
           <Text style={styles.labelMoney}>{moneyMasked}</Text>
         </View>
-        {this.checkProduct(rowData.status)}
+        {this.checkProduct(rowData.invoice.transaction_status)}
       </TouchableOpacity>
     )
   }
 
-  onClickDetailSale (data) {
+  onClickDetailSales (id) {
     NavigationActions.detailsales({
       type: ActionConst.PUSH,
-      status: data.status,
-      types: data.type,
-      isWholeSale: data.isWholeSale
+      idSales: id
     })
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='large' />
-    </View>) : (<View />)
+    if (this.state.loadingPage) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -230,34 +312,40 @@ class SalesList extends React.Component {
           locked
         >
           <View tabLabel='Barang Saya' ref='myStuff'>
-            <ScrollView>
-              <Text style={styles.semiBoldSlate}>Belum dilihat</Text>
-              <ListView
-                dataSource={this.dataSource.cloneWithRows(this.state.dataUnread)}
-                renderRow={this.renderMystuff.bind(this)}
-                enableEmptySections
-              />
-              <Text style={styles.semiBoldSlate}>Sudah dilihat</Text>
-              <ListView
-                dataSource={this.dataSource.cloneWithRows(this.state.dataRead)}
-                renderRow={this.renderMystuff.bind(this)}
-                enableEmptySections
-              />
-            </ScrollView>
-            {spinner}
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
+              renderRow={this.renderMystuff.bind(this)}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.isRefreshing}
+                  onRefresh={this.refresh}
+                  tintColor={Colors.red}
+                  colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                  title='Loading...'
+                  titleColor={Colors.red}
+                  progressBackgroundColor={Colors.snow}
+                />
+              }
+              onEndReached={this.loadMore.bind(this)}
+              renderFooter={() => {
+                if (this.state.loadmore) {
+                  return (
+                    <ActivityIndicator
+                      style={[styles.loadingStyle, { height: 50 }]}
+                      size='small'
+                      color='#ef5656'
+                    />
+                  )
+                }
+                return <View />
+              }}
+              enableEmptySections
+            />
           </View>
           <View tabLabel='Dropshipper' ref='dropshipper'>
-            <ScrollView>
-              <View style={styles.header}>
-                <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
-              </View>
-              <ListView
-                dataSource={this.dataSource.cloneWithRows(this.state.dataDropship)}
-                renderRow={this.renderDropshipper.bind(this)}
-                enableEmptySections
-              />
-            </ScrollView>
-            {spinner}
+            <View style={styles.header}>
+              <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
+            </View>
           </View>
         </ScrollableTabView>
       </View>
@@ -265,14 +353,12 @@ class SalesList extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => ({
+  dataSales: state.sales
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getListSales: (page) => dispatch(salesAction.getSales({page: page}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesList)

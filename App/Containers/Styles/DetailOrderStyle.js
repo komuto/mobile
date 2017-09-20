@@ -7,6 +7,22 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight
+  },
+  spinnerProcess: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    opacity: 0.5,
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight
+  },
   continerOrder: {
     backgroundColor: Colors.snow,
     padding: 15,
@@ -162,23 +178,28 @@ export default StyleSheet.create({
     textAlign: 'center'
   },
   bgModal: {
-    backgroundColor: Colors.snow,
-    // backgroundColor: 'rgba(0,0,0, 0.8)',
-    flex: 1
-  },
-  bgModal2: {
-    backgroundColor: 'rgba(0,0,0, 0.8)',
+    backgroundColor: 'rgba(0,0,0, 0.5)',
     flex: 1
   },
   contaierModal: {
     flex: 1,
     borderRadius: 5,
-    marginTop: 68,
-    marginBottom: 68,
+    marginTop: 50,
+    marginBottom: 50,
     marginLeft: 30.5,
     marginRight: 30.5,
     paddingTop: 30,
     backgroundColor: Colors.snow,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  containerLoading: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  loading: {
     alignItems: 'center',
     justifyContent: 'center'
   },

@@ -16,13 +16,23 @@ export default StyleSheet.create({
   scrollView: {
     paddingBottom: 10
   },
+  containerLoading: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   spinner: {
     position: 'absolute',
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,
-    backgroundColor: Colors.snow,
-    height: Metrics.screenHeight - Metrics.navBarHeight - 70
+    height: Metrics.screenHeight
   },
   information: {
     flexDirection: 'row',

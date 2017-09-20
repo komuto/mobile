@@ -10,10 +10,31 @@ export default StyleSheet.create({
   spinner: {
     position: 'absolute',
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,
-    backgroundColor: Colors.snow,
-    height: Metrics.screenHeight - Metrics.navBarHeight - 70
+    height: Metrics.screenHeight
+  },
+  containerLoading: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  loading: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  maskedImage: {
+    height: 30,
+    width: 30,
+    backgroundColor: Colors.paleGreyFive,
+    borderRadius: 200
+  },
+  image: {
+    height: 30,
+    width: 30,
+    borderRadius: 200
   },
   textTab: {
     fontSize: Fonts.size.smallMed,

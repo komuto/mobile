@@ -13,13 +13,14 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
-import { Actions as NavigationActions } from 'react-native-router-flux'
 import moment from 'moment'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as salesAction from '../actions/transaction'
 
 // Styles
 import styles from './Styles/DetailSalesStyle'
@@ -31,17 +32,39 @@ class DetailSales extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      loading: false,
+      invoiceNumber: '',
+      dateTransaction: 0,
+      storePhoto: null,
+      storeName: '',
+      priceProduct: 0,
+      modalOrderReceived: false,
+      popupOrderReject: false,
+      modalConfrimOrderReject: false,
+      modalLoading: false,
+      isDropship: false,
+      isWholeSale: false,
+      detailOrder: [],
+      invoice: [],
+      buyer: [],
+      items: [],
+      seller: [],
+      reseller: [],
+      expeditionName: '',
+      expeditionServices: '',
+      isInsurance: '',
+      addressBuyer: '',
+      addressSeller: '',
+      loadingPage: true,
+      idOrder: this.props.idOrder,
+      statusAcceptOrder: false,
+      statusRejectOrder: false,
+      typeInvoice: '',
+      loadingProcess: false,
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
-      invoiceNumber: 'Invoice-83273847492/04/2017',
       status: this.props.status,
-      storePhoto: Images.contohproduct,
-      storeName: 'Dropshop Quality',
-      priceProduct: 1250000,
       type: this.props.types,
-      isWholeSale: this.props.isWholeSale,
       receiptNumber: 123412341234,
       statusReceipt: 1,
       modalChangeReceiptNumber: false,
@@ -102,14 +125,45 @@ class DetailSales extends React.Component {
             'name': 'bleble',
             'photo': 'https://komutodev.aptmi.com/uploads/user/https://scontent.xx.fbcdn.net/v/t1.0-1/s200x200/12190927_1051452451551693_3353738072722896044_n.jpg?oh=1a89bdfda8446cc6b3c82a4536970ba3&oe=599E476F'
           }
-        }]
+        }],
+      stateDetailSale: [],
+      dispute: [],
+      shipping: [],
+      idSales: this.props.idSales,
+      statusUpdate: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDetailSale.status === 200) {
+      this.setState({
+        detailOrder: nextProps.dataDetailSale.sale,
+        buyer: nextProps.dataDetailSale.sale.buyer,
+        invoice: nextProps.dataDetailSale.sale.invoice,
+        typeInvoice: nextProps.dataDetailSale.sale.invoice.type,
+        items: nextProps.dataDetailSale.sale.items,
+        seller: nextProps.dataDetailSale.sale.seller,
+        reseller: nextProps.dataDetailSale.sale.reseller,
+        invoiceNumber: nextProps.dataDetailSale.sale.invoice.invoice_number,
+        dateTransaction: nextProps.dataDetailSale.sale.invoice.created_at,
+        expeditionName: nextProps.dataDetailSale.sale.invoice.expedition.expedition.name,
+        expeditionServices: nextProps.dataDetailSale.sale.invoice.expedition.name,
+        isInsurance: nextProps.dataDetailSale.sale.invoice.is_insurance,
+        addressBuyer: nextProps.dataDetailSale.sale.buyer.address,
+        addressSeller: nextProps.dataDetailSale.sale.seller.address,
+        dispute: nextProps.dataDetailSale.sale.dispute,
+        shipping: nextProps.dataDetailSale.sale.shipping,
+        loadingPage: false
+      })
+    } if (nextProps.dataUpdate === 200 && this.state.statusUpdate) {
+      this.setState({modalLoading: false, statusUpdate: false})
+      this.props.getDetailSales(this.state.idSales)
+      nextProps.dataUpdate === 0
+    }
   }
 
   componentDidMount () {
+    this.props.getDetailSales(this.state.idSales)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -137,22 +191,26 @@ class DetailSales extends React.Component {
     return timeStampToDate
   }
 
-  renderPhoto (photo) {
-    if (this.state.photo.length > 4) {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+  renderPhoto (products) {
+    if (products.length > 4) {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         if (i === 3) {
           return (
-            <View key={i} style={styles.maskedSmallImageProduct}>
-              <Image source={data.name} style={styles.imageSmallProduct} />
-              <View style={styles.placeholder}>
-                <Text style={{padding: 5, color: Colors.snow, fontFamily: Fonts.type.bold, fontSize: Fonts.size.medium}}>+{this.state.photo.length - 4}</Text>
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedSmallImageProduct}>
+                <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
+                <View style={styles.placeholder}>
+                  <Text style={styles.textPlaceHolder}>+{products.length - 4}</Text>
+                </View>
               </View>
             </View>
           )
         } else {
           return (
-            <View key={i} style={styles.maskedSmallImageProduct}>
-              <Image source={data.name} style={styles.imageSmallProduct} />
+            <View style={styles.containerOrder}>
+              <View key={i} style={styles.maskedSmallImageProduct}>
+                <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
+              </View>
             </View>
           )
         }
@@ -163,10 +221,10 @@ class DetailSales extends React.Component {
         </View>
       )
     } else {
-      const mapFoto = photo.slice(0, 4).map((data, i) => {
+      const mapFoto = products.slice(0, 4).map((data, i) => {
         return (
           <View key={i} style={styles.maskedSmallImageProduct}>
-            <Image source={data.name} style={styles.imageSmallProduct} />
+            <Image source={{uri: data.product.image}} style={styles.imageSmallProduct} />
           </View>
         )
       })
@@ -179,17 +237,16 @@ class DetailSales extends React.Component {
   }
 
   renderInfoBuyer () {
-    console.log('reseller', this.state.isWholeSale)
-    if (this.state.isWholeSale) {
+    if (this.state.typeInvoice === 'reseller' || this.state.typeInvoice === 'buyer') {
       return (
         <View>
-          <Text style={styles.bigTitle}>Info Reseller</Text>
+          <Text style={styles.bigTitle}>Info Pembeli</Text>
           <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <View style={styles.maskedImageProfile}>
-              <Image source={Images.contohproduct} style={styles.imageProfile} />
+            <View style={styles.maskedImage}>
+              <Image source={{uri: this.state.buyer.photo}} style={styles.image} />
             </View>
-            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.storeName}</Text>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Reseller')}>
+            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.buyer.name}</Text>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessage('Kirim Pesan ke Pembeli', this.state.invoice.id, this.state.buyer, 'Pembeli', 'sendMessageBuyer')}>
               <Text style={styles.labelButtonFav}>Kirim Pesan</Text>
             </TouchableOpacity>
           </View>
@@ -198,13 +255,13 @@ class DetailSales extends React.Component {
     } else {
       return (
         <View>
-          <Text style={styles.bigTitle}>Info Pembeli</Text>
+          <Text style={styles.bigTitle}>Info Reseller</Text>
           <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <View style={styles.maskedImageProfile}>
-              <Image source={Images.contohproduct} style={styles.imageProfile} />
+            <View style={styles.maskedImage}>
+              <Image source={{uri: this.state.reseller.store.photo}} style={styles.image} />
             </View>
-            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.storeName}</Text>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.sendMessageToSaller('Kirim Pesan ke Pembeli')}>
+            <Text style={[styles.labelStyle, {marginLeft: 14}]}>{this.state.reseller.store.name}</Text>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessage('Kirim Pesan ke Reseller', this.state.invoice.id, this.state.reseller.store, 'Reseller', 'sendMessageReseller')}>
               <Text style={styles.labelButtonFav}>Kirim Pesan</Text>
             </TouchableOpacity>
           </View>
@@ -213,41 +270,19 @@ class DetailSales extends React.Component {
     }
   }
 
-  renderListProductBuyer () {
-    var moneyMasked = this.maskedMoney(250000)
+  renderRowProduct (rowData, x, y) {
+    var moneyMasked = this.maskedMoney(rowData.total_price)
     return (
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
           <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
+            <Image source={{uri: rowData.image}} style={styles.imageProduct} />
           </View>
           <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
+            <Text style={styles.labelProduct}>{rowData.product.name}</Text>
             <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
-          </View>
-        </View>
-        <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-          <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
-          </View>
-          <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
-            <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
-          </View>
-        </View>
-        <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-          <View style={styles.maskedImageProduct}>
-            <Image source={Images.contohproduct} style={styles.imageProduct} />
-          </View>
-          <View style={styles.product}>
-            <Text style={styles.labelProduct}>Sepatu Jogging Nike Hitam </Text>
-            <Text style={styles.labelProduct2}>Harga: {moneyMasked} / item </Text>
-            <Text style={styles.labelProduct2}>Jumlah: 3 </Text>
-            <Text style={styles.labelMessage}>"Minta yang ukuran 42"</Text>
+            <Text style={styles.labelProduct2}>Jumlah: {rowData.qty}</Text>
+            <Text style={styles.labelMessage}>{rowData.note}</Text>
           </View>
         </View>
       </View>
@@ -255,50 +290,43 @@ class DetailSales extends React.Component {
   }
 
   renderShippingInformation () {
-    if (this.state.isWholeSale) {
+    const {addressSeller, seller, reseller} = this.state
+    if (this.state.typeInvoice === 'reseller') {
       return (
-        <View style={{backgroundColor: Colors.snow}}>
-          <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-            <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
-              <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Dwinawan Hariwijaya
-              Kemanggisan Jakarta Barat,
-              DKI Jakarta, 55673
-              Telp: 0821 - 1310 - 1585</Text>
-            </View>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
-              <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.informationReseller}>
-            <Text style={styles.textInfoReseller}>Barang ini terjual dari reseller. Sehingga nama
+        <View>
+          <View style={styles.information}>
+            <Text style={styles.textInfo}>Barang ini terjual dari reseller. Sehingga nama
             toko reseller disertakan.</Text>
           </View>
           <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
             <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Alamat Penjual</Text>
+              <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Samantha William (Dropshop Quality)
-              Jalan Wates km 11.
-              Bantul. Yogyakarta, 55752</Text>
+                {seller.name} ({reseller.store.name}){'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+              </Text>
             </View>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => {}}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>JNE</Text>
+          {this.renderExpedition(this.state.invoice)}
+        </View>
+      )
+    } if (this.state.typeInvoice === 'seller') {
+      return (
+        <View>
+          <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
+            <View style={styles.continerAddress}>
+              <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
+              <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
+                {seller.name} ({reseller.store.name}){'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => {}}>
+              <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Paket Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Reguler</Text>
-          </View>
-          <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <Text style={styles.labelStyle}>Asuransi</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Ya</Text>
-          </View>
+          {this.renderExpedition(this.state.invoice)}
         </View>
       )
     } else {
@@ -306,52 +334,58 @@ class DetailSales extends React.Component {
         <View>
           <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
             <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
+              <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Dwinawan Hariwijaya
-              Kemanggisan Jakarta Barat,
-              DKI Jakarta, 55673
-              Telp: 0821 - 1310 - 1585</Text>
+                {seller.name}{'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+              </Text>
             </View>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => {}}>
               <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
             </TouchableOpacity>
           </View>
-          <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
-            <View style={styles.continerAddress}>
-              <Text style={styles.labelProduct2}>Alamat Alamat Penjual</Text>
-              <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-              Samantha William
-              Jalan Wates km 11.
-              Bantul. Yogyakarta, 55752</Text>
-            </View>
-            <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
-              <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>JNE</Text>
-          </View>
-          <View style={styles.continerOrder}>
-            <Text style={styles.labelStyle}>Paket Pengiriman</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Reguler</Text>
-          </View>
-          <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
-            <Text style={styles.labelStyle}>Asuransi</Text>
-            <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>Ya</Text>
-          </View>
+          {this.renderExpedition(this.state.invoice)}
         </View>
       )
     }
   }
 
-  renderPriceDetail () {
-    var subTotal = this.maskedMoney(250000)
-    var insuranceFee = this.maskedMoney(25000)
-    var postalFee = this.maskedMoney(2500)
+  checkInsurance (data) {
+    if (data) {
+      this.status = 'Ya'
+    } else {
+      this.status = 'Tidak'
+    }
+    return (
+      <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{this.status}</Text>
+    )
+  }
 
-    var total = 250000 + 25000 + 2500
+  renderExpedition () {
+    const {expeditionName, expeditionServices, isInsurance} = this.state
+    return (
+      <View>
+        <View style={styles.continerOrder}>
+          <Text style={styles.labelStyle}>Kurir Pengiriman</Text>
+          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{expeditionName}</Text>
+        </View>
+        <View style={styles.continerOrder}>
+          <Text style={styles.labelStyle}>Paket Pengiriman</Text>
+          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.regular}]}>{expeditionServices}</Text>
+        </View>
+        <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
+          <Text style={styles.labelStyle}>Asuransi</Text>
+          {this.checkInsurance(isInsurance)}
+        </View>
+      </View>
+    )
+  }
+
+  renderPriceDetail (data) {
+    var subTotal = this.maskedMoney(data.total_bill)
+    var insuranceFee = this.maskedMoney(data.insurance_fee)
+    var postalFee = this.maskedMoney(data.delivery_cost)
+
+    var total = data.total_bill + data.insurance_fee + data.delivery_cost
     var totalMasked = this.maskedMoney(total)
 
     return (
@@ -377,28 +411,60 @@ class DetailSales extends React.Component {
   }
 
   checkStatus (data) {
-    if (data === 1) {
+    if (data === 0) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status</Text>
-          <View style={[styles.round, {backgroundColor: Colors.darkMint, marginTop: 5, marginRight: 10.8}]} />
-          <Text style={[styles.textRegularSlate]}>Barang sudah diterima</Text>
+          <View style={[styles.round, {backgroundColor: Colors.lightblack, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>REJECTED</Text>
+        </View>
+      )
+    } if (data === 1) {
+      return (
+        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
+          <Text style={[styles.textSemiBoldslate]}>Status</Text>
+          <View style={[styles.round, {backgroundColor: Colors.lightBlue, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>WAITING</Text>
         </View>
       )
     } if (data === 2) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status</Text>
-          <View style={[styles.round, {backgroundColor: Colors.bluesky, marginTop: 5, marginRight: 10.8}]} />
-          <Text style={[styles.textRegularSlate]}>Menunggu Konfirmasi Pembeli</Text>
+          <View style={[styles.round, {backgroundColor: Colors.lightBlueGrey, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>PROCEED</Text>
         </View>
       )
     } if (data === 3) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status</Text>
-          <View style={[styles.round, {backgroundColor: Colors.pumpkinOrange, marginTop: 5, marginRight: 10.8}]} />
+          <View style={[styles.round, {backgroundColor: Colors.bluesky, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>Menunggu Konfrimasi Pembeli</Text>
+        </View>
+      )
+    } if (data === 4) {
+      return (
+        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
+          <Text style={[styles.textSemiBoldslate]}>Status</Text>
+          <View style={[styles.round, {backgroundColor: Colors.darkMint, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>Barrang sudah diterima</Text>
+        </View>
+      )
+    } if (data === 5) {
+      return (
+        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
+          <Text style={[styles.textSemiBoldslate]}>Status</Text>
+          <View style={[styles.round, {backgroundColor: Colors.pumpkinOrange, marginTop: 2, marginRight: 10.8}]} />
           <Text style={[styles.textRegularSlate]}>Terdapat barang bermasalah</Text>
+        </View>
+      )
+    } if (data === 6) {
+      return (
+        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
+          <Text style={[styles.textSemiBoldslate]}>Status</Text>
+          <View style={[styles.round, {backgroundColor: Colors.orange, marginTop: 2, marginRight: 10.8}]} />
+          <Text style={[styles.textRegularSlate]}>COMPLAINT_DONE</Text>
         </View>
       )
     }
@@ -409,21 +475,28 @@ class DetailSales extends React.Component {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>On Progress</Text>
+          <Text style={[styles.textRegularSlate]}>DEFAULT</Text>
         </View>
       )
     } if (data === 2) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>Pending</Text>
+          <Text style={[styles.textRegularSlate]}>ACCEPT</Text>
         </View>
       )
     } if (data === 3) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>Gagal</Text>
+          <Text style={[styles.textRegularSlate]}>DECLINE</Text>
+        </View>
+      )
+    } if (data === 4) {
+      return (
+        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
+          <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
+          <Text style={[styles.textRegularSlate]}>SENT</Text>
         </View>
       )
     }
@@ -462,7 +535,7 @@ class DetailSales extends React.Component {
                 underlineColorAndroid='transparent'
                 placeholder='Nomer Resi'
               />
-              <TouchableOpacity style={[styles.buttonnext, {margin: 20}]} onPress={() => this.setState({modalChangeReceiptNumber: false})}>
+              <TouchableOpacity style={[styles.buttonnext, {margin: 20}]} onPress={() => this.handleChangeReceipeNumber()}>
                 <Text style={styles.textButtonNext}>
                   Perbarui Nomor Resi
                 </Text>
@@ -474,8 +547,30 @@ class DetailSales extends React.Component {
     )
   }
 
+  handleChangeReceipeNumber () {
+    this.setState({modalChangeReceiptNumber: false, modalLoading: true})
+    this.props.updateReceipeNumber(this.state.idSales, +this.state.inputReceiptNumber)
+  }
+
+  modalLoading () {
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={this.state.modalLoading}
+        onRequestClose={() => this.setState({ modalLoading: false })}
+        >
+        <View style={[styles.containerLoading]}>
+          <View style={styles.loading}>
+            <ActivityIndicator color='white' size='large' />
+          </View>
+        </View>
+      </Modal>
+    )
+  }
+
   checkReceiptNumber (data) {
-    if (data === 2) {
+    if (data === 1) {
       return (
         <Text onPress={() => this.setState({modalChangeReceiptNumber: true})} style={[styles.textSemiBoldslate, {marginLeft: 15, flex: 0, color: Colors.bluesky}]}>Ubah</Text>
       )
@@ -486,59 +581,79 @@ class DetailSales extends React.Component {
   }
 
   renderDeliveryStatus () {
+    const {buyer, items, invoice, invoiceNumber, shipping, typeInvoice} = this.state
     return (
       <ScrollView>
         <View style={styles.containerBuyer}>
-          <Text style={[styles.textSemiBold, styles.flexOne]}>Jonathan Hope</Text>
+          <Text style={[styles.textSemiBold, styles.flexOne]}>{buyer.name}</Text>
           <View style={styles.containerPhoto}>
-            {this.renderPhoto(this.state.photo)}
+            {this.renderPhoto(items)}
           </View>
         </View>
         <View style={styles.viewColumn}>
           <View style={styles.borderRow}>
             <Text style={[styles.textSemiBoldslate]}>No Invoice</Text>
-            <Text style={[styles.textRegularSlate]}>{this.state.invoiceNumber}</Text>
+            <Text style={[styles.textRegularSlate]}>{invoiceNumber}</Text>
           </View>
-          {this.checkStatus(this.state.status)}
+          {this.checkStatus(invoice.transaction_status)}
         </View>
         <View style={styles.viewColumn}>
           <View style={styles.borderRow}>
             <Text style={[styles.textSemiBoldslate]}>Nomor Resi</Text>
-            <Text style={[styles.textRegularSlate]}>{this.state.receiptNumber}</Text>
-            {this.checkReceiptNumber(this.state.status)}
+            <Text style={[styles.textRegularSlate]}>{shipping.airway_bill}</Text>
+            {this.checkReceiptNumber(shipping.sender_status)}
           </View>
-          {this.checkReceiptStatus(this.state.statusReceipt)}
+          {this.checkReceiptStatus(shipping.sender_status)}
         </View>
-        {this.renderReviewProduct(this.state.isWholeSale, this.state.status)}
-        {this.renderItemproblem(this.state.status)}
+        {this.renderReviewProduct(items, typeInvoice, invoice.transaction_status)}
+        {this.renderItemproblem(invoice.transaction_status)}
       </ScrollView>
     )
   }
 
-  renderReviewProduct (isWholeSale, status) {
-    if (isWholeSale && status === 1) {
-      return (
-        <View>
-          <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-          <View style={styles.viewColumn}>
-            <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
-              <Text style={[styles.textRegularSlate]}>Review menjadi milik Reseller</Text>
+  renderReviewProduct (items, typeInvoice, transactionStatus) {
+    console.log(transactionStatus)
+    if (transactionStatus === 4) {
+      if (typeInvoice !== 'reseller' && items) {
+        return (
+          <View>
+            <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
+            <View style={styles.viewColumn}>
+              <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
+                <Text style={[styles.textRegularSlate]}>Tidak Ada Review Dari Pembeli</Text>
+              </View>
             </View>
           </View>
-        </View>
-      )
-    } if (!isWholeSale && status === 1) {
+        )
+      } else {
+        return (
+          <View>
+            <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
+            <View style={styles.viewColumn}>
+              <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
+                <Text style={[styles.textRegularSlate]}>Ada Review Dari Pembeli(progress)</Text>
+              </View>
+            </View>
+          </View>
+        )
+      }
+    } else {
       return (
-        <View>
-          <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(this.state.dataReview)}
-            renderRow={this.renderRow.bind(this)}
-            enableEmptySections
-          />
-        </View>
+        <View />
       )
     }
+  //   } if (!isWholeSale && status === 1) {
+  //     return (
+  //       <View>
+  //         <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
+  //         <ListView
+  //           dataSource={this.dataSource.cloneWithRows(this.state.dataReview)}
+  //           renderRow={this.renderRow.bind(this)}
+  //           enableEmptySections
+  //         />
+  //       </View>
+  //     )
+  //   }
   }
 
   renderRow (rowData) {
@@ -606,12 +721,12 @@ class DetailSales extends React.Component {
   }
 
   renderItemproblem (status) {
-    if (status === 3) {
+    if (status === 5) {
       return (
         <View>
           <Text style={styles.boldcharcoalGrey}>Barang bermasalah</Text>
           <View style={[styles.viewColumn, {marginBottom: 0}]}>
-            {this.renderProductProblem(this.state.itemProblem)}
+            {/* {this.renderProductProblem(this.state.itemProblem)} */}
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.buttonReset} onPress={() => {}}>
@@ -652,7 +767,8 @@ class DetailSales extends React.Component {
   }
 
   renderDetail () {
-    var timeStampToDate = this.maskedDate(1505088000)
+    var tempTransactionDate = this.maskedDate(this.state.dateTransaction)
+    const {buyer, addressBuyer} = this.state
     return (
       <ScrollView>
         <View style={styles.continerOrder}>
@@ -661,21 +777,87 @@ class DetailSales extends React.Component {
         </View>
         <View style={[styles.continerOrder, {borderBottomWidth: 0}]}>
           <Text style={styles.labelStyle}>Tanggal Transaksi</Text>
-          <Text style={styles.valueStyle}>{timeStampToDate}</Text>
+          <Text style={styles.valueStyle}>{tempTransactionDate}</Text>
         </View>
         {this.renderInfoBuyer()}
         <Text style={styles.bigTitle}>Daftar Barang yang dibeli</Text>
-        {this.renderListProductBuyer()}
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.items)}
+          renderRow={this.renderRowProduct.bind(this)}
+          enableEmptySections
+        />
         <Text style={styles.bigTitle}>Informasi Pengiriman</Text>
-        {this.renderShippingInformation()}
+        <View style={{backgroundColor: Colors.snow}}>
+          <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
+            <View style={styles.continerAddress}>
+              <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
+              <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
+                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.buttonFav} onPress={() => {}}>
+              <Text style={styles.labelButtonFav}>Cetak Alamat</Text>
+            </TouchableOpacity>
+          </View>
+          {this.renderShippingInformation()}
+        </View>
         <Text style={styles.bigTitle}>Detail Harga</Text>
-        {this.renderPriceDetail()}
+        {this.renderPriceDetail(this.state.invoice)}
+        {this.finalAction()}
       </ScrollView>
     )
   }
 
+  finalAction () {
+    if (this.state.typeInvoice === 'reseller') {
+      return (
+        <View style={[styles.buttonContainer, {marginTop: 20}]}>
+          <TouchableOpacity style={styles.buttonReset} onPress={() => this.handleSendMessage('Kirim Pesan ke Seller', this.state.invoice.id, this.state.seller, 'Seller', 'sendMessageSeller')}>
+            <Text style={styles.labelButtonReset}>
+                Kirim Pesan ke Seller
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
+  }
+
   renderNotification (data) {
-    if (data === 1) {
+    if (data === 0) {
+      return (
+        <View style={[styles.information, {backgroundColor: Colors.paleGrey}]}>
+          <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
+          <Text style={[styles.textInfo, {color: Colors.lightblack}]}>REJECTED</Text>
+        </View>
+      )
+    } if (data === 1) {
+      return (
+        <View style={[styles.information, {backgroundColor: Colors.paleGrey}]}>
+          <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
+          <Text style={[styles.textInfo, {color: Colors.lightblack}]}>WAITING</Text>
+        </View>
+      )
+    } if (data === 2) {
+      return (
+        <View style={[styles.information, {backgroundColor: Colors.paleGrey}]}>
+          <Image source={Images.infoBlue} style={styles.iconInfoBlue} />
+          <Text style={[styles.textInfo, {color: Colors.lightblack}]}>PROCEED</Text>
+        </View>
+      )
+    } if (data === 3) {
+      return (
+        <View style={[styles.information, {backgroundColor: Colors.blueBackground}]}>
+          <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
+          <Text style={[styles.textInfo, {color: Colors.bluesky}]}>Setelah buyer mengkonfirmasi telah
+          menerima barang atau dalam jangka waktu
+          5 hari, saldo akan langsung kami kirimkan.</Text>
+        </View>
+      )
+    } if (data === 4) {
       return (
         <View style={[styles.information, {backgroundColor: Colors.duckEggBlue}]}>
           <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
@@ -684,16 +866,7 @@ class DetailSales extends React.Component {
           Anda. Silahkan diperiksa.</Text>
         </View>
       )
-    } if (data === 2) {
-      return (
-        <View style={styles.information}>
-          <Image source={Images.infoBlue} style={styles.iconInfoBlue} />
-          <Text style={styles.textInfo}>Setelah buyer mengkonfirmasi telah
-          menerima barang atau dalam jangka waktu
-          5 hari, saldo akan langsung kami kirimkan.</Text>
-        </View>
-      )
-    } if (data === 3) {
+    } if (data === 5) {
       return (
         <View style={[styles.information, {backgroundColor: 'rgba(239, 86, 86, 0.14)'}]}>
           <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
@@ -703,14 +876,36 @@ class DetailSales extends React.Component {
           kami kirimkan ke Anda.</Text>
         </View>
       )
+    } if (data === 6) {
+      return (
+        <View style={[styles.information, {backgroundColor: Colors.paleGrey}]}>
+          <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
+          <Text style={[styles.textInfo, {color: Colors.lightblack}]}>COMPLAINT_DONE</Text>
+        </View>
+      )
     }
   }
 
+  handleSendMessage (titles, invoiceId, data, type, actionType) {
+    NavigationActions.sendmessagestore({
+      type: ActionConst.PUSH,
+      title: titles,
+      id: invoiceId,
+      foto: data.photo,
+      namaToko: data.name,
+      alamat: type,
+      typeMessage: actionType
+    })
+  }
+
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='large' />
-    </View>) : (<View />)
+    if (this.state.loadingPage) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -725,30 +920,29 @@ class DetailSales extends React.Component {
         >
           <View tabLabel='Status Pengiriman' ref='deliveryStatus'>
             <ScrollView>
-              {this.renderNotification(this.state.status)}
+              {this.renderNotification(this.state.invoice.transaction_status)}
               {this.renderDeliveryStatus()}
             </ScrollView>
             {this.modalChangeReceiptNumber()}
-            {spinner}
           </View>
           <View tabLabel='Detail' ref='detail'>
             {this.renderDetail()}
-            {spinner}
           </View>
         </ScrollableTabView>
+        {this.modalLoading()}
       </View>
     )
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-  }
-}
+const mapStateToProps = (state) => ({
+  dataDetailSale: state.saleDetail,
+  dataUpdate: state.updateStatus
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-  }
-}
+const mapDispatchToProps = (dispatch) => ({
+  getDetailSales: (id) => dispatch(salesAction.getSaleDetail({id: id})),
+  updateReceipeNumber: (id, receipeNumber) => dispatch(salesAction.inputAirwayBill({id: id, airway_bill: receipeNumber}))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailSales)

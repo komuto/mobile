@@ -16,10 +16,10 @@ export default StyleSheet.create({
   spinner: {
     position: 'absolute',
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,
-    backgroundColor: Colors.snow,
-    height: Metrics.screenHeight - Metrics.navBarHeight - 70
+    height: Metrics.screenHeight
   },
   textTab: {
     fontSize: Fonts.size.smallMed,
@@ -117,7 +117,7 @@ export default StyleSheet.create({
   laberDropShipping: {
     width: 130,
     backgroundColor: Colors.veryLighBlue,
-    height: 40,
+    height: 30,
     borderTopLeftRadius: 2,
     borderBottomLeftRadius: 2,
     justifyContent: 'center'

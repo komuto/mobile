@@ -422,11 +422,11 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   opsi () {
-    const centangDropshipping = this.state.dropShippingActive ? Images.centang : null
+    const centangDropshipping = this.state.dropShippingActive ? Images.centangBiru : null
     if (this.state.sembunyikanBarang === 1) {
       this.centangSebunyikanBarang = null
     } else {
-      this.centangSebunyikanBarang = Images.centang
+      this.centangSebunyikanBarang = Images.centangBiru
     }
     return (
       <View>

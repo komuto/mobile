@@ -305,7 +305,7 @@ class Filter extends React.Component {
 
   renderRow = (rowData) => {
     const rowStyle = rowData.active ? styles.rowStyleActive : styles.rowStyle
-    const centang = rowData.active ? Images.centang : null
+    const centang = rowData.active ? Images.centangBiru : null
     return (
       <TouchableOpacity style={rowStyle} onPress={this.onClickLabel(rowData.id)} >
         <View style={styles.labelContainer}>
@@ -320,7 +320,7 @@ class Filter extends React.Component {
   }
 
   renderRowData = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+    const centang = rowData.active ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickKondisi(rowData.id)} >
         <View style={styles.labelContainerSecond}>
@@ -337,7 +337,7 @@ class Filter extends React.Component {
   }
 
   renderRowDataPengiriman = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centang : null
+    const centang = rowData.is_checked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
         <View style={styles.labelContainerSecond}>
@@ -354,7 +354,7 @@ class Filter extends React.Component {
   }
 
   renderRowDataBrand = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centang : null
+    const centang = rowData.is_checked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickBrand(rowID)} >
         <View style={styles.labelContainerSecond}>
@@ -371,7 +371,7 @@ class Filter extends React.Component {
   }
 
   renderRowDataLainnya = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+    const centang = rowData.active ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickLainnya(rowData.id)} >
         <View style={styles.labelContainerSecond}>

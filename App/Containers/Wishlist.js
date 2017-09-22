@@ -189,25 +189,25 @@ class Wishlist extends React.Component {
           <TouchableOpacity onPress={() => this._onPress('terbaru')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[stylesProduk.checkImage, {opacity: terbaruCek}]} source={Images.centang} />
+              <Image style={[stylesProduk.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('termurah')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[stylesProduk.checkImage, {opacity: termurahCek}]} source={Images.centang} />
+              <Image style={[stylesProduk.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('termahal')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[stylesProduk.checkImage, {opacity: termahalCek}]} source={Images.centang} />
+              <Image style={[stylesProduk.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('terlaris')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[stylesProduk.checkImage, {opacity: terlarisCek}]} source={Images.centang} />
+              <Image style={[stylesProduk.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
         </View>

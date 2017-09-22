@@ -153,7 +153,7 @@ class MovingProduct extends React.Component {
   }
 
   renderRowData (rowData, selectionId, rowId) {
-    const checkProduct = rowData.is_checked ? Images.centang : null
+    const checkProduct = rowData.is_checked ? Images.Biru : null
     return (
       <TouchableOpacity style={styles.list} onPress={this.handleCheckProduct(rowId, rowData.id)}>
         <View style={[styles.row, {paddingLeft: 0}]}>
@@ -392,7 +392,7 @@ class MovingProduct extends React.Component {
   }
 
   header () {
-    const checkAll = this.state.isChecked ? Images.centang : null
+    const checkAll = this.state.isChecked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.header} onPress={this.handleCheckAll(this.state.product)}>
         <View style={styles.row}>

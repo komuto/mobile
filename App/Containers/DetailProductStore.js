@@ -256,12 +256,6 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  checkCategory (data) {
-    return (
-      <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.nameCategory} / {this.state.category.name}</Text>
-    )
-  }
-
   checkBarand (data) {
     if (data) {
       return (
@@ -312,7 +306,7 @@ class DetailProductStore extends React.Component {
           <Text style={styles.textMenuNoFlex}>Nama Produk</Text>
           <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.product.name}</Text>
           <Text style={styles.textMenuNoFlex}>Kategori</Text>
-          {this.checkCategory(this.state.category)}
+          <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.category.full_name}</Text>
           {brand}
           <Text style={styles.textMenuNoFlex}>Deskripsi Produk</Text>
           <Text style={[styles.textValueMenu, {paddingBottom: 15, paddingRight: 40, lineHeight: 20}]}>{this.state.product.description}</Text>

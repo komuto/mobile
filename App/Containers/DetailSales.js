@@ -581,7 +581,7 @@ class DetailSales extends React.Component {
   }
 
   renderDeliveryStatus () {
-    const {buyer, items, invoice, invoiceNumber, shipping, typeInvoice} = this.state
+    const {buyer, items, invoice, invoiceNumber, shipping, typeInvoice, dispute} = this.state
     return (
       <ScrollView>
         <View style={styles.containerBuyer}>
@@ -606,77 +606,61 @@ class DetailSales extends React.Component {
           {this.checkReceiptStatus(shipping.sender_status)}
         </View>
         {this.renderReviewProduct(items, typeInvoice, invoice.transaction_status)}
-        {this.renderItemproblem(invoice.transaction_status)}
+        {this.renderItemproblem(invoice.transaction_status, dispute)}
       </ScrollView>
     )
   }
 
   renderReviewProduct (items, typeInvoice, transactionStatus) {
-    console.log(transactionStatus)
     if (transactionStatus === 4) {
-      if (typeInvoice !== 'reseller' && items) {
-        return (
-          <View>
-            <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-            <View style={styles.viewColumn}>
-              <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
-                <Text style={[styles.textRegularSlate]}>Tidak Ada Review Dari Pembeli</Text>
-              </View>
-            </View>
-          </View>
-        )
-      } else {
-        return (
-          <View>
-            <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-            <View style={styles.viewColumn}>
-              <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
-                <Text style={[styles.textRegularSlate]}>Ada Review Dari Pembeli(progress)</Text>
-              </View>
-            </View>
-          </View>
-        )
-      }
+      return (
+        <View>
+          <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.items)}
+            renderRow={this.renderRow.bind(this)}
+            enableEmptySections
+          />
+        </View>
+      )
     } else {
       return (
         <View />
       )
     }
-  //   } if (!isWholeSale && status === 1) {
-  //     return (
-  //       <View>
-  //         <Text style={styles.boldcharcoalGrey}>Review Produk</Text>
-  //         <ListView
-  //           dataSource={this.dataSource.cloneWithRows(this.state.dataReview)}
-  //           renderRow={this.renderRow.bind(this)}
-  //           enableEmptySections
-  //         />
-  //       </View>
-  //     )
-  //   }
   }
 
   renderRow (rowData) {
-    return (
-      <View style={{marginBottom: 20, elevation: 0.1}}>
-        <View style={styles.border2}>
-          <View style={styles.profile}>
-            <Image
-              source={{ uri: rowData.product.image }}
-              style={styles.styleFotoToko}
-            />
-            <View style={styles.namaContainer}>
-              <Text style={styles.textNama}>
-                {rowData.product.name}
-              </Text>
+    if (rowData.review) {
+      return (
+        <View style={{marginBottom: 20, elevation: 0.1}}>
+          <View style={styles.border2}>
+            <View style={styles.profile}>
+              <Image
+                source={{ uri: rowData.product.image }}
+                style={styles.styleFotoToko}
+              />
+              <View style={styles.namaContainer}>
+                <Text style={styles.textNama}>
+                  {rowData.product.name}
+                </Text>
+              </View>
             </View>
           </View>
+          <View>
+            {this.renderRatingUlasan(rowData.review.accuracy, rowData.review.quality, rowData.review.review)}
+          </View>
         </View>
-        <View>
-          {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
+      )
+    } else {
+      return (
+        <View style={styles.viewColumn}>
+          <View style={[styles.borderRow, {borderBottomWidth: 0}]}>
+            <Text style={[styles.textRegularSlate]}>Tidak ada Review dari pembeli</Text>
+          </View>
         </View>
-      </View>
-    )
+      )
+    }
   }
 
   renderRatingUlasan (starAccurate, starQuantity, isiulasan) {
@@ -720,13 +704,13 @@ class DetailSales extends React.Component {
     )
   }
 
-  renderItemproblem (status) {
+  renderItemproblem (status, dispute) {
     if (status === 5) {
       return (
         <View>
           <Text style={styles.boldcharcoalGrey}>Barang bermasalah</Text>
           <View style={[styles.viewColumn, {marginBottom: 0}]}>
-            {/* {this.renderProductProblem(this.state.itemProblem)} */}
+            {this.renderProductProblem(this.state.items, dispute)}
           </View>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.buttonReset} onPress={() => {}}>
@@ -740,12 +724,14 @@ class DetailSales extends React.Component {
     }
   }
 
-  renderProductProblem (data) {
-    const mapFoto = data[0].product.map((data, i) => {
+  renderProductProblem (data, dispute) {
+    const mapFoto = data.map((data, i) => {
       return (
-        <View style={[styles.borderRow, {alignItems: 'center'}]}>
-          <Image source={data.images} style={{height: 30, width: 30, marginRight: 10}} />
-          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.semiBolds}]}>{data.productName}</Text>
+        <View key={i} style={[styles.borderRow, {alignItems: 'center'}]}>
+          <View style={{height: 30, width: 30, backgroundColor: Colors.paleGreyFive, marginRight: 10}}>
+            <Image source={{uri: data.product.image}} style={{height: 30, width: 30, marginRight: 10}} />
+          </View>
+          <Text style={[styles.labelMessage, {fontFamily: Fonts.type.semiBolds}]}>{data.product.name}</Text>
         </View>
       )
     })
@@ -755,11 +741,11 @@ class DetailSales extends React.Component {
         <View style={[styles.viewColumn, {marginBottom: 0}]}>
           <View style={styles.borderRow}>
             <Text style={[styles.textSemiBoldslate]}>Masalah</Text>
-            <Text style={[styles.textRegularSlate, {flex: 2, textAlign: 'right'}]}>{data[0].problem}</Text>
+            <Text style={[styles.textRegularSlate, {flex: 2, textAlign: 'right'}]}>{dispute.problems}</Text>
           </View>
           <View style={styles.borderRow}>
             <Text style={[styles.textSemiBoldslate]}>Pilihan Solusi</Text>
-            <Text style={[styles.textRegularSlate]}>{data[0].solution}</Text>
+            <Text style={[styles.textRegularSlate, {flex: 2, textAlign: 'right'}]}>{dispute.note}</Text>
           </View>
         </View>
       </View>

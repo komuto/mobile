@@ -221,7 +221,7 @@ class BuyerResolution extends React.Component {
   }
 
   renderRowPriority (rowData, y, x) {
-    const checkPriority = rowData.isChecked ? Images.centang : null
+    const checkPriority = rowData.isChecked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.continerCheckBox} onPress={() => this.onClickPriority(x)}>
         <View style={styles.box}>
@@ -257,7 +257,7 @@ class BuyerResolution extends React.Component {
   }
 
   renderRowTopic (rowData, y, x) {
-    const checkTopic = rowData.isChecked ? Images.centang : null
+    const checkTopic = rowData.isChecked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.continerCheckBox} onPress={() => this.onClickTopic(x)}>
         <View style={styles.box}>

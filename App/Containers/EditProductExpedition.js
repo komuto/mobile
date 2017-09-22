@@ -82,7 +82,7 @@ class EditProductExpedition extends React.Component {
   mapParent (a) {
     const { dataListEkspedisi } = this.state
     const mapparent = dataListEkspedisi.map((data, i) => {
-      const img = dataListEkspedisi[i].is_checked ? Images.centang : null
+      const img = dataListEkspedisi[i].is_checked ? Images.centangBiru : null
       return (
         <View key={i} >
           <View style={styles.containerSinge}>
@@ -114,7 +114,7 @@ class EditProductExpedition extends React.Component {
 
   mapChild (services, parentId) {
     const mapChild = services.map((dataService, i) => {
-      this.centang = services[i].is_checked ? Images.centang : null
+      this.centang = services[i].is_checked ? Images.centangBiru : null
       return (
         <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId, dataService.id)}>
           <View style={styles.childEkspedisi}>

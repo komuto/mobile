@@ -271,25 +271,25 @@ class ProdukTerbaruScreenScreen extends React.Component {
           <TouchableOpacity onPress={() => this._onPress('terbaru')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('termurah')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('termahal')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => this._onPress('terlaris')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
         </View>

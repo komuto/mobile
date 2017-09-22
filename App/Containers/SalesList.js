@@ -346,6 +346,35 @@ class SalesList extends React.Component {
             <View style={styles.header}>
               <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
             </View>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
+              renderRow={this.renderMystuff.bind(this)}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.isRefreshing}
+                  onRefresh={this.refresh}
+                  tintColor={Colors.red}
+                  colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                  title='Loading...'
+                  titleColor={Colors.red}
+                  progressBackgroundColor={Colors.snow}
+                />
+              }
+              onEndReached={this.loadMore.bind(this)}
+              renderFooter={() => {
+                if (this.state.loadmore) {
+                  return (
+                    <ActivityIndicator
+                      style={[styles.loadingStyle, { height: 50 }]}
+                      size='small'
+                      color='#ef5656'
+                    />
+                  )
+                }
+                return <View />
+              }}
+              enableEmptySections
+            />
           </View>
         </ScrollableTabView>
       </View>

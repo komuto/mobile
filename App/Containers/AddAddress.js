@@ -485,7 +485,7 @@ class AddAddress extends React.Component {
 
   renderInfoLokasi () {
     const {isPrimary, colorPickerProv, colorPickerKab, colorPickerKec, colorPickerKel} = this.state
-    const img = isPrimary ? Images.centang : null
+    const img = isPrimary ? Images.centangBiru : null
     return (
       <View style={styles.textInput}>
         <TextInput

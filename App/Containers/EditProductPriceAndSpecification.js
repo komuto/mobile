@@ -421,8 +421,8 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   opsi () {
-    const centangDropshipping = this.state.dropShippingActive ? Images.centang : null
-    const centangSebunyikanBarang = this.state.sembunyikanBarang ? Images.centang : null
+    const centangDropshipping = this.state.dropShippingActive ? Images.centangBiru : null
+    const centangSebunyikanBarang = this.state.sembunyikanBarang ? Images.centangBiru : null
     return (
       <View>
         <Text style={styles.title}>Opsi</Text>

@@ -1183,7 +1183,7 @@ class DetailProduct extends React.Component {
                 </Text>
               </View>
               <TouchableOpacity style={styles.buttonFav}>
-                <Image source={Images.centang} style={styles.image24p} />
+                <Image source={Images.centangBiru} style={styles.image24p} />
                 <Text style={styles.labelButtonFav}>
                   Di Favoritkan
                 </Text>

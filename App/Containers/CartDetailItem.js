@@ -379,7 +379,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListAlamat (rowData, section, row) {
-    const centang = row === this.state.activeAlamat ? Images.centang : null
+    const centang = row === this.state.activeAlamat ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -491,7 +491,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListKurir (rowData, section, row) {
-    const centang = row === this.state.activeKurir ? Images.centang : null
+    const centang = row === this.state.activeKurir ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -528,7 +528,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListSubKurir (rowData, section, row) {
-    const centang = row === this.state.activeSubKurir ? Images.centang : Images.closewhite
+    const centang = row === this.state.activeSubKurir ? Images.centangBiru : Images.closewhite
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -564,7 +564,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListAsuransi (rowData, section, row) {
-    const centang = row === this.state.activeAsuransi ? Images.centang : null
+    const centang = row === this.state.activeAsuransi ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}

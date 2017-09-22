@@ -20,8 +20,9 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   image: {
-    width: 45,
-    height: 45
+    width: 30,
+    height: 30,
+    borderRadius: 3
   },
   barang: {
     marginLeft: 20,
@@ -226,9 +227,8 @@ export default StyleSheet.create({
   },
   scrollView: {
     flexDirection: 'row',
-    height: 120,
-    marginTop: 30,
-    marginBottom: 30
+    marginTop: 10,
+    marginBottom: 10
   },
   addPhoto: {
     marginTop: 10,
@@ -257,5 +257,16 @@ export default StyleSheet.create({
     backgroundColor: Colors.snow,
     borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  imageData: {
+    height: 45,
+    width: 45,
+    borderRadius: 3,
+    marginRight: 10
   }
 })

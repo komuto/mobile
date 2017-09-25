@@ -20,7 +20,8 @@ class PaymentCart extends React.Component {
       namaDiskon: '',
       diskon: 0,
       getCartPaymentDetail: true,
-      transaction: this.props.transaction
+      transaction: this.props.transaction,
+      dataInvoice: []
     }
   }
 
@@ -65,6 +66,7 @@ class PaymentCart extends React.Component {
       if (this.state.transaction) {
         this.setState({
           dataPembayaran: nextProps.dataTransaction.transaction.invoices[0].items,
+          dataInvoice: nextProps.dataTransaction.transaction.invoices[0],
           getCartPaymentDetail: false
         }) //
         const discount = nextProps.dataTransaction.transaction.bucket.promo
@@ -104,44 +106,85 @@ class PaymentCart extends React.Component {
   }
 
   renderRow (rowData) {
-    let insurance
-    if (rowData.shipping.is_insurance) {
-      insurance = 'Ya'
+    const { transaction, dataInvoice } = this.state
+    if (transaction) {
+      let insurance
+      if (dataInvoice.shipping.is_insurance) {
+        insurance = 'Ya'
+      } else {
+        insurance = 'Tidak'
+      }
+      return (
+        <View style={styles.dataContainer}>
+          <View style={styles.product}>
+            <Image source={{ uri: rowData.product.image }} style={styles.image} />
+            <View style={styles.dataProduk}>
+              <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
+              <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
+            </View>
+          </View>
+          <View style={styles.alamatContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
+            </View>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.address.name}</Text>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.address.address}</Text>
+            <Text style={styles.textAlamat}>Telp: {dataInvoice.shipping.address.phone_number}</Text>
+          </View>
+          {this.renderInfo('Kurir Pengiriman', dataInvoice.shipping.expedition_service.expedition.name)}
+          {this.renderInfo('Paket Pengiriman', dataInvoice.shipping.expedition_service.name)}
+          {this.renderInfo('Asuransi', insurance)}
+          <View style={styles.catatanContainer}>
+            <Text style={styles.textNamaProduk}>Catatan</Text>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.note}</Text>
+          </View>
+          {this.renderRincian(
+            rowData.total_price - dataInvoice.shipping.delivery_cost - dataInvoice.shipping.insurance_fee,
+            dataInvoice.shipping.insurance_fee,
+            dataInvoice.shipping.delivery_cost
+          )}
+        </View>
+      )
     } else {
-      insurance = 'Tidak'
+      let insurance
+      if (rowData.shipping.is_insurance) {
+        insurance = 'Ya'
+      } else {
+        insurance = 'Tidak'
+      }
+      return (
+        <View style={styles.dataContainer}>
+          <View style={styles.product}>
+            <Image source={{ uri: rowData.product.image }} style={styles.image} />
+            <View style={styles.dataProduk}>
+              <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
+              <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
+            </View>
+          </View>
+          <View style={styles.alamatContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
+            </View>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.name}</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.address}</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.province.name}</Text>
+            <Text style={styles.textAlamat}>Telp: {rowData.shipping.address.phone_number}</Text>
+          </View>
+          {this.renderInfo('Kurir Pengiriman', rowData.shipping.expedition_service.expedition.name)}
+          {this.renderInfo('Paket Pengiriman', rowData.shipping.expedition_service.name)}
+          {this.renderInfo('Asuransi', insurance)}
+          <View style={styles.catatanContainer}>
+            <Text style={styles.textNamaProduk}>Catatan</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
+          </View>
+          {this.renderRincian(
+            rowData.total_price - rowData.shipping.delivery_cost - rowData.shipping.insurance_fee,
+            rowData.shipping.insurance_fee,
+            rowData.shipping.delivery_cost
+          )}
+        </View>
+      )
     }
-    return (
-      <View style={styles.dataContainer}>
-        <View style={styles.product}>
-          <Image source={{ uri: rowData.product.image }} style={styles.image} />
-          <View style={styles.dataProduk}>
-            <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
-            <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
-          </View>
-        </View>
-        <View style={styles.alamatContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
-          </View>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.name}</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.address}</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.province.name}</Text>
-          <Text style={styles.textAlamat}>Telp: {rowData.shipping.address.phone_number}</Text>
-        </View>
-        {this.renderInfo('Kurir Pengiriman', rowData.shipping.expedition_service.expedition.name)}
-        {this.renderInfo('Paket Pengiriman', rowData.shipping.expedition_service.name)}
-        {this.renderInfo('Asuransi', insurance)}
-        <View style={styles.catatanContainer}>
-          <Text style={styles.textNamaProduk}>Catatan</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
-        </View>
-        {this.renderRincian(
-          rowData.total_price - rowData.shipping.delivery_cost - rowData.shipping.insurance_fee,
-          rowData.shipping.insurance_fee,
-          rowData.shipping.delivery_cost
-        )}
-      </View>
-    )
   }
 
   renderInfo (label, data) {

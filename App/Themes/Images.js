@@ -150,7 +150,8 @@ const images = {
   confrimDelivery: require('../Images/Icons/icon-konfirmasi-pengiriman.png'),
   newOrder: require('../Images/Icons/icon-pesanan-baru.png'),
   infoBlue: require('../Images/Icons/icon-info-blue.png'),
-  receiptSend: require('../Images/resi-send.png')
+  receiptSend: require('../Images/resi-send.png'),
+  filterWhite: require('../Images/Icons/icon-filter-white.png')
 }
 
 export default images

@@ -126,6 +126,10 @@ import InputShippingInfo from '../Containers/InputShippingInfo'
 import SalesList from '../Containers/SalesList'
 import DetailSales from '../Containers/DetailSales'
 import TransactionDetailItem from '../Containers/TransactionDetailItem'
+import BalanceHistory from '../Containers/BalanceHistory'
+import BalanceHistorySelling from '../Containers/BalanceHistorySelling'
+import BalanceHistoryRefund from '../Containers/BalanceHistoryRefund'
+import BalanceHistoryTopup from '../Containers/BalanceHistoryTopup'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1052,6 +1056,34 @@ class NavigationRouter extends Component {
             key='transactiondetailitem'
             component={TransactionDetailItem}
             title='Detail Pesanan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistory'
+            component={BalanceHistory}
+            title='History Saldo'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='balancehistoryselling'
+            component={BalanceHistorySelling}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistoryrefund'
+            component={BalanceHistoryRefund}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorytopup'
+            component={BalanceHistoryTopup}
+            title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

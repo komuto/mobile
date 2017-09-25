@@ -316,7 +316,9 @@ class TransaksiDetailStatusBarang extends React.Component {
 
   buttonPressed (teks) {
     if (teks.toLowerCase().includes('saldo')) {
-      // saldo
+      NavigationActions.balance({
+        type: ActionConst.PUSH
+      })
     } else {
       // komplain
     }

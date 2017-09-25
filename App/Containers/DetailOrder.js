@@ -82,13 +82,15 @@ class DetailOrder extends React.Component {
     } if (nextProps.dataOrders.status === 200 && this.state.statusAcceptOrder) {
       this.setState({
         modalOrderReceived: true,
-        modalLoading: false
+        modalLoading: false,
+        statusAcceptOrder: false
       })
       nextProps.dataOrders.status = 0
     } if (nextProps.dataOrders.status === 200 && this.state.statusRejectOrder) {
       this.setState({
         modalConfrimOrderReject: true,
-        modalLoading: false
+        modalLoading: false,
+        statusRejectOrder: false
       })
       nextProps.dataOrders.status = 0
     }

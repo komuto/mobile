@@ -193,7 +193,10 @@ const saldo = {
   saldoHistory: saldoReducers.getSaldoHistory,
   withdrawal: saldoReducers.withdraw,
   saldoToken: saldoReducers.getSaldoToken,
-  nominals: saldoReducers.getNominals
+  nominals: saldoReducers.getNominals,
+  topupStatus: saldoReducers.getTopupStatus,
+  withdrawStatus: saldoReducers.getWithdrawStatus,
+  saldoHistoryDetail: saldoReducers.getSaldoHistoryDetail
 }
 
 const transaction = {

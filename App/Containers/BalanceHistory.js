@@ -55,7 +55,7 @@ class BalanceHistory extends React.Component {
           'nominal': 'Rp 250.000',
           'balance': 'Rp 1.000.000',
           'type': 1,
-          'cat': 'buying'
+          'cat': 'purchase'
         },
         {
           'title': 'Penarikan Saldo',
@@ -300,6 +300,18 @@ class BalanceHistory extends React.Component {
       })
     } else if (category === 'topup') {
       NavigationActions.balancehistorytopup({
+        type: ActionConst.PUSH
+      })
+    } else if (category === 'comission') {
+      NavigationActions.balancehistorycomission({
+        type: ActionConst.PUSH
+      })
+    } else if (category === 'withdraw') {
+      NavigationActions.balancehistorywithdraw({
+        type: ActionConst.PUSH
+      })
+    } else if (category === 'purchase') {
+      NavigationActions.balancehistorypurchase({
         type: ActionConst.PUSH
       })
     }

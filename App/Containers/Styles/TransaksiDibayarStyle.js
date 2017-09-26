@@ -230,6 +230,15 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
+  imageRowStyle: {
+    height: 45,
+    width: 45,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    resizeMode: 'cover'
+  },
   namaBarangContainer: {
     flexDirection: 'row',
     marginTop: -3,

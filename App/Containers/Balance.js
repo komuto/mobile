@@ -104,13 +104,11 @@ class Balance extends React.Component {
   }
 
   statusPullBalance () {
-    // NavigationActions.login({ type: ActionConst.PUSH })
-    console.log('status pull')
+    // NavigationActions.balancenotification({ type: ActionConst.PUSH })
   }
 
   history () {
-    // NavigationActions.login({ type: ActionConst.PUSH })
-    console.log('history')
+    NavigationActions.balancehistory({ type: ActionConst.PUSH })
   }
 
   render () {

@@ -36,6 +36,16 @@ export default StyleSheet.create({
     letterSpacing: 0.22,
     color: Colors.darkMint
   },
+  blueText: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    letterSpacing: 0.22,
+    color: Colors.bluesky
+  },
+  arrow: {
+    height: 24,
+    width: 24
+  },
   title: {
     fontFamily: Fonts.type.bold,
     marginLeft: 20,
@@ -44,15 +54,33 @@ export default StyleSheet.create({
     letterSpacing: 0.22,
     color: Colors.darkgrey
   },
-  paymentContainer: {
-    flexDirection: 'column',
+  image: {
+    height: 26,
+    width: 26,
+    borderRadius: 13,
+    marginRight: 10
+  },
+  itemContainer: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    flexDirection: 'row',
+    padding: 20,
     backgroundColor: Colors.snow
   },
-  dataPaymentContainer: {
+  imageProduct: {
+    height: 50,
+    width: 50,
+    marginRight: 10,
+    marginTop: 5
+  },
+  rowDataContainer: {
     flexDirection: 'column',
-    backgroundColor: Colors.snow,
-    borderBottomColor: Colors.silver,
-    borderBottomWidth: 0.5,
-    padding: 20
+    flex: 1
+  },
+  textData: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    letterSpacing: 0.22,
+    color: Colors.darkgrey
   }
 })

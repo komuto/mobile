@@ -34,7 +34,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: 13,
     letterSpacing: 0.22,
-    color: Colors.darkMint
+    color: Colors.red
   },
   title: {
     fontFamily: Fonts.type.bold,
@@ -43,16 +43,5 @@ export default StyleSheet.create({
     fontSize: 13,
     letterSpacing: 0.22,
     color: Colors.darkgrey
-  },
-  paymentContainer: {
-    flexDirection: 'column',
-    backgroundColor: Colors.snow
-  },
-  dataPaymentContainer: {
-    flexDirection: 'column',
-    backgroundColor: Colors.snow,
-    borderBottomColor: Colors.silver,
-    borderBottomWidth: 0.5,
-    padding: 20
   }
 })

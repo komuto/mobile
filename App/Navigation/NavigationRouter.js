@@ -130,6 +130,9 @@ import BalanceHistory from '../Containers/BalanceHistory'
 import BalanceHistorySelling from '../Containers/BalanceHistorySelling'
 import BalanceHistoryRefund from '../Containers/BalanceHistoryRefund'
 import BalanceHistoryTopup from '../Containers/BalanceHistoryTopup'
+import BalanceHistoryComission from '../Containers/BalanceHistoryComission'
+import BalanceHistoryWithdraw from '../Containers/BalanceHistoryWithdraw'
+import BalanceHistoryPurchase from '../Containers/BalanceHistoryPurchase'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1083,6 +1086,27 @@ class NavigationRouter extends Component {
           <Scene
             key='balancehistorytopup'
             component={BalanceHistoryTopup}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorycomission'
+            component={BalanceHistoryComission}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorywithdraw'
+            component={BalanceHistoryWithdraw}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorypurchase'
+            component={BalanceHistoryPurchase}
             title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}

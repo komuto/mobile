@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid } from 're
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as saldoAction from '../actions/saldo'
 import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -11,7 +12,7 @@ import * as userAction from '../actions/user'
 import { Images } from '../Themes'
 import styles from './Styles/BalanceStyle'
 
-class Balance extends React.Component {
+class BalanceX extends React.Component {
 
   constructor (props) {
     super(props)
@@ -104,11 +105,13 @@ class Balance extends React.Component {
   }
 
   statusPullBalance () {
-    // NavigationActions.balancenotification({ type: ActionConst.PUSH })
+    NavigationActions.balancestatuswithdraw({ type: ActionConst.PUSH })
   }
 
   history () {
+    // this.props.getSaldoHistory()
     NavigationActions.balancehistory({ type: ActionConst.PUSH })
+    this.props.getSaldoHistory()
   }
 
   render () {
@@ -123,7 +126,7 @@ class Balance extends React.Component {
           {this.renderMenu(Images.pullBalance, 'Tarik Saldo', this.pull)}
           {this.renderStatusPenarikan()}
           {this.renderTitle(null)}
-          {this.renderMenu(Images.iconHistory, 'Riwayat Saldo', this.history)}
+          {this.renderMenu(Images.iconHistory, 'Riwayat Saldo', this.history.bind(this))}
         </ScrollView>
       </View>
     )
@@ -138,8 +141,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getPhone: dispatch(userAction.getPhone())
+    getPhone: dispatch(userAction.getPhone()),
+    getSaldoHistory: () => dispatch(saldoAction.getSaldoHistory({
+      page: 1,
+      filter: ['commission', 'sale', 'topup', 'refund', 'buy', 'withdraw'],
+      start_at: 1448841600,
+      end_at: 1512000000}
+    ))
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Balance)
+export default connect(mapStateToProps, mapDispatchToProps)(BalanceX)

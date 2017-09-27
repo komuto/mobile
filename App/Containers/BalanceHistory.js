@@ -1,11 +1,13 @@
 import React from 'react'
-import { View, ScrollView, ListView, TouchableOpacity, Text, Image, Modal, DatePickerAndroid } from 'react-native'
+import { View, ListView, TouchableOpacity, Text, Image, Modal, ActivityIndicator, DatePickerAndroid, RefreshControl } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
+import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
+import * as saldoAction from '../actions/saldo'
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/BalanceHistoryStyle'
 
@@ -15,97 +17,91 @@ class BalanceHistory extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      number: 4,
-      data: [
-        {
-          'title': 'Dana Penjualan Barang',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 1,
-          'cat': 'selling'
-        },
-        {
-          'title': 'Dana Refund Barang',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 2,
-          'cat': 'refund'
-        },
-        {
-          'title': 'Top Up Saldo',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 1,
-          'cat': 'topup'
-        },
-        {
-          'title': 'Komisi Reseller',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 2,
-          'cat': 'comission'
-        },
-        {
-          'title': 'Pembelian Barang',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 1,
-          'cat': 'purchase'
-        },
-        {
-          'title': 'Penarikan Saldo',
-          'date': '12 Sept 2017',
-          'nominal': 'Rp 250.000',
-          'balance': 'Rp 1.000.000',
-          'type': 2,
-          'cat': 'withdraw'
-        }
-      ],
+      number: 6,
+      data: [],
       filter: [
         {
           'label': 'Komisi Reseller',
-          'check': false
+          'tag': 'commission',
+          'check': true
         },
         {
           'label': 'Dana Penjualan Barang',
-          'check': false
+          'tag': 'sale',
+          'check': true
         },
         {
           'label': 'Dana Refund Barang',
-          'check': false
+          'tag': 'refund',
+          'check': true
         },
         {
           'label': 'Top Up Saldo',
-          'check': false
+          'tag': 'topup',
+          'check': true
         },
         {
           'label': 'Pembelian Barang',
-          'check': false
+          'tag': 'buy',
+          'check': true
         },
         {
           'label': 'Penarikan Saldo',
-          'check': false
+          'tag': 'withdraw',
+          'check': true
         }
       ],
       modalFilter: false,
-      startDate: '26 Agustus 2017',
-      endDate: '27 Agustus 2017',
+      startDate: '30 November 2015',
+      endDate: '30 November 2017',
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-      timestampStart: '12',
-      timestampEnd: '12'
+      page: 1,
+      startAt: 1448841600,
+      endAt: 1512000000,
+      isRefreshing: false,
+      isLoading: true,
+      loadmore: true,
+      isFiltering: false,
+      dataFilter: []
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      if (this.state.isFiltering) {
+        this.setState({
+          data: nextProps.dataHistory.history,
+          page: this.state.page + 1,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          isFiltering: false
+        })
+      } else {
+        if (nextProps.dataHistory.history.length > 0) {
+          let data = [...this.state.data, ...nextProps.dataHistory.history]
+          this.setState({
+            data: data,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true
+          })
+        } else {
+          this.setState({
+            loadmore: false,
+            isLoading: false
+          })
+        }
+      }
     }
   }
 
   renderNavbar () {
     return (
       <View style={styles.navbarContainer}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.back()}>
           <Image source={Images.iconBack} style={styles.arrow} />
         </TouchableOpacity>
         <Text style={styles.navbarText}>History Saldo</Text>
@@ -122,33 +118,101 @@ class BalanceHistory extends React.Component {
     )
   }
 
+  back () {
+    NavigationActions.pop()
+    return true
+  }
+
+  refresh = () => {
+    const { dataFilter, startAt, endAt } = this.state
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.props.getSaldoHistory(1, dataFilter, startAt, endAt)
+  }
+
+  loadMore () {
+    const { page, dataFilter, startAt, endAt, isLoading, loadmore } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.setState({ isLoading: true })
+        this.props.getSaldoHistory(page, dataFilter, startAt, endAt)
+      }
+    }
+  }
+
   renderListView () {
     return (
       <ListView
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
         enableEmptySections
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore && this.state.data > 10) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          } else {
+            return <View />
+          }
+        }}
       />
     )
   }
 
   renderRow (rowData) {
     let money
-    if (rowData.type === 1) {
+    if (rowData.last_saldo > rowData.first_saldo) {
+      const moneyText = MaskService.toMask('money', rowData.last_saldo - rowData.first_saldo, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
       money = (
-        <Text style={styles.textMoneyGreen}>+{rowData.nominal}</Text>
+        <Text style={styles.textMoneyGreen}>+{moneyText}</Text>
       )
     } else {
+      const moneyText = MaskService.toMask('money', rowData.first_saldo - rowData.last_saldo, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
       money = (
-        <Text style={styles.textMoneyRed}>-{rowData.nominal}</Text>
+        <Text style={styles.textMoneyRed}>-{moneyText}</Text>
       )
     }
+    const day = moment.unix(rowData.date).format('DD')
+    const month = parseInt(moment.unix(rowData.date).format('MM'))
+    const textMonth = this.state.months[month].substring(0, 3)
+    const year = moment.unix(rowData.date).format('YYYY')
+    const balanceText = MaskService.toMask('money', rowData.last_saldo, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
     return (
-      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.cat)}>
+      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type)}>
         <View style={styles.dataContainer}>
           <View style={styles.data}>
-            <Text style={[styles.textTitle, {marginBottom: 5}]}>{rowData.title}</Text>
-            <Text style={styles.textDate}>{rowData.date}</Text>
+            <Text style={[styles.textTitle, {marginBottom: 5}]}>{rowData.remark}</Text>
+            <Text style={styles.textDate}>{day} {textMonth} {year}</Text>
           </View>
           <View style={styles.money}>
             {money}
@@ -156,7 +220,7 @@ class BalanceHistory extends React.Component {
           </View>
         </View>
         <View style={styles.balanceContainer}>
-          <Text style={styles.textBalance}>{rowData.balance}</Text>
+          <Text style={styles.textBalance}>{balanceText}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -208,7 +272,7 @@ class BalanceHistory extends React.Component {
               <Image style={styles.arrow} source={Images.down} />
             </TouchableOpacity>
             <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={styles.buttonApply}>
+              <TouchableOpacity style={styles.buttonApply} onPress={() => this.applyFilter()}>
                 <Text style={styles.textButton}>Terapkan Filter</Text>
               </TouchableOpacity>
             </View>
@@ -238,7 +302,7 @@ class BalanceHistory extends React.Component {
 
         this.setState({
           startDate: label,
-          timestampStart: timestamp
+          startAt: timestamp
         })
       }
     } catch ({code, message}) {
@@ -266,7 +330,7 @@ class BalanceHistory extends React.Component {
 
         this.setState({
           endDate: label,
-          timestampEnd: timestamp
+          endAt: timestamp
         })
       }
     } catch ({code, message}) {
@@ -276,10 +340,19 @@ class BalanceHistory extends React.Component {
 
   check (index) {
     const tempData = this.state.filter
+    let number = this.state.number
     if (tempData[index].check) {
       tempData[index].check = false
+      number = number - 1
+      this.setState({
+        number: number
+      })
     } else {
       tempData[index].check = true
+      number = number + 1
+      this.setState({
+        number: number
+      })
     }
     const newDataSource = tempData.map(data => {
       return {...data}
@@ -317,13 +390,24 @@ class BalanceHistory extends React.Component {
     }
   }
 
+  applyFilter () {
+    const { startAt, endAt, filter } = this.state
+    let temp = []
+    for (var i = 0; i < filter.length; i++) {
+      if (filter[i].check) {
+        temp.push(filter[i].tag)
+      }
+    }
+    this.props.getSaldoHistory(1, temp, startAt, endAt)
+    console.log(temp)
+    this.setState({modalFilter: false, isLoading: true, data: [], dataFilter: temp, page: 1, isFiltering: true})
+  }
+
   render () {
     return (
       <View style={styles.container}>
         {this.renderNavbar()}
-        <ScrollView>
-          {this.renderListView()}
-        </ScrollView>
+        {this.renderListView()}
         {this.renderModalFilter()}
       </View>
     )
@@ -332,11 +416,18 @@ class BalanceHistory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistory
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getSaldoHistory: (page, filter, startAt, endAt) => dispatch(saldoAction.getSaldoHistory({
+      page: page,
+      filter: filter,
+      start_at: startAt,
+      end_at: endAt
+    }))
   }
 }
 

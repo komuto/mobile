@@ -10,6 +10,7 @@ export const GET_WITHDRAW_STATUS = 'GET_WITHDRAW_STATUS'
 
 /**
  * @param id {int} nominal id
+ * @params params are the same as the api query
  * @state saldoToken
  */
 export const getSaldoToken = params => buildAction(typeReq(GET_SALDO_TOKEN), params)

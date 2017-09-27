@@ -21,8 +21,16 @@ class PaymentMidtrans extends React.Component {
 
   onNavigationStateChange (webViewState) {
     const address = String(webViewState.url)
-    console.log(address)
-    if (address.includes('success')) {
+    console.log(webViewState)
+    if (address.includes('unfinish')) {
+      ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Error', ToastAndroid.LONG)
+      NavigationActions.pop()
+      return true
+    } else if (address.includes('error') || address.includes('close') || address.includes('pending')) {
+      ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Dibatalkan', ToastAndroid.LONG)
+      NavigationActions.pop()
+      return true
+    } else if (address.includes('finish') || address.includes('success')) {
       if (this.state.from === 'payment') {
         NavigationActions.paymentsuccess({
           type: ActionConst.REPLACE,
@@ -35,14 +43,6 @@ class PaymentMidtrans extends React.Component {
         })
         this.props.getProfile()
       }
-    } else if (address.includes('error')) {
-      ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Error', ToastAndroid.LONG)
-      NavigationActions.pop()
-      return true
-    } else if (address.includes('close')) {
-      ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Dibatalkan', ToastAndroid.LONG)
-      NavigationActions.pop()
-      return true
     }
   }
 

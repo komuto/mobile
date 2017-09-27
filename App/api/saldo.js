@@ -1,9 +1,10 @@
 import { authApiKomuto } from './api'
 import { buildQuery } from '../config'
 
-export const getSaldoToken = ({ id }) => {
+export const getSaldoToken = ({ id, ...data }) => {
   const axios = authApiKomuto()
-  return axios.get(`saldo/nominal/${id}/token`)
+  const query = buildQuery(data)
+  return axios.get(`saldo/nominal/${id}/token?${query}`)
 }
 
 export const getNominals = () => {

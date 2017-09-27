@@ -311,7 +311,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getSnapToken: (id) => dispatch(paymentAction.getMidtransToken({id: id})),
+    getSnapToken: (id) => dispatch(paymentAction.getMidtransToken({id: id, platform: 'apps'})),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
     checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet})),

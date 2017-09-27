@@ -87,19 +87,28 @@ class Transaction extends React.Component {
           onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
         >
           {this.renderData(rowData)}
+        </TouchableOpacity>
+      )
+    } else if (rowData.bucket.status === 3) {
+      return (
+        <TouchableOpacity
+          style={styles.rowContainer}
+          onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
+        >
+          {this.renderData(rowData)}
           {this.renderPembayaran(rowData.bucket.status, rowData.summary_transaction.time_left)}
         </TouchableOpacity>
       )
+    } else {
+      return (
+        <TouchableOpacity
+          style={styles.rowContainer}
+          onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
+        >
+          {this.renderData(rowData)}
+        </TouchableOpacity>
+      )
     }
-    return (
-      <TouchableOpacity
-        style={styles.rowContainer}
-        onPress={() => this.pembayaranDetail(rowData.bucket.status, rowData.bucket.id)}
-      >
-        {this.renderData(rowData)}
-        {this.renderPembayaran(rowData.bucket.status, rowData.summary_transaction.time_left)}
-      </TouchableOpacity>
-    )
   }
 
   renderPembayaran (status, time) {
@@ -110,7 +119,7 @@ class Transaction extends React.Component {
             Menunggu Pembayaran
           </Text>
           <Text style={styles.textTitle}>
-            {time}
+            {time.days} hari : {time.hours} jam : {time.minutes} menit
           </Text>
         </View>
       )

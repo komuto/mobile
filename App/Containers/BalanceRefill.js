@@ -83,7 +83,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getNominals: dispatch(saldoAction.getNominals()),
-    getSaldoToken: (id) => dispatch(saldoAction.getSaldoToken({id: id}))
+    getSaldoToken: (id) => dispatch(saldoAction.getSaldoToken({id: id, platform: 'apps'}))
   }
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, ScrollView, Text } from 'react-native'
+import { View, ScrollView, Text, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -13,11 +14,38 @@ class BalanceHistoryWithdraw extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      date: 'Rabu, 25 Agustus 2018',
-      topup: 250000,
-      bank: 'Bank Mandiri',
-      accountNumber: 13029,
-      accountName: 'Qwerty'
+      date: '',
+      topup: 0,
+      bank: '',
+      accountNumber: '',
+      accountName: '',
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember']
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      const transaction = nextProps.dataHistory.historyDetail.transaction
+      const bank = nextProps.dataHistory.historyDetail.bankAccount
+      const day = parseInt(moment.unix(transaction.date).format('DD'))
+      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const textMonth = this.state.months[month]
+      const year = moment.unix(transaction.date).format('YYYY')
+      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+      const d = new Date(tempLabel)
+      const textDay = this.state.days[d.getDay()]
+      this.setState({
+        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+        topup: transaction.amount,
+        bank: bank.bank.name,
+        accountName: bank.holder_name,
+        accountNumber: bank.holder_account_number
+      })
+      nextProps.dataHistory.status = 0
+    } else if (nextProps.dataHistory.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 
@@ -78,6 +106,7 @@ class BalanceHistoryWithdraw extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistoryDetail
   }
 }
 

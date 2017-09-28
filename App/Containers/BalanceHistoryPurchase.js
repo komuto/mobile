@@ -1,9 +1,12 @@
 import React from 'react'
-import { View, ScrollView, Text, TouchableOpacity, Image, ListView } from 'react-native'
+import { View, ScrollView, Text, TouchableOpacity, Image, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Images } from '../Themes'
+import moment from 'moment'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
+import * as transactionAction from '../actions/transaction'
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
@@ -15,100 +18,71 @@ class BalanceHistoryPurchase extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      date: 'Rabu, 25 Agustus 2018',
-      total: '250000',
+      date: '',
       expand: false,
       arrow: Images.down,
-      dataBarang: [
-        {
-          'store':
-          {
-            'name': 'Goku Sport'
-          },
-          'items': [
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            }
-          ]
-        },
-        {
-          'store':
-          {
-            'name': 'Goku Sport'
-          },
-          'items': [
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            }
-          ]
-        },
-        {
-          'store':
-          {
-            'name': 'Goku Sport'
-          },
-          'items': [
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            },
-            {
-              'product':
-              {
-                'name': 'Indomi',
-                'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-              }
-            }
-          ]
+      dataBarang: [],
+      balance: 0,
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      sisaPembayaran: 0,
+      total: 0,
+      kode: '',
+      diskon: 0,
+      kodeUnik: '',
+      id: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      const transaction = nextProps.dataHistory.historyDetail.transaction
+      const bucket = nextProps.dataHistory.historyDetail.bucket
+      const orders = nextProps.dataHistory.historyDetail.orders
+      const day = parseInt(moment.unix(transaction.date).format('DD'))
+      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const textMonth = this.state.months[month]
+      const year = moment.unix(transaction.date).format('YYYY')
+      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+      const d = new Date(tempLabel)
+      const textDay = this.state.days[d.getDay()]
+      this.setState({
+        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+        dataBarang: orders
+      })
+      const discount = bucket.promo
+      if (discount === '' || discount === undefined || discount === null) {
+        this.setState({
+          sisaPembayaran: transaction.amount,
+          total: transaction.amount - bucket.unique_code,
+          balance: transaction.amount,
+          kode: '',
+          diskon: 0,
+          kodeUnik: bucket.unique_code,
+          id: bucket.id
+        })
+      } else {
+        const typeDiscount = discount.type
+        let nominalDiscount = 0
+        if (typeDiscount === 0) {
+          nominalDiscount = parseInt(discount.percentage) * (transaction.amount - bucket.unique_code) / 100
+        } else {
+          nominalDiscount = parseInt(discount.nominal)
         }
-      ],
-      balance: 200000
+        this.setState({
+          sisaPembayaran: transaction.amount,
+          total: transaction.amount - bucket.unique_code + nominalDiscount,
+          balance: transaction.amount,
+          kode: discount.name,
+          diskon: nominalDiscount,
+          kodeUnik: bucket.unique_code,
+          id: bucket.id
+        })
+      }
+      nextProps.dataHistory.status = 0
+    } else if (nextProps.dataHistory.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 
@@ -137,9 +111,62 @@ class BalanceHistoryPurchase extends React.Component {
   }
 
   renderExpand () {
-    const { expand } = this.state
+    const { expand, total, diskon, kode, kodeUnik, sisaPembayaran } = this.state
+    const totalHarga = MaskService.toMask('money', total, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    let kodevoucer
+    if (kode === '' || kode === null || kode === undefined) {
+      kodevoucer = null
+    } else {
+      const hargaDiskon = MaskService.toMask('money', diskon, {
+        unit: 'Rp -',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+      kodevoucer = (
+        <View style={styles.rowContainerRincian}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
+          <Text style={styles.textGreen}>{hargaDiskon}</Text>
+        </View>
+      )
+    }
     if (expand) {
-      return <Text>expand</Text>
+      return (
+        <View style={styles.rincianContainer}>
+          <View style={styles.bodyRincian}>
+            <View style={styles.rowContainerRincian}>
+              <Text style={[styles.textTitle, { flex: 1 }]}>Total Belanja</Text>
+              <Text style={styles.textTitle}>{totalHarga}</Text>
+            </View>
+            {kodevoucer}
+            <View style={styles.rowContainerRincian}>
+              <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
+              <Text style={styles.textTitle}>{hargaKodeUnik}</Text>
+            </View>
+          </View>
+          <View style={[styles.rowContainerRincian, { paddingLeft: 20, paddingRight: 20 }]}>
+            <Text style={[styles.bold, { flex: 1 }]}>Total Pembayaran</Text>
+            <Text style={styles.bold}>{hargaSisaBayar}</Text>
+          </View>
+        </View>
+      )
     }
     return null
   }
@@ -190,7 +217,7 @@ class BalanceHistoryPurchase extends React.Component {
     )
   }
 
-  renderRowBarang (rowData) {
+  renderRowBarang (rowData, section, row) {
     if (rowData.items.length > 1) {
       if (rowData.items.length <= 4) {
         const image = rowData.items.map((data, i) => {
@@ -199,9 +226,13 @@ class BalanceHistoryPurchase extends React.Component {
           )
         })
         return (
-          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() =>
+            this.detailBarang(this.state.dataBarang[row].invoice.transaction_status, this.state.dataBarang[row].invoice.id)}
+          >
             <View style={styles.containerBarang}>
-              <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+              <Text style={[styles.textTitle, { marginBottom: 10 }]}>
+                {this.state.dataBarang[row].invoice.store.name}
+              </Text>
               <View style={styles.items}>
                 <View style={{ flex: 1, flexDirection: 'row' }}>
                   {image}
@@ -214,9 +245,13 @@ class BalanceHistoryPurchase extends React.Component {
       } else {
         const gambar = rowData.items.length - 4
         return (
-          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() =>
+            this.detailBarang(this.state.dataBarang[row].invoice.transaction_status, this.state.dataBarang[row].invoice.id)}
+          >
             <View style={styles.containerBarang}>
-              <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+              <Text style={[styles.textTitle, { marginBottom: 10 }]}>
+                {this.state.dataBarang[row].invoice.store.name}
+              </Text>
               <View style={styles.items}>
                 <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
                 <Image source={{ uri: rowData.items[1].product.image }} style={styles.imageBarang} />
@@ -240,9 +275,13 @@ class BalanceHistoryPurchase extends React.Component {
       }
     } else {
       return (
-        <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+        <TouchableOpacity style={styles.containerStatusItem} onPress={() =>
+          this.detailBarang(this.state.dataBarang[row].invoice.transaction_status, this.state.dataBarang[row].invoice.id)}
+        >
           <View style={styles.containerBarang}>
-            <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+            <Text style={[styles.textTitle, { marginBottom: 10 }]}>
+              {this.state.dataBarang[row].invoice.store.name}
+            </Text>
             <View style={styles.items}>
               <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
               <View style={styles.namaBarangContainer}>
@@ -256,20 +295,19 @@ class BalanceHistoryPurchase extends React.Component {
     }
   }
 
-  detailBarang (id, status) {
-    // null
+  detailBarang (status, invoiceId) {
+    const { id } = this.state
+    this.props.getDetailInvoice(id, invoiceId)
+    NavigationActions.transactiondetailstatus({
+      type: ActionConst.PUSH,
+      statusBarang: status,
+      idBucket: this.state.id
+    })
   }
 
   render () {
-    const { date, total, balance } = this.state
-    const moneyTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
-    const moneyBalance = MaskService.toMask('money', balance, {
+    const { date, balance } = this.state
+    const moneyTotal = MaskService.toMask('money', balance, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -284,7 +322,7 @@ class BalanceHistoryPurchase extends React.Component {
           {this.renderTotal('Total Tagihan', moneyTotal)}
           {this.renderExpand()}
           {this.renderSeparator()}
-          {this.renderMoney('Saldo yang digunakan', moneyBalance)}
+          {this.renderMoney('Saldo yang digunakan', moneyTotal)}
           {this.renderSeparator()}
           {this.renderTitle('Daftar Barang yang dibeli')}
           {this.renderListView()}
@@ -296,11 +334,13 @@ class BalanceHistoryPurchase extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistoryDetail
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId}))
   }
 }
 

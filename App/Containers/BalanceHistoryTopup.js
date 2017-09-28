@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, ScrollView, Text } from 'react-native'
+import { View, ScrollView, Text, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -13,10 +14,35 @@ class BalanceHistoryTopup extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      date: 'Rabu, 25 Agustus 2018',
-      topup: 250000,
-      method: 'Transfer Bank',
-      uniqueCode: 933
+      date: '',
+      topup: 0,
+      total: 0,
+      method: 'Manual Transfer',
+      uniqueCode: 0,
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember']
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      const data = nextProps.dataHistory.historyDetail
+      const day = parseInt(moment.unix(data.date).format('DD'))
+      const month = parseInt(moment.unix(data.date).format('MM'))
+      const textMonth = this.state.months[month]
+      const year = moment.unix(data.date).format('YYYY')
+      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+      const d = new Date(tempLabel)
+      const textDay = this.state.days[d.getDay()]
+      this.setState({
+        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+        topup: data.amount,
+        total: data.transfer_amount
+      })
+      nextProps.dataHistory.status = 0
+    } else if (nextProps.dataHistory.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 
@@ -50,20 +76,20 @@ class BalanceHistoryTopup extends React.Component {
     )
   }
 
-  renderPayment (topup, uniqueCode) {
+  renderPayment (topup, total) {
     const moneyTopup = MaskService.toMask('money', topup, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
-    const moneyUniq = MaskService.toMask('money', uniqueCode, {
+    const moneyUniq = MaskService.toMask('money', total - topup, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
-    const moneyTotal = MaskService.toMask('money', topup + uniqueCode, {
+    const moneyTotal = MaskService.toMask('money', total, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -77,7 +103,7 @@ class BalanceHistoryTopup extends React.Component {
             <Text style={styles.dataMoney}>{moneyTopup}</Text>
           </View>
           <View style={{ flexDirection: 'row' }}>
-            <Text style={[styles.label, { flex: 1 }]}>Kode Unik {uniqueCode}</Text>
+            <Text style={[styles.label, { flex: 1 }]}>Biaya</Text>
             <Text style={styles.dataMoney}>{moneyUniq}</Text>
           </View>
         </View>
@@ -87,7 +113,7 @@ class BalanceHistoryTopup extends React.Component {
   }
 
   render () {
-    const { date, topup, method, uniqueCode } = this.state
+    const { date, topup, method, total } = this.state
     const moneyTotal = MaskService.toMask('money', topup, {
       unit: 'Rp ',
       separator: '.',
@@ -103,7 +129,7 @@ class BalanceHistoryTopup extends React.Component {
           {this.renderData('Metode Pembayaran', method)}
           {this.renderSeparator()}
           {this.renderTitle('Detail Pembayaran')}
-          {this.renderPayment(topup, uniqueCode)}
+          {this.renderPayment(topup, total)}
         </ScrollView>
       </View>
     )
@@ -112,6 +138,7 @@ class BalanceHistoryTopup extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistoryDetail
   }
 }
 

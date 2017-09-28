@@ -45,7 +45,7 @@ class Login extends React.Component {
         loading: false
       })
       ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
-    } else if (nextProps.datalogin.status === 'ENOENT') {
+    } else if (nextProps.datalogin.status === 'ETIMEOUT' || nextProps.datalogin.status === 'EOFFLINE' || nextProps.datalogin.status === 'EUNKNOWN' || nextProps.datalogin.status === undefined) {
       this.setState({
         loading: false
       })

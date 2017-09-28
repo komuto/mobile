@@ -208,7 +208,7 @@ class BalanceHistory extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type)}>
+      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id)}>
         <View style={styles.dataContainer}>
           <View style={styles.data}>
             <Text style={[styles.textTitle, {marginBottom: 5}]}>{rowData.remark}</Text>
@@ -362,31 +362,35 @@ class BalanceHistory extends React.Component {
     })
   }
 
-  detail (category) {
-    if (category === 'selling') {
+  detail (category, id) {
+    if (category === 'SELL') {
       NavigationActions.balancehistoryselling({
         type: ActionConst.PUSH
       })
-    } else if (category === 'refund') {
+      this.props.getDetailHistory(id)
+    } else if (category === 'RFND') {
       NavigationActions.balancehistoryrefund({
         type: ActionConst.PUSH
       })
-    } else if (category === 'topup') {
+    } else if (category === 'TPUP') {
       NavigationActions.balancehistorytopup({
         type: ActionConst.PUSH
       })
-    } else if (category === 'comission') {
+      this.props.getDetailHistory(id)
+    } else if (category === 'SFEE') {
       NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
-    } else if (category === 'withdraw') {
+    } else if (category === 'WTHD') {
       NavigationActions.balancehistorywithdraw({
         type: ActionConst.PUSH
       })
-    } else if (category === 'purchase') {
+      this.props.getDetailHistory(id)
+    } else if (category === 'PAID') {
       NavigationActions.balancehistorypurchase({
         type: ActionConst.PUSH
       })
+      this.props.getDetailHistory(id)
     }
   }
 
@@ -427,7 +431,8 @@ const mapDispatchToProps = (dispatch) => {
       filter: filter,
       start_at: startAt,
       end_at: endAt
-    }))
+    })),
+    getDetailHistory: (id) => dispatch(saldoAction.getSaldoHistoryDetail({id: id}))
   }
 }
 

@@ -34,10 +34,15 @@ class SalesList extends React.Component {
         backgroundColor: 'transparent'
       },
       saleList: [],
+      saleListDropship: [],
       page: 1,
       loadmore: true,
       isRefreshing: false,
       isLoading: true,
+      pagedDropship: 1,
+      loadmoreDropship: true,
+      isRefreshingDropship: false,
+      isLoadingDropship: true,
       loadingPage: true
     }
   }
@@ -60,11 +65,29 @@ class SalesList extends React.Component {
           isLoading: false
         })
       }
+    } if (nextProps.dataSalesDropship.status === 200) {
+      if (nextProps.dataSalesDropship.sales.length > 0) {
+        let data = [...this.state.saleListDropship, ...nextProps.dataSalesDropship.sales]
+        this.setState({
+          saleListDropship: data,
+          pagedDropship: this.state.pagedDropship + 1,
+          isRefreshingDropship: false,
+          isLoadingDropship: false,
+          loadmoreDropship: true,
+          loadingPage: false
+        })
+      } else {
+        this.setState({
+          loadmoreDropship: false,
+          isLoadingDropship: false
+        })
+      }
     }
   }
 
   componentDidMount () {
     this.props.getListSales(1)
+    this.props.getListSalesDropship(1, true)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -91,6 +114,20 @@ class SalesList extends React.Component {
   refresh = () => {
     this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
     this.props.getListSales(1)
+  }
+
+  loadMoreDropship () {
+    const { pagedDropship, loadmoreDropship, isLoadingDropship } = this.state
+    if (!isLoadingDropship) {
+      if (loadmoreDropship) {
+        this.props.getListSalesDropship(pagedDropship, true)
+      }
+    }
+  }
+
+  refresh = () => {
+    this.setState({ isRefreshingDropship: true, saleListDropship: [], pageDropship: 1, isLoadingDropship: true })
+    this.props.getListSalesDropship(1, true)
   }
 
   maskedMoney (value) {
@@ -264,12 +301,12 @@ class SalesList extends React.Component {
     )
   }
 
-  renderDropshipper (rowData, x, y) {
+  renderMystuffDropship (rowData, x, y) {
     var timeStampToDate = this.maskedDate(rowData.invoice.created_at)
     var moneyMasked = this.maskedMoney(rowData.invoice.total_price)
     return (
       <TouchableOpacity onPress={() => this.onClickDetailSales(rowData.invoice.id)} style={styles.listOrder}>
-        {this.labeldaridropshipper(rowData.invoice.is_drophship, y)}
+        {this.labeldaridropshipper(rowData.invoice.type, y)}
         <View style={styles.labelOrder}>
           <Text style={styles.labelText}>{rowData.user.name}</Text>
           <Text style={styles.labelDate}>{timeStampToDate}</Text>
@@ -347,12 +384,12 @@ class SalesList extends React.Component {
               <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
             </View>
             <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
-              renderRow={this.renderMystuff.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.saleListDropship)}
+              renderRow={this.renderMystuffDropship.bind(this)}
               refreshControl={
                 <RefreshControl
-                  refreshing={this.state.isRefreshing}
-                  onRefresh={this.refresh}
+                  refreshing={this.state.isRefreshingDropship}
+                  onRefresh={this.isRefreshingDropship}
                   tintColor={Colors.red}
                   colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
                   title='Loading...'
@@ -360,9 +397,9 @@ class SalesList extends React.Component {
                   progressBackgroundColor={Colors.snow}
                 />
               }
-              onEndReached={this.loadMore.bind(this)}
+              onEndReached={this.loadMoreDropship.bind(this)}
               renderFooter={() => {
-                if (this.state.loadmore) {
+                if (this.state.loadmoreDropship) {
                   return (
                     <ActivityIndicator
                       style={[styles.loadingStyle, { height: 50 }]}
@@ -383,11 +420,13 @@ class SalesList extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataSales: state.sales
+  dataSales: state.sales,
+  dataSalesDropship: state.sales2
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListSales: (page) => dispatch(salesAction.getSales({page: page}))
+  getListSales: (page) => dispatch(salesAction.getSales({page: page})),
+  getListSalesDropship: (page, isDropship) => dispatch(salesAction.getSales2({page: page, is_dropship: isDropship}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesList)

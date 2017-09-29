@@ -41,7 +41,6 @@ class BuyerDetailMessage extends React.Component {
       nextProps.dataReplyMessage.status = 0
       this.props.getDetailMessage(this.state.idMessage)
     } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
-      console.log('b')
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
@@ -52,7 +51,6 @@ class BuyerDetailMessage extends React.Component {
         page: 1
       })
     } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
-      console.log('a')
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()

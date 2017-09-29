@@ -142,7 +142,7 @@ class StoreDashboard extends React.Component {
   }
 
   openResolutionNotification () {
-    NavigationActions.sellernotificationresolution({
+    NavigationActions.sellerlistcomplaintgoods({
       type: ActionConst.PUSH
     })
   }

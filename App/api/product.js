@@ -109,5 +109,5 @@ export const updateDropshipStatus = (data) => {
 
 export const deleteDropship = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.delete(`users/store/products/${id}`, {}, { data: {} })
+  return axios.delete(`users/store/products/${id}`)
 }

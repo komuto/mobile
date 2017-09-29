@@ -67,6 +67,7 @@ class Category4 extends React.Component {
   }
 
   componentDidMount () {
+    this.props.getProductByCategory(this.state.categoryId)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -75,10 +76,11 @@ class Category4 extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
+    const {dataProduk} = nextProps
+    if (dataProduk.status === 200) {
       if (!this.state.statusFilter) {
-        if (nextProps.dataProduk.products.length > 0) {
-          let data = [...this.state.listDataSource, ...nextProps.dataProduk.products]
+        if (dataProduk.products.length > 0) {
+          let data = [...this.state.listDataSource, ...dataProduk.products]
           this.setState({
             listDataSource: data,
             rowDataSource: data,
@@ -95,8 +97,8 @@ class Category4 extends React.Component {
         }
       } else {
         this.setState({
-          listDataSource: nextProps.dataProduk.products,
-          rowDataSource: nextProps.dataProduk.products,
+          listDataSource: dataProduk.products,
+          rowDataSource: dataProduk.products,
           isRefreshing: false,
           isLoading: false,
           loadmore: true,
@@ -104,8 +106,8 @@ class Category4 extends React.Component {
           page: 1
         })
       }
-    } else if (nextProps.dataProduk.status > 200) {
-      console.log(nextProps.dataProduk.status)
+    } else if (dataProduk.status > 200) {
+      console.log(dataProduk.status)
       this.setState({
         isRefreshing: false,
         isLoading: false,
@@ -636,6 +638,9 @@ const mapDispatchToProps = (dispatch) => {
       other: other,
       page: page,
       sort: sort
+    })),
+    getProductByCategory: (categoryId) => dispatch(produkAction.listProductByCategory({
+      category_id: categoryId
     })),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }

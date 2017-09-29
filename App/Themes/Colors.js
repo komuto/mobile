@@ -71,7 +71,10 @@ const colors = {
   textYellow: '#ffcd00',
   whiteThree: '#f0f0f0',
   pumpkinOrange: '#fe8224',
-  pink: '#ff639b'
+  pink: '#ff639b',
+  charcoalGrey: '#404852',
+  ocher: '#d69515',
+  slate: '#41475e'
 }
 
 export default colors

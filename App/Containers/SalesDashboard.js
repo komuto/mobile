@@ -3,7 +3,6 @@ import {View, Text, ToastAndroid, TouchableOpacity, BackAndroid, Image} from 're
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as salesAction from '../actions/transaction'
-import * as loginaction from '../actions/user'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -46,7 +45,6 @@ class SalesDashboard extends React.Component {
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-    this.props.getProfile()
     this.props.getListOrder()
     this.props.getListProcessingOrder()
     this.props.getListSales()
@@ -153,8 +151,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   getListOrder: () => dispatch(salesAction.getNewOrders()),
   getListProcessingOrder: () => dispatch(salesAction.getProcessingOrders()),
-  getListSales: () => dispatch(salesAction.getSales()),
-  getProfile: () => dispatch(loginaction.getProfile())
+  getListSales: () => dispatch(salesAction.getSales())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesDashboard)

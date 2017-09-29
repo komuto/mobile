@@ -151,7 +151,9 @@ const images = {
   newOrder: require('../Images/Icons/icon-pesanan-baru.png'),
   infoBlue: require('../Images/Icons/icon-info-blue.png'),
   receiptSend: require('../Images/resi-send.png'),
-  filterWhite: require('../Images/Icons/icon-filter-white.png')
+  filterWhite: require('../Images/Icons/icon-filter-white.png'),
+  infoOcher: require('../Images/Icons/icon-info-ocher.png'),
+  infoDone: require('../Images/Icons/icon-done-green.png')
 }
 
 export default images

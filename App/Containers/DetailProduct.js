@@ -48,8 +48,8 @@ class DetailProduct extends React.Component {
       diskon: 0,
       price: 0,
       kondisi: 1,
-      avgQuantity: 4.5,
-      avgAccurate: 4.5,
+      avgQuantity: 0,
+      avgAccurate: 0,
       numOfLine: 3,
       lokasiPenjual: '',
       namaToko: '',
@@ -127,7 +127,6 @@ class DetailProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
-      console.log('masuk')
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
         loadingProduk: false,
@@ -232,6 +231,7 @@ class DetailProduct extends React.Component {
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    this.props.getDetailProduk(this.state.id)
     this.props.getProvinsi()
     this.props.getKota(11)
   }
@@ -734,7 +734,7 @@ class DetailProduct extends React.Component {
           <Text style={styles.staticProduct}>Dilihat</Text>
           <Text style={styles.staticProductVal}>{this.state.jumlahLihat}</Text>
         </View>
-        <View style={styles.staticList}>
+        <View style={[styles.staticList, {borderBottomWidth: 0}]}>
           <Text style={styles.staticProduct}>Terjual</Text>
           {this.renderSold()}
         </View>
@@ -1340,7 +1340,9 @@ class DetailProduct extends React.Component {
   render () {
     if (this.state.loadingProduk) {
       return (
-        <ActivityIndicator color='white' size='small' />
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
       )
     }
     return (

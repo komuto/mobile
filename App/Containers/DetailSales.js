@@ -155,10 +155,10 @@ class DetailSales extends React.Component {
         shipping: nextProps.dataDetailSale.sale.shipping,
         loadingPage: false
       })
-    } if (nextProps.dataUpdate === 200 && this.state.statusUpdate) {
+    } if (nextProps.dataUpdate.status === 200 && this.state.statusUpdate) {
       this.setState({modalLoading: false, statusUpdate: false})
       this.props.getDetailSales(this.state.idSales)
-      nextProps.dataUpdate === 0
+      nextProps.dataUpdate.status === 0
     }
   }
 
@@ -548,7 +548,7 @@ class DetailSales extends React.Component {
   }
 
   handleChangeReceipeNumber () {
-    this.setState({modalChangeReceiptNumber: false, modalLoading: true})
+    this.setState({modalChangeReceiptNumber: false, modalLoading: true, statusUpdate: true})
     this.props.updateReceipeNumber(this.state.idSales, +this.state.inputReceiptNumber)
   }
 
@@ -713,7 +713,7 @@ class DetailSales extends React.Component {
             {this.renderProductProblem(this.state.items, dispute)}
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.buttonReset} onPress={() => {}}>
+            <TouchableOpacity style={styles.buttonReset} onPress={() => this.handleDetailComplaint(this.state.dispute.id)}>
               <Text style={styles.labelButtonReset}>
                   Ke Detail Komplain
               </Text>
@@ -722,6 +722,13 @@ class DetailSales extends React.Component {
         </View>
       )
     }
+  }
+
+  handleDetailComplaint (id) {
+    NavigationActions.sellerdetailcomplaintgoods({
+      type: ActionConst.PUSH,
+      idComplaint: id
+    })
   }
 
   renderProductProblem (data, dispute) {
@@ -846,7 +853,7 @@ class DetailSales extends React.Component {
     } if (data === 4) {
       return (
         <View style={[styles.information, {backgroundColor: Colors.duckEggBlue}]}>
-          <Image source={Images.infoBlue} style={[styles.iconInfoBlue]} />
+          <Image source={Images.infoDone} style={[styles.iconInfoBlue]} />
           <Text style={[styles.textInfo, {color: Colors.greenish}]}>Barang telah diterima oleh pembeli. Uang
           penjualan telah kami kirimkan ke saldo
           Anda. Silahkan diperiksa.</Text>

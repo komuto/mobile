@@ -6,6 +6,14 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.paleGrey
   },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight
+  },
   spinnerProduk: {
     position: 'absolute',
     flex: 1,

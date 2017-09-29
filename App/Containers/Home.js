@@ -7,14 +7,17 @@ import {
   ListView,
   BackAndroid,
   ActivityIndicator,
-  Alert
+  Alert,
+  ToastAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors } from '../Themes'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
+
+import {isFetching, isError, isFound} from '../Services/Status'
+
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
 import * as homeAction from '../actions/home'
@@ -30,68 +33,111 @@ class Home extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      category: false,
+      products: false,
+      wishlist: false,
+      cart: false
+    }
     this.state = {
+      product: props.propsProducts || null,
+      category: props.propsCategory || null,
       tipe: this.props.tipe || 'home',
       search: '',
-      loadingKategori: true,
-      loadingProduk: true,
-      productSource: [],
-      kategoriSource: [],
+      loading: true,
+      getCartHome: true,
       isLogin: this.props.datalogin.login,
-      cartItems: 0,
-      getCartHome: true
+      cartItems: props.propsCart || null
     }
-    this.props.getProdukTerbaru(6)
-    this.props.getCart()
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      const newKategori = nextProps.dataKategori.categories
-      var kategoriInital = newKategori.filter(function (country) {
-        return [ 'Handphone & Tablet', 'Olahraga & Outbond', 'Office & Stationery', 'Komputer & Laptop', 'Ibu dan Anak', 'Peralatan Rumah Tangga' ].indexOf(country.name) !== -1
-      })
-      this.setState({
-        kategoriSource: kategoriInital,
-        productSource: nextProps.dataProduk.products,
-        loadingKategori: false,
-        loadingProduk: false
-      })
-    } else if (nextProps.dataProduk.status > 200) {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
-    } else if (nextProps.dataProduk.status === 'ETIMEOUT' || nextProps.dataKategori.status === 'EOFFLINE' || nextProps.dataKategori.status === 'EUNKNOWN' || nextProps.dataProduk.status === undefined) {
-      this.setState({
-        loadingKategori: true,
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataKategori.message)
+    const {propsProducts, propsCategory, propsWishlist, propsCart} = nextProps
+
+    if (!isFetching(propsProducts) && this.submitting.products) {
+      this.submitting = { ...this.submitting, products: false }
+      if (isError(propsProducts)) {
+        ToastAndroid.show(propsProducts.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsProducts)) {
+        this.setState({ product: propsProducts })
+      }
     }
-    if (nextProps.dataWishlist.status === 200) {
-      this.props.resetAddToWishlist()
-      this.props.getProdukTerbaru(6)
+
+    if (!isFetching(propsCategory) && this.submitting.category) {
+      this.submitting = { ...this.submitting, category: false }
+      if (isError(propsCategory)) {
+        ToastAndroid.show(propsCategory.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsCategory)) {
+        this.setState({ category: propsCategory })
+      }
     }
-    if (this.state.getCartHome) {
-      if (nextProps.dataCart.status === 200) {
-        if (nextProps.dataCart.cart.items.length > 0) {
+
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+        this.props.resetAddToWishlist()
+        this.props.getProdukTerbaru(6)
+      }
+    }
+
+    if (this.state.getCartHome && !isFetching(propsCart) && this.submitting.cart) {
+      this.submitting = { ...this.submitting, cart: false }
+      if (isError(propsCart)) {
+        ToastAndroid.show(propsCart.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsCart)) {
+        if (propsCart.cart.items.length > 0) {
           this.setState({
-            cartItems: nextProps.dataCart.cart.items.length,
+            cartItems: propsCart,
             getCartHome: false
           })
-          // this.props.getCartReset()
         }
       }
+    }
+
+    if (!isFetching(propsProducts) && !isFetching(propsCategory)) {
+      this.setState({ loading: false })
     }
   }
 
   componentDidMount () {
+    const { product, category, cartItems } = this.state
+    if (!product.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        products: true
+      }
+      this.props.getProdukTerbaru(6)
+    }
+    if (!category.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        category: true
+      }
+      this.props.getKategori()
+    }
+
+    if (!cartItems.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        cart: true
+      }
+      this.props.getCart()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
+    this.submitting = {
+      ...this.submitting,
+      products: false,
+      category: false
+    }
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -173,11 +219,9 @@ class Home extends React.Component {
   }
 
   renderRowProduk (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -205,7 +249,7 @@ class Home extends React.Component {
           </Text>
           {this.renderVerified(rowData.store.is_verified)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={styles.harga}>
           {totalHarga}
         </Text>
@@ -220,21 +264,17 @@ class Home extends React.Component {
   }
 
   renderProduk () {
-    const spinner = this.state.loadingProduk
-    ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='#ef5656' size='small' />
-    </View>) : (<View />)
-    if (this.state.loadingProduk) {
+    if (this.submitting.products) {
       return (
-        <View>
-          {spinner}
+        <View style={styles.spinnerProduk}>
+          <ActivityIndicator color='#ef5656' size='small' />
         </View>
       )
     }
     return (
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-        dataSource={this.dataSource.cloneWithRows(this.state.productSource)}
+        dataSource={this.dataSource.cloneWithRows(this.state.product.products)}
         renderRow={this.renderRowProduk.bind(this)}
         enableEmptySections
       />
@@ -251,22 +291,18 @@ class Home extends React.Component {
   }
 
   renderKategori () {
-    const spinner = this.state.loadingKategori
-    ? (<View style={styles.spinnerKategori}>
-      <ActivityIndicator color='#ef5656' size='small' />
-    </View>) : (<View />)
-    if (this.state.loadingKategori) {
+    if (this.submitting.products) {
       return (
-        <View>
-          {spinner}
+        <View style={styles.spinnerKategori}>
+          <ActivityIndicator color='#ef5656' size='small' />
         </View>
       )
     }
     return (
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-        dataSource={this.dataSource.cloneWithRows(this.state.kategoriSource)}
-        initialListSize={10}
+        dataSource={this.dataSource.cloneWithRows(this.state.category.categories)}
+        initialListSize={3}
         renderRow={this.renderRowKategori.bind(this)}
         enableEmptySections
       />
@@ -308,7 +344,6 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
-    this.props.getDetailProduk(id)
   }
 
   handleDetailKategori (rowId, title) {
@@ -327,20 +362,31 @@ class Home extends React.Component {
     this.props.getCart()
   }
 
-  render () {
-    const { cartItems } = this.state
-    let cartNumber
-    if (cartItems > 0) {
-      cartNumber = (
-        <View style={styles.containerNumber}>
-          <Text style={styles.number}>
-            {String(cartItems)}
-          </Text>
-        </View>
-      )
-    } else {
-      cartNumber = null
+  renderCartNumber () {
+    if (this.submitting.cart) {
+      if (!this.state.cartItems) {
+        if (this.state.cartItems.cart.items.length > 0) {
+          return (
+            <View style={styles.containerNumber}>
+              <Text style={styles.number}>
+                {String(this.state.cartItems.cart.items.length)}
+              </Text>
+            </View>
+          )
+        } else {
+          return (
+            <View />
+          )
+        }
+      } else {
+        return (
+          <View />
+        )
+      }
     }
+  }
+
+  render () {
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
@@ -362,7 +408,7 @@ class Home extends React.Component {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonHeader} onPress={() => this.keranjang()}>
                   <Image source={Images.shoppingCart} style={styles.imagestyle} />
-                  {cartNumber}
+                  {this.renderCartNumber()}
                 </TouchableOpacity>
               </View>
               <TouchableOpacity style={styles.searchContainer} onPress={() => this.search()}>
@@ -430,17 +476,17 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataKategori: state.category,
-    dataProduk: state.products,
+    propsCategory: state.category,
+    propsProducts: state.products,
     datalogin: state.isLogin,
-    dataWishlist: state.addWishlistHome,
-    dataCart: state.cart
+    propsWishlist: state.addWishlistHome,
+    propsCart: state.cart
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getKategori: dispatch(homeAction.categoryList()),
+    getKategori: () => dispatch(homeAction.categoryList()),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),

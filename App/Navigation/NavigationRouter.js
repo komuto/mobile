@@ -134,6 +134,8 @@ import BalanceHistoryComission from '../Containers/BalanceHistoryComission'
 import BalanceHistoryWithdraw from '../Containers/BalanceHistoryWithdraw'
 import BalanceHistoryPurchase from '../Containers/BalanceHistoryPurchase'
 import BalanceStatusWithdraw from '../Containers/BalanceStatusWithdraw'
+import SellerListComplaintsGoods from '../Containers/SellerListComplaintsGoods'
+import SellerDetailComplaintsGoods from '../Containers/SellerDetailComplaintsGoods'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1115,7 +1117,21 @@ class NavigationRouter extends Component {
           <Scene
             key='balancestatuswithdraw'
             component={BalanceStatusWithdraw}
-            title='Status Penarikan Saldo'
+            title='Detail Transaksi balancestatuswithdraw'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellerlistcomplaintgoods'
+            component={SellerListComplaintsGoods}
+            title='Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellerdetailcomplaintgoods'
+            component={SellerDetailComplaintsGoods}
+            title='Detail Komplain Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

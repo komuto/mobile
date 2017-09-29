@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, ScrollView, Text, TouchableOpacity, Image, ListView } from 'react-native'
+import { View, ScrollView, Text, TouchableOpacity, Image, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Images, Colors } from '../Themes'
+import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -15,34 +16,52 @@ class BalanceHistoryComission extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      date: 'Rabu, 25 Agustus 2018',
-      total: '250000',
+      date: '',
+      total: 0,
       expand: false,
-      invoice: '123inv',
-      image: 'http://images.goodsmile.info/cgm/images/product/20160927/5981/41608/large/283820e0d12a55d17e3a0f1b855090d0.jpg',
-      name: 'Jonathan Hope',
+      invoice: '',
+      image: '',
+      name: '',
       arrow: Images.down,
-      data: [
-        {
-          'product': {
-            'price': 10000,
-            'name': 'Indomie',
-            'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-          },
-          'note': 'Indomie rasa kare ayam',
-          'qty': 3
-        },
-        {
-          'product': {
-            'price': 20000,
-            'name': 'Sarimie',
-            'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-          },
-          'note': 'Sarimi rasa kare ayam',
-          'qty': 3
-        }
-      ],
-      comission: 15
+      data: [],
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      diskon: 0,
+      biayaOngkir: 0,
+      comission: 0,
+      comissionText: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      const transaction = nextProps.dataHistory.historyDetail.transaction
+      const buyer = nextProps.dataHistory.historyDetail.buyer
+      const invoice = nextProps.dataHistory.historyDetail.invoice
+      const commission = nextProps.dataHistory.historyDetail.commission
+      const day = parseInt(moment.unix(transaction.date).format('DD'))
+      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const textMonth = this.state.months[month]
+      const year = moment.unix(transaction.date).format('YYYY')
+      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+      const d = new Date(tempLabel)
+      const textDay = this.state.days[d.getDay()]
+      this.setState({
+        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+        total: invoice.total_price,
+        invoice: invoice.invoice_number,
+        image: buyer.photo,
+        name: buyer.name,
+        data: invoice.items,
+        diskon: invoice.promo,
+        biayaOngkir: invoice.delivery_cost,
+        comission: commission.nominal,
+        comissionText: commission.percent.toString().substring(0, 3)
+      })
+      nextProps.dataHistory.status = 0
+    } else if (nextProps.dataHistory.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 
@@ -71,9 +90,62 @@ class BalanceHistoryComission extends React.Component {
   }
 
   renderExpand () {
-    const { expand } = this.state
+    const { expand, total, diskon, biayaOngkir } = this.state
+    const totalHarga = MaskService.toMask('money', total - biayaOngkir + diskon, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    const hargaKodeUnik = MaskService.toMask('money', biayaOngkir, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    const hargaSisaBayar = MaskService.toMask('money', total, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    let kodevoucer
+    if (diskon === 0) {
+      kodevoucer = null
+    } else {
+      const hargaDiskon = MaskService.toMask('money', diskon, {
+        unit: 'Rp -',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+      kodevoucer = (
+        <View style={styles.rowContainerRincian}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Diskon</Text>
+          <Text style={styles.textGreen}>{hargaDiskon}</Text>
+        </View>
+      )
+    }
     if (expand) {
-      return <Text>expand</Text>
+      return (
+        <View style={styles.rincianContainer}>
+          <View style={styles.bodyRincian}>
+            <View style={styles.rowContainerRincian}>
+              <Text style={[styles.textTitle, { flex: 1 }]}>Total Belanja</Text>
+              <Text style={styles.textTitle}>{totalHarga}</Text>
+            </View>
+            {kodevoucer}
+            <View style={styles.rowContainerRincian}>
+              <Text style={[styles.textTitle, { flex: 1 }]}>Ongkos Kirim</Text>
+              <Text style={styles.textTitle}>{hargaKodeUnik}</Text>
+            </View>
+          </View>
+          <View style={[styles.rowContainerRincian, { paddingLeft: 20, paddingRight: 20 }]}>
+            <Text style={[styles.bold, { flex: 1 }]}>Total Pembayaran</Text>
+            <Text style={styles.bold}>{hargaSisaBayar}</Text>
+          </View>
+        </View>
+      )
     }
     return null
   }
@@ -158,7 +230,7 @@ class BalanceHistoryComission extends React.Component {
   }
 
   render () {
-    const { date, total, invoice, comission } = this.state
+    const { date, total, invoice, comission, comissionText } = this.state
     const moneyTotal = MaskService.toMask('money', total, {
       unit: 'Rp ',
       separator: '.',
@@ -166,7 +238,7 @@ class BalanceHistoryComission extends React.Component {
       precision: 3
     })
 
-    const paidMoney = MaskService.toMask('money', total * comission / 100, {
+    const paidMoney = MaskService.toMask('money', comission, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -180,7 +252,7 @@ class BalanceHistoryComission extends React.Component {
           {this.renderTotal('Total Tagihan', moneyTotal)}
           {this.renderExpand()}
           {this.renderSeparator()}
-          {this.renderMoney('Komisi yang Anda terima (' + comission + '%)', paidMoney)}
+          {this.renderMoney('Komisi yang Anda terima (' + comissionText + '%)', paidMoney)}
           {this.renderSeparator()}
           {this.renderTitle('Info Penjualan')}
           {this.renderData('No Invoice', invoice)}
@@ -196,6 +268,7 @@ class BalanceHistoryComission extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistoryDetail
   }
 }
 

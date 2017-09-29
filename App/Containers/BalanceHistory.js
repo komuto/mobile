@@ -372,6 +372,7 @@ class BalanceHistory extends React.Component {
       NavigationActions.balancehistoryrefund({
         type: ActionConst.PUSH
       })
+      this.props.getDetailHistory(id)
     } else if (category === 'TPUP') {
       NavigationActions.balancehistorytopup({
         type: ActionConst.PUSH
@@ -381,6 +382,7 @@ class BalanceHistory extends React.Component {
       NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
+      this.props.getDetailHistory(id)
     } else if (category === 'WTHD') {
       NavigationActions.balancehistorywithdraw({
         type: ActionConst.PUSH

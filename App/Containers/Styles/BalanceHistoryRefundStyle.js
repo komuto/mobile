@@ -36,6 +36,12 @@ export default StyleSheet.create({
     letterSpacing: 0.22,
     color: Colors.darkMint
   },
+  dataPaidMoney: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    letterSpacing: 0.22,
+    color: Colors.red
+  },
   blueText: {
     fontFamily: Fonts.type.regular,
     fontSize: 13,

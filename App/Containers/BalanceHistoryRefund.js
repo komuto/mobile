@@ -1,6 +1,7 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView } from 'react-native'
+import { View, ScrollView, Text, Image, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 import { Images } from '../Themes'
@@ -15,21 +16,48 @@ class BalanceHistoryRefund extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      date: 'Rabu, 25 Agustus 2018',
-      total: '250000',
+      date: '',
+      total: 0,
       expand: false,
       arrow: Images.down,
-      refundNumber: 'RF/12',
-      data: [
-        {
-          'name': 'Indomie',
-          'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-        },
-        {
-          'name': 'Indomie',
-          'image': 'https://cdn.idntimes.com/content-images/post/20170315/7-0dc7a8345dbe940f25c6ec32276aecd5.jpg'
-        }
-      ]
+      refundNumber: '',
+      data: [],
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      type: 1
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataHistory.status === 200) {
+      const transaction = nextProps.dataHistory.historyDetail.transaction
+      const refund = nextProps.dataHistory.historyDetail.refund
+      const day = parseInt(moment.unix(transaction.date).format('DD'))
+      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const textMonth = this.state.months[month]
+      const year = moment.unix(transaction.date).format('YYYY')
+      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+      const d = new Date(tempLabel)
+      const textDay = this.state.days[d.getDay()]
+      if (transaction.last_saldo > transaction.first_saldo) {
+        this.setState({
+          type: 1
+        })
+      } else {
+        this.setState({
+          type: 2
+        })
+      }
+      this.setState({
+        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+        total: transaction.amount,
+        refundNumber: refund.refund_number,
+        data: refund.items
+      })
+      nextProps.dataHistory.status = 0
+    } else if (nextProps.dataHistory.status > 200) {
+      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 
@@ -42,13 +70,22 @@ class BalanceHistoryRefund extends React.Component {
     )
   }
 
-  renderMoney (label, data) {
-    return (
-      <View style={styles.dataContainer}>
-        <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
-        <Text style={styles.dataMoney}>{data}</Text>
-      </View>
-    )
+  renderMoney (data) {
+    if (this.state.type === 1) {
+      return (
+        <View style={styles.dataContainer}>
+          <Text style={[styles.label, { flex: 1 }]}>Uang yang Anda terima</Text>
+          <Text style={styles.dataMoney}>{data}</Text>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.dataContainer}>
+          <Text style={[styles.label, { flex: 1 }]}>Uang yang Anda bayar</Text>
+          <Text style={styles.dataPaidMoney}>{data}</Text>
+        </View>
+      )
+    }
   }
 
   renderSeparator () {
@@ -76,8 +113,8 @@ class BalanceHistoryRefund extends React.Component {
   renderRow (rowData) {
     return (
       <View style={styles.rowDataContainer}>
-        <Image source={{ uri: rowData.image }} style={styles.imageRow} />
-        <Text style={styles.label}>{rowData.name}</Text>
+        <Image source={{ uri: rowData.product_image }} style={styles.imageRow} />
+        <Text style={styles.label}>{rowData.product_name}</Text>
       </View>
     )
   }
@@ -95,7 +132,7 @@ class BalanceHistoryRefund extends React.Component {
         <ScrollView>
           {this.renderData('Jenis Transaksi', 'Refund Barang')}
           {this.renderData('Tanggal Transaksi', date)}
-          {this.renderMoney('Uang yang Anda terima', moneyTotal)}
+          {this.renderMoney(moneyTotal)}
           {this.renderData('Nomor Refund', refundNumber)}
           {this.renderSeparator()}
           {this.renderTitle('Daftar Barang yang di refund')}
@@ -108,6 +145,7 @@ class BalanceHistoryRefund extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataHistory: state.saldoHistoryDetail
   }
 }
 

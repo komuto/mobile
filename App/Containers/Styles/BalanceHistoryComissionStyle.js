@@ -82,5 +82,40 @@ export default StyleSheet.create({
     fontSize: 13,
     letterSpacing: 0.22,
     color: Colors.darkgrey
+  },
+  rowContainerRincian: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingBottom: 10
+  },
+  textGreen: {
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.regular,
+    lineHeight: 19,
+    letterSpacing: 0.22,
+    color: Colors.green
+  },
+  rincianContainer: {
+    backgroundColor: Colors.paleGreyThree,
+    flexDirection: 'column'
+  },
+  bodyRincian: {
+    margin: 20,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5
+  },
+  textTitle: {
+    fontSize: Fonts.size.smallMed,
+    fontFamily: Fonts.type.regular,
+    lineHeight: 21,
+    letterSpacing: 0.22,
+    color: Colors.darkgrey
+  },
+  bold: {
+    fontSize: Fonts.size.medium,
+    fontFamily: Fonts.type.bold,
+    lineHeight: 19,
+    letterSpacing: 0.22,
+    color: Colors.darkgrey
   }
 })

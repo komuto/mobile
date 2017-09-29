@@ -7,6 +7,7 @@ import { MaskService } from 'react-native-masked-text'
 import * as paymentAction from '../actions/payment'
 import * as transactionAction from '../actions/transaction'
 import * as cartAction from '../actions/cart'
+import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
@@ -20,7 +21,7 @@ class Payment extends React.Component {
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       total: '0',
-      saldo: '300000',
+      saldo: 0,
       data: [],
       getCartPayment: true,
       idCart: this.props.idCart,
@@ -123,6 +124,11 @@ class Payment extends React.Component {
           })
         }
       }
+    }
+    if (nextProps.dataProfile.status === 200) {
+      this.setState({
+        saldo: String(nextProps.dataProfile.user.user.saldo_wallet)
+      })
     }
   }
 
@@ -305,7 +311,8 @@ const mapStateToProps = (state) => {
     dataCart: state.cart,
     dataCheckout: state.checkout,
     dataToken: state.snapToken,
-    dataTransaction: state.transaction
+    dataTransaction: state.transaction,
+    dataProfile: state.profile
   }
 }
 
@@ -315,7 +322,8 @@ const mapDispatchToProps = (dispatch) => {
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
     checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet})),
-    getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id}))
+    getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id})),
+    getProfile: dispatch(userAction.getProfile())
   }
 }
 

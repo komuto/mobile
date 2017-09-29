@@ -17,8 +17,7 @@ class BalanceX extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      balance: String(this.props.dataProfile.user.user.saldo_wallet),
-      balanceItems: 10
+      balance: String(this.props.dataProfile.user.user.saldo_wallet)
     }
   }
 
@@ -82,11 +81,11 @@ class BalanceX extends React.Component {
       <TouchableOpacity style={styles.menuContainer} onPress={() => this.statusPullBalance()}>
         <Image source={Images.statusPullBalance} style={styles.icon} />
         <Text style={styles.titleMenu}>Status Penarikan Saldo</Text>
-        <View style={styles.containerNumber}>
+        {/* <View style={styles.containerNumber}>
           <Text style={styles.number}>
             {String(this.state.balanceItems)}
           </Text>
-        </View>
+        </View> */}
         <Image source={Images.rightArrow} style={styles.icon} />
       </TouchableOpacity>
     )
@@ -107,6 +106,7 @@ class BalanceX extends React.Component {
 
   statusPullBalance () {
     NavigationActions.balancestatuswithdraw({ type: ActionConst.PUSH })
+    this.props.getStatusWitdhdraw()
   }
 
   history () {
@@ -149,7 +149,8 @@ const mapDispatchToProps = (dispatch) => {
       start_at: 1448841600,
       end_at: 1512000000}
     )),
-    getStatusTopUp: () => dispatch(saldoAction.getTopupStatus())
+    getStatusTopUp: () => dispatch(saldoAction.getTopupStatus()),
+    getStatusWitdhdraw: () => dispatch(saldoAction.getWithdrawStatus())
   }
 }
 

@@ -88,7 +88,7 @@ class Home extends React.Component {
     if (this.state.getCartHome && !isFetching(propsCart) && this.submitting.cart) {
       this.submitting = { ...this.submitting, cart: false }
       if (isError(propsCart)) {
-        ToastAndroid.show(propsCart.message, ToastAndroid.SHORT)
+        // ToastAndroid.show(propsCart.message, ToastAndroid.SHORT)
       }
       if (isFound(propsCart)) {
         if (propsCart.cart.items.length > 0) {

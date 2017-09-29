@@ -1,12 +1,13 @@
 import React from 'react'
-import { ScrollView, Text, ListView, View, Image } from 'react-native'
+import { Text, ListView, View, Image, RefreshControl, ActivityIndicator } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
+import * as saldoAction from '../actions/saldo'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import moment from 'moment'
 // Styles
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import styles from './Styles/BalanceStatusRefillStyle'
 
 class BalanceStatusRefill extends React.Component {
@@ -17,15 +18,30 @@ class BalanceStatusRefill extends React.Component {
     this.state = {
       data: [],
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-        'Agustus', 'September', 'Oktober', 'November', 'Desember']
+        'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+      isRefreshing: true,
+      page: 1,
+      loadmore: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataTopUp.status === 200) {
-      this.setState({
-        data: nextProps.dataTopUp.statuses
-      })
+      if (nextProps.dataTopUp.statuses.length > 0) {
+        const data = [...this.state.data, ...nextProps.dataTopUp.statuses]
+        this.setState({
+          data: data,
+          isRefreshing: false,
+          page: this.state.page + 1,
+          loadmore: true,
+          isLoading: false
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
+      }
       nextProps.dataTopUp.status = 0
     }
   }
@@ -79,15 +95,54 @@ class BalanceStatusRefill extends React.Component {
     )
   }
 
+  refresh = () => {
+    this.setState({ isRefreshing: true, data: [], loadmore: true, page: 1 })
+    this.props.getStatusTopUp(1)
+  }
+
+  loadMore () {
+    const { page, loading, loadmore } = this.state
+    if (!loading) {
+      if (loadmore) {
+        this.props.getStatusTopUp(page)
+      }
+    }
+  }
+
   render () {
     return (
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.data)}
           renderRow={this.renderRow.bind(this)}
           enableEmptySections
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore && this.state.data > 10) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            } else {
+              return <View />
+            }
+          }}
         />
-      </ScrollView>
+      </View>
     )
   }
 }
@@ -100,6 +155,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getStatusTopUp: (page) => dispatch(saldoAction.getTopupStatus({page: page}))
   }
 }
 

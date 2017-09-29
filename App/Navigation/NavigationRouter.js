@@ -1117,7 +1117,7 @@ class NavigationRouter extends Component {
           <Scene
             key='balancestatuswithdraw'
             component={BalanceStatusWithdraw}
-            title='Detail Transaksi balancestatuswithdraw'
+            title='Detail Transaksi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

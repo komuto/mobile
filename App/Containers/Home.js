@@ -47,7 +47,8 @@ class Home extends React.Component {
       loading: true,
       getCartHome: true,
       isLogin: this.props.datalogin.login,
-      cartItems: props.propsCart || null
+      cartItems: props.propsCart || null,
+      number: 0
     }
   }
 
@@ -94,7 +95,8 @@ class Home extends React.Component {
         if (propsCart.cart.items.length > 0) {
           this.setState({
             cartItems: propsCart,
-            getCartHome: false
+            getCartHome: false,
+            number: propsCart.cart.items.length
           })
         }
       }
@@ -363,26 +365,18 @@ class Home extends React.Component {
   }
 
   renderCartNumber () {
-    if (this.submitting.cart) {
-      if (!this.state.cartItems) {
-        if (this.state.cartItems.cart.items.length > 0) {
-          return (
-            <View style={styles.containerNumber}>
-              <Text style={styles.number}>
-                {String(this.state.cartItems.cart.items.length)}
-              </Text>
-            </View>
-          )
-        } else {
-          return (
-            <View />
-          )
-        }
-      } else {
-        return (
-          <View />
-        )
-      }
+    if (this.state.number > 0) {
+      return (
+        <View style={styles.containerNumber}>
+          <Text style={styles.number}>
+            {String(this.state.number)}
+          </Text>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
     }
   }
 

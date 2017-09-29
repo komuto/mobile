@@ -98,6 +98,7 @@ class BalanceX extends React.Component {
 
   status () {
     NavigationActions.balancestatusrefill({ type: ActionConst.PUSH })
+    this.props.getStatusTopUp()
   }
 
   pull () {
@@ -121,7 +122,7 @@ class BalanceX extends React.Component {
         <ScrollView>
           {this.renderTitle('Isi Ulang')}
           {this.renderMenu(Images.getBalance, 'Isi Ulang Saldo', this.refill)}
-          {this.renderMenu(Images.status, 'Status Pengisian', this.status)}
+          {this.renderMenu(Images.status, 'Status Pengisian', this.status.bind(this))}
           {this.renderTitle('Penarikan Saldo')}
           {this.renderMenu(Images.pullBalance, 'Tarik Saldo', this.pull)}
           {this.renderStatusPenarikan()}
@@ -147,7 +148,8 @@ const mapDispatchToProps = (dispatch) => {
       filter: ['commission', 'sale', 'topup', 'refund', 'buy', 'withdraw'],
       start_at: 1448841600,
       end_at: 1512000000}
-    ))
+    )),
+    getStatusTopUp: () => dispatch(saldoAction.getTopupStatus())
   }
 }
 

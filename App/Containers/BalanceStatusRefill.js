@@ -4,7 +4,7 @@ import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-
+import moment from 'moment'
 // Styles
 import { Images } from '../Themes'
 import styles from './Styles/BalanceStatusRefillStyle'
@@ -15,27 +15,23 @@ class BalanceStatusRefill extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      data: [
-        { id: 1,
-          time: '12 Sep 2016',
-          nominal: '20000',
-          status: 0
-        },
-        { id: 2,
-          time: '12 Sep 2016',
-          nominal: '30000',
-          status: 1
-        },
-        { id: 3,
-          time: '12 Sep 2016',
-          nominal: '40000',
-          status: 2
-        }]
+      data: [],
+      months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+        'Agustus', 'September', 'Oktober', 'November', 'Desember']
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataTopUp.status === 200) {
+      this.setState({
+        data: nextProps.dataTopUp.statuses
+      })
+      nextProps.dataTopUp.status = 0
     }
   }
 
   renderRow (rowData) {
-    const money = MaskService.toMask('money', rowData.nominal, {
+    const money = MaskService.toMask('money', rowData.amount, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -49,7 +45,7 @@ class BalanceStatusRefill extends React.Component {
           <Text style={styles.textWaiting}>Menunggu</Text>
         </View>
       )
-    } else if (rowData.status === 1) {
+    } else if (rowData.status === 2) {
       status = (
         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end' }}>
           <Text style={[styles.textFailed, {marginRight: 10}]}>X</Text>
@@ -64,10 +60,14 @@ class BalanceStatusRefill extends React.Component {
         </View>
       )
     }
+    const day = parseInt(moment.unix(rowData.created_at).format('DD'))
+    const month = parseInt(moment.unix(rowData.created_at).format('MM'))
+    const textMonth = this.state.months[month].substring(0, 3)
+    const year = moment.unix(rowData.created_at).format('YYYY')
     return (
       <View style={styles.menuContainer}>
         <View style={[styles.itemContainer, { alignItems: 'flex-start' }]}>
-          <Text style={styles.titleMenu}>{rowData.time}</Text>
+          <Text style={styles.titleMenu}>{day} {textMonth} {year}</Text>
         </View>
         <View style={styles.itemContainer}>
           <Text style={styles.titleMenu}>{money}</Text>
@@ -94,6 +94,7 @@ class BalanceStatusRefill extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataTopUp: state.topupStatus
   }
 }
 

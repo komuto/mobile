@@ -1,12 +1,12 @@
 import React from 'react'
 import {
-  ScrollView,
   View,
   Text,
   ListView,
   Image,
   TouchableOpacity,
-  RefreshControl
+  RefreshControl,
+  ActivityIndicator
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -27,34 +27,56 @@ class Transaction extends React.Component {
     this.state = {
       data: [],
       isRefreshing: true,
-      loading: true
+      loading: true,
+      page: 1,
+      loadmore: true
     }
-    this.props.getListTransaction()
+    this.props.getListTransaction(1)
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataListTransaction.status === 200) {
-      let temp = []
-      const tempData = nextProps.dataListTransaction.listTransactions
-      let i
-      for (i = 0; i < tempData.length; i++) {
-        if (tempData[i].bucket.status === 1 || tempData[i].bucket.status === 2 || tempData[i].bucket.status === 7) {
+      if (nextProps.dataListTransaction.listTransactions.length > 0) {
+        let temp = []
+        const tempData = [...this.state.data, ...nextProps.dataListTransaction.listTransactions]
+        let i
+        for (i = 0; i < tempData.length; i++) {
+          if (tempData[i].bucket.status === 1 || tempData[i].bucket.status === 2 || tempData[i].bucket.status === 7) {
 
-        } else {
-          temp.push(tempData[i])
+          } else {
+            temp.push(tempData[i])
+          }
         }
+        this.setState({
+          data: temp,
+          loading: false,
+          isRefreshing: false,
+          page: this.state.page + 1,
+          loadmore: true,
+          isLoading: false
+        })
+      } else {
+        this.setState({
+          loadmore: false,
+          isLoading: false
+        })
       }
-      this.setState({
-        data: temp,
-        loading: false,
-        isRefreshing: false
-      })
     }
+    nextProps.dataListTransaction.status = 0
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], loading: true })
-    this.props.getListTransaction()
+    this.setState({ isRefreshing: true, data: [], loading: true, loadmore: true, page: 1 })
+    this.props.getListTransaction(1)
+  }
+
+  loadMore () {
+    const { page, loading, loadmore } = this.state
+    if (!loading) {
+      if (loadmore) {
+        this.props.getListTransaction(page)
+      }
+    }
   }
 
   renderListViewTransaksi () {
@@ -63,7 +85,6 @@ class Transaction extends React.Component {
         enableEmptySections
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
-        style={styles.listView}
         refreshControl={
           <RefreshControl
             refreshing={this.state.isRefreshing}
@@ -75,6 +96,20 @@ class Transaction extends React.Component {
             progressBackgroundColor={Colors.snow}
           />
         }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore && this.state.data > 10) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          } else {
+            return <View />
+          }
+        }}
       />
     )
   }
@@ -273,9 +308,7 @@ class Transaction extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <ScrollView>
-          {this.renderListViewTransaksi()}
-        </ScrollView>
+        {this.renderListViewTransaksi()}
       </View>
     )
   }
@@ -289,7 +322,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListTransaction: () => dispatch(transactionAction.listTransactions()),
+    getListTransaction: (page) => dispatch(transactionAction.listTransactions({ page: page })),
     getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id}))
   }
 }

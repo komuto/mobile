@@ -41,7 +41,7 @@ class PurchaseAddToCart extends React.Component {
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
       idProduct: this.props.dataDetailProduk.detail.product.id,
       price: this.props.dataDetailProduk.detail.product.price -
-        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price),
+        ((this.props.dataDetailProduk.detail.product.discount / 100) * this.props.dataDetailProduk.detail.product.price),
       foto: this.props.dataDetailProduk.detail.images[0].file,
       namaProduk: this.props.dataDetailProduk.detail.product.name,
       namaToko: this.props.dataDetailProduk.detail.store.name,
@@ -66,7 +66,7 @@ class PurchaseAddToCart extends React.Component {
       boolAsuransi: false,
       catatan: '',
       subtotal: this.props.dataDetailProduk.detail.product.price -
-        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
+        ((this.props.dataDetailProduk.detail.product.discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
       ongkir: 0,
       ongkirSatuan: 0,
       diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),

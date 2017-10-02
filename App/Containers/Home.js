@@ -81,6 +81,7 @@ class Home extends React.Component {
         ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
       }
       if (isFound(propsWishlist)) {
+        this.submitting.products = true
         this.props.resetAddToWishlist()
         this.props.getProdukTerbaru(6)
       }
@@ -162,6 +163,7 @@ class Home extends React.Component {
 
   addWishList (id) {
     if (this.state.isLogin) {
+      this.submitting.wishlist = true
       this.props.addWishList(id)
     } else {
       Alert.alert('Pesan', 'Anda belum login')
@@ -233,15 +235,21 @@ class Home extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
+    let discount
+    if (rowData.product.discount > 0) {
+      discount = (
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
             {rowData.product.discount}%
           </Text>
         </View>
+      )
+    } else null
+    return (
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
+        {discount}
         <Text style={styles.textTitleProduct}>
           {rowData.product.name}
         </Text>

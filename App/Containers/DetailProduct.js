@@ -367,7 +367,7 @@ class DetailProduct extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    const hargaDiskon = this.discountCalculate(this.state.price, this.state.discount)
+    const hargaDiskon = this.discountCalculate(this.state.price, this.state.diskon)
     if (!grosir && !discount) {
       return (
         <View>

@@ -34,7 +34,7 @@ class BalanceHistoryRefund extends React.Component {
       const transaction = nextProps.dataHistory.historyDetail.transaction
       const refund = nextProps.dataHistory.historyDetail.refund
       const day = parseInt(moment.unix(transaction.date).format('DD'))
-      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
       const textMonth = this.state.months[month]
       const year = moment.unix(transaction.date).format('YYYY')
       const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year

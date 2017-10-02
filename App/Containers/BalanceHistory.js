@@ -198,7 +198,7 @@ class BalanceHistory extends React.Component {
       )
     }
     const day = moment.unix(rowData.date).format('DD')
-    const month = parseInt(moment.unix(rowData.date).format('MM'))
+    const month = parseInt(moment.unix(rowData.date).format('MM')) - 1
     const textMonth = this.state.months[month].substring(0, 3)
     const year = moment.unix(rowData.date).format('YYYY')
     const balanceText = MaskService.toMask('money', rowData.last_saldo, {

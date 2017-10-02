@@ -77,7 +77,7 @@ class BalanceStatusRefill extends React.Component {
       )
     }
     const day = parseInt(moment.unix(rowData.created_at).format('DD'))
-    const month = parseInt(moment.unix(rowData.created_at).format('MM'))
+    const month = parseInt(moment.unix(rowData.created_at).format('MM')) - 1
     const textMonth = this.state.months[month].substring(0, 3)
     const year = moment.unix(rowData.created_at).format('YYYY')
     return (

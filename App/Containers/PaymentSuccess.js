@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import * as saldoAction from '../actions/saldo'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -24,6 +25,7 @@ class PaymentSuccess extends React.Component {
       })
       NavigationActions.transaction()
     } else {
+      this.props.getStatusTopUp()
       NavigationActions.balancestatusrefill({
         type: ActionConst.REPLACE
       })
@@ -61,6 +63,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getStatusTopUp: () => dispatch(saldoAction.getTopupStatus())
   }
 }
 

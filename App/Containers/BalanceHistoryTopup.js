@@ -29,7 +29,7 @@ class BalanceHistoryTopup extends React.Component {
     if (nextProps.dataHistory.status === 200) {
       const data = nextProps.dataHistory.historyDetail
       const day = parseInt(moment.unix(data.date).format('DD'))
-      const month = parseInt(moment.unix(data.date).format('MM'))
+      const month = parseInt(moment.unix(data.date).format('MM')) - 1
       const textMonth = this.state.months[month]
       const year = moment.unix(data.date).format('YYYY')
       const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year

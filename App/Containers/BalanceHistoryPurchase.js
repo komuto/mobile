@@ -41,7 +41,7 @@ class BalanceHistoryPurchase extends React.Component {
       const bucket = nextProps.dataHistory.historyDetail.bucket
       const orders = nextProps.dataHistory.historyDetail.orders
       const day = parseInt(moment.unix(transaction.date).format('DD'))
-      const month = parseInt(moment.unix(transaction.date).format('MM'))
+      const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
       const textMonth = this.state.months[month]
       const year = moment.unix(transaction.date).format('YYYY')
       const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year

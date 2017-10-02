@@ -26,11 +26,11 @@ class PaymentMidtrans extends React.Component {
       ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Error', ToastAndroid.LONG)
       NavigationActions.pop()
       return true
-    } else if (address.includes('error') || address.includes('close') || address.includes('pending')) {
+    } else if (address.includes('error') || address.includes('close')) {
       ToastAndroid.show('Terjadi Kesalahan.. Pembayaran Dibatalkan', ToastAndroid.LONG)
       NavigationActions.pop()
       return true
-    } else if (address.includes('finish') || address.includes('success')) {
+    } else if (address.includes('finish') || address.includes('success') || address.includes('pending')) {
       if (this.state.from === 'payment') {
         NavigationActions.paymentsuccess({
           type: ActionConst.REPLACE,

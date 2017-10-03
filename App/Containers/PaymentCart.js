@@ -21,7 +21,8 @@ class PaymentCart extends React.Component {
       diskon: 0,
       getCartPaymentDetail: true,
       transaction: this.props.transaction,
-      dataInvoice: []
+      dataInvoice: [],
+      uniqueCode: 0
     }
   }
 
@@ -37,7 +38,8 @@ class PaymentCart extends React.Component {
           )
           this.setState({
             dataPembayaran: nextProps.dataCart.cart.items,
-            getCartPaymentDetail: false
+            getCartPaymentDetail: false,
+            uniqueCode: nextProps.dataCart.cart.unique_code
           })
           if (nextProps.dataCart.cart.promo !== null) {
             if (nextProps.dataCart.cart.promo.type === 0) {
@@ -72,7 +74,8 @@ class PaymentCart extends React.Component {
         const discount = nextProps.dataTransaction.transaction.bucket.promo
         if (discount === '' || discount === undefined || discount === null) {
           this.setState({
-            total: nextProps.dataTransaction.transaction.summary_transaction.total_price + nextProps.dataTransaction.transaction.bucket.unique_code
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
+            uniqueCode: nextProps.dataTransaction.transaction.bucket.unique_code
           })
         } else {
           const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
@@ -258,7 +261,7 @@ class PaymentCart extends React.Component {
   }
 
   renderTotal () {
-    const { total, diskon, namaDiskon } = this.state
+    const { total, diskon, namaDiskon, uniqueCode } = this.state
     let renderdiskon
     const totalBiaya = MaskService.toMask('money', total + diskon, {
       unit: 'Rp ',
@@ -272,7 +275,14 @@ class PaymentCart extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    const totalSisa = MaskService.toMask('money', total, {
+    const totalSisa = MaskService.toMask('money', total + uniqueCode, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+
+    const totalUniqueCode = MaskService.toMask('money', uniqueCode, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -300,6 +310,12 @@ class PaymentCart extends React.Component {
             <Text style={styles.textRincianTotal}>{totalBiaya}</Text>
           </View>
           {renderdiskon}
+          <View style={styles.rincian}>
+            <View style={styles.labelContainer}>
+              <Text style={styles.textRincianTotal}>Kode Unik</Text>
+            </View>
+            <Text style={styles.textRincianTotal}>{totalUniqueCode}</Text>
+          </View>
           <View style={styles.sisaPembayaran}>
             <View style={styles.labelContainer}>
               <Text style={styles.sisaPembayaranText}>Sisa Pembayaran</Text>

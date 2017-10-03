@@ -27,7 +27,8 @@ class Payment extends React.Component {
       idCart: this.props.idCart,
       token: '',
       loading: false,
-      transaction: this.props.transaction
+      transaction: this.props.transaction,
+      uniqueCode: 0
     }
   }
 
@@ -78,6 +79,7 @@ class Payment extends React.Component {
           this.setState({
             idCart: nextProps.dataCart.cart.id,
             total: temp,
+            uniqueCode: nextProps.dataCart.cart.unique_code,
             getCartPayment: false
           })
           this.props.getCartReset()
@@ -133,8 +135,8 @@ class Payment extends React.Component {
   }
 
   renderTotal () {
-    const { total } = this.state
-    const totalHarga = MaskService.toMask('money', total, {
+    const { total, uniqueCode } = this.state
+    const totalHarga = MaskService.toMask('money', total + uniqueCode, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',

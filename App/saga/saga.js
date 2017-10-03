@@ -234,6 +234,7 @@ const payment = function * () {
   yield takeEvery(typeReq(paymentActions.CONFIRM_TRANSFER), paymentSaga.confirmTransfer)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN), paymentSaga.getMidtransToken)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN_2), paymentSaga.getMidtransToken2)
+  yield takeEvery(typeReq(paymentActions.BALANCE_PAYMENT), paymentSaga.balancePayment)
 }
 
 const review = function * () {

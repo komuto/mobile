@@ -5,6 +5,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
 import * as reviewAction from '../actions/review'
+import * as transactionAction from '../actions/transaction'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -58,6 +59,13 @@ class UserNotification extends React.Component {
     })
   }
 
+  handleComplain () {
+    this.props.getDisputeList()
+    NavigationActions.buyercomplain({
+      type: ActionConst.PUSH
+    })
+  }
+
   menu (borderStyle, image, titleMenu, onPress) {
     return (
       <TouchableOpacity style={styles.profile} onPress={onPress}>
@@ -81,7 +89,8 @@ class UserNotification extends React.Component {
           {this.menu(styles.borderContainer, Images.messageBuyer, 'Pesan', () => this.handleMessages())}
           {this.menu(styles.borderContainer, Images.komentar, 'Diskusi Produk', () => this.handleDiscussion())}
           {this.menu(styles.borderContainer, Images.bintang, 'Review', () => this.handleReview(93))}
-          {this.menu([styles.borderContainer, {borderBottomWidth: 0}], Images.help, 'Pusat Resolusi', () => this.handleResolution())}
+          {this.menu(styles.borderContainer, Images.help, 'Pusat Resolusi', () => this.handleResolution())}
+          {this.menu(styles.borderContainer, Images.laporkan, 'Komplain Barang', () => this.handleComplain())}
         </View>
       </ScrollView>
     )
@@ -100,7 +109,8 @@ const mapDispatchToProps = (dispatch) => {
     getListDiscussion: () => dispatch(userAction.getDiscussion()),
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
-    getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions())
+    getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions()),
+    getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false }))
   }
 }
 

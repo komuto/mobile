@@ -136,6 +136,8 @@ import BalanceHistoryPurchase from '../Containers/BalanceHistoryPurchase'
 import BalanceStatusWithdraw from '../Containers/BalanceStatusWithdraw'
 import SellerListComplaintsGoods from '../Containers/SellerListComplaintsGoods'
 import SellerDetailComplaintsGoods from '../Containers/SellerDetailComplaintsGoods'
+import BuyerComplain from '../Containers/BuyerComplain'
+import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1131,6 +1133,20 @@ class NavigationRouter extends Component {
           <Scene
             key='sellerdetailcomplaintgoods'
             component={SellerDetailComplaintsGoods}
+            title='Detail Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplain'
+            component={BuyerComplain}
+            title='Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplaindetail'
+            component={BuyerComplainDetail}
             title='Detail Komplain Barang'
             navBar={CustomNavBar}
             hideNavBar={false}

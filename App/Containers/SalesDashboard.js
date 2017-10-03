@@ -4,10 +4,8 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as salesAction from '../actions/transaction'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
-// Styles
 import styles from './Styles/SalesDashboardStyle'
 
 import { Images, Colors } from '../Themes'
@@ -16,38 +14,76 @@ class SalesDashboard extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      neworder: false,
+      deliveryconfrimation: false,
+      saleslist: false
+    }
     this.state = {
-      newOrder: 0,
-      deliveryConfirmation: 0,
-      salesList: 0
+      newOrder: props.dataOrder || null,
+      deliveryConfirmation: props.dataProcessingOrder || null,
+      salesList: props.dataSales || null
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataOrder.status === 200) {
-      this.setState({
-        newOrder: nextProps.dataOrder.orders.length
-      })
-    } if (nextProps.dataProcessingOrder.status === 200) {
-      this.setState({
-        deliveryConfirmation: nextProps.dataProcessingOrder.orders.length
-      })
-    } if (nextProps.dataSales.status === 200) {
-      this.setState({
-        salesList: nextProps.dataSales.sales.length
-      })
-    } if (nextProps.dataOrder.status > 200 ||
-      nextProps.dataProcessingOrder.status > 200 ||
-      nextProps.dataSales.status > 200) {
-      ToastAndroid.show(nextProps.dataOrder.message || nextProps.dataProcessingOrder.message || nextProps.dataSales.message, ToastAndroid.SHORT)
+    const {dataOrder, dataProcessingOrder, dataSales} = nextProps
+
+    if (!isFetching(dataOrder) && this.submitting.neworder) {
+      this.submitting = { ...this.submitting, neworder: false }
+      if (isError(dataOrder)) {
+        ToastAndroid.show(dataOrder.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataOrder)) {
+        this.setState({ newOrder: dataOrder })
+      }
+    }
+
+    if (!isFetching(dataProcessingOrder) && this.submitting.deliveryconfrimation) {
+      this.submitting = { ...this.submitting, deliveryconfrimation: false }
+      if (isError(dataProcessingOrder)) {
+        ToastAndroid.show(dataProcessingOrder.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataOrder)) {
+        this.setState({ deliveryConfirmation: dataProcessingOrder })
+      }
+    }
+
+    if (!isFetching(dataSales) && this.submitting.saleslist) {
+      this.submitting = { ...this.submitting, saleslist: false }
+      if (isError(dataSales)) {
+        ToastAndroid.show(dataSales.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataOrder)) {
+        this.setState({ salesList: dataSales })
+      }
     }
   }
 
   componentDidMount () {
+    const { newOrder, deliveryConfirmation, salesList } = this.state
+    if (!newOrder.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        neworder: true
+      }
+      this.props.getListOrder()
+    }
+    if (!deliveryConfirmation.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        deliveryconfrimation: true
+      }
+      this.props.getListProcessingOrder()
+    }
+    if (!salesList.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        saleslist: true
+      }
+      this.props.getListSales()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-    this.props.getListOrder()
-    this.props.getListProcessingOrder()
-    this.props.getListSales()
   }
 
   componentWillUnmount () {
@@ -78,6 +114,42 @@ class SalesDashboard extends React.Component {
     })
   }
 
+  checkAmountOrder (data) {
+    if (!this.submitting.newOrder) {
+      return (
+        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+          <Text style={styles.statusAmount}>
+            {data.orders.length}
+          </Text>
+        </View>
+      )
+    }
+  }
+
+  checkAmountDeliv (data) {
+    if (!this.submitting.deliveryconfrimation) {
+      return (
+        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+          <Text style={styles.statusAmount}>
+            {data.orders.length}
+          </Text>
+        </View>
+      )
+    }
+  }
+
+  checkAmountSale (data) {
+    if (!this.submitting.saleslist) {
+      return (
+        <View style={styles.circleRed}>
+          <Text style={[styles.statusAmount, {color: Colors.snow}]}>
+            {data.sales.length}
+          </Text>
+        </View>
+      )
+    }
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -91,11 +163,7 @@ class SalesDashboard extends React.Component {
                     Pesanan Baru
                   </Text>
                 </View>
-                <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-                  <Text style={styles.statusAmount}>
-                    {this.state.newOrder}
-                  </Text>
-                </View>
+                {this.checkAmountOrder(this.state.newOrder)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>
@@ -109,11 +177,7 @@ class SalesDashboard extends React.Component {
                     Konfirmasi Pengiriman
                   </Text>
                 </View>
-                <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-                  <Text style={styles.statusAmount}>
-                    {this.state.deliveryConfirmation}
-                  </Text>
-                </View>
+                {this.checkAmountDeliv(this.state.deliveryConfirmation)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>
@@ -127,11 +191,7 @@ class SalesDashboard extends React.Component {
                     Daftar Penjualan
                   </Text>
                 </View>
-                <View style={styles.circleRed}>
-                  <Text style={[styles.statusAmount, {color: Colors.snow}]}>
-                    {this.state.salesList}
-                  </Text>
-                </View>
+                {this.checkAmountSale(this.state.salesList)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>

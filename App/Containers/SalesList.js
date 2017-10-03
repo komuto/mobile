@@ -96,8 +96,8 @@ class SalesList extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.salesdashboard({
-      type: ActionConst.RESET
+    NavigationActions.pop({
+      type: ActionConst.POP_AND_REPLACE
     })
     return true
   }

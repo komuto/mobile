@@ -211,7 +211,7 @@ class Profile extends React.Component {
               </Text>
               <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.profile, {borderBottomWidth: 0}]}>
+            <TouchableOpacity onPress={() => this.handleListFavStore()} style={[styles.profile, {borderBottomWidth: 0}]}>
               <Image source={Images.daftar} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
@@ -263,6 +263,12 @@ class Profile extends React.Component {
 
   saldo () {
     NavigationActions.balance({
+      type: ActionConst.PUSH
+    })
+  }
+
+  handleListFavStore () {
+    NavigationActions.listfavoritestores({
       type: ActionConst.PUSH
     })
   }

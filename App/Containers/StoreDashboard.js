@@ -51,8 +51,6 @@ class StoreDashboard extends React.Component {
   }
 
   handleDaftarProduk () {
-    this.props.getListProduk(false)
-    this.props.getHiddenProduct()
     NavigationActions.productlist({
       type: ActionConst.PUSH
     })
@@ -274,8 +272,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
     getListMessages: () => dispatch(messageAction.getSellerMessages()),
     getListArchiveMessages: () => dispatch(messageAction.getArchiveSellerMessages()),
     getStoreDiscussions: (page) => dispatch(storeAction.getStoreDiscussions({page: page})),

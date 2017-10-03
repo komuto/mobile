@@ -14,7 +14,8 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
-import { Images, Colors } from '../Themes'
+// import Reactotron from 'reactotron-react-native'
+import { Images, Colors, Fonts } from '../Themes'
 
 import {isFetching, isError, isFound} from '../Services/Status'
 
@@ -42,6 +43,7 @@ class Home extends React.Component {
     this.state = {
       product: props.propsProducts || null,
       category: props.propsCategory || null,
+      wishlist: props.propsWishlist || null,
       tipe: this.props.tipe || 'home',
       search: '',
       loading: true,
@@ -81,9 +83,7 @@ class Home extends React.Component {
         ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
       }
       if (isFound(propsWishlist)) {
-        this.submitting.products = true
-        this.props.resetAddToWishlist()
-        this.props.getProdukTerbaru(6)
+        this.setState({ wishlist: propsWishlist })
       }
     }
 
@@ -162,9 +162,20 @@ class Home extends React.Component {
   }
 
   addWishList (id) {
-    if (this.state.isLogin) {
-      this.submitting.wishlist = true
+    const {isLogin, product} = this.state
+    if (isLogin) {
+      this.submitting = {
+        ...this.submitting,
+        wishlist: true
+      }
+      product.products.map((myProduct) => {
+        if (myProduct.product.id === id) {
+          myProduct.product.is_liked ? myProduct.product.count_like -= 1 : myProduct.product.count_like += 1
+          myProduct.product.is_liked = !myProduct.product.is_liked
+        }
+      })
       this.props.addWishList(id)
+      this.setState({ product })
     } else {
       Alert.alert('Pesan', 'Anda belum login')
     }
@@ -222,6 +233,28 @@ class Home extends React.Component {
     return hargaDiskon
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
   renderRowProduk (rowData) {
     if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
@@ -235,21 +268,11 @@ class Home extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    let discount
-    if (rowData.product.discount > 0) {
-      discount = (
-        <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
-            {rowData.product.discount}%
-          </Text>
-        </View>
-      )
-    } else null
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        {discount}
+        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <Text style={styles.textTitleProduct}>
           {rowData.product.name}
         </Text>
@@ -266,7 +289,7 @@ class Home extends React.Component {
         <View style={styles.likesContainer}>
           {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={styles.like}>
-            {rowData.product.stock}
+            {rowData.product.count_like}
           </Text>
         </View>
       </TouchableOpacity>
@@ -481,7 +504,7 @@ const mapStateToProps = (state) => {
     propsCategory: state.category,
     propsProducts: state.products,
     datalogin: state.isLogin,
-    propsWishlist: state.addWishlistHome,
+    propsWishlist: state.addWishlist,
     propsCart: state.cart
   }
 }
@@ -491,7 +514,7 @@ const mapDispatchToProps = (dispatch) => {
     getKategori: () => dispatch(homeAction.categoryList()),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    addWishList: (id) => dispatch(produkAction.addToWishlistHome({ id: id })),
+    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
     getWishlist: () => dispatch(wishlistAction.wishlist()),
     getCart: () => dispatch(cartAction.getCart()),

@@ -12,10 +12,8 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'black',
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
-    opacity: 0.5
+    height: Metrics.screenHeight
   },
   textHeader: {
     flex: 1,
@@ -208,7 +206,6 @@ export default StyleSheet.create({
     borderBottomWidth: 0.5
   },
   modalContainer: {
-    position: 'absolute',
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     backgroundColor: 'rgba(0,0,0,0.5)'

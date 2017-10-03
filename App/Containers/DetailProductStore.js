@@ -3,6 +3,8 @@ import { ScrollView, ActivityIndicator, ToastAndroid, ListView, Text, View, Refr
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
+// import Reactotron from 'reactotron-react-native'
+
 import * as categoriAction from '../actions/home'
 import * as storeAction from '../actions/stores'
 
@@ -30,7 +32,7 @@ class DetailProductStore extends React.Component {
       category: '',
       imageProduct: [],
       nameCategory: '',
-      id: '',
+      id: this.props.idProduct || 213,
       isRefreshing: false,
       callback: false
     }
@@ -74,6 +76,7 @@ class DetailProductStore extends React.Component {
   }
 
   componentDidMount () {
+    this.props.getDetailStoreProduct(this.state.id)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -279,7 +282,6 @@ class DetailProductStore extends React.Component {
       description: this.state.product.description,
       callback: this.state.callback
     })
-    console.log(id)
     this.props.allCategory()
   }
 
@@ -425,7 +427,6 @@ class DetailProductStore extends React.Component {
   }
 
   changeCatalog (id) {
-    console.log(id)
     NavigationActions.editproductcatalog({
       type: ActionConst.PUSH,
       id: id,
@@ -500,7 +501,7 @@ class DetailProductStore extends React.Component {
 
   renderRowExpedition (rowData) {
     return (
-      <Text style={[styles.textValueMenu, {marginRight: 0, paddingBottom: 12}]}>{rowData}</Text>
+      <Text style={[styles.textValueMenu, {marginRight: 0, paddingBottom: 12}]}>{rowData.name}</Text>
     )
   }
 
@@ -541,10 +542,16 @@ class DetailProductStore extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          {this.renderHeader()}
+          <View style={styles.spinner}>
+            <ActivityIndicator color={Colors.red} size='large' />
+          </View>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -569,7 +576,6 @@ class DetailProductStore extends React.Component {
           {this.renderWholeSale()}
           {this.renderExpedition()}
         </ScrollView>
-        {spinner}
       </View>
     )
   }
@@ -588,7 +594,8 @@ const mapDispatchToProps = (dispatch) => {
     allCategory: () => dispatch(categoriAction.categoryList()),
     getKategori: (id) => dispatch(categoriAction.subCategory({id: id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
   }
 }
 

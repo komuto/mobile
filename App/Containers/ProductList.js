@@ -9,12 +9,16 @@ import {
   BackAndroid,
   ActivityIndicator,
   Modal,
-  ListView
+  ListView,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
+// import Reactotron from 'reactotron-react-native'
+
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -33,41 +37,73 @@ class ProductList extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.position = []
+    this.positionCatalog = []
+    this.submitting = {
+      showProduct: false,
+      hiddenProduct: false,
+      doneFetching: false
+    }
     this.state = {
-      activeCatalog: false,
-      katalog: [],
-      product: [],
-      productHidden: [],
+      productHidden: props.dataProductHidden || null,
+      product: props.dataProduk || null,
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
       search: '',
+      activeCatalog: false,
       statusDotDisplay: false,
       statusDotHidden: false,
       rowTerpilih: '',
       loading: true,
-      modal: false,
-      positionCatalog: []
+      modal: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        product: nextProps.dataProduk.storeProducts,
-        katalog: nextProps.dataProduk.storeProducts,
-        loading: false
-      })
+    const {dataProduk, dataProductHidden} = nextProps
+
+    if (!isFetching(dataProduk) && this.submitting.showProduct) {
+      this.submitting = { ...this.submitting, showProduct: false }
+      if (isError(dataProduk)) {
+        ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProduk)) {
+        this.setState({ product: dataProduk })
+      }
     }
-    if (nextProps.dataProductHidden.status === 200) {
-      this.setState({
-        productHidden: nextProps.dataProductHidden.products,
-        loading: false
-      })
+
+    if (!isFetching(dataProductHidden) && this.submitting.hiddenProduct) {
+      this.submitting = { ...this.submitting, hiddenProduct: false }
+      if (isError(dataProductHidden)) {
+        ToastAndroid.show(dataProductHidden.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProductHidden)) {
+        this.setState({ productHidden: dataProductHidden })
+      }
+    }
+
+    if (!isFetching(dataProduk) && !isFetching(dataProductHidden)) {
+      this.submitting = { ...this.submitting, doneFetching: true }
     }
   }
 
   componentDidMount () {
+    const { product, productHidden } = this.state
+    if (!product.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        showProduct: true
+      }
+      this.props.getListProduk(false)
+      this.props.getHiddenProduct()
+    }
+    if (!productHidden.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        hiddenProduct: true
+      }
+      this.props.getHiddenProduct()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -92,36 +128,37 @@ class ProductList extends React.Component {
   }
 
   clickCatalog (rowId) {
-    let temp = this.state.positionCatalog
+    let temp = this.positionCatalog
     this.refs.produkTampil.scrollTo({y: temp[rowId]})
     this.setState({modal: false, activeCatalog: false})
   }
 
   renderCatalogModal (rowData, sectionId, rowId) {
+    const mapCatalog = rowData.storeProducts.map((data, i) => {
+      return (
+        <TouchableOpacity style={styles.containerData} onPress={() => this.clickCatalog(i)}>
+          <Text style={styles.kategori}>{data.catalog.name}</Text>
+        </TouchableOpacity>
+      )
+    })
     return (
-      <TouchableOpacity style={styles.containerData} onPress={() => this.clickCatalog(rowId)}>
-        <Text style={styles.kategori}>{rowData.catalog.name}</Text>
-      </TouchableOpacity>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: (Metrics.screenHeight / 2) + 50 }}>
+        {mapCatalog}
+      </ScrollView>
     )
   }
 
   renderModal () {
     return (
       <Modal
-        animationType={'fade'}
+        animationType={'none'}
         transparent
         visible={this.state.modal}
         onRequestClose={() => this.setState({ modal: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.openKatalog()}>
           <View style={styles.listViewModal}>
-            <ListView
-              enableEmptySections
-              style={{ maxHeight: (Metrics.screenHeight / 2) + 50 }}
-              contentContainerStyle={{ flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.katalog)}
-              renderRow={this.renderCatalogModal.bind(this)}
-            />
+            {this.renderCatalogModal(this.state.product)}
           </View>
           <TouchableOpacity style={styles.floatButtonClose} onPress={() => this.openKatalog()}>
             <Image source={Images.closewhite} style={styles.floatImage} />
@@ -148,7 +185,7 @@ class ProductList extends React.Component {
   renderKatalogtButton () {
     if (!this.state.activeCatalog) {
       return (
-        <TouchableOpacity style={styles.floatButton} onPress={() => this.openKatalog()}>
+        <TouchableOpacity activeOpacity={0.5} style={styles.floatButton} onPress={() => this.openKatalog()}>
           <Image source={Images.katalog} style={styles.floatImage} />
           <Text style={styles.katalog}>Daftar Katalog</Text>
         </TouchableOpacity>
@@ -162,12 +199,16 @@ class ProductList extends React.Component {
 
   renderTambahButton () {
     return (
-      <TouchableOpacity style={styles.create} onPress={() => this.handleTambahProduk()}>
+      <TouchableOpacity activeOpacity={0.5} style={styles.create} onPress={() => this.handleTambahProduk()}>
         <View elevation={9}>
           <Image source={Images.tambahWhite} style={styles.floatImage} />
         </View>
       </TouchableOpacity>
     )
+  }
+
+  handleTextSearch = (text) => {
+    this.setState({ search: text })
   }
 
   renderSearch () {
@@ -195,7 +236,7 @@ class ProductList extends React.Component {
   onLayout = event => {
     let {y} = event.nativeEvent.layout
     this.position.push(y)
-    this.setState({positionCatalog: this.position})
+    this.positionCatalog = this.position
   }
 
   handleListProduk (id, name, hidden) {
@@ -387,67 +428,47 @@ class ProductList extends React.Component {
     )
   }
 
-  containerEditHidden (i, id, hidden) {
-    if (this.state.statusDotHidden && this.state.rowTerpilih === i) {
+  DaftarProdukDiTampilkan (rowData, sectionId, rowId) {
+    const mapProduct = rowData.storeProducts.map((data, i) => {
       return (
-        <View elevation={5} style={styles.edit}>
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Tampilkan')}>
-            <Text style={styles.textEdit}>Tampilkan Barang</Text>
+        <View key={i} style={styles.separaator} onLayout={this.onLayout}>
+          <View style={styles.containerProduk}>
+            <View style={styles.headerInfoAlamat}>
+              <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
+              <TouchableOpacity activeOpacity={0.5} onPress={() => this.setState({statusDotDisplay: true, rowTerpilih: i})}>
+                <Image source={Images.threeDotSilver} style={styles.imageDot} />
+              </TouchableOpacity>
+            </View>
+            {this.mapSingleProduk(data.products, i, data.catalog.id)}
+          </View>
+          <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(data.catalog.id, data.catalog.name, false)}>
+            <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
+            <Image source={Images.rightArrow} style={styles.imageDot} />
           </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleDeleteProduct(id, hidden)}>
-            <Text style={styles.textEdit}>Hapus Barang di Katalog</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToCatalog(id, hidden)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Katalog Lain</Text>
-          </TouchableOpacity>
-          <View style={styles.border} />
-          <TouchableOpacity style={styles.touch} onPress={() => this.handleMoveToDropshipper(id, hidden)}>
-            <Text style={styles.textEdit}>Pindahkan barang ke Dropshipping</Text>
-          </TouchableOpacity>
+          {this.containerEditDisplay(i, data.catalog.id, false)}
         </View>
       )
-    }
+    })
     return (
-      <View />
-    )
-  }
-
-  DaftarProdukDiTampilkan (rowData, sectionId, rowId) {
-    return (
-      <View key={rowId} style={styles.separaator} onLayout={this.onLayout}>
-        <View style={styles.containerProduk}>
-          <View style={styles.headerInfoAlamat}>
-            <Text style={styles.textHeader}>{rowData.catalog.name} ({rowData.catalog.count_product})</Text>
-            <TouchableOpacity onPress={() => this.setState({statusDotDisplay: true, rowTerpilih: rowId})}>
-              <Image source={Images.threeDotSilver} style={styles.imageDot} />
-            </TouchableOpacity>
-          </View>
-          {this.mapSingleProduk(rowData.products, rowId, rowData.catalog.id)}
-        </View>
-        <TouchableOpacity activeOpacity={0.5} style={[styles.headerInfoAlamat, {backgroundColor: Colors.snow}]} onPress={() => this.handleListProduk(rowData.catalog.id, rowData.catalog.name, false)}>
-          <Text style={[styles.textHeader, {color: Colors.bluesky}]}>Lihat semua produk di katalog ini</Text>
-          <Image source={Images.rightArrow} style={styles.imageDot} />
-        </TouchableOpacity>
-        {this.containerEditDisplay(rowId, rowData.catalog.id, false)}
+      <View>
+        {mapProduct}
       </View>
     )
   }
 
   DaftarProdukDiSembunyikan (rowData, sectionId, rowId) {
     return (
-      <TouchableOpacity key={rowId} style={styles.dataListProduk}
+      <TouchableOpacity activeOpacity={0.5}key={rowId} style={styles.dataListProduk}
         onPress={() => this.produkDetail(rowData.id, rowData.name, rowData.image, rowData.price, rowData)}>
         <View style={styles.flexRow}>
           <Image source={{uri: rowData.image}} style={styles.imageProduk} />
           <View style={styles.column}>
             <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
               <Text style={styles.textTitle}>{rowData.name}</Text>
-              <TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.5}>
                 <Image source={Images.diskon} style={styles.imageDot} />
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity activeOpacity={0.5}>
                 <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
               </TouchableOpacity>
             </View>
@@ -479,19 +500,22 @@ class ProductList extends React.Component {
     } else {
       NavigationActions.detailproductstore({
         type: ActionConst.PUSH,
-        productName: name
+        productName: name,
+        idProduct: id
       })
-      this.props.getDetailStoreProduct(id)
     }
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
+    if (!this.submitting.doneFetching) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
     return (
-      <TouchableOpacity activeOpacity={100} onPress={() => this.setState({statusDotDisplay: false, statusDotHidden: false})} style={styles.container}>
+      <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDotDisplay: false, statusDotHidden: false})} style={styles.container}>
         <ScrollableTabView
           prerenderingSiblingsNumber={2}
           style={this.state.tabViewStyle}
@@ -502,29 +526,23 @@ class ProductList extends React.Component {
           tabBarTextStyle={styles.textTab}
           locked
         >
-          <ScrollView tabLabel='Ditampilkan di Toko' ref='produkTampil' style={styles.scrollView}>
-            {this.renderSearch()}
+          <View tabLabel='Ditampilkan di Toko' ref='produkTampil'>
+            <ScrollView>
+              {this.DaftarProdukDiTampilkan(this.state.product)}
+            </ScrollView>
+            {this.renderKatalogtButton()}
+          </View>
+          <View tabLabel='Disembunyikan' ref='productHidden'>
             <ListView
               enableEmptySections
               contentContainerStyle={{ flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.product)}
-              renderRow={this.DaftarProdukDiTampilkan.bind(this)}
-            />
-          </ScrollView>
-          <ScrollView tabLabel='Disembunyikan' ref='productHidden' style={styles.scrollView}>
-            {this.renderSearch()}
-            <ListView
-              enableEmptySections
-              contentContainerStyle={{ flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.productHidden)}
+              dataSource={this.dataSource.cloneWithRows(this.state.productHidden.products)}
               renderRow={this.DaftarProdukDiSembunyikan.bind(this)}
             />
-          </ScrollView>
+          </View>
         </ScrollableTabView>
-        {this.renderKatalogtButton()}
         {this.renderTambahButton()}
         {this.renderModal()}
-        {spinner}
       </TouchableOpacity>
     )
   }
@@ -536,11 +554,12 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
+  getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
+  getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
   getProductByCatalogs: (id) => dispatch(storeAction.getStoreCatalogProducts({id: id, limit: 100})),
   getProductByCatalogDropship: (id, isDropShip) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip})),
   getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
   getCatalog: () => dispatch(catalogAction.getListCatalog()),
-  getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
   getKategori: (id) => dispatch(categoriAction.subCategory({id: id}))
 })
 

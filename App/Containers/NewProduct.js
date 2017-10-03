@@ -9,36 +9,35 @@ import {
   BackAndroid,
   Modal,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Alert,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as produkAction from '../actions/product'
+import {isFetching, isError, isFound} from '../Services/Status'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as produkAction from '../actions/product'
 
 // Styles
 import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors, Metrics } from '../Themes'
+import { Images, Colors, Metrics, Fonts } from '../Themes'
 
 class NewProduct extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-    ]
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.submitting = {
+      wishlist: false
+    }
     this.state = {
       search: '',
       listDataSource: [],
@@ -55,7 +54,6 @@ class NewProduct extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      sortData: menu,
       filter: false,
       page: 1,
       loadmore: true,
@@ -68,11 +66,13 @@ class NewProduct extends React.Component {
       brand: '',
       other: '',
       statusFilter: false,
-      sort: 'newest'
+      sort: 'newest',
+      wishlist: props.propsWishlist || null
     }
   }
 
   componentDidMount () {
+    this.props.getProdukTerbaru()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -81,10 +81,11 @@ class NewProduct extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataFilter.status === 200) {
+    const {propsWishlist, dataFilter} = nextProps
+    if (dataFilter.status === 200) {
       if (!this.state.statusFilter) {
-        if (nextProps.dataFilter.products.length > 0) {
-          let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
+        if (dataFilter.products.length > 0) {
+          let data = [...this.state.listDataSource, ...dataFilter.products]
           this.setState({
             listDataSource: data,
             rowDataSource: data,
@@ -101,8 +102,8 @@ class NewProduct extends React.Component {
         }
       } else {
         this.setState({
-          listDataSource: nextProps.dataFilter.products,
-          rowDataSource: nextProps.dataFilter.products,
+          listDataSource: dataFilter.products,
+          rowDataSource: dataFilter.products,
           isRefreshing: false,
           isLoading: false,
           loadmore: true,
@@ -110,13 +111,21 @@ class NewProduct extends React.Component {
           page: 1
         })
       }
-    } else if (nextProps.dataFilter.status > 200) {
-      console.log(nextProps.dataFilter.status)
+    } else if (dataFilter.status > 200) {
       this.setState({
         isRefreshing: false,
         isLoading: false,
         loadmore: true
       })
+    }
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+        this.setState({ wishlist: propsWishlist })
+      }
     }
   }
 
@@ -343,16 +352,36 @@ class NewProduct extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  addWishList (id) {
+    const {listDataSource} = this.state
+    if (this.props.datalogin.login) {
+      this.submitting = {
+        ...this.submitting,
+        wishlist: true
+      }
+      listDataSource.map((myProduct) => {
+        if (myProduct.product.id === id) {
+          myProduct.product.is_liked ? myProduct.product.count_like -= 1 : myProduct.product.count_like += 1
+          myProduct.product.is_liked = !myProduct.product.is_liked
+        }
+      })
+      this.props.addWishList(id)
+      this.setState({ listDataSource })
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
+  }
+
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -363,12 +392,32 @@ class NewProduct extends React.Component {
     return hargaDiskon
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
   renderRowList (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -380,13 +429,10 @@ class NewProduct extends React.Component {
     })
 
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
@@ -397,7 +443,7 @@ class NewProduct extends React.Component {
             </Text>
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -405,9 +451,9 @@ class NewProduct extends React.Component {
               </Text>
             </View>
             <View style={styles.likesContainer}>
-              {this.renderLikes(rowData.like)}
+              {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
               <Text style={styles.like}>
-                {rowData.product.stock}
+                {rowData.product.count_like}
               </Text>
             </View>
           </View>
@@ -417,11 +463,9 @@ class NewProduct extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -432,13 +476,10 @@ class NewProduct extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData, rowData.product.is_discount)}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>
@@ -448,18 +489,25 @@ class NewProduct extends React.Component {
           </Text>
           {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(rowData.like)}
+          {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={stylesHome.like}>
-            {rowData.product.stock}
+            {rowData.product.count_like}
           </Text>
         </View>
       </TouchableOpacity>
     )
+  }
+
+  produkDetail (id) {
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
   }
 
   changeView () {
@@ -621,13 +669,16 @@ class NewProduct extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataProduk: state.products,
-    dataFilter: state.productBySearch
+    dataFilter: state.productBySearch,
+    propsWishlist: state.addWishlist,
+    datalogin: state.isLogin
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: dispatch(produkAction.listProductBySearch()),
+    getProdukTerbaru: () => dispatch(produkAction.listProductBySearch()),
+    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
     getFilterProduk: (condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductBySearch({
       condition: condition,
       services: services,

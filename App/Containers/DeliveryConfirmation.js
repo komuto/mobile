@@ -69,7 +69,7 @@ class DeliveryConfirmation extends React.Component {
 
   handleBack = () => {
     NavigationActions.salesdashboard({
-      type: ActionConst.RESET
+      type: ActionConst.POP_AND_REPLACE
     })
     return true
   }

@@ -61,7 +61,9 @@ class SellerDetailComplaintsGoods extends React.Component {
       modalUpdateReceiptNumber: false,
       inputReceiptNumber: '',
       messages: '',
-      replyDiscussions: false
+      replyDiscussions: false,
+      listHeight: 0,
+      footerY: 0
     }
   }
 
@@ -653,19 +655,26 @@ class SellerDetailComplaintsGoods extends React.Component {
   }
 
   renderRowDiscussion (rowData) {
-    var timeStampToDate = moment.unix(rowData.created_at).format('HH:MM').toString()
-    return (
-      <View style={styles.containerMessage}>
-        <View style={styles.maskedPhoto}>
-          <Image source={{uri: rowData.user.photo}} style={styles.photoUser} />
-        </View>
-        <View style={{marginLeft: 20, flex: 1}}>
-          <View style={styles.flexRowMessage}>
-            <Text style={styles.titleMessage}>{rowData.user.name}</Text>
-            <Text style={styles.date}>{timeStampToDate}</Text>
+    const image = rowData.map((data, i) => {
+      const timeStampToDate = moment.unix(data.created_at).format('HH:MM').toString()
+      return (
+        <View key={i} onLayout={this.onLayout} style={styles.containerMessage}>
+          <View style={styles.maskedPhoto}>
+            <Image source={{uri: data.user.photo}} style={styles.photoUser} />
           </View>
-          <Text style={styles.messageText}>{rowData.content}</Text>
+          <View style={{marginLeft: 20, flex: 1}}>
+            <View style={styles.flexRowMessage}>
+              <Text style={styles.titleMessage}>{data.user.name}</Text>
+              <Text style={styles.date}>{timeStampToDate}</Text>
+            </View>
+            <Text style={styles.messageText}>{data.content}</Text>
+          </View>
         </View>
+      )
+    })
+    return (
+      <View>
+        {image}
       </View>
     )
   }
@@ -678,6 +687,7 @@ class SellerDetailComplaintsGoods extends React.Component {
   onLayout = (event) => {
     const layout = event.nativeEvent.layout
     this.listHeight = layout.height
+    console.log(this.listHeight)
   }
 
   renderFooter = () => {
@@ -689,16 +699,11 @@ class SellerDetailComplaintsGoods extends React.Component {
   onFooterLayout = (event) => {
     const layout = event.nativeEvent.layout
     this.footerY = layout.y
+    console.log(this.footerY)
   }
 
   scrollToBottom () {
-    // if (this.listHeight && this.footerY && this.footerY > this.listHeight) {
-    //   const scrollTo = this.footerY - this.listHeight
-    this.refs.listView.scrollTo({
-      y: this.footerY - this.listHeight,
-      animated: true
-    })
-    // }
+    this.refs.listView.scrollToEnd()
   }
 
   render () {
@@ -738,14 +743,17 @@ class SellerDetailComplaintsGoods extends React.Component {
             </ScrollView>
           </View>
           <View tabLabel='Diskusi' ref='discussion' style={{flex: 1, flexDirection: 'column', backgroundColor: Colors.snow}}>
-            <ListView
-              ref='listView'
-              onLayout={this.onLayout}
-              renderFooter={this.renderFooter}
-              dataSource={this.dataSource.cloneWithRows(this.state.discussion)}
-              renderRow={this.renderRowDiscussion.bind(this)}
-              enableEmptySections
-            />
+            <ScrollView ref='listView'>
+              {this.renderRowDiscussion(this.state.discussion)}
+              {/* {<ListView
+                ref='listView'
+                onLayout={this.onLayout}
+                renderFooter={this.renderFooter}
+                dataSource={this.dataSource.cloneWithRows(this.state.discussion)}
+                renderRow={this.renderRowDiscussion.bind(this)}
+                enableEmptySections
+              />} */}
+            </ScrollView>
             <TouchableOpacity onPress={() => this.scrollToBottom()} style={styles.absolute}>
               <Image source={Images.down} style={{width: 30, height: 30}} />
             </TouchableOpacity>

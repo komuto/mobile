@@ -7,14 +7,10 @@ export default StyleSheet.create({
     backgroundColor: Colors.paleGrey
   },
   spinner: {
-    position: 'absolute',
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'black',
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
-    opacity: 0.5
+    height: Metrics.screenHeight - Metrics.navBarHeight
   },
   headerTextContainer: {
     height: Metrics.navBarHeight,
@@ -120,10 +116,6 @@ export default StyleSheet.create({
     paddingBottom: 18
   },
   rincianContainrer: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver,
-    borderTopWidth: 0.5,
-    borderTopColor: Colors.silver,
     backgroundColor: Colors.paleGrey,
     marginLeft: -20,
     marginRight: -20,

@@ -138,6 +138,7 @@ import SellerListComplaintsGoods from '../Containers/SellerListComplaintsGoods'
 import SellerDetailComplaintsGoods from '../Containers/SellerDetailComplaintsGoods'
 import BuyerComplain from '../Containers/BuyerComplain'
 import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
+import ListFavoriteStores from '../Containers/ListFavoriteStores'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1148,6 +1149,13 @@ class NavigationRouter extends Component {
             key='buyercomplaindetail'
             component={BuyerComplainDetail}
             title='Detail Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='listfavoritestores'
+            component={ListFavoriteStores}
+            title='Daftar Toko Favorit'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

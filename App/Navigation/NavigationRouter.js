@@ -139,6 +139,7 @@ import SellerDetailComplaintsGoods from '../Containers/SellerDetailComplaintsGoo
 import BuyerComplain from '../Containers/BuyerComplain'
 import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
 import ListFavoriteStores from '../Containers/ListFavoriteStores'
+import BuyerComplainConfirmation from '../Containers/BuyerComplainConfirmation'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1156,6 +1157,13 @@ class NavigationRouter extends Component {
             key='listfavoritestores'
             component={ListFavoriteStores}
             title='Daftar Toko Favorit'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplainconfirmation'
+            component={BuyerComplainConfirmation}
+            title='Konfirmasi Barang Diterima'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

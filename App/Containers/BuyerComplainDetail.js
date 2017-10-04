@@ -33,9 +33,9 @@ class BuyerComplainDetail extends React.Component {
           <ScrollView tabLabel='Detail' ref='detail' style={styles.scrollView}>
             <BuyerComplainDetailItem />
           </ScrollView>
-          <ScrollView tabLabel='Diskusi' ref='discussion' style={styles.scrollView}>
+          <View tabLabel='Diskusi' ref='discussion' style={{ flex: 1 }}>
             <BuyerComplainDetailDiscussion />
-          </ScrollView>
+          </View>
         </ScrollableTabView>
       </View>
     )

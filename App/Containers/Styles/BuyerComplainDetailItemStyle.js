@@ -11,6 +11,11 @@ export default StyleSheet.create({
     padding: 20,
     flexDirection: 'row'
   },
+  notificationContainerBlue: {
+    backgroundColor: Colors.blueBackground,
+    padding: 20,
+    flexDirection: 'row'
+  },
   imageInfo: {
     height: 30,
     marginTop: 10,
@@ -24,6 +29,14 @@ export default StyleSheet.create({
     lineHeight: 20,
     letterSpacing: 0.22,
     color: Colors.boldOrange
+  },
+  textInfoBlue: {
+    fontFamily: Fonts.type.regular,
+    width: Metrics.screenWidth - 70,
+    fontSize: 13,
+    lineHeight: 20,
+    letterSpacing: 0.22,
+    color: Colors.blueText
   },
   dataContainer: {
     padding: 20,
@@ -78,5 +91,24 @@ export default StyleSheet.create({
   proofContainer: {
     backgroundColor: Colors.snow,
     padding: 20
+  },
+  buttonContainer: {
+    backgroundColor: Colors.snow,
+    padding: 20,
+    flexDirection: 'row'
+  },
+  button: {
+    height: 56,
+    flex: 1,
+    backgroundColor: Colors.bluesky,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 14,
+    letterSpacing: 0.23,
+    color: Colors.snow
   }
 })

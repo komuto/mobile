@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid } from 'react-native'
+import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid, RefreshControl } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -9,7 +9,7 @@ import * as userAction from '../actions/user'
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import styles from './Styles/BalanceStyle'
 
 class BalanceX extends React.Component {
@@ -17,14 +17,16 @@ class BalanceX extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      balance: String(this.props.dataProfile.user.user.saldo_wallet)
+      balance: String(this.props.dataProfile.user.user.saldo_wallet),
+      isRefreshing: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProfile.status === 200) {
       this.setState({
-        balance: String(nextProps.dataProfile.user.user.saldo_wallet)
+        balance: String(nextProps.dataProfile.user.user.saldo_wallet),
+        isRefreshing: false
       })
     }
   }
@@ -110,16 +112,32 @@ class BalanceX extends React.Component {
   }
 
   history () {
-    // this.props.getSaldoHistory()
     NavigationActions.balancehistory({ type: ActionConst.PUSH })
     this.props.getSaldoHistory()
+  }
+
+  refresh = () => {
+    this.props.getBalance()
+    this.setState({ isRefreshing: true })
   }
 
   render () {
     return (
       <View style={styles.container}>
         {this.renderBalance()}
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+        >
           {this.renderTitle('Isi Ulang')}
           {this.renderMenu(Images.getBalance, 'Isi Ulang Saldo', this.refill)}
           {this.renderMenu(Images.status, 'Status Pengisian', this.status.bind(this))}
@@ -143,6 +161,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getPhone: dispatch(userAction.getPhone()),
+    getBalance: () => dispatch(userAction.getProfile()),
     getSaldoHistory: () => dispatch(saldoAction.getSaldoHistory({
       page: 1,
       filter: ['commission', 'sale', 'topup', 'refund', 'buy', 'withdraw'],

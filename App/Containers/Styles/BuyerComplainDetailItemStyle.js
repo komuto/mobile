@@ -16,6 +16,11 @@ export default StyleSheet.create({
     padding: 20,
     flexDirection: 'row'
   },
+  notificationContainerGreen: {
+    backgroundColor: Colors.duckEggBlue,
+    padding: 20,
+    flexDirection: 'row'
+  },
   imageInfo: {
     height: 30,
     marginTop: 10,
@@ -37,6 +42,14 @@ export default StyleSheet.create({
     lineHeight: 20,
     letterSpacing: 0.22,
     color: Colors.blueText
+  },
+  textInfoGreen: {
+    fontFamily: Fonts.type.regular,
+    width: Metrics.screenWidth - 70,
+    fontSize: 13,
+    lineHeight: 20,
+    letterSpacing: 0.22,
+    color: Colors.greenish
   },
   dataContainer: {
     padding: 20,

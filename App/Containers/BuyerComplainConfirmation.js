@@ -1,12 +1,14 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, TextInput, ListView } from 'react-native'
+import { ScrollView, Text, View, Image, TouchableOpacity, TextInput, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import moment from 'moment'
 import Spinner from '../Components/Spinner'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
+import * as transactionAction from '../actions/transaction'
 // Styles
 import styles from './Styles/BuyerComplainConfirmationStyle'
 
@@ -21,23 +23,41 @@ class BuyerComplainConfirmation extends React.Component {
       date: this.props.dataComplain.orderDetail.invoice.created_at,
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
-      data: [...this.props.dataComplain.orderDetail.dispute_products],
-      id: this.props.dataComplain.orderDetail.invoice.id,
+      data: [...this.props.dataComplain.orderDetail.products],
+      id: this.props.dataComplain.orderDetail.id,
       vote: 0,
       height: 50,
       heightComplain: 50,
       dataReview: [],
       dataComplain: [],
       storeName: this.props.dataComplain.orderDetail.store.name,
-      storeLogo: this.props.dataComplain.orderDetail.store.logo
+      storeLogo: this.props.dataComplain.orderDetail.store.logo,
+      loading: false,
+      callback: this.props.callback
     }
   }
 
   componentDidMount () {
-    const tempDataReview = this.props.dataComplain.orderDetail.dispute_products
+    const tempDataReview = this.props.dataComplain.orderDetail.products
     tempDataReview.map((data, i) => {
       this.createDataReview(data, i)
     })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataExchange.status === 200) {
+      this.setState({
+        loading: false
+      })
+      nextProps.dataExchange.status = 0
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Review ditambahkan..', ToastAndroid.SHORT)
+    } else if (nextProps.dataExchange.staus > 200) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataExchange.message, ToastAndroid.SHORT)
+    }
   }
 
   createDataReview (data, index) {
@@ -124,7 +144,7 @@ class BuyerComplainConfirmation extends React.Component {
     } else if (vote === 1) {
       return (
         <View style={styles.voteContainer}>
-          <Text style={styles.textTitle}>
+          <Text style={[styles.textTitle, { textAlign: 'center' }]}>
             Apakah Anda memiliki komplain terhadap barang yang Anda terima?
           </Text>
           <View style={styles.vote}>
@@ -143,7 +163,7 @@ class BuyerComplainConfirmation extends React.Component {
     } else if (vote === 2) {
       return (
         <View style={styles.voteContainer}>
-          <Text style={styles.textTitle}>
+          <Text style={[styles.textTitle, { textAlign: 'center' }]}>
             Apakah Anda memiliki komplain terhadap barang yang Anda terima?
           </Text>
           <View style={styles.vote}>
@@ -381,12 +401,11 @@ class BuyerComplainConfirmation extends React.Component {
   }
 
   sendReview () {
-    // const { bucketId, id, dataReview } = this.state
-    // this.setState({
-    //   loading: true
-    // })
-    // this.props.addReview(bucketId, id, dataReview)
-    console.log(this.state.dataReview)
+    const { id, dataReview } = this.state
+    this.setState({
+      loading: true
+    })
+    this.props.receiveExchange(id, dataReview)
   }
 
   sendComplain () {
@@ -468,12 +487,16 @@ class BuyerComplainConfirmation extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataComplain: state.buyerComplainedOrderDetail
+    dataComplain: state.buyerComplainedOrderDetail,
+    dataExchange: state.buyerReceived
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    receiveExchange: (id, data) => dispatch(transactionAction.buyerDisputeReceived({
+      id: id, data: data
+    }))
   }
 }
 

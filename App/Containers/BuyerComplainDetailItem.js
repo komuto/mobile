@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
 import { Images, Colors } from '../Themes'
+import * as transactionAction from '../actions/transaction'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -29,11 +30,24 @@ class BuyerComplainDetailItem extends React.Component {
       data: [],
       resi: '',
       problem: 'Barang tidak sesuai deskripsi, Produk tidak lengkap, Barang rusak',
-      note: 'Sepatu yang merah terdapat sobek pada sisi pinggirnya dan terlihat sudah lecekseperti sudah pernah dipakai karena ada bekas tanahnya'
+      note: 'Sepatu yang merah terdapat sobek pada sisi pinggirnya dan terlihat sudah lecekseperti sudah pernah dipakai karena ada bekas tanahnya',
+      callback: false,
+      disputeId: '',
+      complainSolved: false,
+      refundNumber: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.props.getDetailDispute(this.state.disputeId)
+        this.setState({
+          callback: nextProps.callback,
+          complainSolved: true
+        })
+      }
+    }
     if (nextProps.dataComplain.status === 200) {
       const data = nextProps.dataComplain.orderDetail
       const day = parseInt(moment.unix(data.created_at).format('DD'))
@@ -51,51 +65,72 @@ class BuyerComplainDetailItem extends React.Component {
         invoiceNumber: data.invoice.invoice_number,
         image: data.store.logo,
         shopName: data.store.name,
-        status: 5,
-        statusSolution: 2,
+        status: data.status,
+        statusSolution: data.solution,
         dataProduct: data.dispute_products,
         data: data.proofs,
         problem: data.problems,
         note: data.note,
         dateNotification: limitDay + ' ' + limitTextMonth + ' ' + limitYear,
-        resi: data.dispute_number
+        resi: data.dispute_number,
+        disputeId: data.id,
+        refundNumber: data.refund.refund_number
       })
     }
   }
 
   renderNotification () {
-    const { dateNotification, statusSolution, status } = this.state
+    const { dateNotification, statusSolution, status, complainSolved } = this.state
     let solution, responseSeller
-    if (statusSolution === 1) {
-      solution = 'Refund Dana'
-      responseSeller = 'Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan ' +
-        'kembali uang Anda. Dan segera setelah itu Admin akan menandai komplain ini ' +
-        'sudah terselesaikan'
+    if (complainSolved || status === 8) {
+      <View style={styles.notificationContainerGreen}>
+        <Image source={Images.infoDone} style={styles.imageInfo} />
+        <Text style={styles.textInfoGreen}>
+          Komplain telah terselesaikan
+        </Text>
+      </View>
     } else {
-      solution = 'Tukar Barang'
-      responseSeller = 'Penjual telah mengirim ulang barang. Klik tombol ' +
-      '"barang sudah saya terima" setelah Anda menerima barang tersebut.'
-    }
-    if (status === 1) {
-      return (
-        <View style={styles.notificationContainer}>
-          <Image source={Images.infoOcher} style={styles.imageInfo} />
-          <Text style={styles.textInfo}>
-            Anda memilih solusi {solution}, untuk itu Anda harus mengirim barang kembali ke
-            Seller , paling lambat tanggal {dateNotification}. Atau admin akan mengirimkan
-            dana ke Seller
-          </Text>
-        </View>
-      )
-    } else if (status === 5) {
-      return (
-        <View style={styles.notificationContainerBlue}>
-          <Image source={Images.infoBlue} style={styles.imageInfo} />
-          <Text style={styles.textInfoBlue}>
-            {responseSeller}
-          </Text>
-        </View>
-      )
+      if (statusSolution === 1) {
+        solution = 'Refund Dana'
+        responseSeller = 'Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan ' +
+          'kembali uang Anda. Dan segera setelah itu Admin akan menandai komplain ini ' +
+          'sudah terselesaikan'
+      } else {
+        solution = 'Tukar Barang'
+        responseSeller = 'Penjual telah mengirim ulang barang. Klik tombol ' +
+        '"barang sudah saya terima" setelah Anda menerima barang tersebut.'
+      }
+      if (status === 1) {
+        return (
+          <View style={styles.notificationContainer}>
+            <Image source={Images.infoOcher} style={styles.imageInfo} />
+            <Text style={styles.textInfo}>
+              Anda memilih solusi {solution}, untuk itu Anda harus mengirim barang kembali ke
+              Seller , paling lambat tanggal {dateNotification}. Atau admin akan mengirimkan
+              dana ke Seller
+            </Text>
+          </View>
+        )
+      } else if (status === 5) {
+        return (
+          <View style={styles.notificationContainerBlue}>
+            <Image source={Images.infoBlue} style={styles.imageInfo} />
+            <Text style={styles.textInfoBlue}>
+              {responseSeller}
+            </Text>
+          </View>
+        )
+      } else if (status === 7) {
+        return (
+          <View style={styles.notificationContainerBlue}>
+            <Image source={Images.infoBlue} style={styles.imageInfo} />
+            <Text style={styles.textInfoBlue}>
+              Silahkan mengisi review dari beberapa barang barang di invoice ini, setelah itu kami akan
+              mengirim dana refund ke saldo Anda
+            </Text>
+          </View>
+        )
+      }
     }
   }
 
@@ -120,6 +155,21 @@ class BuyerComplainDetailItem extends React.Component {
     }
   }
 
+  renderButtonAddReview () {
+    const { status } = this.state
+    if (status === 7) {
+      return (
+        <View style={[styles.dataContainer, { marginBottom: 30 }]}>
+          <TouchableOpacity style={styles.button} onPress={() => this.review()}>
+            <Text style={styles.textButton}>
+              Beri Review untuk barang lainnya
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }
+
   renderInfo (label, data) {
     return (
       <View style={styles.dataContainer}>
@@ -132,6 +182,10 @@ class BuyerComplainDetailItem extends React.Component {
   renderStatus () {
     let warna = Colors.red
     let teks = 'Menunggu Penyelesaian'
+    if (this.state.complainSolved) {
+      warna = Colors.greenish
+      teks = 'Terselesaikan'
+    }
     return (
       <View style={styles.dataContainer}>
         <Text style={[styles.textLabel, {flex: 1}]}>Status Komplain</Text>
@@ -166,6 +220,18 @@ class BuyerComplainDetailItem extends React.Component {
         <Text style={styles.textData}>{data}</Text>
       </View>
     )
+  }
+
+  renderRefund () {
+    const { refundSolved, refundNominal, refundNumber } = this.state
+    if (refundSolved) {
+      return (
+        <View>
+          {this.renderInfo('Uang yang direfund', refundNominal)}
+          {this.renderInfo('Nomor Refund', refundNumber)}
+        </View>
+      )
+    }
   }
 
   renderLabel (label) {
@@ -226,7 +292,15 @@ class BuyerComplainDetailItem extends React.Component {
 
   confirm () {
     NavigationActions.buyercomplainconfirmation({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      callback: this.state.callback
+    })
+  }
+
+  review () {
+    NavigationActions.buyercomplainrefundreview({
+      type: ActionConst.PUSH,
+      callback: this.state.callback
     })
   }
 
@@ -237,11 +311,13 @@ class BuyerComplainDetailItem extends React.Component {
         {this.renderNotification()}
         <ScrollView>
           {this.renderVerification()}
+          {this.renderButtonAddReview()}
           {this.renderInfo('No Invoice', invoiceNumber)}
           {this.renderInfo('Tanggal Transaksi', date)}
           {this.renderStatus()}
           {this.renderSeller()}
           {this.renderSolution()}
+          {this.renderRefund()}
           {this.renderLabel('Daftar Barang bermasalah')}
           {this.renderProduct()}
           {this.renderLabel('Masalah yang terjadi')}
@@ -264,6 +340,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailDispute: (id) => dispatch(transactionAction.getComplainedOrderDetailBuyer({id: id}))
   }
 }
 

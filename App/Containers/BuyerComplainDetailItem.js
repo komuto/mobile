@@ -52,18 +52,13 @@ class BuyerComplainDetailItem extends React.Component {
     }
     if (nextProps.dataComplain.status === 200) {
       const data = nextProps.dataComplain.orderDetail
-      const day = parseInt(moment.unix(data.created_at).format('DD'))
-      const month = parseInt(moment.unix(data.created_at).format('MM')) - 1
-      const textMonth = this.state.months[month]
-      const year = moment.unix(data.created_at).format('YYYY')
-
       const limitDay = parseInt(moment.unix(data.limit_send_product).format('DD'))
       const limitMonth = parseInt(moment.unix(data.limit_send_product).format('MM')) - 1
       const limitTextMonth = this.state.months[limitMonth]
       const limitYear = moment.unix(data.limit_send_product).format('YYYY')
 
       this.setState({
-        date: day + ' ' + textMonth + ' ' + year,
+        date: data.created_at,
         invoiceNumber: data.invoice.invoice_number,
         image: data.store.logo,
         shopName: data.store.name,
@@ -81,6 +76,11 @@ class BuyerComplainDetailItem extends React.Component {
         fineProductsTotal: data.fine_products.length
       })
     }
+  }
+
+  maskedDate (value) {
+    const timeStampToDate = moment.unix(value).format('DD MMMM YYYY').toString()
+    return timeStampToDate
   }
 
   renderNotification () {
@@ -321,6 +321,7 @@ class BuyerComplainDetailItem extends React.Component {
 
   render () {
     const { invoiceNumber, date, problem, note } = this.state
+    var tempTransactionDate = this.maskedDate(date)
     return (
       <View style={styles.container}>
         {this.renderNotification()}
@@ -328,7 +329,7 @@ class BuyerComplainDetailItem extends React.Component {
           {this.renderVerification()}
           {this.renderButtonAddReview()}
           {this.renderInfo('No Invoice', invoiceNumber)}
-          {this.renderInfo('Tanggal Transaksi', date)}
+          {this.renderInfo('Tanggal Transaksi', tempTransactionDate)}
           {this.renderStatus()}
           {this.renderSeller()}
           {this.renderSolution()}

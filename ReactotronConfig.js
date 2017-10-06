@@ -9,6 +9,7 @@ import Reactotron, {
 
 if (__DEV__) {
   Reactotron
+    // .configure({host: '192.168.43.76', name: 'Komuto'})
     .configure({host: '192.168.10.125', name: 'Komuto'})
     .use(trackGlobalErrors())
     .use(openInEditor())

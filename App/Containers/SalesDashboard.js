@@ -2,8 +2,7 @@ import React from 'react'
 import {View, Text, ToastAndroid, TouchableOpacity, BackAndroid, Image} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as salesAction from '../actions/transaction'
-
+import * as otherAction from '../actions/other'
 import {isFetching, isError, isFound} from '../Services/Status'
 
 import styles from './Styles/SalesDashboardStyle'
@@ -15,73 +14,43 @@ class SalesDashboard extends React.Component {
   constructor (props) {
     super(props)
     this.submitting = {
-      neworder: false,
-      deliveryconfrimation: false,
-      saleslist: false
+      countorder: false
     }
     this.state = {
-      newOrder: props.dataOrder || null,
-      deliveryConfirmation: props.dataProcessingOrder || null,
-      salesList: props.dataSales || null
+      countOrder: props.dataCount || null,
+      order: '',
+      delivery: '',
+      sale: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataOrder, dataProcessingOrder, dataSales} = nextProps
+    const {dataCount} = nextProps
 
-    if (!isFetching(dataOrder) && this.submitting.neworder) {
-      this.submitting = { ...this.submitting, neworder: false }
-      if (isError(dataOrder)) {
-        ToastAndroid.show(dataOrder.message, ToastAndroid.SHORT)
+    if (!isFetching(dataCount) && this.submitting.countorder) {
+      this.submitting = { ...this.submitting, countorder: false }
+      if (isError(dataCount)) {
+        ToastAndroid.show(dataCount.message, ToastAndroid.SHORT)
       }
-      if (isFound(dataOrder)) {
-        this.setState({ newOrder: dataOrder })
-      }
-    }
-
-    if (!isFetching(dataProcessingOrder) && this.submitting.deliveryconfrimation) {
-      this.submitting = { ...this.submitting, deliveryconfrimation: false }
-      if (isError(dataProcessingOrder)) {
-        ToastAndroid.show(dataProcessingOrder.message, ToastAndroid.SHORT)
-      }
-      if (isFound(dataOrder)) {
-        this.setState({ deliveryConfirmation: dataProcessingOrder })
-      }
-    }
-
-    if (!isFetching(dataSales) && this.submitting.saleslist) {
-      this.submitting = { ...this.submitting, saleslist: false }
-      if (isError(dataSales)) {
-        ToastAndroid.show(dataSales.message, ToastAndroid.SHORT)
-      }
-      if (isFound(dataOrder)) {
-        this.setState({ salesList: dataSales })
+      if (isFound(dataCount)) {
+        this.setState({
+          countOrder: dataCount,
+          order: dataCount.count.sales.new_order,
+          delivery: dataCount.count.sales.processing_order,
+          sale: dataCount.count.sales.sale
+        })
       }
     }
   }
 
   componentDidMount () {
-    const { newOrder, deliveryConfirmation, salesList } = this.state
-    if (!newOrder.isFound) {
+    const { countOrder } = this.state
+    if (!countOrder.isFound) {
       this.submitting = {
         ...this.submitting,
-        neworder: true
+        countorder: true
       }
-      this.props.getListOrder()
-    }
-    if (!deliveryConfirmation.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        deliveryconfrimation: true
-      }
-      this.props.getListProcessingOrder()
-    }
-    if (!salesList.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        saleslist: true
-      }
-      this.props.getListSales()
+      this.props.getCount()
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -115,11 +84,11 @@ class SalesDashboard extends React.Component {
   }
 
   checkAmountOrder (data) {
-    if (!this.submitting.newOrder) {
+    if (!this.submitting.countorder) {
       return (
         <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
           <Text style={styles.statusAmount}>
-            {data.orders.length}
+            {data}
           </Text>
         </View>
       )
@@ -127,11 +96,11 @@ class SalesDashboard extends React.Component {
   }
 
   checkAmountDeliv (data) {
-    if (!this.submitting.deliveryconfrimation) {
+    if (!this.submitting.countorder) {
       return (
         <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
           <Text style={styles.statusAmount}>
-            {data.orders.length}
+            {data}
           </Text>
         </View>
       )
@@ -139,11 +108,11 @@ class SalesDashboard extends React.Component {
   }
 
   checkAmountSale (data) {
-    if (!this.submitting.saleslist) {
+    if (!this.submitting.countorder) {
       return (
         <View style={styles.circleRed}>
           <Text style={[styles.statusAmount, {color: Colors.snow}]}>
-            {data.sales.length}
+            {data}
           </Text>
         </View>
       )
@@ -163,7 +132,7 @@ class SalesDashboard extends React.Component {
                     Pesanan Baru
                   </Text>
                 </View>
-                {this.checkAmountOrder(this.state.newOrder)}
+                {this.checkAmountOrder(this.state.order)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>
@@ -177,7 +146,7 @@ class SalesDashboard extends React.Component {
                     Konfirmasi Pengiriman
                   </Text>
                 </View>
-                {this.checkAmountDeliv(this.state.deliveryConfirmation)}
+                {this.checkAmountDeliv(this.state.delivery)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>
@@ -191,7 +160,7 @@ class SalesDashboard extends React.Component {
                     Daftar Penjualan
                   </Text>
                 </View>
-                {this.checkAmountSale(this.state.salesList)}
+                {this.checkAmountSale(this.state.sale)}
                 <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
             </View>
@@ -203,15 +172,11 @@ class SalesDashboard extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataOrder: state.newOrders,
-  dataProcessingOrder: state.processingOrders,
-  dataSales: state.sales
+  dataCount: state.saleCount
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListOrder: () => dispatch(salesAction.getNewOrders()),
-  getListProcessingOrder: () => dispatch(salesAction.getProcessingOrders()),
-  getListSales: () => dispatch(salesAction.getSales())
+  getCount: () => dispatch(otherAction.getSaleCount())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SalesDashboard)

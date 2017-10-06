@@ -8,12 +8,10 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight
   },
   spinner: {
-    position: 'absolute',
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight
+    height: Metrics.screenHeight - Metrics.navBarHeight - 100
   },
   textHeader: {
     flex: 1,
@@ -81,7 +79,7 @@ export default StyleSheet.create({
   },
   floatButton: {
     position: 'absolute',
-    bottom: 10,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 130,
     left: 10,
     backgroundColor: 'rgba(64,72,82,0.8)',
     borderRadius: 5,
@@ -105,7 +103,7 @@ export default StyleSheet.create({
   },
   create: {
     position: 'absolute',
-    bottom: 10,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 140,
     right: 10,
     backgroundColor: Colors.bluesky,
     borderRadius: 200,

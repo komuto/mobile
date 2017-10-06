@@ -31,7 +31,7 @@ export const getProductBy = async (data) => {
 
 export const addToWishlist = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.get(`products/${id}/wishlist`)
+  return axios.put(`products/${id}/wishlist`)
 }
 
 export const getDiscussion = ({ id, ...params }) => {
@@ -109,5 +109,5 @@ export const updateDropshipStatus = (data) => {
 
 export const deleteDropship = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.delete(`users/store/products/${id}`)
+  return axios.delete(`users/store/products/${id}`, {}, { data: {} })
 }

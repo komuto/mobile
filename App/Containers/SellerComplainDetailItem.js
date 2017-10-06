@@ -9,127 +9,125 @@ import {
   BackAndroid,
   ActivityIndicator,
   Modal,
-  TextInput
+  TextInput,
+  ToastAndroid
 } from 'react-native'
 import {connect} from 'react-redux'
-import ScrollableTabView from 'react-native-scrollable-tab-view'
 import {Actions as NavigationActions} from 'react-native-router-flux'
-// import InvertibleScrollView from 'react-native-invertible-scroll-view'
 import moment from 'moment'
-import { MaskService } from 'react-native-masked-text'
-
-// Add Actions - replace 'Your' with whatever your reducer is called :) import
-// YourActions from '../Redux/YourRedux'
+import {MaskService} from 'react-native-masked-text'
+import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 import * as complaintAction from '../actions/transaction'
 
-// Styles
-import styles from './Styles/SellerDetailComplaintsGoodsStyle'
+import styles from './Styles/SellerComplainDetailItemStyle'
 import {Colors, Images, Fonts} from '../Themes'
 
-class SellerDetailComplaintsGoods extends React.Component {
+class SellerComplainDetailItem extends React.Component {
 
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.submitting = {
-      detail: false
+      detail: false,
+      fetching: true,
+      acceptRefund: false,
+      acceptRetur: false,
+      inputAirwayBills: false,
+      updateAirwayBills: false
     }
     this.listHeight = 0
     this.footerY = 0
     this.state = {
-      loading: false,
-      tabViewStyle: {
-        backgroundColor: 'transparent'
-      },
-      detailComplain: [],
-      discussion: [],
-      loadingPage: true,
-      idComplaint: this.props.idComplaint,
+      idComplain: this.props.idComplain,
+      detailComplain: props.propsDetailCompaint || null,
       modalReceived: false,
-      stateDeliveryRefund: false,
-      stateDeliveryRetur: false,
-      stateProcessReceipt: false,
-      stateReceiptSend: false,
-      receiptNumber: '',
-      disputeSolutionType: '',
-      disputeStatus: '',
-      modalLoading: false,
-      acceptRefund: false,
-      acceptRetur: false,
-      inputAirwayBills: false,
-      updateAirwayBills: false,
       modalUpdateReceiptNumber: false,
+      modalLoading: false,
       inputReceiptNumber: '',
-      messages: '',
-      replyDiscussions: false,
-      listHeight: 0,
-      footerY: 0
+      receiptNumber: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsDetailCompaint, propsConfrimProduct, propsUpdateStatus, propsReply} = nextProps
-    if (propsDetailCompaint.status === 200 && this.submitting.detail) {
-      this.submitting.detail = false
-      this.setState({
-        detailComplain: propsDetailCompaint.orderDetail,
-        disputeSolutionType: propsDetailCompaint.orderDetail.solution,
-        disputeStatus: propsDetailCompaint.orderDetail.status,
-        receiptNumber: propsDetailCompaint.orderDetail.airway_bill,
-        discussion: propsDetailCompaint.orderDetail.discussions,
-        loadingPage: false
-      })
-    } if (propsConfrimProduct.status === 200 && this.state.acceptRefund) {
-      this.setState({
-        stateDeliveryRefund: true,
-        modalLoading: false,
-        acceptRefund: false
-      })
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
-      propsConfrimProduct.status = 0
-    } if (propsConfrimProduct.status === 200 && this.state.acceptRetur) {
-      this.setState({
-        stateDeliveryRefund: true,
-        stateDeliveryRetur: true,
-        modalLoading: false,
-        acceptRetur: false
-      })
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
-      propsConfrimProduct.status = 0
-    } if (propsUpdateStatus.status === 200 && this.state.inputAirwayBills) {
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
-      this.setState({
-        stateReceiptSend: true,
-        stateDeliveryRetur: false,
-        modalLoading: false,
-        inputAirwayBills: false,
-        receiptNumber: propsDetailCompaint.orderDetail.airway_bill
-      })
-      propsConfrimProduct.status = 0
-    } if (propsUpdateStatus.status === 200 && this.state.updateAirwayBills) {
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
-      this.setState({
-        stateReceiptSend: true,
-        stateDeliveryRetur: false,
-        modalLoading: false,
-        updateAirwayBills: false,
-        receiptNumber: propsDetailCompaint.orderDetail.airway_bill
-      })
-      propsConfrimProduct.status = 0
-    } if (propsReply.status === 200 && this.state.replyDiscussions) {
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
-      this.submitting.detail = true
-      this.setState({
-        messages: ''
-      })
-      propsReply.status = 0
+    const {propsDetailCompaint, propsConfrimProduct, propsUpdateStatus} = nextProps
+    if (!isFetching(propsDetailCompaint) && this.submitting.detail) {
+      this.submitting = { ...this.submitting, detail: false, fetching: false }
+      if (isError(propsDetailCompaint)) {
+        ToastAndroid.show(propsDetailCompaint.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsDetailCompaint)) {
+        this.setState({
+          detailComplain: propsDetailCompaint
+        })
+      }
+    }
+
+    if (!isFetching(propsConfrimProduct) && this.submitting.acceptRefund) {
+      this.submitting = { ...this.submitting, acceptRefund: false, fetching: false }
+      if (isError(propsConfrimProduct)) {
+        ToastAndroid.show(propsConfrimProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsConfrimProduct)) {
+        this.setState({
+          modalLoading: false
+        })
+        this.props.getDetailComplaintSeller(this.state.idComplain)
+        this.submitting = { ...this.submitting, detail: true, fetching: true }
+      }
+    }
+
+    if (!isFetching(propsConfrimProduct) && this.submitting.acceptRetur) {
+      this.submitting = { ...this.submitting, acceptRetur: false, fetching: false }
+      if (isError(propsConfrimProduct)) {
+        ToastAndroid.show(propsConfrimProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsConfrimProduct)) {
+        this.setState({
+          modalLoading: false
+        })
+        this.props.getDetailComplaintSeller(this.state.idComplain)
+        this.submitting = { ...this.submitting, detail: true, fetching: true }
+      }
+    }
+
+    if (!isFetching(propsUpdateStatus) && this.submitting.inputAirwayBills) {
+      this.submitting = { ...this.submitting, inputAirwayBills: false, fetching: false }
+      if (isError(propsUpdateStatus)) {
+        ToastAndroid.show(propsUpdateStatus.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsUpdateStatus)) {
+        this.setState({
+          modalLoading: false
+        })
+        this.props.getDetailComplaintSeller(this.state.idComplain)
+        this.submitting = { ...this.submitting, detail: true, fetching: true }
+      }
+    }
+
+    if (!isFetching(propsUpdateStatus) && this.submitting.updateAirwayBills) {
+      this.submitting = { ...this.submitting, updateAirwayBills: false, fetching: false }
+      if (isError(propsUpdateStatus)) {
+        ToastAndroid.show(propsUpdateStatus.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsUpdateStatus)) {
+        this.setState({
+          modalLoading: false
+        })
+        this.props.getDetailComplaintSeller(this.state.idComplain)
+        this.submitting = { ...this.submitting, detail: true, fetching: true }
+      }
     }
   }
 
   componentDidMount () {
     if (!this.submitting.detail) {
-      this.submitting.detail = true
-      this.props.getDetailComplaintSeller(this.state.idComplaint)
+      Reactotron.log(this.state.idComplain)
+      this.submitting = {
+        ...this.submitting,
+        detail: true
+      }
+      this.props.getDetailComplaintSeller(this.state.idComplain)
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -162,106 +160,73 @@ class SellerDetailComplaintsGoods extends React.Component {
     this.setState({ receiptNumber: text })
   }
 
-  renderNotification (disputeSolutionType, disputeStatus, stateDeliveryRefund) {
-    if (!stateDeliveryRefund) {
-      if (disputeSolutionType === 1 && disputeStatus === 1) {
-        return (
-          <View style={styles.header}>
-            <Image source={Images.infoOcher} style={styles.iconOcher} />
-            <Text style={styles.semiboldOcher}>Pembeli menginginkan refund. Pembeli akan mengirimkan kembali barang yang dibeli. Silahkan klik
-              <Text style={styles.boldOrcher}> "Barang sudah saya terima" </Text>jika barang sudah Anda terima dan Admin akan mengirimkan uang ke pembeli.</Text>
-          </View>
-        )
-      } if (disputeSolutionType === 2 && disputeStatus === 1) {
-        return (
-          <View style={styles.header}>
-            <Image source={Images.infoOcher} style={styles.iconOcher} />
-            <Text style={styles.semiboldOcher}>Pembeli menginginkan tukar barang. Pembeli akan mengirimkan kembali barang yang dibeli. Silahkan klik
-              <Text style={styles.boldOrcher}> "Barang sudah saya terima" </Text>jika barang sudah Anda terima dan Anda akan diminta untuk mengirimkan kembali barang yang baru.</Text>
-          </View>
-        )
-      } if (disputeSolutionType === 1 && disputeStatus === 4) {
-        return (
-          <View style={[styles.header, {backgroundColor: Colors.blueBackground}]}>
-            <Image source={Images.infoBlue} style={styles.iconOcher} />
-            <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan kembali uang ke pembeli. Dan segera setelah itu Admin akan menandai komplain ini sudah terselesaikan</Text>
-          </View>
-        )
-      } if (disputeSolutionType === 1 && disputeStatus === 8) {
-        return (
-          <View style={[styles.header, {backgroundColor: Colors.duckEggBlue, alignItems: 'center'}]}>
-            <Image source={Images.infoDone} style={[styles.iconOcher, {marginTop: 0}]} />
-            <Text style={[styles.semiboldOcher, {color: Colors.greenish, lineHeight: 20}]}>Komplain telah terselesaikan</Text>
-          </View>
-        )
-      } if (disputeSolutionType === 2 && disputeStatus === 5) {
-        return (
-          <View style={[styles.header, {backgroundColor: Colors.blueBackground}]}>
-            <Image source={Images.infoBlue} style={styles.iconOcher} />
-            <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Anda tinggal menunggu konfirmasi dari pembeli setelah barang sampai</Text>
-          </View>
-        )
-      }
-    } else {
+  renderNotification (data) {
+    var solutionType = data.orderDetail.solution
+    var disputeStatus = data.orderDetail.status
+    if (solutionType === 1 && disputeStatus === 1) {
       return (
-        <View />
+        <View style={styles.header}>
+          <Image source={Images.infoOcher} style={styles.iconOcher} />
+          <Text style={styles.semiboldOcher}>Pembeli menginginkan refund. Pembeli akan mengirimkan kembali barang yang dibeli. Silahkan klik
+            <Text style={styles.boldOrcher}> "Barang sudah saya terima" </Text>jika barang sudah Anda terima dan Admin akan mengirimkan uang ke pembeli.</Text>
+        </View>
       )
-    }
-  }
-
-  renderNotificationRefund (disputeSolutionType, stateDeliveryRefund) {
-    if (stateDeliveryRefund) {
-      if (disputeSolutionType === 1) {
-        return (
-          <View style={[styles.header, {backgroundColor: Colors.blueBackground}]}>
-            <Image source={Images.infoBlue} style={styles.iconOcher} />
-            <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan kembali uang ke pembeli. Dan segera setelah itu Admin akan menandai komplain ini sudah terselesaikan</Text>
-          </View>
-        )
-      }
-    } else {
+    } if (solutionType === 2 && disputeStatus === 1) {
       return (
-        <View />
+        <View style={styles.header}>
+          <Image source={Images.infoOcher} style={styles.iconOcher} />
+          <Text style={styles.semiboldOcher}>Pembeli menginginkan tukar barang. Pembeli akan mengirimkan kembali barang yang dibeli. Silahkan klik
+            <Text style={styles.boldOrcher}> "Barang sudah saya terima" </Text>jika barang sudah Anda terima dan Anda akan diminta untuk mengirimkan kembali barang yang baru.</Text>
+        </View>
       )
-    }
-  }
-
-  renderNotificationRetur (disputeSolutionType, disputeStatus, stateDeliveryRetur) {
-    if (disputeSolutionType === 2 && disputeStatus === 4) {
+    } if (solutionType === 1 && disputeStatus === 4) {
+      return (
+        <View style={[styles.header, {backgroundColor: Colors.blueBackground}]}>
+          <Image source={Images.infoBlue} style={styles.iconOcher} />
+          <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan kembali uang ke pembeli. Dan segera setelah itu Admin akan menandai komplain ini sudah terselesaikan</Text>
+        </View>
+      )
+    } if (solutionType === 1 && disputeStatus === 8) {
+      return (
+        <View style={[styles.header, {backgroundColor: Colors.duckEggBlue, alignItems: 'center'}]}>
+          <Image source={Images.infoDone} style={[styles.iconOcher, {marginTop: 0}]} />
+          <Text style={[styles.semiboldOcher, {color: Colors.greenish, lineHeight: 20}]}>Komplain telah terselesaikan</Text>
+        </View>
+      )
+    } if (solutionType === 2 && disputeStatus === 5) {
+      return (
+        <View style={[styles.header, {backgroundColor: Colors.blueBackground}]}>
+          <Image source={Images.infoBlue} style={styles.iconOcher} />
+          <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Anda tinggal menunggu konfirmasi dari pembeli setelah barang sampai</Text>
+        </View>
+      )
+    } if (solutionType === 2 && disputeStatus === 4) {
       return (
         <View style={styles.header}>
           <Image source={Images.infoOcher} style={styles.iconOcher} />
           <Text style={styles.semiboldOcher}>Kini Anda silahkan memproses pengiriman barang baru. Dan silahkan memasukkan nomor resi di form dibawah ini</Text>
         </View>
       )
-    } else {
-      return (
-        <View />
-      )
     }
   }
 
-  renderActionAcceptGoods (stateDeliveryRefund, disputeStatus) {
+  renderActionAcceptGoods (data) {
+    var disputeStatus = data.orderDetail.status
     if (disputeStatus === 1) {
-      if (!stateDeliveryRefund) {
-        return (
-          <View style={styles.containerSnow}>
-            <TouchableOpacity activeOpacity={0.5} style={styles.blueButton} onPress={() => this.setState({modalReceived: true})}>
-              <Text style={styles.textboldWhite}>Barang sudah saya terima</Text>
-            </TouchableOpacity>
-          </View>
-        )
-      }
-    } else {
       return (
-        <View />
+        <View style={styles.containerSnow}>
+          <TouchableOpacity activeOpacity={0.5} style={styles.blueButton} onPress={() => this.setState({modalReceived: true})}>
+            <Text style={styles.textboldWhite}>Barang sudah saya terima</Text>
+          </TouchableOpacity>
+        </View>
       )
     }
   }
 
-  renderProcessReceipt (disputeSolutionType, disputeStatus) {
-    if (disputeSolutionType === 2 && disputeStatus === 4) {
-    // if (data) {
+  renderProcessReceipt (data) {
+    var solutionType = data.orderDetail.solution
+    var disputeStatus = data.orderDetail.status
+    if (solutionType === 2 && disputeStatus === 4) {
       return (
         <View>
           <View style={[styles.viewColumn, {marginBottom: 0}]}>
@@ -301,17 +266,21 @@ class SellerDetailComplaintsGoods extends React.Component {
   }
 
   onclickProcessReceiptDelivery () {
-    this.setState({modalLoading: true, inputAirwayBills: true})
-    this.props.inputNumberReceipt(this.state.idComplaint, this.state.receiptNumber)
+    this.submitting.inputAirwayBills = true
+    this.setState({modalLoading: true})
+    this.props.inputNumberReceipt(this.state.idComplain, this.state.receiptNumber)
   }
 
-  renderReceiptSend (disputeSolutionType, disputeStatus) {
-    if (disputeSolutionType === 2 && disputeStatus === 5) {
+  renderReceiptSend (data) {
+    var solutionType = data.orderDetail.solution
+    var disputeStatus = data.orderDetail.status
+    var receiptNumber = data.orderDetail.airway_bill
+    if (solutionType === 2 && disputeStatus === 5) {
       return (
         <View style={styles.containerSnowNull}>
           <View style={styles.flexRowBorder}>
             <Text style={styles.semiboldSlateFlexOne}>Nomor Resi</Text>
-            <Text style={[styles.regularBrowGrey]}>{this.state.receiptNumber}</Text>
+            <Text style={[styles.regularBrowGrey]}>{receiptNumber}</Text>
             <TouchableOpacity onPress={() => this.setState({modalUpdateReceiptNumber: true})}>
               <Text style={[styles.regularBrowGrey, {color: Colors.bluesky}]}>Ubah</Text>
             </TouchableOpacity>
@@ -401,7 +370,8 @@ class SellerDetailComplaintsGoods extends React.Component {
     }
   }
 
-  renderDetail (data) {
+  renderDetail (detail) {
+    var data = detail.orderDetail
     var maskedDate = this.maskedDate(data.invoice.created_at)
     return (
       <View style={styles.containerSnowNull}>
@@ -430,8 +400,8 @@ class SellerDetailComplaintsGoods extends React.Component {
           <Text style={styles.semiboldSlate}>Solusi yang diinginkan</Text>
           {this.checkSolution(data.solution)}
         </View>
-        {this.renderDetailRefundMoney(data, this.state.disputeStatus)}
-        {this.renderDetailNumberRefund(data, this.state.disputeStatus)}
+        {this.renderDetailRefundMoney(data, data.status)}
+        {this.renderDetailNumberRefund(data, data.status)}
       </View>
     )
   }
@@ -467,7 +437,8 @@ class SellerDetailComplaintsGoods extends React.Component {
     }
   }
 
-  renderItemsProblem (data) {
+  renderItemsProblem (detail) {
+    var data = detail.orderDetail
     if (data.dispute_products.length > 1) {
       for (var i = 0; i < data.dispute_products.length; i++) {
         if (i !== data.dispute_products.length - 1) {
@@ -497,7 +468,8 @@ class SellerDetailComplaintsGoods extends React.Component {
     )
   }
 
-  renderProofs (data) {
+  renderProofs (detail) {
+    var data = detail.orderDetail
     return (
       <View>
         <Text style={styles.textBoldcharcoalGrey}>Foto Barang</Text>
@@ -528,7 +500,8 @@ class SellerDetailComplaintsGoods extends React.Component {
     )
   }
 
-  renderProblem (data) {
+  renderProblem (detail) {
+    var data = detail.orderDetail
     return (
       <View>
         <Text style={styles.textBoldcharcoalGrey}>Masalah yang terjadi</Text>
@@ -539,7 +512,8 @@ class SellerDetailComplaintsGoods extends React.Component {
     )
   }
 
-  renderInformation (data) {
+  renderInformation (detail) {
+    var data = detail.orderDetail
     return (
       <View>
         <Text style={styles.textBoldcharcoalGrey}>Keterangan</Text>
@@ -565,7 +539,7 @@ class SellerDetailComplaintsGoods extends React.Component {
               Dengan mengkonfirmasi sudah menerima{'\n'}
               barang, Anda diminta untuk mengirim{'\n'}
               ulang barang yang baru kepada pembeli</Text>
-            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleReceive(this.state.disputeSolutionType)}>
+            <TouchableOpacity style={styles.verifikasiButton} onPress={() => this.handleReceive(this.state.detailComplain)}>
               <Text style={styles.textVerifikasiButton}>Ya, Barang sudah saya terima</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.batalButton} onPress={() => this.setState({modalReceived: false})}>
@@ -619,8 +593,9 @@ class SellerDetailComplaintsGoods extends React.Component {
   }
 
   handleUpdateReceiptNumber () {
-    this.setState({modalUpdateReceiptNumber: false, modalLoading: true, updateAirwayBills: true})
-    this.props.inputNumberReceipt(this.state.idComplaint, this.state.inputReceiptNumber)
+    this.submitting.updateAirwayBills = true
+    this.setState({modalUpdateReceiptNumber: false, modalLoading: true, inputReceiptNumber: ''})
+    this.props.inputNumberReceipt(this.state.idComplain, this.state.inputReceiptNumber)
   }
 
   changeReceiptNumber = (text) => {
@@ -644,133 +619,43 @@ class SellerDetailComplaintsGoods extends React.Component {
     )
   }
 
-  handleReceive (disputeSolutionType) {
-    if (disputeSolutionType === 1) {
-      this.setState({modalLoading: true, modalReceived: false, acceptRefund: true})
-      this.props.confrimProduct(this.state.idComplaint)
+  handleReceive (data) {
+    var solutionType = data.orderDetail.solution
+    if (solutionType === 1) {
+      this.submitting.acceptRefund = true
+      this.setState({modalLoading: true, modalReceived: false})
+      this.props.confrimProduct(this.state.idComplain)
     } else {
-      this.setState({modalLoading: true, modalReceived: false, acceptRetur: true})
-      this.props.confrimProduct(this.state.idComplaint)
+      this.submitting.acceptRetur = true
+      this.setState({modalLoading: true, modalReceived: false})
+      this.props.confrimProduct(this.state.idComplain)
     }
   }
 
-  renderRowDiscussion (rowData) {
-    const image = rowData.map((data, i) => {
-      const timeStampToDate = moment.unix(data.created_at).format('HH:MM').toString()
-      return (
-        <View key={i} onLayout={this.onLayout} style={styles.containerMessage}>
-          <View style={styles.maskedPhoto}>
-            <Image source={{uri: data.user.photo}} style={styles.photoUser} />
-          </View>
-          <View style={{marginLeft: 20, flex: 1}}>
-            <View style={styles.flexRowMessage}>
-              <Text style={styles.titleMessage}>{data.user.name}</Text>
-              <Text style={styles.date}>{timeStampToDate}</Text>
-            </View>
-            <Text style={styles.messageText}>{data.content}</Text>
-          </View>
-        </View>
-      )
-    })
-    return (
-      <View>
-        {image}
-      </View>
-    )
-  }
-
-  sendDiscussion () {
-    this.setState({replyDiscussions: true})
-    this.props.replyDiscussion(this.state.idComplaint, this.state.messages)
-  }
-
-  onLayout = (event) => {
-    const layout = event.nativeEvent.layout
-    this.listHeight = layout.height
-    console.log(this.listHeight)
-  }
-
-  renderFooter = () => {
-    return (
-      <View onLayout={this.onFooterLayout} />
-    )
-  }
-
-  onFooterLayout = (event) => {
-    const layout = event.nativeEvent.layout
-    this.footerY = layout.y
-    console.log(this.footerY)
-  }
-
-  scrollToBottom () {
-    this.refs.listView.scrollToEnd()
-  }
-
   render () {
-    if (this.state.loadingPage) {
+    if (this.submitting.fetching) {
       return (
         <View style={styles.spinner}>
           <ActivityIndicator color={Colors.red} size='large' />
         </View>
       )
     }
-    const {detailComplain, stateDeliveryRefund, stateDeliveryRetur, disputeStatus, disputeSolutionType} = this.state
+    const {detailComplain} = this.state
     return (
       <View style={styles.container}>
-        <ScrollableTabView
-          prerenderingSiblingsNumber={2}
-          style={this.state.tabViewStyle}
-          tabBarBackgroundColor={Colors.red}
-          tabBarActiveTextColor={Colors.snow}
-          tabBarUnderlineStyle={{ backgroundColor: Colors.snow, height: 2 }}
-          tabBarInactiveTextColor={Colors.snow}
-          tabBarTextStyle={styles.textTab}
-          locked
-        >
-          <View tabLabel='Detail' ref='detail'>
-            <ScrollView>
-              {this.renderNotification(disputeSolutionType, disputeStatus, stateDeliveryRefund)}
-              {this.renderNotificationRefund(disputeSolutionType, stateDeliveryRefund)}
-              {this.renderNotificationRetur(disputeSolutionType, disputeStatus, stateDeliveryRetur)}
-              {this.renderActionAcceptGoods(stateDeliveryRefund, disputeStatus)}
-              {this.renderProcessReceipt(disputeSolutionType, disputeStatus)}
-              {this.renderReceiptSend(disputeSolutionType, disputeStatus)}
-              {this.renderDetail(detailComplain)}
-              {this.renderItemsProblem(detailComplain)}
-              {this.renderProblem(detailComplain)}
-              {this.renderProofs(detailComplain)}
-              {this.renderInformation(detailComplain)}
-            </ScrollView>
-          </View>
-          <View tabLabel='Diskusi' ref='discussion' style={{flex: 1, flexDirection: 'column', backgroundColor: Colors.snow}}>
-            <ScrollView ref='listView'>
-              {this.renderRowDiscussion(this.state.discussion)}
-              {/* {<ListView
-                ref='listView'
-                onLayout={this.onLayout}
-                renderFooter={this.renderFooter}
-                dataSource={this.dataSource.cloneWithRows(this.state.discussion)}
-                renderRow={this.renderRowDiscussion.bind(this)}
-                enableEmptySections
-              />} */}
-            </ScrollView>
-            <TouchableOpacity onPress={() => this.scrollToBottom()} style={styles.absolute}>
-              <Image source={Images.down} style={{width: 30, height: 30}} />
-            </TouchableOpacity>
-            <TextInput
-              style={[styles.inputTextMessage]}
-              value={this.state.messages}
-              keyboardType='default'
-              returnKeyType='done'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={(text) => this.setState({messages: text})}
-              onSubmitEditing={() => this.sendDiscussion()}
-              underlineColorAndroid='transparent'
-              placeholder='Tulis pesan Anda disini'
-            />
-          </View>
-        </ScrollableTabView>
+        <View tabLabel='Detail' ref='detail'>
+          <ScrollView>
+            {this.renderNotification(detailComplain)}
+            {this.renderActionAcceptGoods(detailComplain)}
+            {this.renderProcessReceipt(detailComplain)}
+            {this.renderReceiptSend(detailComplain)}
+            {this.renderDetail(detailComplain)}
+            {this.renderItemsProblem(detailComplain)}
+            {this.renderProblem(detailComplain)}
+            {this.renderProofs(detailComplain)}
+            {this.renderInformation(detailComplain)}
+          </ScrollView>
+        </View>
         {this.modalReceived()}
         {this.modalLoading()}
         {this.modalUpdateReceiptNumber()}
@@ -782,14 +667,12 @@ class SellerDetailComplaintsGoods extends React.Component {
 const mapStateToProps = (state) => ({
   propsDetailCompaint: state.sellerComplainedOrderDetail,
   propsConfrimProduct: state.sellerReceived,
-  propsUpdateStatus: state.updateStatus,
-  propsReply: state.sellerComplaintDiscussion
+  propsUpdateStatus: state.updateStatus
 })
 const mapDispatchToProps = (dispatch) => ({
   getDetailComplaintSeller: (id) => dispatch(complaintAction.getComplainedOrderDetailSeller({id: id})),
   confrimProduct: (id) => dispatch(complaintAction.sellerDisputeReceived({id: id})),
-  inputNumberReceipt: (id, numberinputNumberReceipt) => dispatch(complaintAction.updateAirwayBill({id: id, airway_bill: numberinputNumberReceipt})),
-  replyDiscussion: (id, content) => dispatch(complaintAction.createComplaintDiscussionSeller({id: id, content: content}))
+  inputNumberReceipt: (id, numberinputNumberReceipt) => dispatch(complaintAction.updateAirwayBill({id: id, airway_bill: numberinputNumberReceipt}))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(SellerDetailComplaintsGoods)
+export default connect(mapStateToProps, mapDispatchToProps)(SellerComplainDetailItem)

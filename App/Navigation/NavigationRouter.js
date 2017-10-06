@@ -55,7 +55,7 @@ import PaymentTransferBankDetail from '../Containers/PaymentTransferBankDetail'
 import PaymentItemDetail from '../Containers/PaymentItemDetail'
 import PaymentCreditCard from '../Containers/PaymentCreditCard'
 import PaymentBalance from '../Containers/PaymentBalance'
-import ProductList from '../Containers/ProductList'
+import StoreProduct from '../Containers/StoreProduct'
 import AddProduct from '../Containers/AddProduct'
 import UploadProductPhoto from '../Containers/UploadProductPhoto'
 import ProductInfoNameAndCategory from '../Containers/ProductInfoNameAndCategory'
@@ -134,8 +134,8 @@ import BalanceHistoryComission from '../Containers/BalanceHistoryComission'
 import BalanceHistoryWithdraw from '../Containers/BalanceHistoryWithdraw'
 import BalanceHistoryPurchase from '../Containers/BalanceHistoryPurchase'
 import BalanceStatusWithdraw from '../Containers/BalanceStatusWithdraw'
-import SellerListComplaintsGoods from '../Containers/SellerListComplaintsGoods'
-import SellerDetailComplaintsGoods from '../Containers/SellerDetailComplaintsGoods'
+import SellerComplain from '../Containers/SellerComplain'
+import SellerComplainDetail from '../Containers/SellerComplainDetail'
 import BuyerComplain from '../Containers/BuyerComplain'
 import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
 import ListFavoriteStores from '../Containers/ListFavoriteStores'
@@ -582,8 +582,8 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='productlist'
-            component={ProductList}
+            key='storeproduct'
+            component={StoreProduct}
             title='Daftar Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
@@ -1127,15 +1127,15 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='sellerlistcomplaintgoods'
-            component={SellerListComplaintsGoods}
+            key='sellercomplain'
+            component={SellerComplain}
             title='Komplain Barang'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='sellerdetailcomplaintgoods'
-            component={SellerDetailComplaintsGoods}
+            key='sellercomplaindetail'
+            component={SellerComplainDetail}
             title='Detail Komplain Barang'
             navBar={CustomNavBar}
             hideNavBar={false}

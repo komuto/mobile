@@ -51,7 +51,7 @@ class StoreDashboard extends React.Component {
   }
 
   handleDaftarProduk () {
-    NavigationActions.productlist({
+    NavigationActions.storeproduct({
       type: ActionConst.PUSH
     })
   }
@@ -140,7 +140,7 @@ class StoreDashboard extends React.Component {
   }
 
   openResolutionNotification () {
-    NavigationActions.sellerlistcomplaintgoods({
+    NavigationActions.sellercomplain({
       type: ActionConst.PUSH
     })
   }

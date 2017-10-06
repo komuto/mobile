@@ -51,7 +51,6 @@ class MovingProduct extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
-      console.log(nextProps.dataProduk.products.length)
       this.setState({
         product: nextProps.dataProduk.products,
         loading: false,
@@ -235,7 +234,6 @@ class MovingProduct extends React.Component {
 
   handleCatalog (id) {
     let data = this.state.arrayIdProduct
-    console.log('kirim', this.state.arrayIdProduct)
     this.setState({
       idCatalogChoosen: id,
       modalCatalog: false
@@ -245,7 +243,6 @@ class MovingProduct extends React.Component {
 
   handleDeleteProduct () {
     let data = this.state.arrayIdProduct
-    console.log('kirim', this.state.arrayIdProduct)
     this.props.setDeleteProduct(data)
     this.setState({
       modalDelete: false,
@@ -340,7 +337,6 @@ class MovingProduct extends React.Component {
   finalAction () {
     if (this.state.actionType === 'hideProduct') {
       let data = this.state.arrayIdProduct
-      console.log('kirim', this.state.arrayIdProduct)
       this.props.setHideProduct(data)
       this.setState({
         loading: true
@@ -355,7 +351,6 @@ class MovingProduct extends React.Component {
       })
     } else if (this.state.actionType === 'moveDropship') {
       let data = this.state.arrayIdProduct
-      console.log('kirim', this.state.arrayIdProduct)
       this.props.updateProductToDropship(data)
       this.setState({
         loading: true

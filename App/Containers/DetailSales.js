@@ -725,7 +725,7 @@ class DetailSales extends React.Component {
   }
 
   handleDetailComplaint (id) {
-    NavigationActions.sellerdetailcomplaintgoods({
+    NavigationActions.sellercomplaindetail({
       type: ActionConst.PUSH,
       idComplaint: id
     })

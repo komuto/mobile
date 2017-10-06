@@ -479,7 +479,7 @@ class NewProduct extends React.Component {
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        {this.checkDiscount(rowData, rowData.product.is_discount)}
+        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>

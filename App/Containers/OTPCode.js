@@ -372,22 +372,22 @@ const mapDispatchToProps = (dispatch) => {
     sentOTPCode: () => dispatch(userAction.sendOTPPhone()),
     sendOtpEmail: () => dispatch(userAction.sendOTPBank()),
     createRekening: (code, idBank, namaPemilik, nomerRek, namaCabang) =>
-    dispatch(bankAction.addBankAccount({
-      code: code,
-      master_bank_id: idBank,
-      holder_name: namaPemilik,
-      holder_account_number: nomerRek,
-      bank_branch_office_name: namaCabang
-    })),
+      dispatch(bankAction.addBankAccount({
+        code: code,
+        master_bank_id: idBank,
+        holder_name: namaPemilik,
+        holder_account_number: nomerRek,
+        bank_branch_office_name: namaCabang
+      })),
     updateAccount: (id, code, idBank, namaPemilik, nomerRek, namaCabang) =>
-    dispatch(bankAction.updateBankAccount({
-      id: id,
-      code: code,
-      master_bank_id: idBank,
-      holder_name: namaPemilik,
-      holder_account_number: nomerRek,
-      bank_branch_office_name: namaCabang
-    })),
+      dispatch(bankAction.updateBankAccount({
+        id: id,
+        code: code,
+        master_bank_id: idBank,
+        holder_name: namaPemilik,
+        holder_account_number: nomerRek,
+        bank_branch_office_name: namaCabang
+      })),
     deleteAccounts: (code, id) => dispatch(bankAction.deleteBankAccount({code: code, id: id})),
     getListRekening: () => dispatch(bankAction.getBankAccounts()),
     getProfile: (login) => dispatch(userAction.getProfile()),

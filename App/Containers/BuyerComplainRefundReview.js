@@ -40,6 +40,7 @@ class BuyerComplainRefundReview extends React.Component {
       })
       nextProps.dataExchange.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      this.props.getDetailDispute(this.state.id)
       ToastAndroid.show('Review ditambahkan..', ToastAndroid.SHORT)
     } else if (nextProps.dataExchange.staus > 200) {
       this.setState({
@@ -257,7 +258,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     receiveExchange: (id, data) => dispatch(transactionAction.buyerDisputeReceived({
       id: id, data: data
-    }))
+    })),
+    getDetailDispute: (id) => dispatch(transactionAction.getComplainedOrderDetailBuyer({id: id}))
   }
 }
 

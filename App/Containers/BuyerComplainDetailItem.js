@@ -171,8 +171,8 @@ class BuyerComplainDetailItem extends React.Component {
   }
 
   renderButtonAddReview () {
-    const { responseStatus, fineProductsTotal } = this.state
-    if (responseStatus === 1 && fineProductsTotal > 0) {
+    const { responseStatus, fineProductsTotal, status } = this.state
+    if (responseStatus === 1 && fineProductsTotal > 0 && status !== 8) {
       return (
         <View style={[styles.dataContainer, { marginBottom: 30 }]}>
           <TouchableOpacity style={styles.button} onPress={() => this.review()}>

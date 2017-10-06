@@ -85,11 +85,11 @@ class Splash extends React.Component {
         //   default:
         //     NavigationActions.backtab({ type: ActionConst.REPLACE })
         // }
-        NavigationActions.buyercomplainrefundreview({ type: ActionConst.REPLACE })
+        NavigationActions.backtab({ type: ActionConst.REPLACE })
         SplashScreen.hide()
       }
       SplashScreen.hide()
-      NavigationActions.buyercomplainrefundreview({ type: ActionConst.REPLACE })
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
     })
   }
 

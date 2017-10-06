@@ -261,7 +261,8 @@ export default StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 20,
+    marginTop: 10
   },
   imageData: {
     height: 45,

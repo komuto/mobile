@@ -19,6 +19,7 @@ export default StyleSheet.create({
   notificationContainerGreen: {
     backgroundColor: Colors.duckEggBlue,
     padding: 20,
+    alignItems: 'center',
     flexDirection: 'row'
   },
   imageInfo: {

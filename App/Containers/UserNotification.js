@@ -61,6 +61,7 @@ class UserNotification extends React.Component {
 
   handleComplain () {
     this.props.getDisputeList()
+    this.props.getDisputeListDone()
     NavigationActions.buyercomplain({
       type: ActionConst.PUSH
     })
@@ -110,7 +111,8 @@ const mapDispatchToProps = (dispatch) => {
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
     getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions()),
-    getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false }))
+    getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false })),
+    getDisputeListDone: () => dispatch(transactionAction.getComplainedOrdersBuyer2({ is_resolved: true }))
   }
 }
 

@@ -27,8 +27,7 @@ class Payment extends React.Component {
       idCart: this.props.idCart,
       token: '',
       loading: false,
-      transaction: this.props.transaction,
-      uniqueCode: 0
+      transaction: this.props.transaction
     }
   }
 
@@ -79,7 +78,6 @@ class Payment extends React.Component {
           this.setState({
             idCart: nextProps.dataCart.cart.id,
             total: temp,
-            uniqueCode: nextProps.dataCart.cart.unique_code,
             getCartPayment: false
           })
           this.props.getCartReset()
@@ -107,7 +105,7 @@ class Payment extends React.Component {
         const discount = nextProps.dataTransaction.transaction.bucket.promo
         if (discount === '' || discount === undefined || discount === null) {
           this.setState({
-            total: nextProps.dataTransaction.transaction.summary_transaction.total_price + nextProps.dataTransaction.transaction.bucket.unique_code,
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
             getCartPayment: false,
             idCart: nextProps.dataTransaction.transaction.bucket.id
           })
@@ -120,7 +118,7 @@ class Payment extends React.Component {
             nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal)
           }
           this.setState({
-            total: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount + nextProps.dataTransaction.transaction.bucket.unique_code,
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount,
             getCartPayment: false,
             idCart: nextProps.dataTransaction.transaction.bucket.id
           })
@@ -135,8 +133,8 @@ class Payment extends React.Component {
   }
 
   renderTotal () {
-    const { total, uniqueCode } = this.state
-    const totalHarga = MaskService.toMask('money', total + uniqueCode, {
+    const { total } = this.state
+    const totalHarga = MaskService.toMask('money', total, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',

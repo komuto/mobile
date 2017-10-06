@@ -20,7 +20,6 @@ class TransactionExpired extends React.Component {
       total: 320000,
       kode: 'BELANJAENAK',
       diskon: 10000,
-      kodeUnik: 500,
       expand: false,
       dataBarang: [],
       id: ''
@@ -32,11 +31,10 @@ class TransactionExpired extends React.Component {
       const discount = nextProps.dataTransaction.transaction.bucket.promo
       if (discount === '' || discount === undefined || discount === null) {
         this.setState({
-          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price + nextProps.dataTransaction.transaction.bucket.unique_code,
+          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price,
           total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
           kode: '',
           diskon: 0,
-          kodeUnik: nextProps.dataTransaction.transaction.bucket.unique_code,
           dataBarang: nextProps.dataTransaction.transaction.invoices,
           id: nextProps.dataTransaction.transaction.bucket.id
         })
@@ -49,11 +47,10 @@ class TransactionExpired extends React.Component {
           nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal)
         }
         this.setState({
-          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount + nextProps.dataTransaction.transaction.bucket.unique_code,
+          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount,
           total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
           kode: nextProps.dataTransaction.transaction.bucket.promo.promo_code,
           diskon: nominalDiscount,
-          kodeUnik: nextProps.dataTransaction.transaction.bucket.unique_code,
           dataBarang: nextProps.dataTransaction.transaction.invoices,
           id: nextProps.dataTransaction.transaction.bucket.id
         })
@@ -71,14 +68,8 @@ class TransactionExpired extends React.Component {
   }
 
   renderExpand () {
-    const { expand, total, diskon, kode, kodeUnik, sisaPembayaran } = this.state
+    const { expand, total, diskon, kode, sisaPembayaran } = this.state
     const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
@@ -116,10 +107,6 @@ class TransactionExpired extends React.Component {
               <Text style={styles.textTitle}>{totalHarga}</Text>
             </View>
             {kodevoucer}
-            <View style={styles.rowContainerRincian}>
-              <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
-              <Text style={styles.textTitle}>{hargaKodeUnik}</Text>
-            </View>
           </View>
           <View style={[styles.rowContainerRincian, { paddingLeft: 20, paddingRight: 20 }]}>
             <Text style={[styles.bold, { flex: 1 }]}>Total Pembayaran</Text>

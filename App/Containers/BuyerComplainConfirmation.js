@@ -39,6 +39,7 @@ class BuyerComplainConfirmation extends React.Component {
 
   componentDidMount () {
     const tempDataReview = this.props.dataComplain.orderDetail.products
+    console.log('data', tempDataReview)
     tempDataReview.map((data, i) => {
       this.createDataReview(data, i)
     })
@@ -52,7 +53,7 @@ class BuyerComplainConfirmation extends React.Component {
       nextProps.dataExchange.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Review ditambahkan..', ToastAndroid.SHORT)
-    } else if (nextProps.dataExchange.staus > 200) {
+    } else if (nextProps.dataExchange.statusf > 200) {
       this.setState({
         loading: false
       })
@@ -61,7 +62,7 @@ class BuyerComplainConfirmation extends React.Component {
   }
 
   createDataReview (data, index) {
-    let tempDataReview = [...this.state.dataReview]
+    let tempDataReview = this.state.dataReview
     const temp = {
       'product_id': data.id,
       'review': '',

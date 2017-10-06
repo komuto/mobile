@@ -34,7 +34,9 @@ class BuyerComplainDetailItem extends React.Component {
       callback: false,
       disputeId: '',
       complainSolved: false,
-      refundNumber: ''
+      refundNumber: '',
+      responseStatus: -1,
+      fineProductsTotal: 0
     }
   }
 
@@ -74,21 +76,25 @@ class BuyerComplainDetailItem extends React.Component {
         dateNotification: limitDay + ' ' + limitTextMonth + ' ' + limitYear,
         resi: data.dispute_number,
         disputeId: data.id,
-        refundNumber: data.refund.refund_number
+        refundNumber: data.refund.refund_number,
+        responseStatus: data.response_status,
+        fineProductsTotal: data.fine_products.length
       })
     }
   }
 
   renderNotification () {
-    const { dateNotification, statusSolution, status, complainSolved } = this.state
+    const { dateNotification, statusSolution, status, responseStatus, complainSolved, fineProductsTotal } = this.state
     let solution, responseSeller
     if (complainSolved || status === 8) {
-      <View style={styles.notificationContainerGreen}>
-        <Image source={Images.infoDone} style={styles.imageInfo} />
-        <Text style={styles.textInfoGreen}>
-          Komplain telah terselesaikan
-        </Text>
-      </View>
+      return (
+        <View style={styles.notificationContainerGreen}>
+          <Image source={Images.infoDone} style={[styles.imageInfo, { marginTop: 2 }]} />
+          <Text style={styles.textInfoGreen}>
+            Komplain telah terselesaikan
+          </Text>
+        </View>
+      )
     } else {
       if (statusSolution === 1) {
         solution = 'Refund Dana'
@@ -120,13 +126,22 @@ class BuyerComplainDetailItem extends React.Component {
             </Text>
           </View>
         )
-      } else if (status === 7) {
+      } else if (responseStatus === 1 && fineProductsTotal > 0) {
         return (
           <View style={styles.notificationContainerBlue}>
             <Image source={Images.infoBlue} style={styles.imageInfo} />
             <Text style={styles.textInfoBlue}>
               Silahkan mengisi review dari beberapa barang barang di invoice ini, setelah itu kami akan
               mengirim dana refund ke saldo Anda
+            </Text>
+          </View>
+        )
+      } else if (responseStatus === 1 && fineProductsTotal === 0) {
+        return (
+          <View style={styles.notificationContainerBlue}>
+            <Image source={Images.infoBlue} style={styles.imageInfo} />
+            <Text style={styles.textInfoBlue}>
+              Refund dana masih dalam proses
             </Text>
           </View>
         )
@@ -156,8 +171,8 @@ class BuyerComplainDetailItem extends React.Component {
   }
 
   renderButtonAddReview () {
-    const { status } = this.state
-    if (status === 7) {
+    const { responseStatus, fineProductsTotal } = this.state
+    if (responseStatus === 1 && fineProductsTotal > 0) {
       return (
         <View style={[styles.dataContainer, { marginBottom: 30 }]}>
           <TouchableOpacity style={styles.button} onPress={() => this.review()}>
@@ -182,7 +197,7 @@ class BuyerComplainDetailItem extends React.Component {
   renderStatus () {
     let warna = Colors.red
     let teks = 'Menunggu Penyelesaian'
-    if (this.state.complainSolved) {
+    if (this.state.complainSolved || this.state.status === 8) {
       warna = Colors.greenish
       teks = 'Terselesaikan'
     }

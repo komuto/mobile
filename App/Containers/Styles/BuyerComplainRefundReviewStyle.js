@@ -51,5 +51,74 @@ export default StyleSheet.create({
     marginTop: 3,
     width: 20,
     marginRight: 10
+  },
+  textReview: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    lineHeight: 23,
+    letterSpacing: 0.23
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  imageData: {
+    height: 45,
+    width: 45,
+    borderRadius: 3,
+    marginRight: 10
+  },
+  textTitle: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    lineHeight: 23,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
+  },
+  rateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 0.5,
+    paddingBottom: 10,
+    marginTop: 20,
+    marginBottom: 30
+  },
+  questionContainer: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    flexDirection: 'column'
+  },
+  textInput: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    marginLeft: -3
+  },
+  contentContainer: {
+    padding: 20,
+    flex: 1,
+    backgroundColor: Colors.snow
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    padding: 20
+  },
+  button: {
+    flex: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.bluesky,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textWhite: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 15,
+    lineHeight: 23,
+    letterSpacing: 0.23,
+    color: Colors.snow
   }
 })

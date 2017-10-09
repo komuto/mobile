@@ -27,7 +27,8 @@ class Payment extends React.Component {
       idCart: this.props.idCart,
       token: '',
       loading: false,
-      transaction: this.props.transaction
+      transaction: this.props.transaction,
+      payWithSaldo: false
     }
   }
 
@@ -84,8 +85,16 @@ class Payment extends React.Component {
         }
       }
     } if (nextProps.dataCheckout.status === 200) {
+      if (this.state.payWithSaldo) {
+        this.props.getDetailTransaction(this.state.idCart)
+        NavigationActions.paymentbalance({
+          type: ActionConst.PUSH,
+          transaction: this.state.transaction
+        })
+      } else {
+        this.props.getSnapToken(this.state.idCart)
+      }
       nextProps.dataCheckout.status = 0
-      this.props.getSnapToken(this.state.idCart)
     }
     if (nextProps.dataToken.status === 200) {
       nextProps.dataToken.status = 0
@@ -269,9 +278,13 @@ class Payment extends React.Component {
   }
 
   saldo () {
-    NavigationActions.paymentbalance({
-      type: ActionConst.PUSH
+    if (this.state.transaction) {
+      this.props.getDetailTransaction(this.state.idCart)
+    }
+    this.setState({
+      payWithSaldo: true
     })
+    this.props.checkout(true)
   }
 
   midtrans () {

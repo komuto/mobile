@@ -85,6 +85,7 @@ class PaymentBalance extends React.Component {
     let balanceUsed = total
     if (sisaBayar < 0) {
       sisaBayar = 0
+      balanceUsed = saldo
     }
     let hargaDiskon, viewDiscount
     const totalHarga = MaskService.toMask('money', total + diskon, {

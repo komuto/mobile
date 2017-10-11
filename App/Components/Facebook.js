@@ -1,6 +1,7 @@
 import React from 'react'
 import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
+import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import FBSDK from 'react-native-fbsdk'
 import Styles from './Styles/FacebookStyle'
@@ -86,13 +87,11 @@ class Facebook extends React.Component {
         loading: false
       })
       console.log(json)
-      this.props.loginSocial(providerName, json.id, token1)
-      // AsyncStorage.setItem('nama', json.name)
-      // AsyncStorage.setItem('saldo', '0')
-      // AsyncStorage.setItem('foto', json.picture.data.url)
-      // AsyncStorage.setItem('token', token1)
-      // AsyncStorage.setItem('status', '0')
-      // AsyncStorage.setItem('email', json.email)
+      FCM.getFCMToken().then(tokenFCM => {
+        if (tokenFCM !== null && tokenFCM !== undefined) {
+          this.props.loginSocial(providerName, json.id, token1, tokenFCM)
+        }
+      })
     })
     .catch((err) => console.log(err))
   }
@@ -137,8 +136,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
-    loginSocial: (providerName, providerUid, accessToken) => dispatch(loginAction.loginSocial({
-      provider_name: providerName, provider_uid: providerUid, access_token: accessToken})),
+    loginSocial: (providerName, providerUid, accessToken, fcmToken) => dispatch(loginAction.loginSocial({
+      provider_name: providerName, provider_uid: providerUid, access_token: accessToken, reg_token: fcmToken})),
     getProfile: (login) => dispatch(loginAction.getProfile())
   }
 }

@@ -79,6 +79,40 @@ class Transaction extends React.Component {
     }
   }
 
+  renderView () {
+    const { data } = this.state
+    if (data.length > 0) {
+      return (
+        this.renderListViewTransaksi()
+      )
+    } else if (data.length === 0) {
+      return (
+        this.renderEmptyData()
+      )
+    }
+  }
+
+  renderEmptyData () {
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptyTransaction} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Transaksi Anda Kosong
+        </Text>
+        <Text style={styles.textNotif}>
+          Anda belum pernah melakukan transaksi di sini. Silahkan melihat lihat barang.
+        </Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.startShopping} onPress={() => this.home()}>
+            <Text style={styles.textButton}>
+              Mulai Lihat Barang
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    )
+  }
+
   renderListViewTransaksi () {
     return (
       <ListView
@@ -296,6 +330,10 @@ class Transaction extends React.Component {
     }
   }
 
+  home () {
+    NavigationActions.home()
+  }
+
   render () {
     const { loading } = this.state
     if (loading) {
@@ -308,7 +346,7 @@ class Transaction extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.renderListViewTransaksi()}
+        {this.renderView()}
       </View>
     )
   }

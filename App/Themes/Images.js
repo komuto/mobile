@@ -153,7 +153,8 @@ const images = {
   receiptSend: require('../Images/resi-send.png'),
   filterWhite: require('../Images/Icons/icon-filter-white.png'),
   infoOcher: require('../Images/Icons/icon-info-ocher.png'),
-  infoDone: require('../Images/Icons/icon-done-green.png')
+  infoDone: require('../Images/Icons/icon-done-green.png'),
+  emptyTransaction: require('../Images/empty-transaction.png')
 }
 
 export default images

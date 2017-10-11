@@ -38,7 +38,7 @@ class BalanceHistoryTopup extends React.Component {
       this.setState({
         date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
         topup: data.amount,
-        total: data.transfer_amount
+        total: data.amount
       })
       nextProps.dataHistory.status = 0
     } else if (nextProps.dataHistory.status > 200) {

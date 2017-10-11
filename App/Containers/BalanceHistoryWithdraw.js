@@ -27,23 +27,27 @@ class BalanceHistoryWithdraw extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataHistory.status === 200) {
-      const transaction = nextProps.dataHistory.historyDetail.transaction
-      const bank = nextProps.dataHistory.historyDetail.bankAccount
-      const day = parseInt(moment.unix(transaction.date).format('DD'))
-      const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
-      const textMonth = this.state.months[month]
-      const year = moment.unix(transaction.date).format('YYYY')
-      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
-      const d = new Date(tempLabel)
-      const textDay = this.state.days[d.getDay()]
-      this.setState({
-        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
-        topup: transaction.amount,
-        bank: bank.bank.name,
-        accountName: bank.holder_name,
-        accountNumber: bank.holder_account_number
-      })
-      nextProps.dataHistory.status = 0
+      try {
+        const transaction = nextProps.dataHistory.historyDetail.transaction
+        const bank = nextProps.dataHistory.historyDetail.bankAccount
+        const day = parseInt(moment.unix(transaction.date).format('DD'))
+        const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
+        const textMonth = this.state.months[month]
+        const year = moment.unix(transaction.date).format('YYYY')
+        const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+        const d = new Date(tempLabel)
+        const textDay = this.state.days[d.getDay()]
+        this.setState({
+          date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+          topup: transaction.amount,
+          bank: bank.bank.name,
+          accountName: bank.holder_name,
+          accountNumber: bank.holder_account_number
+        })
+        nextProps.dataHistory.status = 0
+      } catch (e) {
+
+      }
     } else if (nextProps.dataHistory.status > 200) {
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }

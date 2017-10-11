@@ -27,20 +27,24 @@ class BalanceHistoryTopup extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataHistory.status === 200) {
-      const data = nextProps.dataHistory.historyDetail
-      const day = parseInt(moment.unix(data.date).format('DD'))
-      const month = parseInt(moment.unix(data.date).format('MM')) - 1
-      const textMonth = this.state.months[month]
-      const year = moment.unix(data.date).format('YYYY')
-      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
-      const d = new Date(tempLabel)
-      const textDay = this.state.days[d.getDay()]
-      this.setState({
-        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
-        topup: data.amount,
-        total: data.amount
-      })
-      nextProps.dataHistory.status = 0
+      try {
+        const data = nextProps.dataHistory.historyDetail
+        const day = parseInt(moment.unix(data.date).format('DD'))
+        const month = parseInt(moment.unix(data.date).format('MM')) - 1
+        const textMonth = this.state.months[month]
+        const year = moment.unix(data.date).format('YYYY')
+        const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+        const d = new Date(tempLabel)
+        const textDay = this.state.days[d.getDay()]
+        this.setState({
+          date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+          topup: data.amount,
+          total: data.amount
+        })
+        nextProps.dataHistory.status = 0
+      } catch (e) {
+
+      }
     } else if (nextProps.dataHistory.status > 200) {
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }
@@ -83,12 +87,12 @@ class BalanceHistoryTopup extends React.Component {
       delimiter: '.',
       precision: 3
     })
-    const moneyUniq = MaskService.toMask('money', total - topup, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    // const moneyUniq = MaskService.toMask('money', total - topup, {
+    //   unit: 'Rp ',
+    //   separator: '.',
+    //   delimiter: '.',
+    //   precision: 3
+    // })
     const moneyTotal = MaskService.toMask('money', total, {
       unit: 'Rp ',
       separator: '.',
@@ -98,14 +102,14 @@ class BalanceHistoryTopup extends React.Component {
     return (
       <View style={styles.paymentContainer}>
         <View style={styles.dataPaymentContainer}>
-          <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+          <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.label, { flex: 1 }]}>Harga Saldo (nominal {topup})</Text>
             <Text style={styles.dataMoney}>{moneyTopup}</Text>
           </View>
-          <View style={{ flexDirection: 'row' }}>
+          {/* <View style={{ flexDirection: 'row' }}>
             <Text style={[styles.label, { flex: 1 }]}>Biaya</Text>
             <Text style={styles.dataMoney}>{moneyUniq}</Text>
-          </View>
+          </View> */}
         </View>
         {this.renderData('Total', moneyTotal)}
       </View>
@@ -125,7 +129,7 @@ class BalanceHistoryTopup extends React.Component {
         <ScrollView>
           {this.renderData('Jenis Transaksi', 'Top-up Saldo')}
           {this.renderData('Tanggal Transaksi', date)}
-          {this.renderMoney('Uang yang Anda terima', moneyTotal)}
+          {this.renderMoney('Jumlah Top-up Saldo', moneyTotal)}
           {this.renderData('Metode Pembayaran', method)}
           {this.renderSeparator()}
           {this.renderTitle('Detail Pembayaran')}

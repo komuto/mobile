@@ -31,31 +31,35 @@ class BalanceHistoryRefund extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataHistory.status === 200) {
-      const transaction = nextProps.dataHistory.historyDetail.transaction
-      const refund = nextProps.dataHistory.historyDetail.refund
-      const day = parseInt(moment.unix(transaction.date).format('DD'))
-      const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
-      const textMonth = this.state.months[month]
-      const year = moment.unix(transaction.date).format('YYYY')
-      const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
-      const d = new Date(tempLabel)
-      const textDay = this.state.days[d.getDay()]
-      if (transaction.last_saldo > transaction.first_saldo) {
+      try {
+        const transaction = nextProps.dataHistory.historyDetail.transaction
+        const refund = nextProps.dataHistory.historyDetail.refund
+        const day = parseInt(moment.unix(transaction.date).format('DD'))
+        const month = parseInt(moment.unix(transaction.date).format('MM')) - 1
+        const textMonth = this.state.months[month]
+        const year = moment.unix(transaction.date).format('YYYY')
+        const tempLabel = (parseInt(month) + 1) + '/' + day + '/' + year
+        const d = new Date(tempLabel)
+        const textDay = this.state.days[d.getDay()]
+        if (transaction.last_saldo > transaction.first_saldo) {
+          this.setState({
+            type: 1
+          })
+        } else {
+          this.setState({
+            type: 2
+          })
+        }
         this.setState({
-          type: 1
+          date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
+          total: transaction.amount,
+          refundNumber: refund.refund_number,
+          data: refund.items
         })
-      } else {
-        this.setState({
-          type: 2
-        })
+        nextProps.dataHistory.status = 0
+      } catch (e) {
+
       }
-      this.setState({
-        date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
-        total: transaction.amount,
-        refundNumber: refund.refund_number,
-        data: refund.items
-      })
-      nextProps.dataHistory.status = 0
     } else if (nextProps.dataHistory.status > 200) {
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
     }

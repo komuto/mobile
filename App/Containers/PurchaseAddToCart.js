@@ -162,6 +162,12 @@ class PurchaseAddToCart extends React.Component {
         })
         this.props.resetStatusAddress()
       }
+    } else if (nextProps.dataAddress.status !== 200 && nextProps.dataAddress.status !== 0) {
+      this.setState({
+        statusAlamat: false
+      })
+      ToastAndroid.show(nextProps.dataAddress.message, ToastAndroid.LONG)
+      this.props.resetStatusAddress()
     }
     if (nextProps.dataServices.status === 200) {
       if (nextProps.dataServices.charges.length > 0) {
@@ -175,18 +181,19 @@ class PurchaseAddToCart extends React.Component {
           statusSubKurir: false
         })
       }
-    } else if (nextProps.dataServices.status > 200) {
+    } else if (nextProps.dataServices.status !== 200 && nextProps.dataServices.status !== 0) {
       this.setState({
         dataCost: [],
         statusSubKurir: false
       })
+      ToastAndroid.show(nextProps.dataServices.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCart.status === 200) {
       if (this.state.activeScene) {
         this.setState({ loadingCart: false, modalNotifikasi: true, activeScene: false })
         this.props.resetCreateStatus()
       }
-    } else if (nextProps.dataCart.status > 200 || nextProps.dataCart.status === 'ETIMEOUT') {
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       if (this.state.activeScene) {
         this.setState({ loadingCart: false })
         ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
@@ -196,7 +203,7 @@ class PurchaseAddToCart extends React.Component {
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
       this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
-    } else if (nextProps.dataAddressList.status > 200) {
+    } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }

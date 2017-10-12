@@ -169,7 +169,7 @@ class CartDetailItem extends React.Component {
         this.setState({ loadingCart: false })
       }
       this.props.resetCreateStatus()
-    } else if (nextProps.dataCart.status > 200) {
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       this.setState({ loadingCart: false })
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
       this.props.resetCreateStatus()
@@ -177,7 +177,7 @@ class CartDetailItem extends React.Component {
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
       this.setState({ dataAddress: nextProps.dataAddressList.address, loadingAddress: false })
-    } else if (nextProps.dataAddressList.status > 200) {
+    } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAddress: false })
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
     }

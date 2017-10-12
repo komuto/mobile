@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native'
+import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -24,14 +24,11 @@ class Facebook extends React.Component {
       this.props.getProfile()
       this.props.stateLogin(true)
       NavigationActions.backtab({ type: ActionConst.RESET })
-    } else if (nextProps.datalogin.status > 200) {
+    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
       this.setState({
         loading: false
       })
-    } else if (nextProps.datalogin.status === 'ENOENT') {
-      this.setState({
-        loading: false
-      })
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.datalogin.message, ToastAndroid.SHORT)
     }
   }
 

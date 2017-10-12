@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ListView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, ListView, Image, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Colors, Images } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -25,6 +25,11 @@ class BuyerComplainWaiting extends React.Component {
       this.setState(({
         data: nextProps.dataDispute.orders
       }))
+    } else if (nextProps.dataDispute.status !== 200 && nextProps.dataDispute.status !== 0) {
+      this.setState({
+        data: []
+      })
+      ToastAndroid.show(nextProps.dataDispute.message, ToastAndroid.LONG)
     }
   }
 

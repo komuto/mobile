@@ -1,5 +1,16 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, Modal, BackAndroid, ListView, TextInput } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Modal,
+  BackAndroid,
+  ListView,
+  ToastAndroid,
+  TextInput
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
@@ -37,10 +48,24 @@ class BuyerDetailMessage extends React.Component {
         detailMessageUser: nextProps.detailMessage.buyerDetailMessage.detail_messages
       })
       nextProps.detailMessage.status = 0
-    } if (nextProps.dataReplyMessage.status === 200) {
+    } else if (nextProps.detailMessage.status !== 200 && nextProps.detailMessage.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.detailMessage.message, ToastAndroid.LONG)
+      nextProps.detailMessage.status = 0
+    }
+    if (nextProps.dataReplyMessage.status === 200) {
       nextProps.dataReplyMessage.status = 0
       this.props.getDetailMessage(this.state.idMessage)
-    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
+    } else if (nextProps.dataReplyMessage.status !== 200 && nextProps.dataReplyMessage.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataReplyMessage.message, ToastAndroid.LONG)
+      nextProps.dataReplyMessage.status = 0
+    }
+    if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
@@ -50,7 +75,8 @@ class BuyerDetailMessage extends React.Component {
         messageNotif: 'Berhasil memindahkan ke Arsip',
         page: 1
       })
-    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
+    }
+    if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
       nextProps.dataMoveMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
@@ -60,7 +86,12 @@ class BuyerDetailMessage extends React.Component {
         messageNotif: 'Berhasil memindahkan ke Percakapan',
         page: 0
       })
-    } if (nextProps.dataDeleteMessage.status === 200) {
+    }
+    if (nextProps.dataMoveMessage.status !== 200 && nextProps.dataMoveMessage.status !== 0) {
+      nextProps.dataMoveMessage.status = 0
+      ToastAndroid.show(nextProps.dataMoveMessage.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataDeleteMessage.status === 200) {
       nextProps.dataDeleteMessage.status = 0
       this.props.getListMessages()
       this.props.getListArchiveMessages()
@@ -70,6 +101,9 @@ class BuyerDetailMessage extends React.Component {
         messageNotif: 'Berhasil menghapus Percakapan',
         page: 0
       })
+    } else if (nextProps.dataDeleteMessage.status !== 200 && nextProps.dataDeleteMessage.status !== 0) {
+      nextProps.dataDeleteMessage.status = 0
+      ToastAndroid.show(nextProps.dataDeleteMessage.message, ToastAndroid.LONG)
     }
   }
 

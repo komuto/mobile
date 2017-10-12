@@ -72,6 +72,9 @@ class TransactionItemReceived extends React.Component {
         this.createDataReview(data, i)
       })
       nextProps.dataInvoice.status = 0
+    } else if (nextProps.dataInvoice.status !== 200 && nextProps.dataInvoice.status !== 0) {
+      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.LONG)
+      nextProps.dataInvoice.status = 0
     }
     if (nextProps.dataAddReview.status === 200) {
       this.setState({
@@ -82,11 +85,11 @@ class TransactionItemReceived extends React.Component {
         typeNotification: ''
       })
       nextProps.dataAddReview.status = 0
-    } else if (nextProps.dataAddReview.status > 200) {
+    } else if (nextProps.dataAddReview.status !== 200 && nextProps.dataAddReview.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddComplain.message, ToastAndroid.LONG)
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddReview.message, ToastAndroid.LONG)
     }
     if (nextProps.dataPhoto.status === 200) {
       let temp = this.state.dataComplainPhotos
@@ -111,7 +114,7 @@ class TransactionItemReceived extends React.Component {
         bucketId, id, product, problems, activeSolution, complain, temp
       )
       nextProps.dataPhoto.status = 0
-    } else if (nextProps.dataPhoto.status > 200) {
+    } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
       this.setState({
         loading: false
       })
@@ -125,7 +128,7 @@ class TransactionItemReceived extends React.Component {
         typeNotification: 'complain'
       })
       nextProps.dataAddComplain.status = 0
-    } else if (nextProps.dataAddComplain.status > 200) {
+    } else if (nextProps.dataAddComplain.status !== 200 && nextProps.dataAddComplain.status !== 0) {
       this.setState({
         loading: false
       })

@@ -65,15 +65,20 @@ class EditProductPriceAndSpecification extends React.Component {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
       })
-    } if (nextProps.dataCreateCatalog.status === 200) {
+    } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataCreateCatalog.status === 200) {
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
+    } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.LONG)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataCreateProdukDropshipper.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }

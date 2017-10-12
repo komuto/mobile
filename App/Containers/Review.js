@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, Image, ListView, ActivityIndicator, RefreshControl } from 'react-native'
+import { Text, View, Image, ListView, ActivityIndicator, RefreshControl, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
@@ -47,6 +47,13 @@ class Review extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataReview.status !== 200 && nextProps.dataReview.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataReview.message, ToastAndroid.LONG)
     }
   }
 

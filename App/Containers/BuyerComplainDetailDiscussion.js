@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ListView, Image, Text, ScrollView, TextInput, BackAndroid, RefreshControl } from 'react-native'
+import { View, ListView, Image, Text, ScrollView, TextInput, BackAndroid, RefreshControl, ToastAndroid } from 'react-native'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
@@ -44,12 +44,22 @@ class BuyerComplainDetailDiscussion extends React.Component {
         id: nextProps.dataComplain.orderDetail.id,
         isRefreshing: false
       })
+    } else if (nextProps.dataComplain.status !== 200 && nextProps.dataComplain.status !== 0) {
+      this.setState({
+        data: [],
+        id: '',
+        isRefreshing: false
+      })
+      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
     }
     if (nextProps.dataReply.status === 200) {
       this.refresh()
       this.setState({
         content: ''
       })
+      nextProps.dataReply.status = 0
+    } else if (nextProps.dataReply.status !== 200 && nextProps.dataReply.status !== 0) {
+      ToastAndroid.show(nextProps.dataReply.message, ToastAndroid.LONG)
       nextProps.dataReply.status = 0
     }
   }

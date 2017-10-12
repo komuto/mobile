@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ListView, Text, Image, RefreshControl, ActivityIndicator } from 'react-native'
+import { View, ListView, Text, Image, RefreshControl, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors } from '../Themes'
@@ -44,6 +44,15 @@ class BalanceStatusWithdraw extends React.Component {
         })
       }
       nextProps.dataWithdraw.status = 0
+    } else if (nextProps.dataWithdraw.status !== 200 && nextProps.dataWithdraw.status !== 0) {
+      this.setState({
+        data: [],
+        isRefreshing: false,
+        page: 1,
+        loadmore: false,
+        isLoading: false
+      })
+      ToastAndroid.show(nextProps.dataWithdraw.message, ToastAndroid.LONG)
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, ListView, View, Image, RefreshControl, ActivityIndicator } from 'react-native'
+import { Text, ListView, View, Image, RefreshControl, ActivityIndicator, ToastAndroid } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import * as saldoAction from '../actions/saldo'
@@ -42,6 +42,16 @@ class BalanceStatusRefill extends React.Component {
           isLoading: false
         })
       }
+      nextProps.dataTopUp.status = 0
+    } else if (nextProps.dataTopUp.status !== 200 && nextProps.dataTopUp.status !== 0) {
+      this.setState({
+        data: [],
+        isRefreshing: false,
+        page: 1,
+        loadmore: false,
+        isLoading: false
+      })
+      ToastAndroid.show(nextProps.dataTopUp.message, ToastAndroid.LONG)
       nextProps.dataTopUp.status = 0
     }
   }

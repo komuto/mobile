@@ -8,7 +8,8 @@ import {
   BackAndroid,
   Image,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -79,14 +80,21 @@ class DetailOrder extends React.Component {
         addressSeller: nextProps.dataDetailOrder.orderDetail.seller.address,
         loading: false
       })
-    } if (nextProps.dataOrders.status === 200 && this.state.statusAcceptOrder) {
+    } else if (nextProps.dataDetailOrder.status !== 200 && nextProps.dataDetailOrder.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataDetailOrder.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataOrders.status === 200 && this.state.statusAcceptOrder) {
       this.setState({
         modalOrderReceived: true,
         modalLoading: false,
         statusAcceptOrder: false
       })
       nextProps.dataOrders.status = 0
-    } if (nextProps.dataOrders.status === 200 && this.state.statusRejectOrder) {
+    }
+    if (nextProps.dataOrders.status === 200 && this.state.statusRejectOrder) {
       this.setState({
         modalConfrimOrderReject: true,
         modalLoading: false,

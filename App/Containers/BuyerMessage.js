@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ListView,
   BackAndroid,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -47,6 +48,13 @@ class BuyerMessage extends React.Component {
         dataArchive: nextProps.dataArchiveMessage.archiveMessages,
         loading: false
       })
+      nextProps.dataMessage.status = 0
+      nextProps.dataArchiveMessage.status = 0
+    } else if (nextProps.dataMessage.status !== 200 && nextProps.dataMessage.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataMessage.message, ToastAndroid.LONG)
       nextProps.dataMessage.status = 0
       nextProps.dataArchiveMessage.status = 0
     }

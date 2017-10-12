@@ -56,11 +56,15 @@ class PaymentBalance extends React.Component {
           })
         }
       }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.LONG)
     }
     if (nextProps.dataBalance.status === 200) {
       this.setState({
         saldo: nextProps.dataBalance.balance
       })
+    } else if (nextProps.dataBalance.status !== 200 && nextProps.dataBalance.status !== 0) {
+      ToastAndroid.show(nextProps.dataBalance.message, ToastAndroid.LONG)
     }
     if (nextProps.dataPayment.status === 200) {
       NavigationActions.paymentsuccess({
@@ -71,7 +75,7 @@ class PaymentBalance extends React.Component {
         loading: false
       })
       nextProps.dataPayment.status = 0
-    } else if (nextProps.dataPayment.status > 200) {
+    } else if (nextProps.dataPayment.status !== 200 && nextProps.dataPayment.status !== 0) {
       this.setState({
         loading: false
       })

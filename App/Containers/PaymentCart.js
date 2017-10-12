@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, ListView, Image } from 'react-native'
+import { ScrollView, Text, View, ListView, Image, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import * as cartAction from '../actions/cart'
@@ -61,6 +61,13 @@ class PaymentCart extends React.Component {
           this.props.getCartReset()
         }
       }
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
+      if (!this.state.transaction) {
+        if (this.state.getCartPaymentDetail) {
+          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+          this.props.getCartReset()
+        }
+      }
     }
     if (nextProps.dataTransaction.status === 200) {
       if (this.state.transaction) {
@@ -91,6 +98,10 @@ class PaymentCart extends React.Component {
             })
           }
         }
+      }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      if (this.state.transaction) {
+        ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
       }
     }
   }

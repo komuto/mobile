@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, BackAndroid, ListView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, BackAndroid, ListView, ToastAndroid } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import moment from 'moment'
@@ -64,6 +64,8 @@ class TransaksiDetailStatusBarang extends React.Component {
           dataDispute: nextProps.dataInvoice.invoice.dispute.dispute_products
         })
       }
+    } else if (nextProps.dataInvoice.status !== 200 && nextProps.dataInvoice.status !== 0) {
+      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.LONG)
     }
   }
 

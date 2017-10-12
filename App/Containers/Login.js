@@ -40,12 +40,7 @@ class Login extends React.Component {
         loading: false
       })
       this.props.stateLogin(true)
-    } else if (nextProps.datalogin.status > 200) {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
-    } else if (nextProps.datalogin.status === 'ETIMEOUT' || nextProps.datalogin.status === 'EOFFLINE' || nextProps.datalogin.status === 'EUNKNOWN' || nextProps.datalogin.status === undefined) {
+    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
       this.setState({
         loading: false
       })

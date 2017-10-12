@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, ListView, View, Image } from 'react-native'
+import { ScrollView, Text, ListView, View, Image, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -43,6 +43,8 @@ class TransactionDetailStatusPurchase extends React.Component {
         insuranceFee: nextProps.dataInvoice.invoice.shipping.insurance_fee,
         shippingFee: nextProps.dataInvoice.invoice.shipping.delivery_cost
       })
+    } else if (nextProps.dataInvoice.status !== 200 && nextProps.dataInvoice.status !== 0) {
+      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.LONG)
     }
   }
 

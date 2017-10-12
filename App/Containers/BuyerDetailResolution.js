@@ -6,7 +6,8 @@ import {
   View,
   TextInput,
   ListView,
-  BackAndroid
+  BackAndroid,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -53,8 +54,15 @@ class BuyerDetailResolution extends React.Component {
         photoComplaint: nextProps.dataDetailResolution.resolution.images
       })
       nextProps.dataDetailResolution.status = 0
-    } if (nextProps.dataReplyResolutions.status === 200) {
+    } else if (nextProps.dataDetailResolution.status !== 200 && nextProps.dataDetailResolution.status !== 0) {
+      ToastAndroid.show(nextProps.dataDetailResolution.message, ToastAndroid.LONG)
+      nextProps.dataDetailResolution.status = 0
+    }
+    if (nextProps.dataReplyResolutions.status === 200) {
       this.props.getDetailResolution(this.state.idResolution)
+      nextProps.dataReplyResolutions.status = 0
+    } else if (nextProps.dataReplyResolutions.status !== 200 && nextProps.dataReplyResolutions.status !== 0) {
+      ToastAndroid.show(nextProps.dataReplyResolutions.message, ToastAndroid.LONG)
       nextProps.dataReplyResolutions.status = 0
     }
   }

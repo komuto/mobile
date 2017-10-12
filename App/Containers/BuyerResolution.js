@@ -72,7 +72,8 @@ class BuyerResolution extends React.Component {
         dataUnresolve: nextProps.dataResolutionUnresolve.resolutions,
         loading: false
       })
-    } if (nextProps.dataPhoto.status === 200) {
+    }
+    if (nextProps.dataPhoto.status === 200) {
       this.props.createResolution(
         this.state.choosenPriority,
         this.state.choosenTopic,
@@ -91,7 +92,8 @@ class BuyerResolution extends React.Component {
         dataTopic: this.state.dataTopicStore
       })
       nextProps.dataPhoto.status = 0
-    } if (nextProps.dataCreateResolution.status === 200 && this.state.foto) {
+    }
+    if (nextProps.dataCreateResolution.status === 200 && this.state.foto) {
       this.props.getListResolutionUnresolve()
       this.setState({
         modalCreateComplaint: false,
@@ -104,10 +106,13 @@ class BuyerResolution extends React.Component {
         dataTopic: this.state.dataTopicStore
       })
       nextProps.dataCreateResolution.status = 0
-    } if (nextProps.dataPhoto.status > 200 || nextProps.dataCreateResolution.status > 200) {
+    }
+    if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0 && nextProps.dataCreateResolution.status !== 200 && nextProps.dataCreateResolution.status !== 0) {
       this.setState({buttonDisable: false})
-    } if (nextProps.dataResolutionResolve.status > 200 && nextProps.dataResolutionUnresolve.status > 200) {
-      ToastAndroid.show('Request Time Out..', ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataResolutionResolve.status !== 200 && nextProps.dataResolutionResolve.status !== 0 && nextProps.dataResolutionUnresolve.status !== 200 && nextProps.dataResolutionUnresolve.status !== 0) {
+      ToastAndroid.show(nextProps.dataResolutionResolve.message, ToastAndroid.LONG)
     }
   }
 

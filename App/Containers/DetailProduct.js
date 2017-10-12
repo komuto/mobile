@@ -186,30 +186,36 @@ class DetailProduct extends React.Component {
       })
       nextProps.dataDetailProduk.status = 0
       this.props.resetProduk()
-    }
-    if (nextProps.dataDetailProduk.status === 406) {
-      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
+    } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
+      ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.LONG)
+      nextProps.dataDetailProduk.status = 0
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
+    } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
+      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
         kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
+    } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
+      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
     }
     if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
+    } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
+      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
     }
     if (nextProps.dataServis.status === 200) {
       this.setState({
         dataServices: nextProps.dataServis.charges
       })
-    } else if (nextProps.dataServis.status > 200) {
+    } else if (nextProps.dataServis.status !== 200 && nextProps.dataServis.status !== 0) {
       this.setState({
         messageServices: nextProps.dataServis.message
       })
@@ -226,6 +232,9 @@ class DetailProduct extends React.Component {
         })
         this.props.resetAddToWishlist()
       }
+    } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
+      ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.LONG)
+      this.props.resetAddToWishlist()
     }
   }
 

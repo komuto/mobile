@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -58,11 +59,24 @@ class Transaction extends React.Component {
       } else {
         this.setState({
           loadmore: false,
-          isLoading: false
+          isLoading: false,
+          loading: false,
+          data: []
         })
       }
+      nextProps.dataListTransaction.status = 0
+    } else if (nextProps.dataListTransaction.status !== 200 && nextProps.dataListTransaction.status !== 0) {
+      this.setState({
+        data: [],
+        loading: false,
+        isRefreshing: false,
+        page: 1,
+        loadmore: false,
+        isLoading: false
+      })
+      ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.LONG)
+      nextProps.dataListTransaction.status = 0
     }
-    nextProps.dataListTransaction.status = 0
   }
 
   refresh = () => {

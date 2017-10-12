@@ -115,7 +115,7 @@ class PurchaseCart extends React.Component {
         }
         this.props.getCartReset()
       }
-    } else if (nextProps.dataCart.status > 200) {
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       // ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
       this.setState({
         data: [],
@@ -141,11 +141,11 @@ class PurchaseCart extends React.Component {
         })
       }
       nextProps.dataPromo.status = 0
-    } else if (nextProps.dataPromo.status > 200) {
+    } else if (nextProps.dataPromo.status !== 200 && nextProps.dataPromo.status !== 0) {
       this.setState({
         modalPromo: false
       })
-      nextProps.dataPromo.status
+      nextProps.dataPromo.status = 0
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
@@ -156,7 +156,7 @@ class PurchaseCart extends React.Component {
         requestPromo: false
       })
       nextProps.dataCancelPromo.status = 0
-    } else if (nextProps.dataCancelPromo.status > 200) {
+    } else if (nextProps.dataCancelPromo.status !== 200 && nextProps.dataCancelPromo.status !== 0) {
       this.setState({ requestPromo: false })
       nextProps.dataCancelPromo.status = 0
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
@@ -170,7 +170,7 @@ class PurchaseCart extends React.Component {
         loadingCheckout: false
       })
       this.props.resetUpdateCart()
-    } else if (nextProps.dataCheckout.status > 200 || nextProps.dataCheckout.status === 'ENOENT') {
+    } else if (nextProps.dataCheckout.status !== 200 && nextProps.dataCheckout.status !== 0) {
       this.setState({
         loadingCheckout: false
       })
@@ -184,6 +184,8 @@ class PurchaseCart extends React.Component {
         })
         this.refresh()
       }
+    } else if (nextProps.dataDeleteItem.status !== 200 && nextProps.dataDeleteItem.status !== 0) {
+      ToastAndroid.show(nextProps.dataDeleteItem.message, ToastAndroid.LONG)
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView, TouchableOpacity } from 'react-native'
+import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
@@ -29,8 +29,8 @@ class BuyerComplainDetailItem extends React.Component {
       dataProduct: [],
       data: [],
       resi: '',
-      problem: 'Barang tidak sesuai deskripsi, Produk tidak lengkap, Barang rusak',
-      note: 'Sepatu yang merah terdapat sobek pada sisi pinggirnya dan terlihat sudah lecekseperti sudah pernah dipakai karena ada bekas tanahnya',
+      problem: '',
+      note: '',
       callback: false,
       disputeId: '',
       complainSolved: false,
@@ -75,6 +75,8 @@ class BuyerComplainDetailItem extends React.Component {
         responseStatus: data.response_status,
         fineProductsTotal: data.fine_products.length
       })
+    } else if (nextProps.dataComplain.status !== 200 && nextProps.dataComplain.status !== 0) {
+      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
     }
   }
 

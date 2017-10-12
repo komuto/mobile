@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
+import { ScrollView, Text, View, Image, TouchableOpacity, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -55,6 +55,8 @@ class TransactionPaid extends React.Component {
           id: nextProps.dataTransaction.transaction.bucket.id
         })
       }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.LONG)
     }
   }
 

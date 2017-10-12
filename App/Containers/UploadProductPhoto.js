@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, BackAndroid, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
@@ -40,10 +40,11 @@ class UploadProductPhoto extends React.Component {
         type: ActionConst.PUSH,
         images: temp
       })
-    } else if (nextProps.dataPhoto.status > 200) {
+    } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
       this.setState({
         loading: false
       })
+      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
     }
   }
 

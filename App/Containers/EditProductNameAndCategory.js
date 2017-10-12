@@ -129,32 +129,56 @@ class EditProductNameAndCategory extends React.Component {
         loading: false,
         kategori: this.state.tambahanKategori.concat(nextProps.dataKategori.categories)
       })
-    } if (nextProps.dataSubKategori1.status === 200) {
+    } else if (nextProps.dataKategori.status !== 200 && nextProps.dataKategori.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataKategori.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataSubKategori1.status === 200) {
       this.setState({
         loading: false,
         subKategori1: this.state.tambahanSubKategori1.concat(nextProps.dataSubKategori1.categories.sub_categories)
       })
-    } if (nextProps.dataSubKategori2.status === 200) {
+    } else if (nextProps.dataSubKategori1.status !== 200 && nextProps.dataSubKategori1.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataSubKategori1.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataSubKategori2.status === 200) {
       this.setState({
         loading: false,
         subKategori2: this.state.tambahanSubKategori2.concat(nextProps.dataSubKategori2.categories.sub_categories)
       })
-    } if (nextProps.dataSubKategori3.status === 200) {
+    } else if (nextProps.dataSubKategori2.status !== 200 && nextProps.dataSubKategori2.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataSubKategori2.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataSubKategori3.status === 200) {
       this.setState({
         loading: false,
         subKategori3: this.state.tambahanSubKategori3.concat(nextProps.dataSubKategori3.categories.sub_categories)
       })
-    } if (nextProps.dataBrand.status === 200) {
+    }
+    if (nextProps.dataBrand.status === 200) {
       this.setState({
         loading: false,
         brand: this.state.tambahanBrand.concat(nextProps.dataBrand.brands)
       })
+    } else if (nextProps.dataBrand.status !== 200 && nextProps.dataBrand.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataBrand.message, ToastAndroid.LONG)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       this.props.resetAlterProduct()
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }

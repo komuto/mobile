@@ -9,7 +9,7 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  Alert
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -82,23 +82,19 @@ class SearchResultByCategory extends React.Component {
         rowDataSource: nextProps.dataProduk.products,
         loadingProduk: false
       })
-    } else if (nextProps.dataProduk.status > 200) {
+    } else if (nextProps.dataProduk.status !== 200 && nextProps.dataProduk.status !== 0) {
       this.setState({
         loadingProduk: true
       })
-    } else if (nextProps.dataProduk.status === 'ENOENT') {
-      this.setState({
-        loadingProduk: true
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataProduk.message)
+      ToastAndroid.show(nextProps.dataProduk.message, ToastAndroid.LONG)
     }
     if (nextProps.dataFilter.status === 200) {
       this.setState({
         listDataSource: nextProps.dataFilter.products,
         rowDataSource: nextProps.dataFilter.products
       })
-    } else if (nextProps.dataFilter.status > 200) {
-      console.log(nextProps.dataFilter.status)
+    } else if (nextProps.dataFilter.status !== 200 && nextProps.dataFilter.status !== 0) {
+      ToastAndroid.show(nextProps.dataFilter.message, ToastAndroid.LONG)
     }
   }
 

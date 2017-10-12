@@ -64,7 +64,7 @@ class Profile extends React.Component {
         fotoToko: nextProps.dataProfile.user.store.logo,
         statusToko: nextProps.dataProfile.user.store.status
       })
-    } else if (nextProps.dataProfile.status > 200) {
+    } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       this.setState({
         loading: false
       })

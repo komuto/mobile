@@ -84,21 +84,29 @@ class PurchaseUserInfo extends React.Component {
       this.setState({
         dataProvinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
+    } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
+      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
         dataKabupaten: this.state.tambahanKabupaten.concat(nextProps.dataKota.districts)
       })
+    } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
+      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
     }
     if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
         dataKecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
+    } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
+      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
     }
     if (nextProps.dataVillage.status === 200) {
       this.setState({
         dataKelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
       })
+    } else if (nextProps.dataVillage.status !== 200 && nextProps.dataVillage.status !== 0) {
+      ToastAndroid.show(nextProps.dataVillage.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCreateAlamat.status === 200) {
       this.setState({
@@ -110,7 +118,7 @@ class PurchaseUserInfo extends React.Component {
         statusAlamat: true
       })
       this.props.addAddressReset()
-    } else if (nextProps.dataCreateAlamat.status > 200) {
+    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
       ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.LONG)
       this.setState({
         loadingCart: false

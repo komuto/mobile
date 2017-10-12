@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   ListView,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import moment from 'moment'
@@ -56,6 +57,15 @@ class BuyerDiscussion extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.listDiscussion.status !== 200 && nextProps.listDiscussion.status !== 0) {
+      this.setState({
+        data: [],
+        page: 1,
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.listDiscussion.message, ToastAndroid.LONG)
     }
   }
 

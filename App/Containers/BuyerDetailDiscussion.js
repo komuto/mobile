@@ -37,11 +37,23 @@ class BuyerDetailDiscussion extends React.Component {
         data: nextProps.dataDetailDiscussion.comments
       })
       nextProps.dataDetailDiscussion.status = 0
-    } if (nextProps.dataNewComent.status === 200) {
+    } else if (nextProps.dataDetailDiscussion.status !== 200 && nextProps.dataDetailDiscussion.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataDetailDiscussion.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataNewComent.status === 200) {
       this.setState({loading: false})
       this.props.getDetailDiscussion(this.state.idDiscussion)
       nextProps.dataNewComent.status = 0
-    } if (nextProps.dataDetailProduk.status === 406) {
+    } else if (nextProps.dataNewComent.status !== 200 && nextProps.dataNewComent.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataNewComent.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataDetailProduk.status === 406) {
       this.setState({loading: false})
       ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
       nextProps.dataDetailProduk.status = 0

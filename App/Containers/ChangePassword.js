@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import * as EmailValidator from 'email-validator'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -39,6 +39,11 @@ class ChangePassword extends React.Component {
         notif: true,
         pesanNotif: 'Sukses mengganti password Anda'
       })
+    } else if (nextProps.dataPassword.status !== 200 && nextProps.dataPassword.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.LONG)
     }
   }
 

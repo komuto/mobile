@@ -53,11 +53,12 @@ class BuyerComplainConfirmation extends React.Component {
       nextProps.dataExchange.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Review ditambahkan..', ToastAndroid.SHORT)
-    } else if (nextProps.dataExchange.statusf > 200) {
+    } else if (nextProps.dataExchange.status !== 200 && nextProps.dataExchange.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataExchange.message, ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataExchange.message, ToastAndroid.LONG)
+      nextProps.dataExchange.status = 0
     }
   }
 

@@ -33,7 +33,7 @@ class EditProductCatalog extends React.Component {
       data: [],
       namaProduk: this.props.dataDetailProduct.storeProductDetail.product.name,
       foto: this.props.dataDetailProduct.storeProductDetail.images[0].file,
-      price: 1000000,
+      price: 0,
       namaToko: this.props.dataDetailProduct.storeProductDetail.product.name,
       index: this.props.catalogId,
       idCatalog: this.props.catalogId,
@@ -59,27 +59,33 @@ class EditProductCatalog extends React.Component {
         idCatalog: nextProps.dataCatalog.catalogs[0].id
       })
       nextProps.dataCatalog.status = 0
-    } if (nextProps.dataCreateCatalog.status === 200) {
+    } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataCreateCatalog.status === 200) {
       this.setState({
         namaKatalog: ''
       })
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
-    } if (nextProps.dataCreateProdukDropshipper.status === 200) {
+    } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataCreateProdukDropshipper.status === 200) {
       this.setState({
         loading: false
       })
-    }
-    if (nextProps.dataCreateProdukDropshipper.status > 200) {
+    } else if (nextProps.dataCreateProdukDropshipper.status !== 200 && nextProps.dataCreateProdukDropshipper.status !== 0) {
       this.setState({
         loading: true
       })
+      ToastAndroid.show(nextProps.dataCreateProdukDropshipper.message, ToastAndroid.LONG)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }

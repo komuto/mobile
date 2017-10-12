@@ -37,7 +37,10 @@ class EditProductExpedition extends React.Component {
       this.setState({
         dataListEkspedisi: nextProps.dataEkspedisiList.expeditions
       })
-    } if (nextProps.dataServicesExpedition.status === 200) {
+    } else if (nextProps.dataEkspedisiList.status !== 200 && nextProps.dataEkspedisiList.status !== 0) {
+      ToastAndroid.show(nextProps.dataEkspedisiList.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataServicesExpedition.status === 200) {
       let dataTemp = []
       let dataTempSec = []
       nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
@@ -50,16 +53,24 @@ class EditProductExpedition extends React.Component {
         filterPengiriman: dataTemp,
         expeditionServices: dataTempSec
       })
-    } if (nextProps.dataServicesExpedition.status && nextProps.dataEkspedisiList.status === 200) {
+    } else if (nextProps.dataServicesExpedition.status !== 200 && nextProps.dataServicesExpedition.status !== 0) {
+      ToastAndroid.show(nextProps.dataServicesExpedition.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataServicesExpedition.status && nextProps.dataEkspedisiList.status === 200) {
       this.setState({
         loading: false
       })
+    } else if (nextProps.dataServicesExpedition.status !== 200 && nextProps.dataServicesExpedition.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataServicesExpedition.message, ToastAndroid.LONG)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }

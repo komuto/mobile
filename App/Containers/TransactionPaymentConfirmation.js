@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   DatePickerAndroid,
   Picker,
-  BackAndroid
+  BackAndroid,
+  ToastAndroid
 } from 'react-native'
 import Spinner from '../Components/Spinner'
 import { Actions as NavigationActions } from 'react-native-router-flux'
@@ -67,6 +68,11 @@ class TransactionPaymentConfirmation extends React.Component {
       this.setState({
         bank: nextProps.dataBank.banks
       })
+    } else if (nextProps.dataBank.status !== 200 && nextProps.dataBank.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataBank.message, ToastAndroid.LONG)
     }
     if (nextProps.dataPhoto.status === 200) {
       console.log(nextProps.dataPhoto.payload.images[0].name)
@@ -74,10 +80,11 @@ class TransactionPaymentConfirmation extends React.Component {
         loading: false,
         payloadImage: nextProps.dataPhoto.payload.images[0].name
       })
-    } else if (nextProps.dataPhoto.status > 200) {
+    } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
       this.setState({
         loading: false
       })
+      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
     }
   }
 

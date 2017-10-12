@@ -6,7 +6,8 @@ import {
   ListView,
   ActivityIndicator,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
@@ -56,6 +57,13 @@ class ProductDiscussion extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
     }
   }
 

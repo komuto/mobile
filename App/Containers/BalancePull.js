@@ -58,6 +58,8 @@ class BalancePull extends React.Component {
       this.setState({
         dataBanks: data
       })
+    } else if (nextProps.dataBanks.status !== 200 && nextProps.dataBanks.status !== 0) {
+      ToastAndroid.show(nextProps.dataBanks.message, ToastAndroid.LONG)
     }
     if (nextProps.dataAccountBank.status === 200) {
       if (nextProps.dataAccountBank.listBankAccounts.length > 0) {
@@ -70,6 +72,9 @@ class BalancePull extends React.Component {
           loadingAccount: false
         })
       }
+      nextProps.dataAccountBank.status = 0
+    } else if (nextProps.dataAccountBank.status !== 200 && nextProps.dataAccountBank.status !== 0) {
+      ToastAndroid.show(nextProps.dataAccountBank.message, ToastAndroid.LONG)
       nextProps.dataAccountBank.status = 0
     }
     if (nextProps.codeOtp.status === 200) {
@@ -89,11 +94,16 @@ class BalancePull extends React.Component {
         })
         nextProps.codeOtp.status = 0
       }
+    } else if (nextProps.codeOtp.status !== 200 && nextProps.codeOtp.status !== 0) {
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
+      nextProps.codeOtp.status = 0
     }
     if (nextProps.dataProfile.status === 200) {
       this.setState({
         balance: String(nextProps.dataProfile.user.user.saldo_wallet)
       })
+    } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
     }
   }
 

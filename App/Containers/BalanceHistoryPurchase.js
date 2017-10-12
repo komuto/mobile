@@ -81,8 +81,9 @@ class BalanceHistoryPurchase extends React.Component {
         })
       }
       nextProps.dataHistory.status = 0
-    } else if (nextProps.dataHistory.status > 200) {
+    } else if (nextProps.dataHistory.status !== 200 && nextProps.dataHistory.status !== 0) {
       ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
+      nextProps.dataHistory.status = 0
     }
   }
 

@@ -1,5 +1,16 @@
 import React from 'react'
-import { View, ListView, TouchableOpacity, Text, Image, Modal, ActivityIndicator, DatePickerAndroid, RefreshControl } from 'react-native'
+import {
+  View,
+  ListView,
+  TouchableOpacity,
+  Text,
+  Image,
+  Modal,
+  ActivityIndicator,
+  DatePickerAndroid,
+  RefreshControl,
+  ToastAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
@@ -95,6 +106,16 @@ class BalanceHistory extends React.Component {
           })
         }
       }
+    } else if (nextProps.dataHistory.status !== 200 && nextProps.dataHistory.status !== 0) {
+      this.setState({
+        data: [],
+        page: 1,
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false,
+        isFiltering: false
+      })
+      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.LONG)
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, Text, TouchableOpacity, Image, Modal, ListView, TextInput } from 'react-native'
+import { View, ScrollView, Text, TouchableOpacity, Image, Modal, ListView, TextInput, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
@@ -53,6 +53,12 @@ class BalanceNewAccount extends React.Component {
         title: 'New Account',
         textButton: 'Verifikasi kode OTP'
       })
+      nextProps.codeOtp.status = 0
+    } else if (nextProps.codeOtp.status !== 200 && nextProps.codeOtp.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
       nextProps.codeOtp.status = 0
     }
   }

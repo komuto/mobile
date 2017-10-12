@@ -31,9 +31,9 @@ class NewDiscussion extends React.Component {
         loading: false
       })
       ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
-    } else if (nextProps.dataDiskusi.status > 200) {
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })
-      Alert.alert('Pesan', nextProps.dataDiskusi.message)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
     }
   }
 

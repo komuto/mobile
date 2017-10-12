@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid, RefreshControl } from 'react-native'
+import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid, RefreshControl, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -28,6 +28,11 @@ class BalanceX extends React.Component {
         balance: String(nextProps.dataProfile.user.user.saldo_wallet),
         isRefreshing: false
       })
+    } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      this.setState({
+        isRefreshing: false
+      })
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
     }
   }
 

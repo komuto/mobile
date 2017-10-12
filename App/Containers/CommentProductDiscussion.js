@@ -70,11 +70,22 @@ class DiskusiProdukKomentar extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
     }
     if (nextProps.tambahKomentar.status === 200) {
       ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
       this.setState({ data: [], komentar: '', page: 1 })
       this.props.getComment(this.state.discussionId, 1)
+      this.props.resetNewComment()
+    } else if (nextProps.tambahKomentar.status !== 200 && nextProps.tambahKomentar.status !== 0) {
+      this.setState({ data: [], komentar: '', page: 1 })
+      ToastAndroid.show(nextProps.tambahKomentar.message, ToastAndroid.LONG)
       this.props.resetNewComment()
     }
   }

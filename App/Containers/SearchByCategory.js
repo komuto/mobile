@@ -47,9 +47,7 @@ class Search extends React.Component {
           notFound: false
         })
       }
-    } else if (nextProps.dataSearch.status > 200) {
-      Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
-    } else if (nextProps.dataSearch.status === 'ENOENT') {
+    } else if (nextProps.dataSearch.status !== 200 && nextProps.dataSearch.status !== 0) {
       Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
     }
   }

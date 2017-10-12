@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, ListView, TouchableOpacity, Image } from 'react-native'
+import { ScrollView, Text, ListView, TouchableOpacity, Image, ToastAndroid } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -27,6 +27,8 @@ class BalanceRefill extends React.Component {
       this.setState({
         data: nextProps.dataSaldo.nominals
       })
+    } else if (nextProps.dataSaldo.status !== 200 && nextProps.dataSaldo.status !== 0) {
+      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataSaldoToken.status === 200) {
       NavigationActions.paymentmidtrans({
@@ -34,6 +36,9 @@ class BalanceRefill extends React.Component {
         token: nextProps.dataSaldoToken.token,
         from: 'balance'
       })
+      nextProps.dataSaldoToken.status = 0
+    } else if (nextProps.dataSaldoToken.status !== 200 && nextProps.dataSaldoToken.status !== 0) {
+      ToastAndroid.show(nextProps.dataSaldoToken.message, ToastAndroid.LONG)
       nextProps.dataSaldoToken.status = 0
     }
   }

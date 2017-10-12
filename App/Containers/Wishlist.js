@@ -7,7 +7,7 @@ import {
   ListView,
   Text,
   TouchableOpacity,
-  Alert,
+  ToastAndroid,
   Modal
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -65,16 +65,11 @@ class Wishlist extends React.Component {
           empty: false
         })
       }
-    } else if (nextProps.dataWishlist.status > 200) {
+    } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
       this.setState({
         loading: false
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataWishlist.message)
-    } else if (nextProps.dataWishlist.status === 'ENOENT') {
-      this.setState({
-        loading: false
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataWishlist.message)
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
   }
 

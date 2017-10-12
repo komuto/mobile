@@ -42,7 +42,7 @@ class BuyerComplainRefundReview extends React.Component {
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       this.props.getDetailDispute(this.state.id)
       ToastAndroid.show('Review ditambahkan..', ToastAndroid.SHORT)
-    } else if (nextProps.dataExchange.staus > 200) {
+    } else if (nextProps.dataExchange.status !== 200 && nextProps.dataExchange.status !== 0) {
       this.setState({
         loading: false
       })

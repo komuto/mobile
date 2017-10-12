@@ -40,7 +40,14 @@ class SendMessageStore extends React.Component {
         pertanyaan: ''
       })
       this.props.resetSendMessage()
-    } if (nextProps.dataMessageTransaction.status === 200) {
+    } else if (nextProps.dataPesan.status !== 200 && nextProps.dataPesan.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.LONG)
+      this.props.resetSendMessage()
+    }
+    if (nextProps.dataMessageTransaction.status === 200) {
       this.setState({
         loading: false,
         notification: true,
@@ -48,8 +55,12 @@ class SendMessageStore extends React.Component {
         pertanyaan: ''
       })
       nextProps.dataMessageTransaction.status = 0
-    } if (nextProps.dataPesan.status > 200 || nextProps.dataMessageTransaction.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan, ' + nextProps.dataPesan.message, ToastAndroid.LONG)
+    } else if (nextProps.dataMessageTransaction.status !== 200 && nextProps.dataMessageTransaction.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      nextProps.dataMessageTransaction.status = 0
+      ToastAndroid.show(nextProps.dataPedataMessageTransactionsan.message, ToastAndroid.LONG)
     }
   }
 

@@ -3,6 +3,7 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, BackAndroid, Activ
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -16,7 +17,9 @@ class TermsScreenScreen extends React.Component {
     super(props)
     this.state = {
       termInput: '',
-      loading: false
+      height: 0,
+      loading: false,
+      profiles: props.profile || null
     }
   }
 
@@ -24,7 +27,13 @@ class TermsScreenScreen extends React.Component {
     if (nextProps.dataTerms.status === 200) {
       this.setState({
         loading: false,
-        termInput: ''
+        termInput: '',
+        height: 0
+      })
+    } if (nextProps.profile.status === 200) {
+      this.setState({
+        loading: false,
+        profiles: nextProps.profile.user
       })
     } if (nextProps.dataTerms.status > 200) {
       this.setState({loading: true})
@@ -53,6 +62,27 @@ class TermsScreenScreen extends React.Component {
     this.props.updateTerm(this.state.termInput)
   }
 
+  checkTermStore (data) {
+    Reactotron.log(data.user.store)
+    if (!data.user.store.term_condition) {
+      return (
+        <Text style={styles.contoh}>
+          Contoh:{'\n'}
+          - Toko Hanya melakukan pengiriman di hari kamis
+          - Pesanan diatas jam 10 pagi akan diproses besok
+        </Text>
+      )
+    } else {
+      return (
+        <Text style={styles.contoh}>
+          Terms and Conditions Toko {data.user.store.name} :{'\n'}
+          <Text style={{padding: 5}} />
+          {data.user.store.term_condition}
+        </Text>
+      )
+    }
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -66,21 +96,23 @@ class TermsScreenScreen extends React.Component {
           </Text>
           <View style={styles.body}>
             <TextInput
-              style={styles.inputText}
+              style={[styles.inputText, {height: Math.max(40, this.state.height)}]}
               value={this.state.termInput}
+              multiline
               keyboardType='default'
               returnKeyType='next'
               autoCapitalize='none'
               autoCorrect
-              onChangeText={this.handleChangeTerms}
+              onChange={(event) => {
+                this.setState({
+                  termInput: event.nativeEvent.text,
+                  height: event.nativeEvent.contentSize.height
+                })
+              }}
               underlineColorAndroid='transparent'
               placeholder='Tulis Terms and Conditions'
           />
-            <Text style={styles.contoh}>
-              Contoh:{'\n'}
-              - Toko Hanya melakukan pengiriman di hari kamis{'\n'}
-              - Pesanan diatas jam 10 pagi akan diproses besok
-            </Text>
+            {this.checkTermStore(this.state.profiles)}
             <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdateTerms()}>
               <Text style={styles.textButtonNext}>
                 Simpan Perubahan
@@ -97,7 +129,8 @@ class TermsScreenScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataTerms: state.updateStore
+    dataTerms: state.updateStore,
+    profile: state.profile
   }
 }
 

@@ -34,7 +34,7 @@ class PriceAndSpecificationProduct extends React.Component {
       jenisAsuransi: 'opsional',
       indexAsuransi: 0,
       isInsurance: false,
-      dataAsuransi: [{label: 'Opsional', value: 0}, {label: 'Wajib', value: 0}],
+      dataAsuransi: [{label: 'Opsional', value: 0}, {label: 'Wajib', value: 1}],
       listKatalog: [],
       modalDropshipping: false,
       grosirAktif: false,
@@ -68,6 +68,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   componentDidMount () {
+    this.props.getCatalog()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -82,38 +83,6 @@ class PriceAndSpecificationProduct extends React.Component {
 
   backButton () {
     NavigationActions.pop()
-  }
-
-  changeDiscount = (text) => {
-    this.setState({diskon: text})
-  }
-
-  changeHarga = (text) => {
-    this.setState({harga: text})
-  }
-
-  changeBeratProduk = (text) => {
-    this.setState({beratProduk: text})
-  }
-
-  changeStokProduk = (text) => {
-    this.setState({stokProduk: text})
-  }
-
-  changeNamaKatalog = (text) => {
-    this.setState({namaKatalog: text})
-  }
-
-  changeMinimalGrosir = (text) => {
-    this.setState({minimalGrosir: text})
-  }
-
-  changeMaksimalGrosir = (text) => {
-    this.setState({maksimalGrosir: text})
-  }
-
-  changeHargaGrosir = (text) => {
-    this.setState({hargaGrosir: text})
   }
 
   renderListCatalog (rowData) {
@@ -203,7 +172,7 @@ class PriceAndSpecificationProduct extends React.Component {
                 autoCapitalize='none'
                 maxLength={30}
                 autoCorrect
-                onChangeText={this.changeNamaKatalog}
+                onChangeText={(text) => this.setState({namaKatalog: text})}
                 underlineColorAndroid='transparent'
                 placeholder='Masukkan nama katalog'
               />
@@ -226,22 +195,15 @@ class PriceAndSpecificationProduct extends React.Component {
         <View style={styles.spesifkasi}>
           <View style={styles.flexRow}>
             <View style={styles.left}>
-              <TextInputMask
+              <TextInput
                 style={styles.inputText}
                 value={String(this.state.harga)}
                 keyboardType='numeric'
                 returnKeyType='done'
                 autoCapitalize='none'
-                type='money'
                 maxLength={18}
-                options={{
-                  unit: 'Rp ',
-                  separator: '.',
-                  delimiter: '.',
-                  precision: 3
-                }}
                 autoCorrect
-                onChangeText={this.changeHarga}
+                onChangeText={(text) => this.setState({harga: text})}
                 underlineColorAndroid='transparent'
                 placeholder='Harga Produk'
               />
@@ -256,7 +218,7 @@ class PriceAndSpecificationProduct extends React.Component {
                   autoCapitalize='none'
                   maxLength={3}
                   autoCorrect
-                  onChangeText={this.changeDiscount}
+                  onChangeText={(text) => this.setState({diskon: text})}
                   underlineColorAndroid='transparent'
                   placeholder='Diskon'
                 />
@@ -274,7 +236,7 @@ class PriceAndSpecificationProduct extends React.Component {
               autoCapitalize='none'
               maxLength={5}
               autoCorrect
-              onChangeText={this.changeBeratProduk}
+              onChangeText={(text) => this.setState({beratProduk: text})}
               underlineColorAndroid='transparent'
               placeholder='Berat Produk'
             />
@@ -289,7 +251,7 @@ class PriceAndSpecificationProduct extends React.Component {
               autoCapitalize='none'
               maxLength={5}
               autoCorrect
-              onChangeText={this.changeStokProduk}
+              onChangeText={(text) => this.setState({stokProduk: text})}
               underlineColorAndroid='transparent'
               placeholder='Stock Produk'
             />
@@ -691,8 +653,6 @@ class PriceAndSpecificationProduct extends React.Component {
     dataProduk[12] = parseInt(diskon)
     dataProduk[13] = grosirAktif
     dataProduk[14] = dataGrosirUpload
-    // dataProduk[11] = tempGrosir
-    // console.log(dataGrosirUpload)
     NavigationActions.expeditionproduct({
       type: ActionConst.PUSH,
       dataProduk: dataProduk,

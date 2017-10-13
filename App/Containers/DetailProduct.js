@@ -26,6 +26,7 @@ import * as reviewAction from '../actions/review'
 import * as productAction from '../actions/product'
 import * as storeAction from '../actions/stores'
 import * as catalogAction from '../actions/catalog'
+import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -158,6 +159,7 @@ class DetailProduct extends React.Component {
         service: nextProps.dataDetailProduk.detail.expeditions,
         jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
         storeId: nextProps.dataDetailProduk.detail.store.id,
+        isStoreFavorite: nextProps.dataDetailProduk.detail.store.is_favorite,
         dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
         asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
@@ -1169,6 +1171,28 @@ class DetailProduct extends React.Component {
     NavigationActions.storedetail({ type: ActionConst.PUSH })
   }
 
+  checkIsFavorite (data) {
+    const {storeId} = this.state
+    if (!data) {
+      return (
+        <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
+          <Image source={Images.centangBiru} style={styles.image24p} />
+          <Text style={styles.labelButtonFav}>
+            Di Favoritkan
+          </Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity style={[styles.buttonFav, {borderColor: Colors.greenish}]} onPress={() => this.handleFavoriteStore(storeId)}>
+          <Text style={[styles.labelButtonFav, {color: Colors.greenish}]}>
+            Favorit
+          </Text>
+        </TouchableOpacity>
+      )
+    }
+  }
+
   renderInfoPenjual () {
     const {numOfLine, storeId} = this.state
     return (
@@ -1191,12 +1215,7 @@ class DetailProduct extends React.Component {
                   {this.state.lokasiPenjual}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.buttonFav}>
-                <Image source={Images.centangBiru} style={styles.image24p} />
-                <Text style={styles.labelButtonFav}>
-                  Di Favoritkan
-                </Text>
-              </TouchableOpacity>
+              {this.checkIsFavorite(this.state.isStoreFavorite)}
             </View>
           </TouchableOpacity>
         </View>
@@ -1217,6 +1236,17 @@ class DetailProduct extends React.Component {
         </View>
       </View>
     )
+  }
+
+  handleFavoriteStore (id) {
+    const {isStoreFavorite} = this.state
+    if (isStoreFavorite) {
+      this.setState({isStoreFavorite: false})
+      this.props.putFavoriteStore(id)
+    } else {
+      this.setState({isStoreFavorite: true})
+      this.props.putFavoriteStore(id)
+    }
   }
 
   renderProduk () {
@@ -1426,7 +1456,8 @@ const mapDispatchToProps = (dispatch) => {
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
     resetProduk: () => dispatch(productAction.resetDetail()),
-    getCatalog: () => dispatch(catalogAction.getListCatalog())
+    getCatalog: () => dispatch(catalogAction.getListCatalog()),
+    putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id}))
   }
 }
 

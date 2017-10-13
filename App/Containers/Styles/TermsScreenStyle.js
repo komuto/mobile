@@ -51,7 +51,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.small,
     color: Colors.darkgrey,
     lineHeight: 23,
-    paddingTop: 10.8,
+    paddingTop: 15.8,
     paddingRight: 50,
     paddingBottom: 25
   },

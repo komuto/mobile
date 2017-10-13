@@ -1,13 +1,19 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ToastAndroid,
+  BackAndroid,
+  TouchableOpacity,
+  Image,
+  ScrollView
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
+import {isFetching, isError, isFound} from '../Services/Status'
 import * as storeAction from '../actions/stores'
-import * as categoriAction from '../actions/home'
-
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/UploadPhotoProdukScreenStyle'
@@ -17,6 +23,10 @@ class UploadProductPhoto extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      upload: false,
+      fetching: true
+    }
     this.state = {
       foto: [],
       loading: false,
@@ -27,24 +37,25 @@ class UploadProductPhoto extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataPhoto.status === 200) {
-      let temp = this.state.images
-      nextProps.dataPhoto.payload.images.map((data, i) => {
-        temp[i] = ({'name': data.name})
-      })
-      this.setState({
-        loading: false
-      })
-      this.props.getKategori()
-      NavigationActions.productinfonameandcategory({
-        type: ActionConst.PUSH,
-        images: temp
-      })
-    } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
+    const {dataPhoto} = nextProps
+
+    if (!isFetching(dataPhoto) && this.submitting.upload) {
+      this.submitting = { ...this.submitting, upload: false }
+      if (isError(dataPhoto)) {
+        ToastAndroid.show(dataPhoto.message, ToastAndroid.SHORT)
+        this.setState({ loading: false })
+      }
+      if (isFound(dataPhoto)) {
+        let temp = this.state.images
+        dataPhoto.payload.images.map((data, i) => {
+          temp[i] = ({'name': data.name})
+        })
+        NavigationActions.productinfonameandcategory({
+          type: ActionConst.PUSH,
+          images: temp
+        })
+        this.setState({ loading: false })
+      }
     }
   }
 
@@ -125,6 +136,7 @@ class UploadProductPhoto extends React.Component {
     })
     postData.append('type', 'product')
     this.props.photoUpload(postData)
+    this.submitting.upload = true
     this.setState({loading: true})
   }
 
@@ -135,6 +147,9 @@ class UploadProductPhoto extends React.Component {
         <CameraModal
           visible={this.state.showModalCamera}
           onClose={() => {
+            this.setState({showModalCamera: false})
+          }}
+          onPress={() => {
             this.setState({showModalCamera: false})
           }}
           onPhotoCaptured={(path) => {
@@ -192,8 +207,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data})),
-    getKategori: () => dispatch(categoriAction.categoryList())
+    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data}))
   }
 }
 

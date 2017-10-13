@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Modal, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, TouchableOpacity, ToastAndroid } from 'react-native'
 import styles from './Styles/CameraModalStyle'
 import ImagePicker from 'react-native-image-crop-picker'
 
@@ -10,9 +10,8 @@ export default class CameraModal extends React.Component {
       width: 500,
       height: 500
     }).then(image => {
-      console.log('received image', image.path)
       this.props.onPhotoCaptured(image.path)
-    }).catch(e => window.alert(e))
+    }).catch(e => ToastAndroid.show('Terjadi Kesalahan..' + e, ToastAndroid.SHORT))
   }
 
   pickSingleBase64 () {
@@ -21,21 +20,20 @@ export default class CameraModal extends React.Component {
       height: 300,
       cropping: true
     }).then(image => {
-      console.log('received base64 image', image.path)
       this.props.onPhotoCaptured(image.path)
-    }).catch(e => window.alert(e))
+    }).catch(e => ToastAndroid.show('Terjadi Kesalahan..' + e, ToastAndroid.SHORT))
   }
 
   render () {
-    const { onClose, visible } = this.props
+    const { onClose, onPress, visible } = this.props
     return (
       <Modal
-        animationType={'slide'}
+        animationType={'fade'}
         transparent
         visible={visible}
         onRequestClose={onClose}
       >
-        <View style={styles.bgMdalContainer}>
+        <TouchableOpacity onPress={onPress} style={styles.bgMdalContainer}>
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={() => this.pickSingleBase64()}>
               <View style={styles.menuModal}>
@@ -48,7 +46,7 @@ export default class CameraModal extends React.Component {
               </View>
             </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     )
   }

@@ -33,10 +33,8 @@ class Notification extends React.Component {
   }
 
   handleDaftarProduk () {
-    // this.props.getListProduk(false)
-    // this.props.getHiddenProduct()
     NavigationActions.storeproduct({
-      type: ActionConst.REPLACE
+      type: ActionConst.PUSH_OR_POP
     })
   }
 

@@ -14,10 +14,13 @@ import {
 import { connect } from 'react-redux'
 import {MaskService} from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as userAction from '../actions/user'
+import * as productAction from '../actions/product'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/ListFavoriteStoresStyle'
@@ -28,6 +31,9 @@ class ListFavoriteStores extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      list: false
+    }
     this.state = {
       search: '',
       listStore: [],
@@ -41,7 +47,8 @@ class ListFavoriteStores extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     const {propsListStore} = nextProps
-    if (propsListStore.status === 200) {
+    if (propsListStore.status === 200 && this.submitting.list) {
+      this.submitting = { ...this.submitting, list: false }
       if (propsListStore.stores.length > 0) {
         let data = [...this.state.listStore, ...propsListStore.stores]
         this.setState({
@@ -62,7 +69,14 @@ class ListFavoriteStores extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getListFavStore(1)
+    const {listStore} = this.state
+    if (listStore) {
+      this.submitting = {
+        ...this.submitting,
+        list: true
+      }
+      this.props.getListFavStore(1)
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -71,23 +85,21 @@ class ListFavoriteStores extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.salesdashboard({
-      type: ActionConst.RESET
-    })
+    NavigationActions.pop()
     return true
   }
 
   loadMore () {
-    const { page, loadmore, isLoading } = this.state
-    if (!isLoading) {
-      if (loadmore) {
-        this.props.getListFavStore(page)
-      }
+    const { page, loadmore } = this.state
+    if (loadmore) {
+      this.submitting.list = true
+      this.props.getListFavStore(page)
     }
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
+    this.setState({ isRefreshing: true, listStore: [], page: 1 })
+    this.submitting.list = true
     this.props.getListFavStore(1)
   }
 
@@ -172,8 +184,7 @@ class ListFavoriteStores extends React.Component {
     }
   }
 
-  renderRowProduk (rowData) {
-    console.log(rowData.name)
+  renderRowProduk (rowData, id) {
     const mapProduct = rowData.map((data, i) => {
       if (data.is_discount) {
         this.hargaDiskon = this.discountCalculate(data.price, data.discount)
@@ -188,7 +199,7 @@ class ListFavoriteStores extends React.Component {
         precision: 3
       })
       return (
-        <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => {}}>
+        <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.handleDetailProduct(data.id)}>
           <View style={styles.maskedimageProduct}>
             <Image source={{uri: data.image}} style={styles.imageProduct} />
           </View>
@@ -212,7 +223,7 @@ class ListFavoriteStores extends React.Component {
     return (
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingBottom: 12}}>
         {mapProduct}
-        <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => {}}>
+        <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.handleDetailStore(id)}>
           <View style={styles.iconflexColumn}>
             <Image source={Images.listProduk} style={styles.bitmap} />
             <Text style={styles.fontsemiBoldCharcoal}>
@@ -226,7 +237,7 @@ class ListFavoriteStores extends React.Component {
 
   renderRowListStore (rowData) {
     return (
-      <TouchableOpacity style={styles.containerList}>
+      <TouchableOpacity style={styles.containerList} activeOpacity={0.8} onPress={() => this.handleDetailStore(rowData.store.id)}>
         <View style={styles.storeInfo}>
           <View style={styles.maskedBitmap}>
             <Image source={{uri: rowData.store.logo}} style={styles.bitmap} />
@@ -238,13 +249,30 @@ class ListFavoriteStores extends React.Component {
             </View>
             <Text style={styles.fontregularBrowGrey}>{rowData.store.province.name}</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => this.handlePutFavStore(rowData.store.id)}>
             <Image source={Images.keranjang} style={styles.searchImage} />
           </TouchableOpacity>
         </View>
-        {this.renderRowProduk(rowData.products)}
+        {this.renderRowProduk(rowData.products, rowData.store.id)}
       </TouchableOpacity>
     )
+  }
+
+  handleDetailStore (id) {
+    this.props.getStore(id)
+    NavigationActions.storedetail({ type: ActionConst.PUSH })
+  }
+
+  handleDetailProduct (id) {
+    this.props.getDetailProduct(id)
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
+  }
+
+  handlePutFavStore (id) {
+    this.props.putFavoriteStore(id)
   }
 
   render () {
@@ -257,7 +285,7 @@ class ListFavoriteStores extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {this.renderSearch()}
+        {/* {this.renderSearch()} */}
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.listStore)}
           renderRow={this.renderRowListStore.bind(this)}
@@ -293,11 +321,15 @@ class ListFavoriteStores extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  propsListStore: state.listFavoriteStore
+  propsListStore: state.listFavoriteStore,
+  propsFavStore: state.favorite
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListFavStore: (page) => dispatch(userAction.listFavorite({page: page}))
+  getListFavStore: (page) => dispatch(userAction.listFavorite({page: page})),
+  putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id})),
+  getStore: (id) => dispatch(storeAction.getStores({ id: id })),
+  getDetailProduct: (id) => dispatch(productAction.getProduct({id: id}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListFavoriteStores)

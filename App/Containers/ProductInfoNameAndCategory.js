@@ -1,7 +1,21 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ToastAndroid,
+  BackAndroid,
+  Modal,
+  ListView,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -19,72 +33,82 @@ class ProductInfoNameAndCategory extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      category1: false,
+      category2: false,
+      category3: false,
+      category4: false,
+      brand: false
+    }
     this.state = {
-      images: this.props.images,
+      images: this.props.images || null,
       namaProduk: '',
       descProduk: '',
       active: false,
       errorColorNamaProduk: Colors.snow,
-      colorKategori: Colors.labelgrey,
-      colorsubKat1: Colors.labelgrey,
-      colorsubKat2: Colors.labelgrey,
-      colorsubKat3: Colors.labelgrey,
+      colorCategory1: Colors.labelgrey,
+      colorCategory2: Colors.labelgrey,
+      colorCategory3: Colors.labelgrey,
+      colorCategory4: Colors.labelgrey,
       colorBrand: Colors.labelgrey,
-      kategoriIcon: Images.down,
-      subKat1Icon: Images.down,
-      subKat2Icon: Images.down,
-      subKat3Icon: Images.down,
-      brandIcon: Images.down,
-      loading: false,
-      kategori: [],
-      subKategori1: [],
-      subKategori2: [],
-      subKategori3: [],
+      iconCategory1: Images.down,
+      iconCategory2: Images.down,
+      iconCategory3: Images.down,
+      iconCategory4: Images.down,
+      iconBrand: Images.down,
+      loading: true,
+      category1: props.category1 || null,
+      category2: props.category2 || null,
+      category3: props.category3 || null,
+      category4: props.category4 || null,
       brand: [],
-      kategoriTerpilih: 'Pilih Kategori',
-      subKategori1Terpilih: 'Pilih Sub Kategori 1',
-      subKategori2Terpilih: 'Pilih Sub Kategori 2',
-      subKategori3Terpilih: 'Pilih Sub Kategori 3',
-      brandTerpilih: 'Pilih Brand',
-      idkategoriTerpilih: 0,
-      idSubKategori1Terpilih: 0,
-      idSubKategori2Terpilih: 0,
-      idSubKategori3Terpilih: 0,
-      idBrandTerpilih: 0,
-      tambahanKategori: [
+      fieldCategory1: 'Pilih Kategori',
+      fieldCategory2: 'Pilih Sub Kategori 1',
+      fieldCategory3: 'Pilih Sub Kategori 2',
+      fieldCategory4: 'Pilih Sub Kategori 3',
+      fieldBrand: 'Pilih Brand',
+      idCategory1: 0,
+      idCategory2: 0,
+      idCategory3: 0,
+      idCategory4: 0,
+      idBrand: 0,
+      addCategory1: [
         {
           'id': 0,
           'name': 'Pilih Kategori'
         }
       ],
-      tambahanSubKategori1: [
+      addCategory2: [
         {
           'id': 0,
           'name': 'Pilih Sub Kategori 1'
         }
       ],
-      tambahanSubKategori2: [
+      addCategory3: [
         {
           'id': 0,
           'name': 'Pilih Sub Kategori 2'
         }
       ],
-      tambahanSubKategori3: [
+      addCategory4: [
         {
           'id': 0,
           'name': 'Pilih Sub Kategori 3'
         }
       ],
-      tambahanBrand: [
+      addBrand: [
         {
           'id': 0,
           'name': 'Pilih Brand'
         }
       ],
-      modalKategori: false,
-      modalSubKategori1: false,
-      modalSubKategori2: false,
-      modalSubKategori3: false,
+      isDisable2: true,
+      isDisable3: true,
+      isDisable4: true,
+      modalCategory1: false,
+      modalCategory2: false,
+      modalCategory3: false,
+      modalCategory4: false,
       modalBrand: false,
       brandCheck: false,
       height: 0,
@@ -94,35 +118,68 @@ class ProductInfoNameAndCategory extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataKategori.status === 200) {
-      this.setState({
-        loading: false,
-        kategori: this.state.tambahanKategori.concat(nextProps.dataKategori.categories)
-      })
-    } if (nextProps.dataSubKategori1.status === 200) {
-      this.setState({
-        loading: false,
-        subKategori1: this.state.tambahanSubKategori1.concat(nextProps.dataSubKategori1.categories.sub_categories)
-      })
-    } if (nextProps.dataSubKategori2.status === 200) {
-      this.setState({
-        loading: false,
-        subKategori2: this.state.tambahanSubKategori2.concat(nextProps.dataSubKategori2.categories.sub_categories)
-      })
-    } if (nextProps.dataSubKategori3.status === 200) {
-      this.setState({
-        loading: false,
-        subKategori3: this.state.tambahanSubKategori3.concat(nextProps.dataSubKategori3.categories.sub_categories)
-      })
-    } if (nextProps.dataBrand.status === 200) {
-      this.setState({
-        loading: false,
-        brand: this.state.tambahanBrand.concat(nextProps.dataBrand.brands)
-      })
+    const {category1, category2, category3, category4, brands} = nextProps
+
+    if (!isFetching(category1) && this.submitting.category1) {
+      this.submitting = { ...this.submitting, category1: false }
+      if (isError(category1)) {
+        ToastAndroid.show(category1.message, ToastAndroid.SHORT)
+      }
+      if (isFound(category1)) {
+        this.setState({ category1: category1, loading: false })
+      }
+    }
+
+    if (!isFetching(category2) && this.submitting.category2) {
+      this.submitting = { ...this.submitting, category2: false }
+      if (isError(category2)) {
+        ToastAndroid.show(category2.message, ToastAndroid.SHORT)
+      }
+      if (isFound(category2)) {
+        this.setState({ category2: category2, loading: false, isDisable2: false })
+      }
+    }
+
+    if (!isFetching(category3) && this.submitting.category3) {
+      this.submitting = { ...this.submitting, category3: false }
+      if (isError(category3)) {
+        ToastAndroid.show(category3.message, ToastAndroid.SHORT)
+      }
+      if (isFound(category3)) {
+        this.setState({ category3: category3, loading: false, isDisable3: false })
+      }
+    }
+
+    if (!isFetching(category4) && this.submitting.category4) {
+      this.submitting = { ...this.submitting, category4: false }
+      if (isError(category4)) {
+        ToastAndroid.show(category4.message, ToastAndroid.SHORT)
+      }
+      if (isFound(category4)) {
+        this.setState({ category4: category4, loading: false, isDisable4: false })
+      }
+    }
+
+    if (!isFetching(brands) && this.submitting.brand) {
+      this.submitting = { ...this.submitting, brand: false }
+      if (isError(brands)) {
+        ToastAndroid.show(brands.message, ToastAndroid.SHORT)
+      }
+      if (isFound(brands)) {
+        this.setState({ brand: brands, loading: false })
+      }
     }
   }
 
   componentDidMount () {
+    const { category1 } = this.state
+    if (!category1.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        category1: true
+      }
+      this.props.getCategory1()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -194,19 +251,21 @@ class ProductInfoNameAndCategory extends React.Component {
     this.setState({ namaProduk: text })
   }
 
-  renderListKategori (rowData) {
+  renderRowCategory1 (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => {
           this.setState({
-            kategoriTerpilih: rowData.name,
-            idkategoriTerpilih: rowData.id,
-            colorKategori: Colors.darkgrey,
-            kategoriIcon: Images.down,
-            modalKategori: false })
-          this.props.getSubKategori1(rowData.id)
+            fieldCategory1: rowData.name,
+            idCategory1: rowData.id,
+            colorCategory1: Colors.darkgrey,
+            iconCategory1: Images.down,
+            modalCategory1: false,
+            loading: true })
+          this.submitting.category2 = true
+          this.props.getCategory2(rowData.id)
         }}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -214,19 +273,21 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  renderListSubKategori1 (rowData) {
+  renderRowCategory2 (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => {
           this.setState({
-            subKategori1Terpilih: rowData.name,
-            idSubKategori1Terpilih: rowData.id,
-            colorsubKat1: Colors.darkgrey,
-            subKat1Icon: Images.down,
-            modalSubKategori1: false })
-          this.props.getSubKategori1(rowData.id)
+            fieldCategory2: rowData.name,
+            idCategory2: rowData.id,
+            colorCategory2: Colors.darkgrey,
+            iconCategory2: Images.down,
+            modalCategory2: false,
+            loading: true })
+          this.submitting.category3 = true
+          this.props.getCategory3(rowData.id)
         }}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -234,19 +295,21 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  renderListSubKategori2 (rowData) {
+  renderRowCategory3 (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => {
           this.setState({
-            subKategori2Terpilih: rowData.name,
-            idSubKategori2Terpilih: rowData.id,
-            colorsubKat2: Colors.darkgrey,
-            subKat2Icon: Images.down,
-            modalSubKategori2: false })
-          this.props.getSubKategori1(rowData.id)
+            fieldCategory3: rowData.name,
+            idCategory3: rowData.id,
+            colorCategory3: Colors.darkgrey,
+            iconCategory3: Images.down,
+            modalCategory3: false,
+            loading: true })
+          this.submitting.category4 = true
+          this.props.getCategory4(rowData.id)
         }}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -254,18 +317,18 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  renderListSubKategori3 (rowData) {
+  renderRowCategory4 (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => {
           this.setState({
-            subKategori3Terpilih: rowData.name,
-            idSubKategori3Terpilih: rowData.id,
-            colorsubKat3: Colors.darkgrey,
-            subKat3Icon: Images.down,
-            modalSubKategori3: false })
+            fieldCategory4: rowData.name,
+            idCategory4: rowData.id,
+            colorCategory4: Colors.darkgrey,
+            iconCategory4: Images.down,
+            modalCategory4: false })
         }}
       >
         <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
@@ -273,17 +336,17 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  renderListBrand (rowData) {
+  renderRowBrand (rowData) {
     return (
       <TouchableOpacity
         style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
-        activeOpacity={0.8}
+        activeOpacity={0.9}
         onPress={() => {
           this.setState({
-            brandTerpilih: rowData.name,
-            idBrandTerpilih: rowData.id,
+            fieldBrand: rowData.name,
+            idBrand: rowData.id,
             colorBrand: Colors.darkgrey,
-            brandIcon: Images.down,
+            iconBrand: Images.down,
             modalBrand: false })
         }}
       >
@@ -292,20 +355,20 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  modalKategori () {
+  modalCategory1 () {
     return (
       <Modal
         animationType={'slide'}
         transparent
-        visible={this.state.modalKategori}
-        onRequestClose={() => this.setState({ modalKategori: false, kategoriIcon: Images.down })}
+        visible={this.state.modalCategory1}
+        onRequestClose={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}
         >
-        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalKategori: false, kategoriIcon: Images.down })}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}>
           <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.kategori)}
-              renderRow={this.renderListKategori.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory1.concat(this.state.category1.categories))}
+              renderRow={this.renderRowCategory1.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -314,20 +377,20 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  modalSubKategori1 () {
+  modalCategory2 () {
     return (
       <Modal
         animationType={'slide'}
         transparent
-        visible={this.state.modalSubKategori1}
-        onRequestClose={() => this.setState({ modalSubKategori1: false, subKat1Icon: Images.down })}
+        visible={this.state.modalCategory2}
+        onRequestClose={() => this.setState({ modalCategory2: false, iconCategory2: Images.down })}
         >
-        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalSubKategori1: false, subKat1Icon: Images.down })}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => this.setState({ modalCategory2: false, iconCategory2: Images.down })}>
           <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.subKategori1)}
-              renderRow={this.renderListSubKategori1.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory2.concat(this.state.category2.categories.sub_categories))}
+              renderRow={this.renderRowCategory2.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -336,20 +399,20 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  modalSubKategori2 () {
+  modalCategory3 () {
     return (
       <Modal
         animationType={'slide'}
         transparent
-        visible={this.state.modalSubKategori2}
-        onRequestClose={() => this.setState({ modalSubKategori2: false, subKat2Icon: Images.down })}
+        visible={this.state.modalCategory3}
+        onRequestClose={() => this.setState({ modalCategory3: false, iconCategory3: Images.down })}
         >
-        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalSubKategori2: false, subKat2Icon: Images.down })}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => this.setState({ modalCategory3: false, iconCategory3: Images.down })}>
           <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.subKategori2)}
-              renderRow={this.renderListSubKategori2.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory3.concat(this.state.category3.categories.sub_categories))}
+              renderRow={this.renderRowCategory3.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -358,20 +421,20 @@ class ProductInfoNameAndCategory extends React.Component {
     )
   }
 
-  modalSubKategori3 () {
+  modalCategory4 () {
     return (
       <Modal
         animationType={'slide'}
         transparent
-        visible={this.state.modalSubKategori3}
-        onRequestClose={() => this.setState({ modalSubKategori3: false, subKat3Icon: Images.down })}
+        visible={this.state.modalCategory4}
+        onRequestClose={() => this.setState({ modalCategory4: false, iconCategory4: Images.down })}
         >
-        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalSubKategori3: false })}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => this.setState({ modalCategory4: false })}>
           <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.subKategori3)}
-              renderRow={this.renderListSubKategori3.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory4.concat(this.state.category4.categories.sub_categories))}
+              renderRow={this.renderRowCategory4.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -386,14 +449,14 @@ class ProductInfoNameAndCategory extends React.Component {
         animationType={'slide'}
         transparent
         visible={this.state.modalBrand}
-        onRequestClose={() => this.setState({ modalBrand: false, brandIcon: Images.down })}
+        onRequestClose={() => this.setState({ modalBrand: false, iconBrand: Images.down })}
         >
-        <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({ modalBrand: false, brandIcon: Images.down })}>
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer} onPress={() => this.setState({ modalBrand: false, iconBrand: Images.down })}>
           <ScrollView style={styles.menuProvinsiContainer}>
             <ListView
               contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.brand)}
-              renderRow={this.renderListBrand.bind(this)}
+              dataSource={this.dataSource.cloneWithRows(this.state.addBrand.concat(this.state.brand.brands))}
+              renderRow={this.renderRowBrand.bind(this)}
               enableEmptySections
             />
           </ScrollView>
@@ -405,22 +468,24 @@ class ProductInfoNameAndCategory extends React.Component {
   handdleBrand () {
     if (!this.state.brandCheck) {
       this.setState({brandCheck: true, loading: true, colorCheckbox: Colors.bluesky})
+      this.submitting.brand = true
       this.props.getBrand()
     } else {
+      this.submitting.brand = false
       this.setState({brandCheck: false, colorCheckbox: Colors.snow})
     }
   }
 
   viewBrand () {
-    const {errorColorNamaProduk, colorBrand, brandCheck, brandIcon} = this.state
+    const {errorColorNamaProduk, colorBrand, brandCheck, iconBrand} = this.state
     if (brandCheck) {
       return (
         <View>
           <Text style={[styles.textLabel]}>Brand</Text>
           <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalBrand: true, brandIcon: Images.up })}>
-              <Text style={[styles.inputPicker, {color: colorBrand}]}>{this.state.brandTerpilih}</Text>
-              <Image source={brandIcon} style={styles.imagePicker} />
+            <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalBrand: true, iconBrand: Images.up })}>
+              <Text style={[styles.inputPicker, {color: colorBrand}]}>{this.state.fieldBrand}</Text>
+              <Image source={iconBrand} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
           <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Brand Harus dipilih</Text>
@@ -434,8 +499,30 @@ class ProductInfoNameAndCategory extends React.Component {
   }
 
   stateTwo () {
-    const {colorCheckbox, brandCheck, errorColorNamaProduk, colorKategori, colorsubKat1, colorsubKat2, colorsubKat3} = this.state
-    const imageCentang = brandCheck ? Images.centangBiru : null
+    const {
+      colorCheckbox,
+      brandCheck,
+      errorColorNamaProduk,
+      colorCategory1,
+      colorCategory2,
+      colorCategory3,
+      colorCategory4,
+      isDisable2,
+      isDisable3,
+      isDisable4,
+      iconCategory1,
+      iconCategory2,
+      iconCategory3,
+      iconCategory4,
+      height,
+      fieldCategory1,
+      fieldCategory2,
+      fieldCategory3,
+      fieldCategory4,
+      descProduk
+    } = this.state
+
+    const imageCentang = brandCheck ? Images.centang : null
     return (
       <View style={styles.infoContainer}>
         <Text style={styles.textLabel}>Nama Produk</Text>
@@ -455,33 +542,33 @@ class ProductInfoNameAndCategory extends React.Component {
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Nama Produk Harus diisi</Text>
         <Text style={[styles.textLabel]}>Kategori</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKategori: true, kategoriIcon: Images.up })}>
-            <Text style={[styles.inputPicker, {color: colorKategori}]}>{this.state.kategoriTerpilih}</Text>
-            <Image source={this.state.kategoriIcon} style={styles.imagePicker} />
+          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory1: true, iconCategory1: Images.up })}>
+            <Text style={[styles.inputPicker, {color: colorCategory1}]}>{fieldCategory1}</Text>
+            <Image source={iconCategory1} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Kategori Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 1</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalSubKategori1: true, subKat1Icon: Images.up })}>
-            <Text style={[styles.inputPicker, {color: colorsubKat1}]}>{this.state.subKategori1Terpilih}</Text>
-            <Image source={this.state.subKat1Icon} style={styles.imagePicker} />
+          <TouchableOpacity disabled={isDisable2} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory2: true, iconCategory2: Images.up })}>
+            <Text style={[styles.inputPicker, {color: colorCategory2}]}>{fieldCategory2}</Text>
+            <Image source={iconCategory2} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 1 Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 2</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalSubKategori2: true, subKat2Icon: Images.up })}>
-            <Text style={[styles.inputPicker, {color: colorsubKat2}]}>{this.state.subKategori2Terpilih}</Text>
-            <Image source={this.state.subKat2Icon} style={styles.imagePicker} />
+          <TouchableOpacity disabled={isDisable3} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory3: true, iconCategory3: Images.up })}>
+            <Text style={[styles.inputPicker, {color: colorCategory3}]}>{fieldCategory3}</Text>
+            <Image source={iconCategory3} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 2 Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 3</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalSubKategori3: true, subKat3Icon: Images.up })}>
-            <Text style={[styles.inputPicker, {color: colorsubKat3}]}>{this.state.subKategori3Terpilih}</Text>
-            <Image source={this.state.subKat3Icon} style={styles.imagePicker} />
+          <TouchableOpacity disabled={isDisable4} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory4: true, iconCategory4: Images.up })}>
+            <Text style={[styles.inputPicker, {color: colorCategory4}]}>{fieldCategory4}</Text>
+            <Image source={iconCategory4} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 3 Harus dipilih</Text>
@@ -499,8 +586,8 @@ class ProductInfoNameAndCategory extends React.Component {
         {this.viewBrand()}
         <Text style={styles.textLabel}>Deksripsi Produk</Text>
         <TextInput
-          style={[styles.inputText, {height: Math.max(40, this.state.height)}]}
-          value={this.state.descProduk}
+          style={[styles.inputText, {height: Math.max(40, height)}]}
+          value={descProduk}
           keyboardType='default'
           returnKeyType='done'
           autoCapitalize='none'
@@ -523,26 +610,32 @@ class ProductInfoNameAndCategory extends React.Component {
   }
 
   nextState () {
-    const {dataProduk, namaProduk, idkategoriTerpilih, idBrandTerpilih, descProduk} = this.state
+    const {
+      dataProduk,
+      namaProduk,
+      idCategory1,
+      idBrand,
+      descProduk,
+      images
+    } = this.state
+
     if (namaProduk === '') {
       this.onError('namaproduk')
     } else {
       dataProduk[0] = namaProduk
-      dataProduk[1] = idkategoriTerpilih
-      dataProduk[2] = idBrandTerpilih
+      dataProduk[1] = idCategory1
+      dataProduk[2] = idBrand
       dataProduk[3] = descProduk
-      console.log(dataProduk)
-      this.props.getCatalog()
       NavigationActions.priceandspesificationproduct({
         type: ActionConst.PUSH,
         dataProduk: dataProduk,
-        images: this.state.images
+        images: images
       })
     }
   }
 
   render () {
-    const spinner = this.state.loading
+    const spinner = this.submitting.category1
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
@@ -575,10 +668,10 @@ class ProductInfoNameAndCategory extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        {this.modalKategori()}
-        {this.modalSubKategori1()}
-        {this.modalSubKategori2()}
-        {this.modalSubKategori3()}
+        {this.modalCategory1()}
+        {this.modalCategory2()}
+        {this.modalCategory3()}
+        {this.modalCategory4()}
         {this.modalBrand()}
         {spinner}
       </View>
@@ -588,19 +681,22 @@ class ProductInfoNameAndCategory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataKategori: state.category,
-    dataSubKategori1: state.subCategory,
-    dataSubKategori2: state.subCategory,
-    dataSubKategori3: state.subCategory,
-    dataBrand: state.brands
+    category1: state.category,
+    category2: state.subCategory,
+    category3: state.subCategory2,
+    category4: state.subCategory3,
+    brands: state.brands
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getSubKategori1: (id) => dispatch(categoriAction.subCategory({id})),
     getBrand: (id) => dispatch(brandAction.getBrand()),
-    getCatalog: () => dispatch(katalogAction.getListCatalog())
+    getCatalog: () => dispatch(katalogAction.getListCatalog()),
+    getCategory1: () => dispatch(categoriAction.categoryList()),
+    getCategory2: (id) => dispatch(categoriAction.subCategory({id: id})),
+    getCategory3: (id) => dispatch(categoriAction.subCategory2({id: id})),
+    getCategory4: (id) => dispatch(categoriAction.subCategory3({id: id}))
   }
 }
 

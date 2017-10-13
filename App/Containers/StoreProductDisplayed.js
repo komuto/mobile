@@ -9,12 +9,14 @@ import {
   ActivityIndicator,
   Modal,
   ListView,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
+// import Reactotron from 'reactotron-react-native'
 
 import * as storeAction from '../actions/stores'
 import * as catalogAction from '../actions/catalog'
@@ -32,13 +34,11 @@ class StoreProductDisplayed extends React.Component {
     this.positionCatalog = []
     this.submitting = {
       showProduct: false,
-      doneFetching: true
+      doneFetching: true,
+      isRefreshing: false
     }
     this.state = {
       product: props.dataProduk || null,
-      tabViewStyle: {
-        backgroundColor: 'transparent'
-      },
       activeCatalog: false,
       statusDotDisplay: false,
       statusDotHidden: false,
@@ -60,11 +60,21 @@ class StoreProductDisplayed extends React.Component {
         this.setState({ product: dataProduk })
       }
     }
+
+    if (!isFetching(dataProduk) && this.submitting.isRefreshing) {
+      this.submitting = { ...this.submitting, isRefreshing: false, doneFetching: false }
+      if (isError(dataProduk)) {
+        ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProduk)) {
+        this.setState({ product: dataProduk })
+      }
+    }
   }
 
   componentDidMount () {
     const { product } = this.state
-    if (!product.isFound) {
+    if (!product.isFound || !this.submitting.showProduct) {
       this.submitting = {
         ...this.submitting,
         showProduct: true
@@ -357,7 +367,8 @@ class StoreProductDisplayed extends React.Component {
     this.props.getProductByCatalogs(id, 100)
     NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
-      title: name
+      title: name,
+      catalogId: id
     })
   }
 
@@ -420,6 +431,16 @@ class StoreProductDisplayed extends React.Component {
     })
   }
 
+  refresh = () => {
+    if (!this.submitting.isRefreshing) {
+      this.submitting = {
+        ...this.submitting,
+        isRefreshing: true
+      }
+      this.props.getListProduk(false)
+    }
+  }
+
   render () {
     if (this.submitting.doneFetching) {
       return (
@@ -430,7 +451,20 @@ class StoreProductDisplayed extends React.Component {
     }
     return (
       <View>
-        <ScrollView ref='produkTampil'>
+        <ScrollView
+          ref='produkTampil'
+          refreshControl={
+            <RefreshControl
+              refreshing={this.submitting.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+            }
+          >
           {this.DaftarProdukDiTampilkan(this.state.product)}
         </ScrollView>
         {this.renderKatalogtButton()}

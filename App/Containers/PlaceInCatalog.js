@@ -15,6 +15,7 @@ import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import CustomRadio from '../Components/CustomRadioCatalog'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'

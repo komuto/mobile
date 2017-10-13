@@ -10,6 +10,7 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -26,8 +27,8 @@ class ListProdukByCatalog extends React.Component {
     super(props)
     this.state = {
       loading: false,
-      katalog: [],
       produk: [],
+      catalogId: this.props.catalogId,
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
@@ -71,12 +72,6 @@ class ListProdukByCatalog extends React.Component {
         {this.mapSingleProduk()}
       </View>
     )
-  }
-
-  handleListProduk () {
-    NavigationActions.listprodukbycatalog({
-      type: ActionConst.PUSH
-    })
   }
 
   produkDetail (id, name, photo, price, data, catalogId) {
@@ -169,11 +164,11 @@ class ListProdukByCatalog extends React.Component {
   }
 
   mapSingleProduk () {
-    const { produk } = this.state
+    const { produk, catalogId } = this.state
     const mapProduk = produk.map((data, i) => {
       return (
         <TouchableOpacity key={i} activeOpacity={0.5} style={styles.dataListProduk}
-          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data)}>
+          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data, catalogId)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>

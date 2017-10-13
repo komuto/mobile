@@ -18,7 +18,7 @@ import Hr from '../Components/Hr'
 import ForgotPassword from '../Components/ForgotPassword'
 import * as loginAction from '../actions/user'
 import { Colors } from '../Themes'
-
+// import Reactotron from 'reactotron-react-native'
 class Login extends React.Component {
 
   constructor (props) {
@@ -72,6 +72,7 @@ class Login extends React.Component {
         this.setState({
           loading: true
         })
+
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
             this.props.attemptLogin(email, password, tokenFCM)
@@ -84,8 +85,6 @@ class Login extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field')
-    console.tron.log(field)
     switch (field) {
       case 'emailNotValid':
         this.setState({

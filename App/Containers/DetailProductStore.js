@@ -426,10 +426,11 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changeCatalog (id) {
+  changeCatalog (id, catalogId) {
     NavigationActions.editproductcatalog({
       type: ActionConst.PUSH,
       id: id,
+      catalogId: catalogId,
       callback: this.state.callback
     })
   }
@@ -439,7 +440,7 @@ class DetailProductStore extends React.Component {
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
           <Text style={styles.titleMenu}>Katalog</Text>
-          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id)}>
+          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id, this.state.catalog.id)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>

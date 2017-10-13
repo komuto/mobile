@@ -16,8 +16,8 @@ class InfoStoreOwner extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      noIdentitas: '111',
-      namaIbu: 'marta',
+      noIdentitas: '',
+      namaIbu: '',
       namaPelimilik: this.props.dataProfile.user.user.name,
       email: this.props.dataProfile.user.user.email,
       noHp: this.props.dataProfile.user.user.phone_number,

@@ -5,7 +5,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import CameraModal from '../Components/CameraModal'
 import * as storeAction from '../actions/stores'
 import * as loginaction from '../actions/user'
-import * as expeditionAction from '../actions/expedition'
+// import * as expeditionAction from '../actions/expedition'
 
 import { Images, Colors } from '../Themes'
 
@@ -363,13 +363,10 @@ class InfoStore extends React.Component {
         store[2] = descToko
         store[3] = fotoToko
         stores[0] = store
-        this.props.getExpedition()
-        this.props.getServicesExpedition()
+        // this.props.getExpedition()
+        // this.props.getServicesExpedition()
         NavigationActions.storeexpedition({
           type: ActionConst.PUSH,
-          namaToko: namaToko,
-          slogan: slogan,
-          descToko: descToko,
           dataStore: stores
         })
         console.log(stores)
@@ -443,9 +440,9 @@ const mapDispatchToProps = (dispatch) => {
       description: desc,
       logo: photo
     })),
-    getProfile: (login) => dispatch(loginaction.getProfile()),
-    getExpedition: () => dispatch(expeditionAction.getExpedition()),
-    getServicesExpedition: () => dispatch(expeditionAction.getServices())
+    getProfile: (login) => dispatch(loginaction.getProfile())
+    // getExpedition: () => dispatch(expeditionAction.getExpedition()),
+    // getServicesExpedition: () => dispatch(expeditionAction.getServices())
   }
 }
 

@@ -47,10 +47,8 @@ class StatusStockDropshipping extends React.Component {
       this.setState({
         loading: false
       })
-      // this.props.getListProduk(false)
-      // this.props.getHiddenProduct()
       NavigationActions.storeproduct({
-        type: ActionConst.PUSH
+        type: ActionConst.PUSH_OR_POP
       })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {

@@ -2,6 +2,8 @@ import React from 'react'
 import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as expeditionAction from '../actions/expedition'
+// import Reactotron from 'reactotron-react-native'
 
 import { Images, Colors, Fonts } from '../Themes'
 
@@ -14,64 +16,53 @@ class StoreExpedition extends React.Component {
     this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dataListEkspedisi: [],
-      filterPengiriman: [],
-      expeditionServices: [],
-      dataStore: this.props.dataStore,
-      loading: true,
-      imageCentang: false,
-      idTerpilih: ''
+      dataStore: this.props.dataStore || null,
+      loading: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataEkspedisiList.status === 200) {
       this.setState({
-        dataListEkspedisi: nextProps.dataEkspedisiList.expeditions
-      })
-    } if (nextProps.dataServicesExpedition.status === 200) {
-      let dataTemp = []
-      let dataTempSec = []
-      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
-        dataTemp.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition_id})
-      ))
-      nextProps.dataServicesExpedition.expeditionServices.map((data, i) => (
-        dataTempSec.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition_id})
-      ))
-      this.setState({
-        filterPengiriman: dataTemp,
-        expeditionServices: dataTempSec
-      })
-    } if (nextProps.dataServicesExpedition.status && nextProps.dataServicesExpedition.status === 200) {
-      this.setState({
+        dataListEkspedisi: nextProps.dataEkspedisiList.expeditions,
         loading: false
       })
     }
   }
 
   componentDidMount () {
+    this.props.getExpedition()
   }
 
   nextState () {
-    const {expeditionServices, dataStore} = this.state
-    dataStore[1] = expeditionServices
+    const {dataListEkspedisi, dataStore} = this.state
+    var temp = []
+    dataListEkspedisi.map((data, i) => {
+      data.services.map((datas, j) => {
+        if (datas.is_checked) {
+          temp.push({'expedition_service_id': datas.id, 'status': datas.status})
+        }
+        return temp
+      })
+    })
+
+    dataStore[1] = temp
     NavigationActions.infostoreowner({
       type: ActionConst.PUSH,
       dataStore: dataStore
     })
-    console.log(dataStore)
   }
 
   checkParent (title) {
   }
 
-  mapParent (a) {
-    const { dataListEkspedisi } = this.state
-    const mapparent = dataListEkspedisi.map((data, i) => {
-      const img = dataListEkspedisi[i].is_checked ? Images.centangBiru : null
+  mapParent (expedition) {
+    const mapparent = expedition.map((data, i) => {
+      const img = expedition[i].is_checked ? Images.centangBiru : null
       return (
         <View key={i} >
           <View style={styles.containerSinge}>
-            <TouchableOpacity onPress={this.onClickPengiriman2(i, i, data.id)}>
+            <TouchableOpacity onPress={this.onClickAll(i, i, data.id)}>
               <View style={styles.containerEkspedisi}>
                 <View style={styles.box}>
                   <Image
@@ -97,11 +88,29 @@ class StoreExpedition extends React.Component {
     )
   }
 
+  onClickAll = (selected, i, parentId) => (e) => {
+    const { dataListEkspedisi } = this.state
+
+    if (dataListEkspedisi[i].is_checked) {
+      dataListEkspedisi[i].is_checked = false
+      dataListEkspedisi[i].services.map((data, i) => {
+        data.is_checked = false
+      })
+    } else {
+      dataListEkspedisi[i].is_checked = true
+      dataListEkspedisi[i].services.map((data, i) => {
+        data.is_checked = true
+      })
+    }
+
+    this.setState({...dataListEkspedisi})
+  }
+
   mapChild (services, parentId) {
-    const mapChild = services.map((dataService, i) => {
+    const mapChild = services.map((data, i) => {
       this.centang = services[i].is_checked ? Images.centangBiru : null
       return (
-        <TouchableOpacity key={i} onPress={this.onClickPengiriman(i, parentId)}>
+        <TouchableOpacity key={i} onPress={this.onClickSingle(i, parentId, services.length, services)}>
           <View style={styles.childEkspedisi}>
             <View style={styles.box}>
               <Image
@@ -109,7 +118,7 @@ class StoreExpedition extends React.Component {
                 style={styles.gambarCentangBox}
               />
             </View>
-            <Text style={[styles.title]}>{dataService.name}</Text>
+            <Text style={[styles.title]}>{data.name}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -121,83 +130,42 @@ class StoreExpedition extends React.Component {
     )
   }
 
-  onClickPengiriman = (selected, parentId) => (e) => {
-    const {dataListEkspedisi, filterPengiriman, expeditionServices} = this.state
-    let dummy = filterPengiriman
-    let temp = expeditionServices
+  onClickSingle = (selected, parentId, length, dataChild) => (e) => {
+    const { dataListEkspedisi } = this.state
 
-    if (dataListEkspedisi[parentId].services[selected].is_checked) {
-      var i = dummy.indexOf(dataListEkspedisi[parentId].services[selected].id)
-      if (i !== 0) {
-        dummy[selected].status = 2
-        temp[selected].status = 2
-      }
-      dataListEkspedisi[parentId].services[selected].is_checked = false
-      const newDataSource = dataListEkspedisi.map(data => {
-        return {...data}
-      })
+    if (dataChild[selected].is_checked) {
+      dataChild[selected].is_checked = false
       this.setState({
-        dataListEkspedisi: newDataSource,
-        filterPengiriman: dummy,
-        expeditionServices: temp
+        ...dataListEkspedisi
       })
     } else {
-      dummy[selected].status = 1
-      temp[selected].status = 1
-      dataListEkspedisi[parentId].services[selected].is_checked = true
-      const newDataSource = dataListEkspedisi.map(data => {
-        return {...data}
-      })
+      dataChild[selected].is_checked = true
       this.setState({
-        dataListEkspedisi: newDataSource,
-        filterPengiriman: dummy,
-        expeditionServices: temp
+        ...dataListEkspedisi
       })
     }
-  }
 
-  onClickPengiriman2 = (selected, i, parentId) => (e) => {
-    this.setState({imageCentang: true})
-    const {dataListEkspedisi, filterPengiriman} = this.state
-    if (dataListEkspedisi[i].id === parentId) {
-      if (dataListEkspedisi[i].is_checked === false) {
-        dataListEkspedisi[i].is_checked = true
-      } else {
-        dataListEkspedisi[i].is_checked = false
+    var count = 0
+    dataChild.map((data, i) => {
+      if (data.is_checked) {
+        count++
       }
-      dataListEkspedisi[i].services.filter(function (data) {
-        if (data.is_checked === false) {
-          data.is_checked = true
-        } else {
-          data.is_checked = false
-        }
-      })
-      this.setState({dataListEkspedisi: dataListEkspedisi})
-      filterPengiriman.filter(function (data) {
-        if (data.parent === parentId) {
-          if (data.status === 2) {
-            data.status = 1
-          } else {
-            data.status = 2
-          }
-        } else {
-          data.status = 2
-        }
-      })
-      this.setState({expeditionServices: filterPengiriman})
+    })
+
+    if (count === length) {
+      dataListEkspedisi[parentId].is_checked = true
     } else {
-      window.alert('Internal Error')
+      dataListEkspedisi[parentId].is_checked = false
     }
   }
 
   renderStateTwo () {
-    let a = 0
     return (
       <View>
         <View style={styles.titleEkspedisi}>
           <Text style={styles.textTitle}>Pilihlah ekspedisi pengiriman yang digunakan oleh toko Anda untuk mengirim barang</Text>
         </View>
-        {this.mapParent(a)}
+        {this.mapParent(this.state.dataListEkspedisi)}
         <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
           <Text style={styles.textButtonNext}>
             Lanjutkan
@@ -242,13 +210,13 @@ class StoreExpedition extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataEkspedisiList: state.expeditions,
-    dataServicesExpedition: state.expeditionServices
+    dataEkspedisiList: state.expeditions
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getExpedition: () => dispatch(expeditionAction.getExpedition())
   }
 }
 

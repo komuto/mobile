@@ -34,7 +34,7 @@ class BuyerDetailDiscussion extends React.Component {
     if (nextProps.dataDetailDiscussion.status === 200) {
       this.setState({
         loading: false,
-        data: nextProps.dataDetailDiscussion.comments
+        data: nextProps.dataDetailDiscussion.comments.comments
       })
       nextProps.dataDetailDiscussion.status = 0
     } else if (nextProps.dataDetailDiscussion.status !== 200 && nextProps.dataDetailDiscussion.status !== 0) {

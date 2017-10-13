@@ -14,7 +14,7 @@ import {
 import { connect } from 'react-redux'
 import {MaskService} from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -32,7 +32,8 @@ class ListFavoriteStores extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.submitting = {
-      list: false
+      list: false,
+      search: false
     }
     this.state = {
       search: '',
@@ -50,6 +51,7 @@ class ListFavoriteStores extends React.Component {
     if (propsListStore.status === 200 && this.submitting.list) {
       this.submitting = { ...this.submitting, list: false }
       if (propsListStore.stores.length > 0) {
+        Reactotron.log('in')
         let data = [...this.state.listStore, ...propsListStore.stores]
         this.setState({
           listStore: data,
@@ -65,6 +67,17 @@ class ListFavoriteStores extends React.Component {
           isLoading: false
         })
       }
+    }
+    if (propsListStore.status === 200 && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      this.setState({
+        listStore: propsListStore.stores,
+        page: this.state.page + 1,
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: true,
+        loadingPage: false
+      })
     }
   }
 
@@ -99,12 +112,25 @@ class ListFavoriteStores extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, listStore: [], page: 1 })
-    this.submitting.list = true
+    this.submitting.search = true
     this.props.getListFavStore(1)
   }
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.submitting.search = true
+      setTimeout(() => {
+        this.props.getListFavStore(1, text)
+      }, 500)
+    } else {
+      this.props.getListFavStore(1, '')
+      this.submitting.list = true
+    }
   }
 
   renderSearch () {
@@ -116,7 +142,6 @@ class ListFavoriteStores extends React.Component {
             ref='search'
             style={styles.inputText}
             value={this.state.search}
-            onSubmitEditing={() => this.search()}
             keyboardType='default'
             autoCapitalize='none'
             autoCorrect
@@ -237,7 +262,7 @@ class ListFavoriteStores extends React.Component {
 
   renderRowListStore (rowData) {
     return (
-      <TouchableOpacity style={styles.containerList} activeOpacity={0.8} onPress={() => this.handleDetailStore(rowData.store.id)}>
+      <View>
         <View style={styles.storeInfo}>
           <View style={styles.maskedBitmap}>
             <Image source={{uri: rowData.store.logo}} style={styles.bitmap} />
@@ -254,7 +279,7 @@ class ListFavoriteStores extends React.Component {
           </TouchableOpacity>
         </View>
         {this.renderRowProduk(rowData.products, rowData.store.id)}
-      </TouchableOpacity>
+      </View>
     )
   }
 
@@ -285,7 +310,7 @@ class ListFavoriteStores extends React.Component {
     }
     return (
       <View style={styles.container}>
-        {/* {this.renderSearch()} */}
+        {this.renderSearch()}
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.listStore)}
           renderRow={this.renderRowListStore.bind(this)}
@@ -326,7 +351,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListFavStore: (page) => dispatch(userAction.listFavorite({page: page})),
+  getListFavStore: (page, q) => dispatch(userAction.listFavorite({page: page, q: q})),
   putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id})),
   getStore: (id) => dispatch(storeAction.getStores({ id: id })),
   getDetailProduct: (id) => dispatch(productAction.getProduct({id: id}))

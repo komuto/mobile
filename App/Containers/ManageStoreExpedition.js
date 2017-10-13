@@ -10,7 +10,7 @@ import {
   ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
-import Reactotron from 'reactotron-react-native'
+// import Reactotron from 'reactotron-react-native'
 
 import * as expeditionAction from '../actions/expedition'
 
@@ -72,8 +72,6 @@ class ManageStoreExpedition extends React.Component {
         return temp
       })
     })
-
-    Reactotron.log(temp)
 
     this.props.updateExpedition(temp)
   }

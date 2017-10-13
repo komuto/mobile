@@ -33,13 +33,12 @@ class EditProductExpedition extends React.Component {
         dataListEkspedisi: nextProps.dataProductExpedition.productExpeditions,
         loading: false
       })
-      ToastAndroid.show(nextProps.dataServicesExpedition.message, ToastAndroid.LONG)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
+    } else if (nextProps.dataUpdateData.status > 200) {
       nextProps.dataUpdateData.status = 0
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }

@@ -15,25 +15,33 @@ class TermsScreenScreen extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      term: false
+    }
     this.state = {
       termInput: '',
       height: 0,
       loading: false,
-      profiles: props.profile || null
+      profiles: props.profile || null,
+      term: props.profile.user.store || null
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataTerms.status === 200) {
+    if (nextProps.dataTerms.status === 200 && this.submitting.term) {
+      Reactotron.log(nextProps.dataTerms.updateStore)
+      this.submitting = {...this.submitting, term: false}
       this.setState({
         loading: false,
         termInput: '',
-        height: 0
+        height: 0,
+        term: nextProps.dataTerms.updateStore
       })
+      this.props.profile.user.store = nextProps.dataTerms.updateStore
     } if (nextProps.profile.status === 200) {
       this.setState({
         loading: false,
-        profiles: nextProps.profile.user
+        profiles: nextProps.profile
       })
     } if (nextProps.dataTerms.status > 200) {
       this.setState({loading: true})
@@ -59,12 +67,12 @@ class TermsScreenScreen extends React.Component {
 
   handleUpdateTerms () {
     this.setState({loading: true})
+    this.submitting.term = true
     this.props.updateTerm(this.state.termInput)
   }
 
   checkTermStore (data) {
-    Reactotron.log(data.user.store)
-    if (!data.user.store.term_condition) {
+    if (!data.term_condition) {
       return (
         <Text style={styles.contoh}>
           Contoh:{'\n'}
@@ -75,9 +83,9 @@ class TermsScreenScreen extends React.Component {
     } else {
       return (
         <Text style={styles.contoh}>
-          Terms and Conditions Toko {data.user.store.name} :{'\n'}
+          Terms and Conditions Toko {data.name} :{'\n'}
           <Text style={{padding: 5}} />
-          {data.user.store.term_condition}
+          {data.term_condition}
         </Text>
       )
     }
@@ -112,7 +120,7 @@ class TermsScreenScreen extends React.Component {
               underlineColorAndroid='transparent'
               placeholder='Tulis Terms and Conditions'
           />
-            {this.checkTermStore(this.state.profiles)}
+            {this.checkTermStore(this.state.term)}
             <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdateTerms()}>
               <Text style={styles.textButtonNext}>
                 Simpan Perubahan

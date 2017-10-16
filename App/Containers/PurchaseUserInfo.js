@@ -118,7 +118,7 @@ class PurchaseUserInfo extends React.Component {
         statusAlamat: true
       })
       this.props.addAddressReset()
-    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
+    } else if (nextProps.dataCreateAlamat.status !== 200 && nextProps.dataCreateAlamat.status !== 0) {
       ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.LONG)
       this.setState({
         loadingCart: false

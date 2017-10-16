@@ -261,6 +261,7 @@ class DetailProduct extends React.Component {
       NavigationActions.backtab({
         type: ActionConst.REPLACE
       })
+      return true
     }
   }
 
@@ -271,6 +272,7 @@ class DetailProduct extends React.Component {
       NavigationActions.backtab({
         type: ActionConst.REPLACE
       })
+      return true
     }
   }
 

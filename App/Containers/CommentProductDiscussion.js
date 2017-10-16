@@ -43,11 +43,10 @@ class DiskusiProdukKomentar extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDiskusi.status === 200) {
-      if (nextProps.dataDiskusi.comments.length > 0) {
-        console.log(nextProps.dataDiskusi.comments)
+      if (nextProps.dataDiskusi.comments.comments.length > 0) {
         if (this.state.getData) {
           this.setState({
-            data: nextProps.dataDiskusi.comments,
+            data: nextProps.dataDiskusi.comments.comments,
             page: this.state.page + 1,
             isRefreshing: false,
             isLoading: false,
@@ -55,7 +54,7 @@ class DiskusiProdukKomentar extends React.Component {
             getData: false
           })
         } else {
-          let data = [...this.state.data, ...nextProps.dataDiskusi.comments]
+          let data = [...this.state.data, ...nextProps.dataDiskusi.comments.comments]
           this.setState({
             data: data,
             page: this.state.page + 1,

@@ -1,8 +1,11 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, Modal } from 'react-native'
+import { ScrollView, Text, View, Image, TouchableOpacity, Modal, ToastAndroid, TextInput } from 'react-native'
 import { connect } from 'react-redux'
+import { Colors } from '../Themes'
 import { Actions as NavigationActions } from 'react-native-router-flux'
+import * as productAction from '../actions/product'
 import CustomRadio from '../Components/CustomRadio'
+import Spinner from '../Components/Spinner'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -14,6 +17,7 @@ class Report extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      id: this.props.id,
       images: this.props.images,
       namaBarang: this.props.namaBarang,
       harga: this.props.harga,
@@ -26,8 +30,30 @@ class Report extends React.Component {
       ],
       index: 0,
       alasan: 'Salah Kategori',
-      notifikasi: false
+      notifikasi: false,
+      report: '',
+      height: 50,
+      loading: false
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataReport.status === 200) {
+      this.setState({
+        notifikasi: true,
+        loading: false
+      })
+      nextProps.dataReport.status = 0
+    } else if (nextProps.dataReport.status !== 200 && nextProps.dataReport.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataReport.message, ToastAndroid.LONG)
+    }
+  }
+
+  handleChangeReport = (text) => {
+    this.setState({ report: text })
   }
 
   handlingRadio (index, value) {
@@ -38,9 +64,11 @@ class Report extends React.Component {
   }
 
   laporkan () {
+    const { id, report, index } = this.state
     this.setState({
-      notifikasi: true
+      loading: true
     })
+    this.props.reportProduct(id, index + 1, report)
   }
 
   backButton () {
@@ -75,6 +103,20 @@ class Report extends React.Component {
   }
 
   render () {
+    let renderButton
+    if (this.state.loading) {
+      renderButton = (
+        <View style={styles.tombol}>
+          <Spinner color={Colors.snow} />
+        </View>
+      )
+    } else {
+      renderButton = (
+        <TouchableOpacity style={styles.tombol} onPress={() => this.laporkan()}>
+          <Text style={styles.textTombol}>Kirimkan Laporan</Text>
+        </TouchableOpacity>
+      )
+    }
     return (
       <ScrollView style={styles.container}>
         <View style={styles.containerData}>
@@ -96,13 +138,25 @@ class Report extends React.Component {
               />
             </View>
             <Text style={styles.hargaBarang}>Laporan Anda</Text>
-            <Text style={styles.laporan}>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-            </Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                ref='report'
+                style={[styles.textInput, { height: this.state.height }]}
+                multiline
+                onContentSizeChange={(event) => {
+                  this.setState({height: event.nativeEvent.contentSize.height})
+                }}
+                value={this.state.report}
+                keyboardType='default'
+                autoCapitalize='none'
+                autoCorrect
+                onChangeText={this.handleChangeReport}
+                underlineColorAndroid='transparent'
+                placeholder='Laporan Anda'
+              />
+            </View>
           </View>
-          <TouchableOpacity style={styles.tombol} onPress={() => this.laporkan()}>
-            <Text style={styles.textTombol}>Kirimkan Laporan</Text>
-          </TouchableOpacity>
+          {renderButton}
         </View>
         {this.renderNotifikasiModal()}
       </ScrollView>
@@ -112,11 +166,17 @@ class Report extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataReport: state.report
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    reportProduct: (id, type, description) => dispatch(productAction.reportProduct({
+      id: id,
+      report_type: type,
+      description: description
+    }))
   }
 }
 

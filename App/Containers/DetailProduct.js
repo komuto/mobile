@@ -10,7 +10,8 @@ import {
   BackAndroid,
   Alert,
   Modal,
-  ToastAndroid
+  ToastAndroid,
+  Share
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
@@ -122,7 +123,8 @@ class DetailProduct extends React.Component {
       idBrand: '',
       isDropship: '',
       photoProductDropship: [],
-      expeditionDropship: []
+      expeditionDropship: [],
+      shareUrl: ''
     }
   }
 
@@ -165,7 +167,8 @@ class DetailProduct extends React.Component {
         jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
         idCategory: nextProps.dataDetailProduk.detail.product.category_id,
         idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
-        isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper
+        isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper,
+        shareUrl: nextProps.dataDetailProduk.detail.share_link
       })
       try {
         this.setState({
@@ -252,12 +255,23 @@ class DetailProduct extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
-    return true
+    if (NavigationActions.pop()) {
+      return true
+    } else {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+    }
   }
 
   backButton () {
-    NavigationActions.pop()
+    if (NavigationActions.pop()) {
+      return true
+    } else {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+    }
   }
 
   openLaporkan () {
@@ -278,7 +292,8 @@ class DetailProduct extends React.Component {
       type: ActionConst.PUSH,
       images: this.state.fotoToko,
       namaBarang: this.state.title,
-      harga: this.state.price
+      harga: this.state.price,
+      id: this.state.id
     })
   }
 
@@ -288,6 +303,26 @@ class DetailProduct extends React.Component {
       id: id
     })
     this.props.getDetailProduk(id)
+  }
+
+  onShare () {
+    const price = MaskService.toMask('money', this.state.price, {
+      unit: 'Rp ',
+      separator: '.',
+      delimiter: '.',
+      precision: 3
+    })
+    Share.share({
+      message: 'Coba Lihat Product ' + this.state.title + ' dengan harga ' + price +
+        '\n' + this.state.shareUrl,
+      url: '',
+      title: 'Bagikan Product Ini'
+    }, {
+      dialogTitle: 'Bagikan Product',
+      tintColor: 'green'
+    })
+    .then(this._showResult)
+    .catch((error) => this.setState({result: 'error: ' + error.message}))
   }
 
   renderModalLaporkan () {
@@ -300,7 +335,11 @@ class DetailProduct extends React.Component {
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.closeLaporkan()}>
           <View style={styles.menuLaporkanContainer}>
-            <TouchableOpacity style={styles.menuLaporkan} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.menuLaporkan}
+              activeOpacity={0.8}
+              onPress={() => this.onShare()}
+            >
               <Image
                 source={Images.share}
                 style={styles.imageStyle}

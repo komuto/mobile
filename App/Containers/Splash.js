@@ -1,7 +1,7 @@
 import React from 'react'
 import { AsyncStorage } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst, Linking } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as loginaction from '../actions/user'
 import FCM from 'react-native-fcm'
@@ -20,44 +20,55 @@ class Splash extends React.Component {
     }
   }
 
-  componentWillMount () {
-    FCM.getFCMToken().then(tokenFCM => {
-      if (tokenFCM !== null && tokenFCM !== undefined) {
-      }
-    })
-    SplashScreen.show()
-    FCM.getInitialNotification().then(notif => {
-      if (notif && notif.fcm && notif.fcm.action) {
-        switch (notif.type) {
-          case 'BUYER_MESSAGE':
-            this.setState({
-              notificationAction: 'BUYER_MESSAGE',
-              redirectId: notif.id
-            })
-            break
-          case 'BUYER_DISCUSSION':
-            this.setState({
-              notificationAction: 'BUYER_DISCUSSION',
-              redirectId: notif.id
-            })
-            break
-          case 'BUYER_REVIEW':
-            this.setState({
-              notificationAction: 'BUYER_REVIEW'
-            })
-            break
-          case 'BUYER_RESOLUTION':
-            this.setState({
-              notificationAction: 'BUYER_RESOLUTION'
-            })
-            break
-          default:
+  componentDidMount () {
+    try {
+      Linking.getInitialURL().then(url => {
+        this.navigate(url)
+      })
+    } catch (e) {
+      FCM.getFCMToken().then(tokenFCM => {
+        if (tokenFCM !== null && tokenFCM !== undefined) {
         }
-      }
-    })
-    setTimeout(() => {
-      this._loadInitialState().done()
-    }, 1000)
+      })
+      SplashScreen.show()
+      FCM.getInitialNotification().then(notif => {
+        if (notif && notif.fcm && notif.fcm.action) {
+          switch (notif.type) {
+            case 'BUYER_MESSAGE':
+              this.setState({
+                notificationAction: 'BUYER_MESSAGE',
+                redirectId: notif.id
+              })
+              break
+            case 'BUYER_DISCUSSION':
+              this.setState({
+                notificationAction: 'BUYER_DISCUSSION',
+                redirectId: notif.id
+              })
+              break
+            case 'BUYER_REVIEW':
+              this.setState({
+                notificationAction: 'BUYER_REVIEW'
+              })
+              break
+            case 'BUYER_RESOLUTION':
+              this.setState({
+                notificationAction: 'BUYER_RESOLUTION'
+              })
+              break
+            default:
+          }
+        }
+      })
+      setTimeout(() => {
+        this._loadInitialState().done()
+      }, 1000)
+    }
+  }
+
+  navigate = (url) => {
+    const route = url.replace(/.*?:\/\//g, '')
+    console.log(route)
   }
 
   _loadInitialState = async () => {

@@ -107,5 +107,16 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  inputContainer: {
+    marginTop: 5,
+    marginBottom: -5
+  },
+  textInput: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    marginLeft: -3
   }
 })

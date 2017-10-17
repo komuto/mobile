@@ -63,7 +63,7 @@ class StoreCatalog extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.popTo('managestore')
     return true
   }
 
@@ -155,6 +155,22 @@ class StoreCatalog extends React.Component {
     }
   }
 
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Katalog
+        </Text>
+      </View>
+    )
+  }
+
   containerEdit (i, idKatalog, name, contProduct) {
     if (this.state.statusDot && this.state.rowTerpilih === i) {
       return (
@@ -207,6 +223,7 @@ class StoreCatalog extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.notif()}
         <ScrollView>
           {this.mapingKatalog()}

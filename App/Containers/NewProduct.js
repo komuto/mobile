@@ -108,7 +108,7 @@ class NewProduct extends React.Component {
           isLoading: false,
           loadmore: true,
           statusFilter: false,
-          page: 1
+          page: 2
         })
       }
     } else if (dataFilter.status > 200) {
@@ -130,10 +130,10 @@ class NewProduct extends React.Component {
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, sort)
+    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1, sort)
     this.setState({
       filter: false,
-      page: 1,
+      page: 2,
       kondisi: kondisi,
       pengiriman: pengiriman,
       price: price,

@@ -775,7 +775,7 @@ class NavigationRouter extends Component {
             component={StoreCatalog}
             title='Katalog'
             navBar={CustomNavBar}
-            hideNavBar={false}
+            hideNavBar
             hideBackImage={false} />
           <Scene
             key='addeditstorecatalog'

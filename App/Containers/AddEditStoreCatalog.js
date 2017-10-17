@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid, Keyboard } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -33,6 +33,7 @@ class AddEditStoreCatalog extends React.Component {
         notif: true,
         pesanNotif: 'menambahkan katalog baru'
       })
+      Keyboard.dismiss()
       this.props.getCatalog()
       nextProps.dataCatalog.status = 0
     } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
@@ -43,7 +44,7 @@ class AddEditStoreCatalog extends React.Component {
       nextProps.dataCatalog.status = 0
     }
     if (nextProps.updateCatalogs.status === 200) {
-      console.log('lol')
+      Keyboard.dismiss()
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,

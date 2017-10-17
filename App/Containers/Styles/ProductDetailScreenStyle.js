@@ -348,6 +348,7 @@ export default StyleSheet.create({
   },
   buttonContainer: {
     height: 66,
+    width: Metrics.screenWidth,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -359,7 +360,7 @@ export default StyleSheet.create({
   },
   buttonReset: {
     flexDirection: 'row',
-    width: 164.4,
+    flex: 1,
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',
@@ -380,7 +381,7 @@ export default StyleSheet.create({
     marginLeft: 6.8
   },
   buttonOke: {
-    width: 164.4,
+    flex: 1,
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',

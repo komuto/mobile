@@ -168,7 +168,7 @@ class Login extends React.Component {
         <ScrollView contentContainerStyle={styles.contentContainerStyle}>
           <View style={styles.containerBanner}>
             <Text style={styles.textBanner}>
-              Sudah punya akun?
+              Belum punya akun?
             </Text>
             <TouchableOpacity onPress={() => this.daftar()}>
               <Text style={styles.textLogin}> Daftar Disini</Text>

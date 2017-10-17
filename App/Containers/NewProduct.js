@@ -508,6 +508,7 @@ class NewProduct extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   changeView () {
@@ -688,7 +689,8 @@ const mapDispatchToProps = (dispatch) => {
       other: other,
       page: page,
       sort: sort
-    }))
+    })),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

@@ -187,6 +187,7 @@ class PurchaseAddToCart extends React.Component {
         statusSubKurir: false
       })
       ToastAndroid.show(nextProps.dataServices.message, ToastAndroid.LONG)
+      nextProps.dataServices.status = 0
     }
     if (nextProps.dataCart.status === 200) {
       if (this.state.activeScene) {
@@ -206,6 +207,7 @@ class PurchaseAddToCart extends React.Component {
     } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+      nextProps.dataAddressList.status = 0
     }
   }
 

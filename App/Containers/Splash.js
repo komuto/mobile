@@ -73,6 +73,7 @@ class Splash extends React.Component {
         type: ActionConst.REPLACE,
         id: id
       })
+      this.props.getDetailProduk(id)
     }
   }
 
@@ -125,7 +126,8 @@ const mapDispatchToProps = (dispatch) => {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getDetailDiscussion: (id) => dispatch(productAction.getComment({id})),
-    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id}))
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id}))
   }
 }
 

@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   AsyncStorage,
-  Alert
+  Alert,
+  BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import FCM from 'react-native-fcm'
@@ -43,6 +44,19 @@ class Register extends React.Component {
     }
   }
 
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataRegister.status === 200) {
       this.setState({
@@ -54,12 +68,7 @@ class Register extends React.Component {
       NavigationActions.backtab({
         type: ActionConst.RESET
       })
-    } else if (nextProps.dataRegister.status > 200) {
-      this.setState({
-        loading: false
-      })
-      Alert.alert('Error', nextProps.dataRegister.message)
-    } else if (nextProps.dataRegister.status === 'ENOENT') {
+    } else if (nextProps.dataRegister.status !== 200 && nextProps.dataRegister.status !== 0) {
       this.setState({
         loading: false
       })

@@ -377,6 +377,7 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   handleDetailKategori (rowId, title) {

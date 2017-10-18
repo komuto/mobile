@@ -66,6 +66,16 @@ class SendMessageStore extends React.Component {
 
   renderProduct () {
     const { foto, namaToko, alamat } = this.state
+    let renderAddress
+    if (alamat === '' || alamat === null || alamat === undefined) {
+      renderAddress = null
+    } else {
+      renderAddress = (
+        <Text style={styles.textKelola}>
+          {alamat}
+        </Text>
+      )
+    }
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -77,9 +87,7 @@ class SendMessageStore extends React.Component {
             <Text style={styles.textNama}>
               {namaToko}
             </Text>
-            <Text style={styles.textKelola}>
-              {alamat}
-            </Text>
+            {renderAddress}
           </View>
         </View>
       </View>

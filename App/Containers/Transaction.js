@@ -37,10 +37,11 @@ class Transaction extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataListTransaction.status === 200) {
+      let i
+      let temp = []
+      let tempData
       if (nextProps.dataListTransaction.listTransactions.length > 0) {
-        let temp = []
-        const tempData = [...this.state.data, ...nextProps.dataListTransaction.listTransactions]
-        let i
+        tempData = [...this.state.data, ...nextProps.dataListTransaction.listTransactions]
         for (i = 0; i < tempData.length; i++) {
           if (tempData[i].bucket.status === 1 || tempData[i].bucket.status === 2 || tempData[i].bucket.status === 7) {
 
@@ -60,11 +61,50 @@ class Transaction extends React.Component {
         this.setState({
           loadmore: false,
           isLoading: false,
-          loading: false,
-          data: []
+          loading: false
         })
       }
-      nextProps.dataListTransaction.status = 0
+      let tempCountDown = [...tempData]
+      let lastData = []
+      for (i = 0; i < tempCountDown.length; i++) {
+        if (tempCountDown[i].bucket.status === 3) {
+          const time = tempCountDown[i].summary_transaction.time_left
+          if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
+            tempCountDown[i].bucket.status = 7
+            this.setState({
+              data: tempCountDown
+            })
+          } else {
+            setTimeout(
+              () => {
+                if (time.minutes > 0) {
+                  time.minutes = time.minutes - 1
+                } else if (time.minutes === 0 && time.hours > 0) {
+                  time.minutes = 59
+                  time.hours = time.hours - 1
+                } else if (time.minutes === 0 && time.hours === 0 && time.days > 0) {
+                  time.minutes = 59
+                  time.hours = 23
+                  time.days = time.days - 1
+                }
+                this.setState({
+                  data: tempCountDown
+                })
+              },
+              60000
+            )
+          }
+        }
+      }
+      for (i = 0; i < tempCountDown.length; i++) {
+        if (tempCountDown[i].bucket.status === 7) {
+        } else {
+          lastData.push(tempCountDown[i])
+        }
+      }
+      this.setState({
+        data: lastData
+      })
     } else if (nextProps.dataListTransaction.status !== 200 && nextProps.dataListTransaction.status !== 0) {
       this.setState({
         data: [],
@@ -75,7 +115,6 @@ class Transaction extends React.Component {
         isLoading: false
       })
       ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.LONG)
-      nextProps.dataListTransaction.status = 0
     }
   }
 

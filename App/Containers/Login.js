@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ToastAndroid,
   ActivityIndicator
 } from 'react-native'
 import FCM from 'react-native-fcm'
@@ -44,7 +43,7 @@ class Login extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
+      // ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
   }
   handleChangeEmail = (text) => {

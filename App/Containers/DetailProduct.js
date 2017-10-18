@@ -241,6 +241,13 @@ class DetailProduct extends React.Component {
       ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.LONG)
       this.props.resetAddToWishlist()
     }
+    if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+      this.setState({
+        isStoreFavorite: false
+      })
+      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.LONG)
+      nextProps.dataFavorit.status = 0
+    }
   }
 
   componentDidMount () {
@@ -1477,7 +1484,8 @@ const mapStateToProps = (state) => {
     dataSubDistrict: state.subdistricts,
     dataServis: state.estimatedCharges,
     dataWishlist: state.addWishlist,
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataFavorit: state.favorite
   }
 }
 

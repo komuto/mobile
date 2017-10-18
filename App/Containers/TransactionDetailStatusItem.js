@@ -18,7 +18,6 @@ class TransaksiDetailStatusBarang extends React.Component {
     this.state = {
       id: '',
       nama: '',
-      namaToko: '',
       image: '',
       invoice: '',
       status: this.props.statusBarang,
@@ -306,11 +305,11 @@ class TransaksiDetailStatusBarang extends React.Component {
   }
 
   sendMessage () {
-    NavigationActions.kirimpesan({
+    NavigationActions.sendmessagestore({
       type: ActionConst.PUSH,
       id: this.state.storeId,
       foto: this.state.image,
-      namaToko: this.state.namaToko,
+      namaToko: this.state.nama,
       alamat: this.state.alamat,
       title: this.state.invoice
     })

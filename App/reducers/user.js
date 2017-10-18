@@ -171,6 +171,9 @@ export const listFavoriteStore = createReducer(buildInitState({ stores: [] }, tr
 export const alterUser = createReducer(buildInitState())
   .addReducer({
     type: actions.UPDATE_FIREBASE_REG_TOKEN
+  })
+  .addReducer({
+    type: actions.RESEND_SIGNUP
   }).run()
 
 export const notifSettings = createReducer(buildInitState({ settings: [] }))

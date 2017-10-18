@@ -9,6 +9,7 @@ import {
   AsyncStorage,
   Modal
 } from 'react-native'
+import Spinner from '../Components/Spinner'
 import { MaskService } from 'react-native-masked-text'
 // const LoginManager = require('react-native').NativeModules.FBLoginManager
 import { connect } from 'react-redux'
@@ -21,7 +22,7 @@ import * as loginaction from '../actions/user'
 import styles from './Styles/ProfileStyle'
 
 // Images
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 class Profile extends React.Component {
 
@@ -41,7 +42,7 @@ class Profile extends React.Component {
       statusToko: '',
       verifyNoHp: '',
       nomerHape: '',
-      loading: true
+      loading: false
     }
   }
 
@@ -65,10 +66,24 @@ class Profile extends React.Component {
         statusToko: nextProps.dataProfile.user.store.status
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataResendVerification.status === 200) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(
+        'Link verifikasi berhasil dikirimkan.. Silakan cek email ' +
+        this.state.email + ' untuk melakukan verifikasi',
+        ToastAndroid.LONG
+      )
+      nextProps.dataResendVerification.status = 0
+    } else if (nextProps.dataResendVerification.status !== 200 && nextProps.dataResendVerification.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show('Terjadi kesalahan ' + nextProps.dataResendVerification.message, ToastAndroid.LONG)
+      nextProps.dataResendVerification.status = 0
     }
   }
 
@@ -93,8 +108,31 @@ class Profile extends React.Component {
     // LoginManager.logOut()
   }
 
+  resend () {
+    this.setState({
+      loading: true
+    })
+    this.props.resendVerification()
+  }
+
   renderStatus () {
-    const { status } = this.state
+    const { status, loading } = this.state
+    let renderButton
+    if (!loading) {
+      renderButton = (
+        <TouchableOpacity style={styles.buttonVerifikasi} onPress={() => this.resend()}>
+          <Text style={styles.textButtonVerifikasi}>
+            Kirim Ulang link verifikasi
+          </Text>
+        </TouchableOpacity>
+      )
+    } else {
+      renderButton = (
+        <View style={styles.buttonVerifikasi}>
+          <Spinner color={Colors.orange} />
+        </View>
+      )
+    }
     if (status === 0) {
       return (
         <View style={styles.verifikasiContainer}>
@@ -112,11 +150,7 @@ class Profile extends React.Component {
               Silahkan klik link verifikasi yang telah kami {'\n'}
               kirimkan ke {this.state.email}
             </Text>
-            <TouchableOpacity style={styles.buttonVerifikasi}>
-              <Text style={styles.textButtonVerifikasi}>
-                Kirim Ulang link verifikasi
-              </Text>
-            </TouchableOpacity>
+            {renderButton}
           </View>
         </View>
       )
@@ -388,7 +422,8 @@ const mapDispatchToProps = (dispatch) => {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     getProfile: (login) => dispatch(loginaction.getProfile()),
     logout: (login) => dispatch(loginaction.logout()),
-    sentOTP: () => dispatch(loginaction.sendOTPPhone())
+    sentOTP: () => dispatch(loginaction.sendOTPPhone()),
+    resendVerification: () => dispatch(loginaction.resendSignup())
   }
 }
 
@@ -396,7 +431,8 @@ const mapStateToProps = (state) => {
   return {
     datalogin: state.isLogin,
     dataProfile: state.profile,
-    dataOTP: state.sendOTPPhone
+    dataOTP: state.sendOTPPhone,
+    dataResendVerification: state.alterUser
   }
 }
 

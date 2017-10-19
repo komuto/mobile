@@ -119,7 +119,7 @@ class Category4 extends React.Component {
           })
         } else {
           this.setState({
-            isLoading: false,
+            isLoading: true,
             isRefreshing: false,
             loadmore: false,
             page: 1
@@ -611,7 +611,7 @@ class Category4 extends React.Component {
               progressBackgroundColor={Colors.snow}
             />
         }
-          onEndReached={this.loadMore.bind(this)}
+          onEndReached={this.loadMore(this)}
           renderFooter={() => {
             if (this.state.loadmore) {
               return (
@@ -645,7 +645,7 @@ class Category4 extends React.Component {
             progressBackgroundColor={Colors.snow}
           />
         }
-        onEndReached={this.loadMore.bind(this)}
+        onEndReached={this.loadMore(this)}
         renderFooter={() => {
           if (this.state.loadmore) {
             return (

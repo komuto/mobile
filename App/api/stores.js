@@ -1,8 +1,8 @@
-import { publicApiKomuto, authApiKomuto } from './api'
+import { authApiKomuto } from './api'
 import { buildQuery } from '../config'
 
 export const getStores = ({ id }) => {
-  const axios = publicApiKomuto()
+  const axios = authApiKomuto()
   return axios.get(`stores/${id}`)
 }
 

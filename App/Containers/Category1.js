@@ -35,8 +35,14 @@ class Category1 extends React.Component {
       data: props.dataAllCategory || null,
       loadingKategori: true,
       id: '',
-      categoryTitle: ''
+      categoryTitle: '',
+      gettingData: true
     }
+  }
+
+  backToHome () {
+    NavigationActions.popTo('backtab')
+    return true
   }
 
   componentWillReceiveProps (nextProps) {
@@ -48,7 +54,7 @@ class Category1 extends React.Component {
         ToastAndroid.show(dataAllCategory.message, ToastAndroid.SHORT)
       }
       if (isFound(dataAllCategory)) {
-        this.setState({ data: dataAllCategory })
+        this.setState({ data: dataAllCategory, gettingData: false })
       }
     }
   }
@@ -143,18 +149,44 @@ class Category1 extends React.Component {
   }
 
   render () {
+    const { data, gettingData } = this.state
     const spinner = this.state.data.isLoading
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='#ef5656' size='small' />
     </View>) : (<View />)
+    let view
+    if (!gettingData) {
+      if (data.allCategory.length > 0) {
+        view = (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.data.allCategory)}
+            renderRow={this.renderRow.bind(this)}
+            initialListSize={10}
+            enableEmptySections
+          />
+        )
+      } else {
+        view = (
+          <View style={styles.imageContainer}>
+            <Image source={Images.notFound} style={styles.image} />
+            <Text style={styles.textLabel}>Produk tidak ditemukan</Text>
+            <Text style={styles.textInfo}>
+              Kami tidak bisa menemukan barang dari kategori produk ini
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>
+                <Text style={styles.textButton}>Kembali ke Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      view = null
+    }
     return (
       <ScrollView style={styles.container}>
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.data.allCategory)}
-          renderRow={this.renderRow.bind(this)}
-          initialListSize={10}
-          enableEmptySections
-        />
+        {view}
         {spinner}
       </ScrollView>
     )

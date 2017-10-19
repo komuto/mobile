@@ -22,9 +22,15 @@ class Category2 extends React.Component {
       data: [],
       loadingKategori: true,
       id: this.props.id,
-      name: this.props.name
+      name: this.props.name,
+      gettingData: true
     }
     this.props.getKategori(this.props.id)
+  }
+
+  backToHome () {
+    NavigationActions.popTo('backtab')
+    return true
   }
 
   componentWillReceiveProps (nextProps) {
@@ -32,7 +38,8 @@ class Category2 extends React.Component {
       this.setState({
         data: nextProps.dataSubCategory.categories.sub_categories,
         iconParent: nextProps.dataSubCategory.categories.icon,
-        loadingKategori: false
+        loadingKategori: false,
+        gettingData: false
       })
     } else if (nextProps.dataSubCategory.status > 200) {
       this.setState({
@@ -81,29 +88,56 @@ class Category2 extends React.Component {
   }
 
   render () {
-    const {iconParent} = this.state
+    const {iconParent, data, gettingData} = this.state
     const spinner = this.state.loadingKategori
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='#ef5656' size='small' />
     </View>) : (<View />)
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (
+          <View>
+            <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(this.state.id, this.state.categoryTitle)}>
+              <Image source={{uri: iconParent}} style={styles.imageCategory} />
+              <View style={[styles.namaContainer, {marginLeft: 15}]}>
+                <Text style={styles.textNama}>
+                  Lihat semua di {this.state.name}
+                </Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.rightArrow} />
+            </TouchableOpacity>
+            <ListView
+              style={{ marginTop: 5 }}
+              dataSource={this.dataSource.cloneWithRows(this.state.data)}
+              renderRow={this.renderRow.bind(this)}
+              initialListSize={10}
+              enableEmptySections
+            />
+          </View>
+        )
+      } else {
+        view = (
+          <View style={styles.imageContainer}>
+            <Image source={Images.notFound} style={styles.image} />
+            <Text style={styles.textLabel}>Produk tidak ditemukan</Text>
+            <Text style={styles.textInfo}>
+              Kami tidak bisa menemukan barang dari kategori produk ini
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>
+                <Text style={styles.textButton}>Kembali ke Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      view = null
+    }
     return (
       <ScrollView style={styles.container}>
-        <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(this.state.id, this.state.categoryTitle)}>
-          <Image source={{uri: iconParent}} style={styles.imageCategory} />
-          <View style={[styles.namaContainer, {marginLeft: 15}]}>
-            <Text style={styles.textNama}>
-              Lihat semua di {this.state.name}
-            </Text>
-          </View>
-          <Image source={Images.rightArrow} style={styles.rightArrow} />
-        </TouchableOpacity>
-        <ListView
-          style={{ marginTop: 5 }}
-          dataSource={this.dataSource.cloneWithRows(this.state.data)}
-          renderRow={this.renderRow.bind(this)}
-          initialListSize={10}
-          enableEmptySections
-        />
+        {view}
         {spinner}
       </ScrollView>
     )

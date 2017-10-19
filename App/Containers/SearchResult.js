@@ -110,7 +110,9 @@ class ProdukTerbaruScreenScreen extends React.Component {
       return true
     } else if (NavigationActions.pop()) {
       if (this.state.from === 'home') {
-        NavigationActions.popTo('backtab')
+        NavigationActions.backtab({
+          type: ActionConst.RESET
+        })
       } else {
         NavigationActions.popTo('newproduct')
       }

@@ -16,6 +16,8 @@ import {
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import Reactotron from 'reactotron-react-native'
+
 import Filter from '../Components/Filter'
 import {isFetching, isError, isFound} from '../Services/Status'
 
@@ -56,8 +58,8 @@ class NewProduct extends React.Component {
       terlarisCek: 0,
       filter: false,
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
+      loadmore: false,
+      isRefreshing: true,
       isLoading: false,
       kondisi: '',
       pengiriman: '',
@@ -67,12 +69,14 @@ class NewProduct extends React.Component {
       other: '',
       statusFilter: false,
       sort: 'newest',
-      wishlist: props.propsWishlist || null
+      wishlist: props.propsWishlist || null,
+      params: this.props.params || null
     }
   }
 
   componentDidMount () {
-    this.props.getProdukTerbaru()
+    Reactotron.log(this.state.params)
+    this.props.getProdukTerbaru(this.state.params)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -365,7 +369,7 @@ class NewProduct extends React.Component {
           myProduct.product.is_liked = !myProduct.product.is_liked
         }
       })
-      this.props.addWishList(id)
+      this.props.addWishList({id: id})
       this.setState({ listDataSource })
     } else {
       Alert.alert('Pesan', 'Anda belum login')
@@ -375,13 +379,13 @@ class NewProduct extends React.Component {
   renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity onPress={() => this.addWishList(id)}>
+        <TouchableOpacity onPress={() => this.addWishList({id: id})}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => this.addWishList(id)}>
+      <TouchableOpacity onPress={() => this.addWishList({id: id})}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -678,8 +682,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: () => dispatch(produkAction.listProductBySearch()),
-    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
+    getProdukTerbaru: (param) => dispatch(produkAction.listProductBySearch(param)),
+    addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
     getFilterProduk: (condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductBySearch({
       condition: condition,
       services: services,

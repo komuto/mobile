@@ -876,9 +876,8 @@ class NavigationRouter extends Component {
           <Scene
             key='movingproduct'
             component={MovingProduct}
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='detailproductstore'
             component={DetailProductStore}

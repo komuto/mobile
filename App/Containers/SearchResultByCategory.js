@@ -1,6 +1,5 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   ListView,
   View,
@@ -9,14 +8,18 @@ import {
   TextInput,
   BackAndroid,
   Modal,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import Reactotron from 'reactotron-react-native'
+import {isFetching, isError, isFound} from '../Services/Status'
+
 import Filter from '../Components/Filter'
 import * as produkAction from '../actions/product'
-import * as homeAction from '../actions/home'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -26,22 +29,20 @@ import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Fonts, Metrics } from '../Themes'
 
 class SearchResultByCategory extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-    ]
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.submitting = {
+      wishlist: false
+    }
     this.state = {
       query: this.props.querys,
+      id: this.props.id,
       search: '',
       listDataSource: [],
       rowDataSource: [],
@@ -57,14 +58,26 @@ class SearchResultByCategory extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      sortData: menu,
       filter: false,
-      from: this.props.from
+      page: 1,
+      loadmore: true,
+      isRefreshing: false,
+      isLoading: false,
+      kondisi: '',
+      pengiriman: '',
+      price: '',
+      address: '',
+      brand: '',
+      other: '',
+      statusFilter: false,
+      sort: 'newest',
+      wishlist: props.propsWishlist || null,
+      searchfrom: this.props.searchfrom
     }
   }
 
   componentDidMount () {
-    this.props.getFilterProduk(this.props.querys)
+    this.props.getFilterProduk(this.props.querys, this.props.id)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -73,33 +86,70 @@ class SearchResultByCategory extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.query !== nextProps.querys) {
-      this.props.getSearch(this.props.querys)
+    const {propsWishlist, dataFilter} = nextProps
+    if (dataFilter.status === 200) {
+      if (!this.state.statusFilter) {
+        if (dataFilter.products.length > 0) {
+          Reactotron.log('cat 4')
+          let data = [...this.state.listDataSource, ...dataFilter.products]
+          this.setState({
+            listDataSource: data,
+            rowDataSource: data,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1
+          })
+        } else {
+          this.setState({
+            loadmore: false,
+            isLoading: false
+          })
+        }
+      } else {
+        this.setState({
+          listDataSource: dataFilter.products,
+          rowDataSource: dataFilter.products,
+          isRefreshing: false,
+          isLoading: false,
+          loadmore: true,
+          statusFilter: false,
+          page: 1
+        })
+      }
+    } else if (dataFilter.status > 200) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: true
+      })
     }
-    if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataProduk.products,
-        rowDataSource: nextProps.dataProduk.products,
-        loadingProduk: false
-      })
-    } else if (nextProps.dataProduk.status !== 200 && nextProps.dataProduk.status !== 0) {
-      this.setState({
-        loadingProduk: true
-      })
-      ToastAndroid.show(nextProps.dataProduk.message, ToastAndroid.LONG)
-    }
-    if (nextProps.dataFilter.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products
-      })
-    } else if (nextProps.dataFilter.status !== 200 && nextProps.dataFilter.status !== 0) {
-      ToastAndroid.show(nextProps.dataFilter.message, ToastAndroid.LONG)
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+        this.setState({ wishlist: propsWishlist })
+      }
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
+    const { query, id } = this.state
+    this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, sort)
+    this.setState({
+      filter: false,
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other,
+      statusFilter: true,
+      isRefreshing: true
+    })
   }
 
   handleBack = () => {
@@ -109,13 +159,6 @@ class SearchResultByCategory extends React.Component {
       })
       return true
     } else if (NavigationActions.pop()) {
-      if (this.state.from === 'home') {
-        NavigationActions.backtab({
-          type: ActionConst.RESET
-        })
-      } else {
-        NavigationActions.popTo('categori1')
-      }
       return true
     }
   }
@@ -129,16 +172,6 @@ class SearchResultByCategory extends React.Component {
   }
 
   backButton () {
-    if (this.state.from === 'home') {
-      NavigationActions.backtab({
-        type: ActionConst.RESET
-      })
-    } else {
-      NavigationActions.popTo('newproduct')
-    }
-  }
-
-  popSearch () {
     NavigationActions.pop()
   }
 
@@ -146,6 +179,21 @@ class SearchResultByCategory extends React.Component {
     this.setState({
       tipe: 'data'
     })
+  }
+
+  loadMore () {
+    const { query, id, page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.props.getFilterProduk(query, id, page, kondisi, pengiriman, price, address, brand, other)
+      }
+    }
+  }
+
+  refresh = () => {
+    const { query, id, kondisi, pengiriman, price, address, brand, other, sort } = this.state
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, sort)
   }
 
   renderHeader () {
@@ -188,7 +236,7 @@ class SearchResultByCategory extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.popSearch()}>
+        <TouchableOpacity onPress={() => this.openSearch()}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -214,41 +262,22 @@ class SearchResultByCategory extends React.Component {
     this.setState({sortModal: visible})
   }
 
-  sortArrayAsc (array, key, field) {
-    const {bluesky, lightblack} = Colors
-    switch (field) {
-      case 'terbaru':
-        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
-        }).reverse()
-      case 'termurah':
-        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        }).reverse()
-      case 'termahal':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        })
-      case 'terlaris':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
-        return array.sort(function (a, b) {
-          return b.product.stock - a.product.stock
-        })
-      default:
-        window.alert('Internal Error')
-        break
-    }
-  }
-
   _onPress (field) {
-    const {listDataSource} = this.state
-    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
-    this.setState({
-      listDataSource: sortedData
-    })
+    const {bluesky, lightblack} = Colors
+    const {query, id, kondisi, pengiriman, price, address, brand, other} = this.state
+    if (field === 'terbaru') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
+      this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, 'newest')
+    } else if (field === 'termahal') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
+      this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, 'expensive')
+    } else if (field === 'termurah') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
+      return this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, 'cheapest')
+    } else if (field === 'terlaris') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
+      this.props.getFilterProduk(query, id, 1, kondisi, pengiriman, price, address, brand, other, 'selling')
+    }
   }
 
   renderModalSort () {
@@ -295,9 +324,7 @@ class SearchResultByCategory extends React.Component {
   }
 
   openSearch () {
-    this.setState({
-      tipe: 'search'
-    })
+    NavigationActions.searchbycategory({ type: ActionConst.PUSH, from: this.state.searchfrom, id: this.state.id })
   }
 
   renderVerified (status) {
@@ -332,16 +359,36 @@ class SearchResultByCategory extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  addWishList (id) {
+    const {listDataSource} = this.state
+    if (this.props.datalogin.login) {
+      this.submitting = {
+        ...this.submitting,
+        wishlist: true
+      }
+      listDataSource.map((myProduct) => {
+        if (myProduct.product.id === id) {
+          myProduct.product.is_liked ? myProduct.product.count_like -= 1 : myProduct.product.count_like += 1
+          myProduct.product.is_liked = !myProduct.product.is_liked
+        }
+      })
+      this.props.addWishList(id)
+      this.setState({ listDataSource })
+    } else {
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
+    }
+  }
+
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -352,12 +399,32 @@ class SearchResultByCategory extends React.Component {
     return hargaDiskon
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
   renderRowList (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -369,17 +436,10 @@ class SearchResultByCategory extends React.Component {
     })
 
     return (
-      <TouchableOpacity
-        style={styles.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
@@ -390,7 +450,7 @@ class SearchResultByCategory extends React.Component {
             </Text>
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -398,9 +458,9 @@ class SearchResultByCategory extends React.Component {
               </Text>
             </View>
             <View style={styles.likesContainer}>
-              {this.renderLikes(rowData.like)}
+              {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
               <Text style={styles.like}>
-                {rowData.product.stock}
+                {rowData.product.count_like}
               </Text>
             </View>
           </View>
@@ -410,11 +470,9 @@ class SearchResultByCategory extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
@@ -425,17 +483,10 @@ class SearchResultByCategory extends React.Component {
       precision: 3
     })
     return (
-      <TouchableOpacity
-        style={stylesHome.rowDataContainer}
-        activeOpacity={0.5}
-        onPress={() => this.produkDetail(rowData.product.id)}
-      >
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>
@@ -445,18 +496,25 @@ class SearchResultByCategory extends React.Component {
           </Text>
           {this.renderVerified(rowData.store.remarks_status)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(rowData.like)}
+          {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={stylesHome.like}>
-            {rowData.product.stock}
+            {rowData.product.count_like}
           </Text>
         </View>
       </TouchableOpacity>
     )
+  }
+
+  produkDetail (id) {
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
   }
 
   changeView () {
@@ -474,34 +532,83 @@ class SearchResultByCategory extends React.Component {
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
-        <View style={stylesHome.listViewContainer}>
-          <ListView
-            contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-            enableEmptySections
-            dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
-            renderRow={this.renderRowGrid.bind(this)}
-          />
-        </View>
+        <ListView
+          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          enableEmptySections
+          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          renderRow={this.renderRowGrid.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+        }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50, marginLeft: Metrics.screenWidth / 2 - 20 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          style={styles.listView}
+        />
       )
     }
     return (
-      <View style={styles.listViewContainer}>
-        <ListView
-          contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
-          enableEmptySections
-          dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
-          renderRow={this.renderRowList.bind(this)}
-        />
-      </View>
+      <ListView
+        contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
+        enableEmptySections
+        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        renderRow={this.renderRowList.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        style={styles.listView}
+      />
     )
   }
 
-  produkDetail (id) {
-    NavigationActions.detailproduct({
-      type: ActionConst.PUSH,
-      id: id
-    })
-    this.props.getDetailProduk(id)
+  renderImageTypeView () {
+    if (this.state.tipeView === 'grid') {
+      return (
+        <Image source={Images.grid} style={styles.searchImage} />
+      )
+    }
+    return (
+      <Image source={Images.list} style={styles.searchImage} />
+    )
   }
 
   render () {
@@ -516,9 +623,7 @@ class SearchResultByCategory extends React.Component {
         <View style={[styles.headerContainer, background]}>
           {this.renderHeader()}
         </View>
-        <ScrollView style={styles.listViewContainer}>
-          {this.viewProduk()}
-        </ScrollView>
+        {this.viewProduk()}
         <View style={styles.footerMenu}>
           <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
             <View style={styles.buttonFooter}>
@@ -534,7 +639,7 @@ class SearchResultByCategory extends React.Component {
           </TouchableOpacity>
           <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
             <View style={styles.buttonFooter}>
-              <Image style={styles.imageFooter} source={Images.grid} />
+              {this.renderImageTypeView()}
               <Text style={styles.footerButton}>Tampilan</Text>
             </View>
           </TouchableOpacity>
@@ -570,21 +675,26 @@ class SearchResultByCategory extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.productByCategory,
-    dataFilter: state.filterProduct
+    dataFilter: state.productByCategory,
+    propsWishlist: state.addWishlist,
+    datalogin: state.isLogin
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getFilterProduk: (q, condition, services, price, address, brands, other) => dispatch(homeAction.filter({
-      q: q,
+    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
+    getFilterProduk: (query, id, page, condition, services, price, address, brands, other, sort) => dispatch(produkAction.listProductByCategory({
+      q: query,
+      category_id: id,
+      page: page,
       condition: condition,
       services: services,
       price: price,
       address: address,
       brands: brands,
-      other: other
+      other: other,
+      sort: sort
     })),
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }

@@ -234,5 +234,16 @@ export default StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
     marginTop: 10
+  },
+  buttonStyle: {
+    flex: 1,
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textResult: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey
   }
 })

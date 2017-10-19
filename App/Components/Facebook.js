@@ -50,7 +50,7 @@ class Facebook extends React.Component {
   }
   fbAuth () {
     const _this = this
-    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_photos', 'pages_show_list'])
+    LoginManager.logInWithReadPermissions(['public_profile'])
     .then(
       function (result) {
         if (result.isCancelled) {

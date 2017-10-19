@@ -1,9 +1,18 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, ListView, Alert, ActivityIndicator } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  ToastAndroid,
+  Image,
+  TouchableOpacity,
+  ListView,
+  ActivityIndicator
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 import * as homeAction from '../actions/home'
-import * as produkAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -18,9 +27,12 @@ class Category1 extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      category1: false
+    }
     this.state = {
       search: '',
-      data: [],
+      data: props.dataAllCategory || null,
       loadingKategori: true,
       id: '',
       categoryTitle: ''
@@ -28,26 +40,28 @@ class Category1 extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataAllCategory.status === 200) {
-      this.setState({
-        data: nextProps.dataAllCategory.allCategory,
-        loadingKategori: false
-      })
-    } else if (nextProps.dataAllCategory.status > 200) {
-      this.setState({
-        loadingKategori: false
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
-    } else if (nextProps.dataAllCategory.status === 'ENOENT') {
-      this.setState({
-        loadingKategori: false
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
+    const {dataAllCategory} = nextProps
+
+    if (!isFetching(dataAllCategory) && this.submitting.category1) {
+      this.submitting = { ...this.submitting, category1: false }
+      if (isError(dataAllCategory)) {
+        ToastAndroid.show(dataAllCategory.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataAllCategory)) {
+        this.setState({ data: dataAllCategory })
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getKategori()
+    const { data } = this.state
+    if (!data.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        category1: true
+      }
+      this.props.getKategori()
+    }
   }
 
   handleDetailKategori (rowId, title) {
@@ -65,9 +79,9 @@ class Category1 extends React.Component {
       type: ActionConst.PUSH,
       id: id,
       header: title,
-      name: title
+      name: title,
+      searchfrom: 'category1'
     })
-    this.props.getProduckKategori(id)
   }
 
   renderSubListView (subCategory) {
@@ -129,14 +143,14 @@ class Category1 extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loadingKategori
+    const spinner = this.state.data.isLoading
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='#ef5656' size='small' />
     </View>) : (<View />)
     return (
       <ScrollView style={styles.container}>
         <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.data)}
+          dataSource={this.dataSource.cloneWithRows(this.state.data.allCategory)}
           renderRow={this.renderRow.bind(this)}
           initialListSize={10}
           enableEmptySections
@@ -156,8 +170,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getKategori: () => dispatch(homeAction.allCategory()),
-    getProduckKategori: (categoryId) => dispatch(produkAction.listProductByCategory({category_id: categoryId}))
+    getKategori: () => dispatch(homeAction.allCategory())
   }
 }
 

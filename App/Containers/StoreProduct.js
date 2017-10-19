@@ -19,7 +19,8 @@ class StoreProduct extends React.Component {
     this.state = {
       tabViewStyle: {
         backgroundColor: 'transparent'
-      }
+      },
+      callback: this.props.callback || false
     }
   }
 
@@ -36,10 +37,6 @@ class StoreProduct extends React.Component {
     return true
   }
 
-  backButton () {
-    NavigationActions.pop()
-  }
-
   render () {
     return (
       <View style={styles.container}>
@@ -54,10 +51,10 @@ class StoreProduct extends React.Component {
           locked
         >
           <View tabLabel='Ditampilkan di Toko'>
-            <StoreProductDisplayed />
+            <StoreProductDisplayed callback={this.props.callback} />
           </View>
           <View tabLabel='Disembunyikan'>
-            <StoreProductHidden />
+            <StoreProductHidden callback={this.props.callback} />
           </View>
         </ScrollableTabView>
       </View>

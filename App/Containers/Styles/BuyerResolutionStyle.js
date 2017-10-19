@@ -200,7 +200,7 @@ export default StyleSheet.create({
   },
   create: {
     position: 'absolute',
-    bottom: 100,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 100,
     right: 30,
     backgroundColor: Colors.bluesky,
     borderRadius: 200,

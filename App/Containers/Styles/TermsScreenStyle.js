@@ -9,7 +9,6 @@ export default StyleSheet.create({
   },
   spinner: {
     position: 'absolute',
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
@@ -52,15 +51,23 @@ export default StyleSheet.create({
     color: Colors.darkgrey,
     lineHeight: 23,
     paddingTop: 15.8,
-    paddingRight: 50,
-    paddingBottom: 25
+    paddingRight: 50
+  },
+  buttonBg: {
+    position: 'absolute',
+    paddingTop: 5,
+    paddingBottom: 20,
+    backgroundColor: Colors.snow
   },
   buttonnext: {
+    width: Metrics.screenWidth - 40,
     height: 50,
     backgroundColor: Colors.bluesky,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5
+    borderRadius: 5,
+    marginLeft: 20,
+    marginRight: 20
   },
   textButtonNext: {
     color: Colors.background,

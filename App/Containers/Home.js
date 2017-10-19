@@ -385,7 +385,8 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: rowId,
       header: title,
-      name: title
+      name: title,
+      searchfrom: 'home'
     })
   }
 
@@ -441,7 +442,7 @@ class Home extends React.Component {
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
                   <Text style={styles.inputText}>
-                    Cari barang atau toko
+                    Cari Barang
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -455,7 +456,7 @@ class Home extends React.Component {
               <Image source={Images.searchGrey} style={styles.searchImage} />
               <View style={styles.textInputContainer}>
                 <Text style={styles.inputText}>
-                  Cari barang atau toko
+                  Cari Barang
                 </Text>
               </View>
             </TouchableOpacity>

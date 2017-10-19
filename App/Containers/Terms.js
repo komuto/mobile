@@ -1,12 +1,21 @@
 import React from 'react'
-import { View, ScrollView, Text, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import {
+  View,
+  ScrollView,
+  ToastAndroid,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  BackAndroid,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Animated,
+  Dimensions,
+  DeviceEventEmitter
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
-import Reactotron from 'reactotron-react-native'
-
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/TermsScreenStyle'
@@ -18,18 +27,20 @@ class TermsScreenScreen extends React.Component {
     this.submitting = {
       term: false
     }
+    this.keyboardHeight = new Animated.Value(0)
     this.state = {
       termInput: '',
       height: 0,
       loading: false,
       profiles: props.profile || null,
-      term: props.profile.user.store || null
+      term: props.profile.user.store || null,
+      visibleHeight: Dimensions.get('window').height - 150,
+      margin: 0
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataTerms.status === 200 && this.submitting.term) {
-      Reactotron.log(nextProps.dataTerms.updateStore)
       this.submitting = {...this.submitting, term: false}
       this.setState({
         loading: false,
@@ -52,8 +63,28 @@ class TermsScreenScreen extends React.Component {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
+  componentWillMount () {
+    this.keyboardDidShowListener = DeviceEventEmitter.addListener('keyboardDidShow', this.keyboardDidShow.bind(this))
+    this.keyboardDidHideListener = DeviceEventEmitter.addListener('keyboardDidHide', this.keyboardDidHide.bind(this))
+  }
+
   componentWillUnmount () {
+    this.keyboardDidShowListener.remove()
+    this.keyboardDidHideListener.remove()
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  keyboardDidShow (e) {
+    let newSize = Dimensions.get('window').height - e.endCoordinates.height
+    this.setState({
+      visibleHeight: newSize - 140
+    })
+  }
+
+  keyboardDidHide (e) {
+    this.setState({
+      visibleHeight: Dimensions.get('window').height - 150
+    })
   }
 
   handleBack = () => {
@@ -66,15 +97,26 @@ class TermsScreenScreen extends React.Component {
   }
 
   handleUpdateTerms () {
-    this.setState({loading: true})
-    this.submitting.term = true
-    this.props.updateTerm(this.state.termInput)
+    if (this.state.termInput !== '') {
+      this.setState({loading: true})
+      this.submitting.term = true
+      this.props.updateTerm({
+        term_condition: this.state.termInput
+      })
+    } else {
+      ToastAndroid.show('Term and Conditions harus diisi', ToastAndroid.SHORT)
+    }
+  }
+
+  onLayout = (event) => {
+    const layout = event.nativeEvent.layout
+    this.setState({margin: layout.y})
   }
 
   checkTermStore (data) {
     if (!data.term_condition) {
       return (
-        <Text style={styles.contoh}>
+        <Text onLayout={this.onLayout} style={styles.contoh}>
           Contoh:{'\n'}
           - Toko Hanya melakukan pengiriman di hari kamis
           - Pesanan diatas jam 10 pagi akan diproses besok
@@ -82,7 +124,7 @@ class TermsScreenScreen extends React.Component {
       )
     } else {
       return (
-        <Text style={styles.contoh}>
+        <Text onLayout={this.onLayout} style={styles.contoh}>
           Terms and Conditions Toko {data.name} :{'\n'}
           <Text style={{padding: 5}} />
           {data.term_condition}
@@ -98,36 +140,41 @@ class TermsScreenScreen extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
-        <ScrollView>
-          <Text style={styles.headerTitle}>
-            Terms and Conditions akan ditampilkan pada profil toko dan detal barang Anda.
-          </Text>
-          <View style={styles.body}>
-            <TextInput
-              style={[styles.inputText, {height: Math.max(40, this.state.height)}]}
-              value={this.state.termInput}
-              multiline
-              keyboardType='default'
-              returnKeyType='next'
-              autoCapitalize='none'
-              autoCorrect
-              onChange={(event) => {
-                this.setState({
-                  termInput: event.nativeEvent.text,
-                  height: event.nativeEvent.contentSize.height
-                })
-              }}
-              underlineColorAndroid='transparent'
-              placeholder='Tulis Terms and Conditions'
-          />
-            {this.checkTermStore(this.state.term)}
-            <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdateTerms()}>
-              <Text style={styles.textButtonNext}>
-                Simpan Perubahan
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <KeyboardAvoidingView
+        >
+          <ScrollView style={{marginBottom: this.state.margin}}>
+            <Text style={styles.headerTitle}>
+              Terms and Conditions akan ditampilkan pada profil toko dan detal barang Anda.
+            </Text>
+            <View style={styles.body}>
+              <TextInput
+                style={[styles.inputText, {height: Math.max(40, this.state.height)}]}
+                value={this.state.termInput}
+                multiline
+                keyboardType='default'
+                returnKeyType='next'
+                autoCapitalize='none'
+                autoCorrect
+                onChange={(event) => {
+                  this.setState({
+                    termInput: event.nativeEvent.text,
+                    height: event.nativeEvent.contentSize.height
+                  })
+                }}
+                underlineColorAndroid='transparent'
+                placeholder='Tulis Terms and Conditions'
+            />
+              {this.checkTermStore(this.state.term)}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <View style={[styles.buttonBg, {top: this.state.visibleHeight}]}>
+          <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.handleUpdateTerms()}>
+            <Text style={styles.textButtonNext}>
+              Simpan Perubahan
+            </Text>
+          </TouchableOpacity>
+        </View>
         {spinner}
       </View>
     )
@@ -144,7 +191,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateTerm: (data) => dispatch(storeAction.updateTerm({term_condition: data}))
+    updateTerm: (param) => dispatch(storeAction.updateTerm(param))
   }
 }
 

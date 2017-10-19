@@ -4,17 +4,40 @@ import { Fonts, Colors, Metrics } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.background
+  },
+  headerTextContainer: {
+    height: Metrics.navBarHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 5,
+    paddingRight: 10,
+    backgroundColor: Colors.red
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
+  },
+  headerTextTop: {
+    color: Colors.snow,
+    backgroundColor: Colors.transparent,
+    fontFamily: Fonts.style.bold,
+    fontSize: 16,
+    fontWeight: 'bold',
+    flex: 1,
+    top: -1,
+    marginLeft: 15,
+    marginRight: 10
   },
   spinner: {
     position: 'absolute',
+    marginTop: Metrics.navBarHeight,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'black',
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
+    height: Metrics.screenHeight - Metrics.navBarHeight,
     opacity: 0.5
   },
   header: {
@@ -50,6 +73,13 @@ export default StyleSheet.create({
     width: 35,
     borderRadius: 3,
     marginLeft: 19.3
+  },
+  maskedImage: {
+    height: 35,
+    width: 35,
+    borderRadius: 3,
+    marginLeft: 19.3,
+    backgroundColor: Colors.paleGreyFive
   },
   box: {
     width: 25,

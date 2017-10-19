@@ -29,7 +29,8 @@ class SellerComplainDone extends React.Component {
       fetching: true
     }
     this.state = {
-      complains: props.propsResolvedCompaint || null,
+      datacomplains: props.propsResolvedCompaint || null,
+      complains: [],
       page: 1,
       loadmore: false,
       isRefreshing: false,
@@ -40,25 +41,29 @@ class SellerComplainDone extends React.Component {
   componentWillReceiveProps (nextProps) {
     const {propsResolvedCompaint} = nextProps
 
-    if (!isFetching(propsResolvedCompaint)) {
+    if (!isFetching(propsResolvedCompaint && this.submitting.complain)) {
       this.submitting = { ...this.submitting, complain: false, fetching: false }
       if (isError(propsResolvedCompaint)) {
         ToastAndroid.show(propsResolvedCompaint.message, ToastAndroid.SHORT)
       }
       if (isFound(propsResolvedCompaint)) {
-        if (propsResolvedCompaint.orders.length > 0) {
+        const isFound = propsResolvedCompaint.orders.length
+        if (isFound > 0) {
           let data = [...this.state.complains, ...propsResolvedCompaint.orders]
           this.setState({
+            datacomplaint: propsResolvedCompaint,
             complains: data,
             page: this.state.page + 1,
             isRefreshing: false,
             loadmore: true,
-            isLoading: true
+            isLoading: false
           })
         } else {
           this.setState({
+            isLoading: false,
+            isRefreshing: false,
             loadmore: false,
-            isLoading: false
+            page: 1
           })
         }
       }
@@ -67,12 +72,12 @@ class SellerComplainDone extends React.Component {
 
   componentDidMount () {
     const { complains } = this.state
-    if (!complains.isFound) {
+    if (!complains.isFound || !this.submitting.complain) {
       this.submitting = {
         ...this.submitting,
         complain: true
       }
-      this.props.getComplain(1, true)
+      this.props.getComplain({page: 1, is_resolved: true})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -90,14 +95,16 @@ class SellerComplainDone extends React.Component {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getComplain(page, true)
+        this.submitting.complain = true
+        this.props.getComplain({page: page, is_resolved: true})
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, complains: [], isLoading: true })
-    this.props.getComplain(1, true)
+    this.submitting.complain = true
+    this.props.getComplain({page: 1, is_resolved: true})
   }
 
   checkAmountComplain (data) {
@@ -196,7 +203,7 @@ class SellerComplainDone extends React.Component {
   }
 
   render () {
-    if (!this.state.complains.isFound) {
+    if (this.submitting.fetching) {
       return (
         <View style={styles.spinner}>
           <ActivityIndicator color={Colors.red} size='large' />
@@ -244,7 +251,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getComplain: (page, param) => dispatch(salesAction.getComplainedOrdersSeller2({page: page, is_resolved: param}))
+  getComplain: (param) => dispatch(salesAction.getComplainedOrdersSeller2(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SellerComplainDone)

@@ -14,6 +14,7 @@ import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 import * as storeAction from '../actions/stores'
 
@@ -30,18 +31,28 @@ class StoreProductHidden extends React.Component {
     this.positionCatalog = []
     this.submitting = {
       showProduct: false,
-      doneFetching: true,
-      isRefreshing: false
+      doneFetching: true
     }
     this.state = {
-      product: props.dataProduk || null
+      product: props.dataProduk || null,
+      callback: this.props.callback,
+      isRefreshing: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataProduk} = nextProps
+    const {dataProduk, callback} = nextProps
+    if (callback !== undefined) {
+      if (callback !== this.state.callback) {
+        this.refresh()
+        this.setState({
+          callback: callback
+        })
+      }
+    }
 
     if (!isFetching(dataProduk) && this.submitting.showProduct) {
+      Reactotron.log('callback hide')
       this.submitting = { ...this.submitting, showProduct: false, doneFetching: false }
       if (isError(dataProduk)) {
         ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
@@ -51,9 +62,11 @@ class StoreProductHidden extends React.Component {
       }
     }
 
-    if (!isFetching(dataProduk) && this.submitting.isRefreshing) {
-      this.submitting = { ...this.submitting, isRefreshing: false, doneFetching: false }
+    if (!isFetching(dataProduk) && this.state.isRefreshing) {
+      this.setState({ isRefreshing: false })
+      this.submitting = { ...this.submitting, doneFetching: false }
       if (isError(dataProduk)) {
+        this.submitting = { ...this.submitting, showProduct: false, doneFetching: true }
         ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
       }
       if (isFound(dataProduk)) {
@@ -64,12 +77,12 @@ class StoreProductHidden extends React.Component {
 
   componentDidMount () {
     const { product } = this.state
-    if (!product.isFound && !this.submitting.showProduct) {
+    if (!product.isFound || !this.submitting.showProduct) {
       this.submitting = {
         ...this.submitting,
         showProduct: true
       }
-      this.props.getListProduk()
+      this.props.getListProdukHidden()
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -171,6 +184,46 @@ class StoreProductHidden extends React.Component {
     }
   }
 
+  checkLabelProduct (productName, isDiscount, isWholesale) {
+    if (isDiscount && isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isDiscount) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+        </View>
+      )
+    }
+  }
+
   renderRow (rowData, sectionId, rowId) {
     return (
       <TouchableOpacity activeOpacity={0.5}key={rowId} style={styles.dataListProduk}
@@ -178,15 +231,7 @@ class StoreProductHidden extends React.Component {
         <View style={styles.flexRow}>
           <Image source={{uri: rowData.image}} style={styles.imageProduk} />
           <View style={styles.column}>
-            <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
-              <Text style={styles.textTitle}>{rowData.name}</Text>
-              <TouchableOpacity activeOpacity={0.5}>
-                <Image source={Images.diskon} style={styles.imageDot} />
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.5}>
-                <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
-              </TouchableOpacity>
-            </View>
+            {this.checkLabelProduct(rowData.name, rowData.is_discount, rowData.is_wholesaler)}
             {this.labeldaridropshipper(rowData)}
           </View>
         </View>
@@ -216,13 +261,8 @@ class StoreProductHidden extends React.Component {
   }
 
   refresh = () => {
-    if (!this.submitting.isRefreshing) {
-      this.submitting = {
-        ...this.submitting,
-        isRefreshing: true
-      }
-      this.props.getListProduk(false)
-    }
+    this.setState({ isRefreshing: true })
+    this.props.getListProdukHidden()
   }
 
   render () {
@@ -242,7 +282,7 @@ class StoreProductHidden extends React.Component {
           renderRow={this.renderRow.bind(this)}
           refreshControl={
             <RefreshControl
-              refreshing={this.submitting.isRefreshing}
+              refreshing={this.state.isRefreshing}
               onRefresh={this.refresh}
               tintColor={Colors.red}
               colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
@@ -263,7 +303,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListProduk: () => dispatch(storeAction.getHiddenStoreProducts()),
-  getProductByCatalogs: (id) => dispatch(storeAction.getStoreCatalogProducts({id: id, limit: 100}))
+  getListProdukHidden: () => dispatch(storeAction.getHiddenStoreProducts())
 })
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductHidden)

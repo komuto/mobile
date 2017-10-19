@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 import CustomRadio from '../Components/CustomRadioCatalog'
 import Dropshipping from './Dropshipping'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -47,9 +47,7 @@ class StatusStockDropshipping extends React.Component {
       this.setState({
         loading: false
       })
-      NavigationActions.storeproduct({
-        type: ActionConst.PUSH_OR_POP
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {
       this.setState({
@@ -70,12 +68,12 @@ class StatusStockDropshipping extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     return true
   }
 
   backButton () {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
   }
 
   modalDropshipping () {

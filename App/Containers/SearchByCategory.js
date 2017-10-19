@@ -10,13 +10,11 @@ import {
   Alert
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
+
 import * as productAction from '../actions/product'
 
 import { Images } from '../Themes'
-// Styles
 import styles from './Styles/SearchStyle'
 
 class Search extends React.Component {
@@ -29,7 +27,8 @@ class Search extends React.Component {
       query: this.props.search,
       dataSource: dataSource.cloneWithRows([]),
       from: this.props.from,
-      notFound: false
+      notFound: false,
+      id: this.props.id
     }
   }
 
@@ -59,12 +58,12 @@ class Search extends React.Component {
 
   trySearch (text) {
     if (text !== '') {
-      this.props.getSearch(text, this.state.catalogId)
+      this.props.getSearch(text, this.state.id)
     }
   }
 
   detailResult (name) {
-    NavigationActions.searchresultbycategory({ type: ActionConst.PUSH, header: name, querys: name, from: this.state.from })
+    NavigationActions.searchresultbycategory({ type: ActionConst.PUSH, header: name, querys: name, from: this.state.from, id: this.state.id })
   }
 
   renderRow (rowData) {
@@ -164,13 +163,13 @@ class Search extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataSearch: state.productByCategory
+    dataSearch: state.productBySearch
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getSearch: (query, categoryId) => dispatch(productAction.listProductByCategory({q: query, category_id: categoryId}))
+    getSearch: (query, categoryId) => dispatch(productAction.listProductBySearch({q: query, category_id: categoryId}))
   }
 }
 

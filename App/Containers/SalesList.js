@@ -235,7 +235,7 @@ class SalesList extends React.Component {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.bluesky}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Menunggu Konfrimasi Pembeli</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Menunggu Konfirmasi Pembeli</Text>
         </View>
       )
     } if (data === 4) {

@@ -3,7 +3,7 @@ import { ScrollView, ActivityIndicator, ToastAndroid, ListView, Text, View, Refr
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 import * as categoriAction from '../actions/home'
 import * as storeAction from '../actions/stores'
@@ -32,7 +32,7 @@ class DetailProductStore extends React.Component {
       category: '',
       imageProduct: [],
       nameCategory: '',
-      id: this.props.idProduct || 213,
+      id: this.props.idProduct,
       isRefreshing: false,
       callback: false
     }
@@ -43,7 +43,8 @@ class DetailProductStore extends React.Component {
       if (nextProps.callback !== this.state.callback) {
         this.refresh()
         this.setState({
-          callback: nextProps.callback
+          callback: nextProps.callback,
+          loading: false
         })
       }
     }
@@ -62,9 +63,10 @@ class DetailProductStore extends React.Component {
         loading: false,
         isRefreshing: false
       })
+      Reactotron.log('masuk detail')
       nextProps.dataDetailProduct.status = 0
       this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.parent_id)
-    } else if (nextProps.dataDetailProduct.status) {
+    } else if (nextProps.dataDetailProduct.status > 200) {
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataDetailProduct.message, ToastAndroid.LONG)
     }
     if (nextProps.dataKategoriParent.status === 200) {
@@ -82,17 +84,15 @@ class DetailProductStore extends React.Component {
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-    this.props.getListProduk(false)
-    this.props.getHiddenProduct()
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     return true
   }
 
   backButton () {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
   }
 
   discountCalculate (price, discount) {
@@ -596,7 +596,7 @@ const mapDispatchToProps = (dispatch) => {
     getKategori: (id) => dispatch(categoriAction.subCategory({id: id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
     getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id: id}))
   }
 }
 

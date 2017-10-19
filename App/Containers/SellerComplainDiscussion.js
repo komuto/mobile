@@ -17,6 +17,7 @@ import {Actions as NavigationActions} from 'react-native-router-flux'
 import moment from 'moment'
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as complaintAction from '../actions/transaction'
+import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/SellerComplainDiscussionStyle'
 import {Colors, Images} from '../Themes'
@@ -51,6 +52,7 @@ class SellerComplainDiscussion extends React.Component {
         ToastAndroid.show(propsDetailCompaint.message, ToastAndroid.SHORT)
       }
       if (isFound(propsDetailCompaint)) {
+        Reactotron.log('isFound')
         this.setState({
           discussion: propsDetailCompaint
         })
@@ -78,11 +80,12 @@ class SellerComplainDiscussion extends React.Component {
 
   componentDidMount () {
     const { discussion } = this.state
-    if (!discussion.isFound) {
+    if (!discussion.isFound || !this.submitting.discussion) {
       this.submitting = {
         ...this.submitting,
         discussion: true
       }
+      Reactotron.log('didmount')
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -164,6 +167,7 @@ class SellerComplainDiscussion extends React.Component {
 
   render () {
     if (this.submitting.fetching) {
+      Reactotron.log('render ' + this.submitting.fetching)
       return (
         <View style={styles.spinner}>
           <ActivityIndicator color={Colors.red} size='large' />

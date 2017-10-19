@@ -243,17 +243,14 @@ class DetailProduct extends React.Component {
       this.props.resetAddToWishlist()
     }
     if (nextProps.dataFavorit.status === 200) {
-      this.setState({
-        isStoreFavorite: nextProps.dataFavorit.favorite
-      })
-    } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
-      this.setState({
-        isStoreFavorite: !this.state.isStoreFavorite
-      })
-      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.LONG)
-      if (this.state.isHere) {
-        nextProps.dataFavorit.status = 0
+      if (this.state.isStoreFavorite) {
+        this.setState({isStoreFavorite: false})
+      } else {
+        this.setState({isStoreFavorite: true})
       }
+      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
+    } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
     }
   }
 
@@ -1234,17 +1231,17 @@ class DetailProduct extends React.Component {
     if (!data) {
       return (
         <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
-          <Image source={Images.centangBiru} style={styles.image24p} />
           <Text style={styles.labelButtonFav}>
-            Di Favoritkan
+            Favorit
           </Text>
         </TouchableOpacity>
       )
     } else {
       return (
-        <TouchableOpacity style={[styles.buttonFav, {borderColor: Colors.greenish}]} onPress={() => this.handleFavoriteStore(storeId)}>
-          <Text style={[styles.labelButtonFav, {color: Colors.greenish}]}>
-            Favorit
+        <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
+          <Image source={Images.centangBiru} style={styles.image24p} />
+          <Text style={styles.labelButtonFav}>
+            Di Favoritkan
           </Text>
         </TouchableOpacity>
       )
@@ -1297,14 +1294,15 @@ class DetailProduct extends React.Component {
   }
 
   handleFavoriteStore (id) {
-    const {isStoreFavorite} = this.state
-    if (isStoreFavorite) {
-      this.setState({isStoreFavorite: false})
-      this.props.putFavoriteStore(id)
-    } else {
-      this.setState({isStoreFavorite: true})
-      this.props.putFavoriteStore(id)
-    }
+    this.props.putFavoriteStore(id)
+  }
+
+  handleNewProduct (id) {
+    NavigationActions.newproduct({
+      type: ActionConst.PUSH,
+      header: 'Produk Terbaru',
+      params: {store_id: id}
+    })
   }
 
   renderProduk () {
@@ -1316,7 +1314,7 @@ class DetailProduct extends React.Component {
           renderRow={this.renderRowProduk.bind(this)}
           enableEmptySections
         />
-        <TouchableOpacity style={styles.allCategory} onPress={() => {}}>
+        <TouchableOpacity style={styles.allCategory} onPress={() => this.handleNewProduct(this.state.storeId)}>
           <Text style={styles.textAllCategory}>
             Lihat semua produk terbaru
           </Text>

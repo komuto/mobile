@@ -36,6 +36,10 @@ class ListProdukByCatalog extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.props.getProductByCatalogs({id: this.state.catalogId})
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProduk.status === 200) {
       this.setState({
@@ -89,9 +93,9 @@ class ListProdukByCatalog extends React.Component {
     } else {
       NavigationActions.detailproductstore({
         type: ActionConst.PUSH,
-        productName: name
+        productName: name,
+        idProduct: id
       })
-      this.props.getDetailStoreProduct(id)
     }
   }
 
@@ -163,6 +167,46 @@ class ListProdukByCatalog extends React.Component {
     }
   }
 
+  checkLabelProduct (productName, isDiscount, isWholesale) {
+    if (isDiscount && isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isDiscount) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+        </View>
+      )
+    }
+  }
+
   mapSingleProduk () {
     const { produk, catalogId } = this.state
     const mapProduk = produk.map((data, i) => {
@@ -172,15 +216,7 @@ class ListProdukByCatalog extends React.Component {
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
-              <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
-                <Text style={styles.textTitle}>{data.name}</Text>
-                <TouchableOpacity>
-                  <Image source={Images.diskon} style={styles.imageDot} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
-                </TouchableOpacity>
-              </View>
+              {this.checkLabelProduct(data.name, data.is_discount, data.is_wholesaler)}
               {this.labeldaridropshipper(data)}
             </View>
           </View>
@@ -230,7 +266,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id}))
+    getProductByCatalogs: (param) => dispatch(storeAction.getStoreCatalogProducts(param))
   }
 }
 

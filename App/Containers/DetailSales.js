@@ -440,7 +440,7 @@ class DetailSales extends React.Component {
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status</Text>
           <View style={[styles.round, {backgroundColor: Colors.bluesky, marginTop: 2, marginRight: 10.8}]} />
-          <Text style={[styles.textRegularSlate]}>Menunggu Konfrimasi Pembeli</Text>
+          <Text style={[styles.textRegularSlate]}>Menunggu Konfirmasi Pembeli</Text>
         </View>
       )
     } if (data === 4) {

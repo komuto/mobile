@@ -43,7 +43,6 @@ class Login extends React.Component {
       this.setState({
         loading: false
       })
-      // ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
   }
   handleChangeEmail = (text) => {
@@ -134,7 +133,7 @@ class Login extends React.Component {
         break
       default:
         this.setState({
-          passText: 'Password shit',
+          passText: 'Password',
           passErrorColor: Colors.snow
         })
         break

@@ -17,7 +17,6 @@ import {Actions as NavigationActions} from 'react-native-router-flux'
 import moment from 'moment'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
-import Reactotron from 'reactotron-react-native'
 import * as complaintAction from '../actions/transaction'
 
 import styles from './Styles/SellerComplainDetailItemStyle'
@@ -122,7 +121,6 @@ class SellerComplainDetailItem extends React.Component {
 
   componentDidMount () {
     if (!this.submitting.detail) {
-      Reactotron.log(this.state.idComplain)
       this.submitting = {
         ...this.submitting,
         detail: true
@@ -407,8 +405,8 @@ class SellerComplainDetailItem extends React.Component {
   }
 
   renderDetailRefundMoney (data, disputeStatus) {
-    var maksedMoney = this.maskedMoney(data.refund.total)
     if (disputeStatus === 8) {
+      var maksedMoney = this.maskedMoney(data.refund.total)
       return (
         <View style={[styles.flexRowBorder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <Text style={styles.semiboldSlateFlexOne}>Uang yang direfund</Text>

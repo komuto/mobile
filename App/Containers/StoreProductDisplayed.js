@@ -16,10 +16,9 @@ import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 import * as storeAction from '../actions/stores'
-import * as catalogAction from '../actions/catalog'
 
 import styles from './Styles/DaftarProdukScreenStyle'
 
@@ -34,8 +33,7 @@ class StoreProductDisplayed extends React.Component {
     this.positionCatalog = []
     this.submitting = {
       showProduct: false,
-      doneFetching: true,
-      isRefreshing: false
+      doneFetching: true
     }
     this.state = {
       product: props.dataProduk || null,
@@ -44,26 +42,40 @@ class StoreProductDisplayed extends React.Component {
       statusDotHidden: false,
       rowTerpilih: '',
       loading: true,
-      modal: false
+      modal: false,
+      callback: this.props.callback,
+      isRefreshing: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataProduk} = nextProps
+    const {dataProduk, callback} = nextProps
+    if (callback !== undefined) {
+      if (callback !== this.state.callback) {
+        Reactotron.log('callback show')
+        this.refresh()
+        this.setState({
+          callback: callback
+        })
+      }
+    }
 
     if (!isFetching(dataProduk) && this.submitting.showProduct) {
       this.submitting = { ...this.submitting, showProduct: false, doneFetching: false }
       if (isError(dataProduk)) {
         ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
+        this.submitting = { ...this.submitting, showProduct: false, doneFetching: true }
       }
       if (isFound(dataProduk)) {
         this.setState({ product: dataProduk })
       }
     }
 
-    if (!isFetching(dataProduk) && this.submitting.isRefreshing) {
-      this.submitting = { ...this.submitting, isRefreshing: false, doneFetching: false }
+    if (!isFetching(dataProduk) && this.state.isRefreshing) {
+      this.setState({ isRefreshing: false })
+      this.submitting = { ...this.submitting, doneFetching: false }
       if (isError(dataProduk)) {
+        this.submitting = { ...this.submitting, showProduct: false, doneFetching: true }
         ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
       }
       if (isFound(dataProduk)) {
@@ -79,7 +91,7 @@ class StoreProductDisplayed extends React.Component {
         ...this.submitting,
         showProduct: true
       }
-      this.props.getListProduk(false)
+      this.props.getListProduk({hidden: false})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -195,6 +207,46 @@ class StoreProductDisplayed extends React.Component {
     }
   }
 
+  checkLabelProduct (productName, isDiscount, isWholesale) {
+    if (isDiscount && isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isDiscount) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.diskon} style={[styles.imageDot]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else if (isWholesale) {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+          <TouchableOpacity>
+            <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
+          <Text style={styles.textTitle}>{productName}</Text>
+        </View>
+      )
+    }
+  }
+
   mapSingleProduk (data, id, catalogId) {
     const mapProduk = data.map((data, i) => {
       return (
@@ -203,15 +255,7 @@ class StoreProductDisplayed extends React.Component {
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
-              <View style={[styles.flexRow, {alignItems: 'flex-start'}]}>
-                <Text style={styles.textTitle}>{data.name}</Text>
-                <TouchableOpacity>
-                  <Image source={Images.diskon} style={styles.imageDot} />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Image source={Images.grosir} style={[styles.imageDot, {marginLeft: 9}]} />
-                </TouchableOpacity>
-              </View>
+              {this.checkLabelProduct(data.name, data.is_discount, data.is_wholesaler)}
               {this.labeldaridropshipper(data)}
             </View>
           </View>
@@ -225,6 +269,12 @@ class StoreProductDisplayed extends React.Component {
     )
   }
 
+  checkAmountCatalog (rowLenght, idRow) {
+    if (rowLenght > 0) {
+      this.setState({statusDotDisplay: true, rowTerpilih: idRow})
+    }
+  }
+
   DaftarProdukDiTampilkan (rowData, sectionId, rowId) {
     const product = rowData.storeProducts.map((data, i) => {
       return (
@@ -232,7 +282,7 @@ class StoreProductDisplayed extends React.Component {
           <View style={styles.containerProduk}>
             <View style={styles.headerInfoAlamat}>
               <Text style={styles.textHeader}>{data.catalog.name} ({data.catalog.count_product})</Text>
-              <TouchableOpacity activeOpacity={0.5} onPress={() => this.setState({statusDotDisplay: true, rowTerpilih: i})}>
+              <TouchableOpacity activeOpacity={0.5} onPress={() => this.checkAmountCatalog(data.catalog.count_product, i)}>
                 <Image source={Images.threeDotSilver} style={styles.imageDot} />
               </TouchableOpacity>
             </View>
@@ -364,7 +414,6 @@ class StoreProductDisplayed extends React.Component {
   }
 
   handleListProduk (id, name, hidden) {
-    this.props.getProductByCatalogs(id, 100)
     NavigationActions.productlistbycatalog({
       type: ActionConst.PUSH,
       title: name,
@@ -374,54 +423,53 @@ class StoreProductDisplayed extends React.Component {
 
   handleHideProduct (id, hidden, textButton) {
     this.setState({statusDotDisplay: false})
-    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
       statusHidden: hidden,
       actionType: 'hideProduct',
       title: 'Pindahkan ke Katalog Lain',
-      textButton: textButton + ' Barang Terpilih'
+      textButton: textButton + ' Barang Terpilih',
+      callback: this.state.callback
     })
   }
 
   handleDeleteProduct (id, hidden) {
     this.setState({statusDotDisplay: false})
-    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       actionType: 'deleteProduct',
       idCatalog: id,
       statusHidden: hidden,
       title: 'Hapus Barang',
-      textButton: 'Hapus Barang Terpilih'
+      textButton: 'Hapus Barang Terpilih',
+      callback: this.state.callback
     })
   }
 
   handleMoveToCatalog (id, hidden) {
     this.setState({statusDotDisplay: false})
-    this.props.getProductByCatalogDropship(id, false)
-    this.props.getCatalog()
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
       statusHidden: hidden,
       actionType: 'moveCatalog',
       title: 'Pindahkan ke Katalog Lain',
-      textButton: 'Pindahkan Barang Terpilih'
+      textButton: 'Pindahkan Barang Terpilih',
+      callback: this.state.callback
     })
   }
 
   handleMoveToDropshipper (id, hidden) {
     this.setState({statusDotDisplay: false})
-    this.props.getProductByCatalogDropship(id, false)
     NavigationActions.movingproduct({
       type: ActionConst.PUSH,
       idCatalog: id,
       actionType: 'moveDropship',
       statusHidden: hidden,
       title: 'Jadikan Dropshipping',
-      textButton: 'Jadikan Dropshipping untuk barang terpilih'
+      textButton: 'Jadikan Dropshipping untuk barang terpilih',
+      callback: this.state.callback
     })
   }
 
@@ -432,13 +480,8 @@ class StoreProductDisplayed extends React.Component {
   }
 
   refresh = () => {
-    if (!this.submitting.isRefreshing) {
-      this.submitting = {
-        ...this.submitting,
-        isRefreshing: true
-      }
-      this.props.getListProduk(false)
-    }
+    this.setState({ isRefreshing: true })
+    this.props.getListProduk({hidden: false})
   }
 
   render () {
@@ -455,7 +498,7 @@ class StoreProductDisplayed extends React.Component {
           ref='produkTampil'
           refreshControl={
             <RefreshControl
-              refreshing={this.submitting.isRefreshing}
+              refreshing={this.state.isRefreshing}
               onRefresh={this.refresh}
               tintColor={Colors.red}
               colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
@@ -480,10 +523,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-  getProductByCatalogs: (id) => dispatch(storeAction.getStoreCatalogProducts({id: id, limit: 100})),
-  getProductByCatalogDropship: (id, isDropShip) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: isDropShip})),
-  getCatalog: () => dispatch(catalogAction.getListCatalog())
+  getListProduk: (param) => dispatch(storeAction.getStoreProducts(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductDisplayed)

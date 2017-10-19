@@ -742,6 +742,12 @@ class DetailSales extends React.Component {
         </View>
       )
     })
+    let solutionText
+    if (dispute.solution === 1) {
+      solutionText = 'REFUND'
+    } else {
+      solutionText = 'TUKAR BARANG'
+    }
     return (
       <View>
         {mapFoto}
@@ -752,7 +758,7 @@ class DetailSales extends React.Component {
           </View>
           <View style={styles.borderRow}>
             <Text style={[styles.textSemiBoldslate]}>Pilihan Solusi</Text>
-            <Text style={[styles.textRegularSlate, {flex: 2, textAlign: 'right'}]}>{dispute.note}</Text>
+            <Text style={[styles.textRegularSlate, {flex: 2, textAlign: 'right'}]}>{solutionText}</Text>
           </View>
         </View>
       </View>

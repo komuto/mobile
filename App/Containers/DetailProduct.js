@@ -124,7 +124,8 @@ class DetailProduct extends React.Component {
       isDropship: '',
       photoProductDropship: [],
       expeditionDropship: [],
-      shareUrl: ''
+      shareUrl: '',
+      isHere: true
     }
   }
 
@@ -241,12 +242,18 @@ class DetailProduct extends React.Component {
       ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.LONG)
       this.props.resetAddToWishlist()
     }
-    if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+    if (nextProps.dataFavorit.status === 200) {
       this.setState({
-        isStoreFavorite: false
+        isStoreFavorite: nextProps.dataFavorit.favorite
+      })
+    } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+      this.setState({
+        isStoreFavorite: !this.state.isStoreFavorite
       })
       ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.LONG)
-      nextProps.dataFavorit.status = 0
+      if (this.state.isHere) {
+        nextProps.dataFavorit.status = 0
+      }
     }
   }
 
@@ -1216,6 +1223,9 @@ class DetailProduct extends React.Component {
 
   detailPenjual (id) {
     this.props.getToko(id)
+    this.setState({
+      isHere: false
+    })
     NavigationActions.storedetail({ type: ActionConst.PUSH })
   }
 

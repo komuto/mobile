@@ -6,7 +6,8 @@ import {
   View,
   TouchableOpacity,
   Modal,
-  ListView
+  ListView,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Images, Colors } from '../Themes'
@@ -14,6 +15,7 @@ import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as userAction from '../actions/user'
 import StoreDetailProduct from './StoreDetailProduct'
 import StoreDetailProfile from './StoreDetailProfile'
 import StoreDetailRating from './StoreDetailRating'
@@ -37,23 +39,40 @@ class StoreDetail extends React.Component {
       tabAktiv: 'Produk',
       height: [],
       namaToko: '',
-      alamat: 'Jakarta Selatan, DKI Jakarta',
+      alamat: '',
       verified: false,
-      fotoToko: null
+      fotoToko: null,
+      isFavorited: false,
+      getData: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
-      console.log(nextProps.dataToko.store)
+      if (this.state.getData) {
+        this.setState({
+          data: nextProps.dataToko.store.catalogs,
+          namaToko: nextProps.dataToko.store.name,
+          id: nextProps.dataToko.store.id,
+          alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
+          verified: nextProps.dataToko.store.is_verified,
+          fotoToko: nextProps.dataToko.store.logo || null,
+          isFavorited: nextProps.dataToko.store.is_favorite,
+          getData: false
+        })
+      }
+    } else if (nextProps.dataToko.status !== 200 && nextProps.dataToko.status !== 0) {
+      ToastAndroid.show(nextProps.dataToko.message, ToastAndroid.LONG)
+    }
+    if (nextProps.dataFavorit.status === 200) {
       this.setState({
-        data: nextProps.dataToko.store.catalogs,
-        namaToko: nextProps.dataToko.store.name,
-        id: nextProps.dataToko.store.id,
-        alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
-        verified: nextProps.dataToko.store.is_verified,
-        fotoToko: nextProps.dataToko.store.logo || null
+        isFavorited: nextProps.dataFavorit.favorite
       })
+    } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+      this.setState({
+        isFavorited: !this.state.isFavorited
+      })
+      nextProps.dataFavorit.status = 0
     }
   }
 
@@ -150,7 +169,7 @@ class StoreDetail extends React.Component {
   renderFotoToko () {
     if (this.state.fotoToko === null) {
       return (
-        <Image source={Images.contohproduct} style={styles.profilImage} />
+        <Image source={null} style={styles.profilImage} />
       )
     }
     return (
@@ -158,7 +177,38 @@ class StoreDetail extends React.Component {
     )
   }
 
+  favorite () {
+    const { isFavorited, id } = this.state
+    if (isFavorited) {
+      this.setState({
+        isFavorited: false
+      })
+    } else {
+      this.setState({
+        isFavorited: true
+      })
+    }
+    this.props.putFavoriteStore(id)
+  }
+
   render () {
+    const { isFavorited } = this.state
+    let renderFavorite
+    if (!isFavorited) {
+      renderFavorite = (
+        <TouchableOpacity style={[styles.button, { backgroundColor: Colors.snow }]} onPress={() => this.favorite()}>
+          <Image source={Images.tambah} style={styles.image} />
+          <Text style={[styles.verifiedText, { color: Colors.darkgrey }]}>Favorit</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      renderFavorite = (
+        <TouchableOpacity style={[styles.button, { backgroundColor: Colors.bluesky }]} onPress={() => this.favorite()}>
+          <Image source={Images.centang} style={styles.image} />
+          <Text style={[styles.verifiedText, { color: Colors.snow }]}>Di Favoritkan</Text>
+        </TouchableOpacity>
+      )
+    }
     return (
       <View style={styles.container}>
         <View style={styles.headerContainer}>
@@ -180,10 +230,7 @@ class StoreDetail extends React.Component {
               <Text style={styles.verifiedText}>Kirim Pesan</Text>
             </TouchableOpacity>
             <View style={styles.separator} />
-            <TouchableOpacity style={styles.button}>
-              <Image source={Images.tambah} style={styles.image} />
-              <Text style={styles.verifiedText}>Favorit</Text>
-            </TouchableOpacity>
+            {renderFavorite}
           </View>
         </View>
         <ScrollableTabView
@@ -215,12 +262,14 @@ class StoreDetail extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataToko: state.stores
+    dataToko: state.stores,
+    dataFavorit: state.favorite
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id}))
   }
 }
 

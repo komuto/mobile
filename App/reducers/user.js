@@ -121,7 +121,8 @@ export const changePassword = createReducer(buildInitState())
 
 export const favoriteStore = createReducer(buildInitState())
   .addReducer({
-    type: actions.FAVORITE_STORE
+    type: actions.FAVORITE_STORE,
+    resultName: 'favorite'
   }).run()
 
 export const getPhone = createReducer(buildInitState({ phone: '' }))

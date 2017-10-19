@@ -182,7 +182,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            < TouchableOpacity onPress={() => this.handleSales()}>
+            <TouchableOpacity onPress={() => this.handleSales()}>
               <View style={styles.profile}>
                 <Image source={Images.penjualan} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>

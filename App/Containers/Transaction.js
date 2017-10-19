@@ -64,47 +64,51 @@ class Transaction extends React.Component {
           loading: false
         })
       }
-      let tempCountDown = [...tempData]
-      let lastData = []
-      for (i = 0; i < tempCountDown.length; i++) {
-        if (tempCountDown[i].bucket.status === 3) {
-          const time = tempCountDown[i].summary_transaction.time_left
-          if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
-            tempCountDown[i].bucket.status = 7
-            this.setState({
-              data: tempCountDown
-            })
-          } else {
-            setTimeout(
-              () => {
-                if (time.minutes > 0) {
-                  time.minutes = time.minutes - 1
-                } else if (time.minutes === 0 && time.hours > 0) {
-                  time.minutes = 59
-                  time.hours = time.hours - 1
-                } else if (time.minutes === 0 && time.hours === 0 && time.days > 0) {
-                  time.minutes = 59
-                  time.hours = 23
-                  time.days = time.days - 1
-                }
-                this.setState({
-                  data: tempCountDown
-                })
-              },
-              60000
-            )
+      try {
+        let tempCountDown = [...tempData]
+        let lastData = []
+        for (i = 0; i < tempCountDown.length; i++) {
+          if (tempCountDown[i].bucket.status === 3) {
+            const time = tempCountDown[i].summary_transaction.time_left
+            if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
+              tempCountDown[i].bucket.status = 7
+              this.setState({
+                data: tempCountDown
+              })
+            } else {
+              setTimeout(
+                () => {
+                  if (time.minutes > 0) {
+                    time.minutes = time.minutes - 1
+                  } else if (time.minutes === 0 && time.hours > 0) {
+                    time.minutes = 59
+                    time.hours = time.hours - 1
+                  } else if (time.minutes === 0 && time.hours === 0 && time.days > 0) {
+                    time.minutes = 59
+                    time.hours = 23
+                    time.days = time.days - 1
+                  }
+                  this.setState({
+                    data: tempCountDown
+                  })
+                },
+                60000
+              )
+            }
           }
         }
-      }
-      for (i = 0; i < tempCountDown.length; i++) {
-        if (tempCountDown[i].bucket.status === 7) {
-        } else {
-          lastData.push(tempCountDown[i])
+        for (i = 0; i < tempCountDown.length; i++) {
+          if (tempCountDown[i].bucket.status === 7) {
+          } else {
+            lastData.push(tempCountDown[i])
+          }
         }
+        this.setState({
+          data: lastData
+        })
+      } catch (e) {
+
       }
-      this.setState({
-        data: lastData
-      })
     } else if (nextProps.dataListTransaction.status !== 200 && nextProps.dataListTransaction.status !== 0) {
       this.setState({
         data: [],

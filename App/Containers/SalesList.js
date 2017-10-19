@@ -256,7 +256,7 @@ class SalesList extends React.Component {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.orange}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>COMPLAINT_DONE</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Komplain Selesai</Text>
         </View>
       )
     }

@@ -51,7 +51,8 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.regular,
     letterSpacing: 0.2,
-    marginBottom: 5
+    marginBottom: 5,
+    marginRight: 100
   },
   alamatToko: {
     color: Colors.labelgrey,
@@ -60,7 +61,6 @@ export default StyleSheet.create({
     letterSpacing: 0.2
   },
   verifiedText: {
-    color: Colors.darkgrey,
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.2
@@ -72,7 +72,6 @@ export default StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     flex: 1,
-    backgroundColor: Colors.snow,
     borderColor: Colors.lightSilver,
     borderWidth: 1
   },

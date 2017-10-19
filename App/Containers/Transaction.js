@@ -13,6 +13,7 @@ import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
+import ModalLogin from '../Components/ModalLogin'
 import * as transactionAction from '../actions/transaction'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -30,9 +31,11 @@ class Transaction extends React.Component {
       isRefreshing: true,
       loading: true,
       page: 1,
-      loadmore: true
+      loadmore: true,
+      isLogin: this.props.datalogin.login
     }
     this.props.getListTransaction(1)
+    console.log(props.datalogin.login)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -118,7 +121,9 @@ class Transaction extends React.Component {
         loadmore: false,
         isLoading: false
       })
-      ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.LONG)
+      if (nextProps.dataListTransaction.status !== 401) {
+        ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.LONG)
+      }
     }
   }
 
@@ -392,7 +397,7 @@ class Transaction extends React.Component {
   }
 
   render () {
-    const { loading } = this.state
+    const { loading, isLogin } = this.state
     if (loading) {
       return (
         <View style={styles.container}>
@@ -401,9 +406,14 @@ class Transaction extends React.Component {
         </View>
       )
     }
+    let view = null
+    if (!isLogin) {
+      view = <ModalLogin visible={!isLogin} onClose={() => this.setState({ isLogin: true })} />
+    }
     return (
       <View style={styles.container}>
         {this.renderView()}
+        {view}
       </View>
     )
   }
@@ -411,7 +421,8 @@ class Transaction extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataListTransaction: state.listTransactions
+    dataListTransaction: state.listTransactions,
+    datalogin: state.isLogin
   }
 }
 

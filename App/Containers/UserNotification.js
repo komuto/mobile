@@ -6,6 +6,7 @@ import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
 import * as reviewAction from '../actions/review'
 import * as transactionAction from '../actions/transaction'
+import ModalLogin from '../Components/ModalLogin'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -15,6 +16,12 @@ import styles from './Styles/NotifikasiPenggunaStyle'
 import { Images } from '../Themes'
 
 class UserNotification extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      isLogin: this.props.datalogin.login
+    }
+  }
 
   ComponentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
@@ -84,6 +91,11 @@ class UserNotification extends React.Component {
   }
 
   render () {
+    const { isLogin } = this.state
+    let view = null
+    if (!isLogin) {
+      view = <ModalLogin visible={!isLogin} onClose={() => this.setState({ isLogin: true })} />
+    }
     return (
       <ScrollView style={styles.container}>
         <View style={[styles.dataProfileContainer, {elevation: 0.5}]}>
@@ -93,6 +105,7 @@ class UserNotification extends React.Component {
           {this.menu(styles.borderContainer, Images.help, 'Pusat Resolusi', () => this.handleResolution())}
           {this.menu(styles.borderContainer, Images.laporkan, 'Komplain Barang', () => this.handleComplain())}
         </View>
+        {view}
       </ScrollView>
     )
   }
@@ -100,6 +113,7 @@ class UserNotification extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    datalogin: state.isLogin
   }
 }
 

@@ -17,6 +17,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
+import ModalLogin from '../Components/ModalLogin'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -125,7 +126,8 @@ class DetailProduct extends React.Component {
       photoProductDropship: [],
       expeditionDropship: [],
       shareUrl: '',
-      isHere: true
+      isHere: true,
+      modalLogin: false
     }
   }
 
@@ -1428,17 +1430,24 @@ class DetailProduct extends React.Component {
         this.props.getCatalog()
       }
     } else {
-      Alert.alert('Pesan', 'Mohon login terlebih dahulu untuk membeli produk ini')
+      this.setState({
+        modalLogin: true
+      })
     }
   }
 
   render () {
-    if (this.state.loadingProduk) {
+    const { loadingProduk, modalLogin } = this.state
+    if (loadingProduk) {
       return (
         <View style={styles.spinner}>
           <ActivityIndicator color={Colors.red} size='large' />
         </View>
       )
+    }
+    let view = null
+    if (modalLogin) {
+      view = <ModalLogin visible={modalLogin} onClose={() => this.setState({ modalLogin: false })} />
     }
     return (
       <View style={styles.container}>
@@ -1479,6 +1488,7 @@ class DetailProduct extends React.Component {
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}
         {this.renderModalKecamatan()}
+        {view}
       </View>
     )
   }

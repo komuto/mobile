@@ -88,7 +88,17 @@ class BuyerComplainDetailItem extends React.Component {
   renderNotification () {
     const { dateNotification, statusSolution, status, responseStatus, complainSolved, fineProductsTotal } = this.state
     let solution, responseSeller
-    if (complainSolved || status === 8) {
+    if (responseStatus !== 0 && fineProductsTotal > 0 && status === 8) {
+      return (
+        <View style={styles.notificationContainerBlue}>
+          <Image source={Images.infoBlue} style={styles.imageInfo} />
+          <Text style={styles.textInfoBlue}>
+            Silahkan mengisi review dari beberapa barang barang di invoice ini, setelah itu kami akan
+            mengirim dana refund ke saldo Anda
+          </Text>
+        </View>
+      )
+    } else if (complainSolved || status === 8) {
       return (
         <View style={styles.notificationContainerGreen}>
           <Image source={Images.infoDone} style={[styles.imageInfo, { marginTop: 2 }]} />
@@ -128,16 +138,6 @@ class BuyerComplainDetailItem extends React.Component {
             </Text>
           </View>
         )
-      } else if (responseStatus === 1 && fineProductsTotal > 0) {
-        return (
-          <View style={styles.notificationContainerBlue}>
-            <Image source={Images.infoBlue} style={styles.imageInfo} />
-            <Text style={styles.textInfoBlue}>
-              Silahkan mengisi review dari beberapa barang barang di invoice ini, setelah itu kami akan
-              mengirim dana refund ke saldo Anda
-            </Text>
-          </View>
-        )
       } else if (responseStatus === 1 && fineProductsTotal === 0) {
         return (
           <View style={styles.notificationContainerBlue}>
@@ -174,7 +174,7 @@ class BuyerComplainDetailItem extends React.Component {
 
   renderButtonAddReview () {
     const { responseStatus, fineProductsTotal, status } = this.state
-    if (responseStatus === 1 && fineProductsTotal > 0 && status !== 8) {
+    if (responseStatus !== 0 && fineProductsTotal > 0 && status === 8) {
       return (
         <View style={[styles.dataContainer, { marginBottom: 30 }]}>
           <TouchableOpacity style={styles.button} onPress={() => this.review()}>

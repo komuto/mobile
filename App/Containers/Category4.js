@@ -77,7 +77,8 @@ class Category4 extends React.Component {
       isFound: false,
       modalSearch: false,
       refreshSearch: false,
-      valueSearch: ''
+      valueSearch: '',
+      gettingData: true
     }
   }
 
@@ -118,7 +119,8 @@ class Category4 extends React.Component {
             isLoading: false,
             loadmore: true,
             page: this.state.page + 1,
-            isRefreshing: false
+            isRefreshing: false,
+            gettingData: false
           })
         } else {
           const data = [...this.state.listDataSource, ...propsProduct.products]
@@ -724,34 +726,61 @@ class Category4 extends React.Component {
   }
 
   render () {
-    let background
+    const { gettingData, listDataSource } = this.state
+    let background, view
     background = stylesSearch.kategori
+    if (!gettingData) {
+      if (listDataSource.length > 0) {
+        view = (
+          <View style={{ flex: 1 }}>
+            {this.viewProduk()}
+            <View style={styles.footerMenu}>
+              <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
+                <View style={styles.buttonFooter}>
+                  <Image style={styles.imageFooter} source={Images.sort} />
+                  <Text style={styles.footerButton}>Urutkan</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
+                <View style={styles.buttonFooter}>
+                  <Image style={styles.imageFooter} source={Images.filter} />
+                  <Text style={styles.footerButton}>Filter</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
+                <View style={styles.buttonFooter}>
+                  {this.renderImageTypeView()}
+                  <Text style={styles.footerButton}>Tampilan</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      } else {
+        view = (
+          <View style={styles.imageContainer}>
+            <Image source={Images.notFound} style={styles.image} />
+            <Text style={styles.textLabel}>Produk tidak ditemukan</Text>
+            <Text style={styles.textInfo}>
+              Kami tidak bisa menemukan barang dari kategori produk ini
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>
+                <Text style={styles.textButton}>Kembali ke Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      view = null
+    }
     return (
       <View style={styles.container}>
         <View style={[styles.headerContainer, background]}>
           {this.renderHeader()}
         </View>
-        {this.viewProduk()}
-        <View style={styles.footerMenu}>
-          <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
-            <View style={styles.buttonFooter}>
-              <Image style={styles.imageFooter} source={Images.sort} />
-              <Text style={styles.footerButton}>Urutkan</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
-            <View style={styles.buttonFooter}>
-              <Image style={styles.imageFooter} source={Images.filter} />
-              <Text style={styles.footerButton}>Filter</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
-            <View style={styles.buttonFooter}>
-              {this.renderImageTypeView()}
-              <Text style={styles.footerButton}>Tampilan</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        {view}
         {this.modalFilter()}
         {this.modalSort()}
         <ModalSearch

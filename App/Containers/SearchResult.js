@@ -5,7 +5,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TextInput,
   BackAndroid,
   Modal,
   ActivityIndicator,
@@ -16,7 +15,6 @@ import {
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import Reactotron from 'reactotron-react-native'
 import ModalSearchGeneral from '../Components/Search'
 
 import Filter from '../Components/Filter'

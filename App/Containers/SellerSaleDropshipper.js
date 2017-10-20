@@ -15,7 +15,6 @@ import {Actions as NavigationActions, ActionConst} from 'react-native-router-flu
 import moment from 'moment'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
-import Reactotron from 'reactotron-react-native'
 
 import * as salesAction from '../actions/transaction'
 

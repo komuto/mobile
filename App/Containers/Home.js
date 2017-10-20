@@ -14,7 +14,6 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
-import Reactotron from 'reactotron-react-native'
 import { Images, Colors, Fonts } from '../Themes'
 
 import {isFetching, isError, isFound} from '../Services/Status'

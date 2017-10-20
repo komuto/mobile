@@ -120,7 +120,6 @@ class Dropshipping extends React.Component {
   }
 
   handleDropshipper () {
-    this.props.getDropshipper(true)
     NavigationActions.chooseitemdropship({
       type: ActionConst.PUSH,
       loading: true

@@ -19,6 +19,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 import Reactotron from 'reactotron-react-native'
 
 import * as storeAction from '../actions/stores'
+import * as catalogAction from '../actions/catalog'
 
 import styles from './Styles/DaftarProdukScreenStyle'
 
@@ -523,7 +524,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListProduk: (param) => dispatch(storeAction.getStoreProducts(param))
+  getListProduk: (param) => dispatch(storeAction.getStoreProducts(param)),
+  getCatalog: () => dispatch(catalogAction.getListCatalog())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductDisplayed)

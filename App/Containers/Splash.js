@@ -102,11 +102,11 @@ class Splash extends React.Component {
         //   default:
         //     NavigationActions.backtab({ type: ActionConst.REPLACE })
         // }
-        NavigationActions.chooseitemdropship({ type: ActionConst.REPLACE })
+        NavigationActions.backtab({ type: ActionConst.REPLACE })
         SplashScreen.hide()
       }
       SplashScreen.hide()
-      NavigationActions.chooseitemdropship({ type: ActionConst.REPLACE })
+      NavigationActions.backtab({ type: ActionConst.REPLACE })
     })
   }
 

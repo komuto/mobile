@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Text,
   Alert,
+  ScrollView,
   ToastAndroid,
   ListView,
   View,
@@ -27,6 +28,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesHome from './Styles/HomeStyle'
 import stylesDropshipping from './Styles/PilihBarangDropshippingScreenStyle'
+import stylesLokasi from './Styles/ProductDetailScreenStyle'
 
 import { Images, Colors, Metrics, Fonts } from '../Themes'
 
@@ -36,6 +38,7 @@ class ChooseItemDropship extends React.Component {
     super(props)
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.submitting = {
       product: false,
       search: false,
@@ -72,7 +75,18 @@ class ChooseItemDropship extends React.Component {
       other: '',
       sort: 'newest',
       wishlist: props.propsWishlist || null,
-      category1: props.category1 || null
+      category1: props.category1 || null,
+      addCategory1: [
+        {
+          'id': 0,
+          'name': 'Pilih Kategori'
+        }
+      ],
+      modalCategory1: false,
+      idCategory1: '',
+      fieldCategory1: 'Semua Kategori',
+      colorCategory1: Colors.labelgrey,
+      iconCategory1: Images.down
     }
   }
 
@@ -80,9 +94,11 @@ class ChooseItemDropship extends React.Component {
     if (!this.submitting.product) {
       this.submitting = {
         ...this.submitting,
-        product: true
+        product: true,
+        category1: true
       }
       Reactotron.log('ChooseItemDropship')
+      this.props.getCategory1()
       this.props.getDropshipper({is_dropship: true})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
@@ -150,11 +166,11 @@ class ChooseItemDropship extends React.Component {
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    const { id, search, page, sort } = this.state
+    const { search, page, sort, idCategory1 } = this.state
     this.submitting.category = true
     this.props.getDropshipper({
       q: search,
-      category_id: id,
+      category_id: idCategory1,
       condition: kondisi,
       services: pengiriman,
       price: price,
@@ -261,12 +277,12 @@ class ChooseItemDropship extends React.Component {
       other,
       page,
       sort,
-      id
+      idCategory1
     } = this.state
     this.submitting.category = true
     this.props.getDropshipper({
       q: search,
-      category_id: id,
+      category_id: idCategory1,
       condition: kondisi,
       services: pengiriman,
       price: price,
@@ -445,7 +461,6 @@ class ChooseItemDropship extends React.Component {
       dropship: true,
       buttonText: 'Pilih Barang ini'
     })
-    this.props.getDetailProduk(id)
   }
 
   renderRowList (rowData) {
@@ -623,12 +638,12 @@ class ChooseItemDropship extends React.Component {
   }
 
   loadMore () {
-    const {isLoading, loadmore, search, kondisi, pengiriman, price, address, brand, other, page, sort, id} = this.state
+    const {isLoading, loadmore, search, kondisi, pengiriman, price, address, brand, other, page, sort, idCategory1} = this.state
     if (!isLoading) {
       if (loadmore) {
         this.props.getDropshipper({
           q: search,
-          category_id: id,
+          category_id: idCategory1,
           condition: kondisi,
           services: pengiriman,
           price: price,
@@ -644,7 +659,7 @@ class ChooseItemDropship extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, listDataSource: [], page: 1, search: '' })
+    this.setState({ isRefreshing: true, listDataSource: [], page: 1, search: '', idCategory1: '' })
     this.props.getDropshipper({is_dropship: true})
   }
 
@@ -684,11 +699,57 @@ class ChooseItemDropship extends React.Component {
     return (
       <View style={stylesDropshipping.containerKategori}>
         <Text style={stylesDropshipping.textKategori}>Kategori : </Text>
-        <TouchableOpacity style={{alignItems: 'center', flexDirection: 'row', flex: 1}} activeOpacity={0.5} onPress={() => console.log('tai')}>
-          <Text style={[stylesDropshipping.textKategori, {flex: 1}]}>Semua Kategori</Text>
-          <Image source={Images.down} style={stylesDropshipping.image} />
+        <TouchableOpacity style={{alignItems: 'center', flexDirection: 'row', flex: 1}} activeOpacity={0.5} onPress={() => this.setState({ modalCategory1: true, iconCategory1: Images.up })}>
+          <Text style={[stylesDropshipping.textKategori, {flex: 1, color: this.state.colorCategory1}]}>{this.state.fieldCategory1}</Text>
+          <Image source={this.state.iconCategory1} style={stylesDropshipping.image} />
         </TouchableOpacity>
       </View>
+    )
+  }
+
+  renderRowCategory1 (rowData) {
+    return (
+      <TouchableOpacity
+        style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.9}
+        onPress={() => {
+          this.setState({
+            fieldCategory1: rowData.name,
+            idCategory1: rowData.id,
+            colorCategory1: Colors.darkgrey,
+            iconCategory1: Images.down,
+            modalCategory1: false,
+            listDataSource: [],
+            rowDataSource: [],
+            isRefreshing: true
+          })
+          this.props.getDropshipper({category_id: rowData.id})
+        }}
+      >
+        <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  modalCategory1 () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalCategory1}
+        onRequestClose={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}
+        >
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer2} onPress={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}>
+          <ScrollView style={styles.menuProvinsiContainer}>
+            <ListView
+              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory1.concat(this.state.category1.categories))}
+              renderRow={this.renderRowCategory1.bind(this)}
+              enableEmptySections
+            />
+          </ScrollView>
+        </TouchableOpacity>
+      </Modal>
     )
   }
 
@@ -733,6 +794,7 @@ class ChooseItemDropship extends React.Component {
         </View>
         {this.modalFilter()}
         {this.renderModalSort()}
+        {this.modalCategory1()}
       </View>
     )
   }

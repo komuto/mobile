@@ -296,5 +296,16 @@ export default StyleSheet.create({
     letterSpacing: 0.19,
     textAlign: 'center',
     color: Colors.snow
+  },
+  modalContainer2: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
   }
 })

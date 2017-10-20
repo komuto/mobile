@@ -21,7 +21,7 @@ class TransaksiDetailStatusBarang extends React.Component {
       image: '',
       invoice: '',
       status: this.props.statusBarang,
-      resi: '238423423',
+      resi: '',
       alamat: '',
       storeId: 0,
       date: '',
@@ -29,7 +29,8 @@ class TransaksiDetailStatusBarang extends React.Component {
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
       dataDispute: [],
       dispute: '',
-      idBucket: this.props.idBucket
+      idBucket: this.props.idBucket,
+      data: ''
     }
   }
 
@@ -55,7 +56,9 @@ class TransaksiDetailStatusBarang extends React.Component {
         image: nextProps.dataInvoice.invoice.store.logo, // http://www.tokomesin.com/wp-content/uploads/2015/08/Sate-Ayam-Madura-tokomesin.jpeg
         invoice: nextProps.dataInvoice.invoice.invoice_number,
         storeId: nextProps.dataInvoice.invoice.store.id,
-        date: nextProps.dataInvoice.invoice.created_at
+        date: nextProps.dataInvoice.invoice.created_at,
+        resi: nextProps.dataInvoice.invoice.shipping.airway_bill,
+        data: nextProps.dataInvoice.invoice
       })
       if (this.state.status === 5) { // || status === 6 nunggu data dari back end
         this.setState({
@@ -282,7 +285,7 @@ class TransaksiDetailStatusBarang extends React.Component {
           <View style={styles.disputeContainer}>
             <Text style={[styles.textTitle, { marginRight: 30 }]}>Masalah</Text>
             <View style={{ flex: 1 }} />
-            <Text style={[styles.teks, { marginRight: 80, textAlign: 'right' }]}>
+            <Text style={[styles.teks, { textAlign: 'right' }]}>
               {dispute.problems}
             </Text>
           </View>
@@ -321,7 +324,11 @@ class TransaksiDetailStatusBarang extends React.Component {
         type: ActionConst.PUSH
       })
     } else {
-      // komplain
+      const idDispute = this.state.data.dispute.id
+      this.props.getDetailDispute(idDispute)
+      NavigationActions.buyercomplaindetail({
+        type: ActionConst.PUSH
+      })
     }
   }
 
@@ -360,7 +367,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId}))
+    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId})),
+    getDetailDispute: (id) => dispatch(transactionAction.getComplainedOrderDetailBuyer({id: id}))
   }
 }
 

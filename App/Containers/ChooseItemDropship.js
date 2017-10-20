@@ -166,7 +166,7 @@ class ChooseItemDropship extends React.Component {
               autoCorrect
               onChangeText={this.handleTextSearch}
               underlineColorAndroid='transparent'
-              placeholder='Cari barang atau toko'
+              placeholder='Cari Barang'
             />
           </View>
         </View>

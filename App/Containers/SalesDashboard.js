@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as otherAction from '../actions/other'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/SalesDashboardStyle'
 
@@ -44,6 +45,7 @@ class SalesDashboard extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('sales dashboard')
     const { countOrder } = this.state
     if (!countOrder.isFound) {
       this.submitting = {

@@ -14,10 +14,11 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 import { Images, Colors, Fonts } from '../Themes'
 
 import {isFetching, isError, isFound} from '../Services/Status'
+import ModalSearchGeneral from '../Components/Search'
 
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
@@ -34,11 +35,13 @@ class Home extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.dataSourceSearch = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.submitting = {
       category: false,
       products: false,
       wishlist: false,
-      cart: false
+      cart: false,
+      search: false
     }
     this.state = {
       product: props.propsProducts || null,
@@ -50,12 +53,16 @@ class Home extends React.Component {
       getCartHome: true,
       isLogin: this.props.datalogin.login,
       cartItems: props.propsCart || null,
-      number: 0
+      number: 0,
+      isFound: false,
+      modalSearch: false,
+      refreshSearch: false,
+      resultSearch: []
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsProducts, propsCategory, propsWishlist, propsCart} = nextProps
+    const {propsProducts, propsCategory, propsWishlist, propsCart, dataSearch} = nextProps
 
     if (!isFetching(propsProducts) && this.submitting.products) {
       this.submitting = { ...this.submitting, products: false }
@@ -90,7 +97,6 @@ class Home extends React.Component {
     if (this.state.getCartHome && !isFetching(propsCart) && this.submitting.cart) {
       this.submitting = { ...this.submitting, cart: false }
       if (isError(propsCart)) {
-        // ToastAndroid.show(propsCart.message, ToastAndroid.SHORT)
       }
       if (isFound(propsCart)) {
         if (propsCart.cart.items.length > 0) {
@@ -105,6 +111,29 @@ class Home extends React.Component {
 
     if (!isFetching(propsProducts) && !isFetching(propsCategory)) {
       this.setState({ loading: false })
+    }
+
+    if (!isFetching(dataSearch) && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      if (isError(dataSearch)) {
+        ToastAndroid.show(dataSearch.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataSearch)) {
+        const result = dataSearch.products
+        if (result.length === 0) {
+          this.setState({
+            resultSearch: dataSearch.products,
+            isFound: true,
+            refreshSearch: false
+          })
+        } else {
+          this.setState({
+            resultSearch: dataSearch.products,
+            isFound: false,
+            refreshSearch: false
+          })
+        }
+      }
     }
   }
 
@@ -158,7 +187,39 @@ class Home extends React.Component {
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text })
+    this.setState({ search: text, isFound: false, refreshSearch: true })
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.submitting.search = true
+      setTimeout(() => {
+        this.props.getSearch({q: text})
+      }, 1000)
+    }
+  }
+
+  detailResult (name) {
+    this.setState({ modalSearch: false, page: 1, resultSearch: [], search: '' })
+    NavigationActions.searchresult({ header: name, type: ActionConst.PUSH, params: {q: name} })
+  }
+
+  searchFocus () {
+    this.setState({
+      isFound: false,
+      search: ''
+    })
+  }
+
+  renderRowSearch (rowData) {
+    return (
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.name)}>
+        <Text style={styles.textResult}>
+          {rowData.name}
+        </Text>
+      </TouchableOpacity>
+    )
   }
 
   addWishList (id) {
@@ -355,16 +416,6 @@ class Home extends React.Component {
     }
   }
 
-  openSearch () {
-    this.setState({
-      tipe: 'search'
-    })
-  }
-
-  search () {
-    NavigationActions.search({ type: ActionConst.PUSH, from: 'home' })
-  }
-
   produkTerbaru () {
     NavigationActions.newproduct({
       type: ActionConst.PUSH,
@@ -377,7 +428,6 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
-    this.props.getDetailProduk(id)
   }
 
   handleDetailKategori (rowId, title) {
@@ -385,8 +435,7 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: rowId,
       header: title,
-      name: title,
-      searchfrom: 'home'
+      name: title
     })
   }
 
@@ -421,7 +470,7 @@ class Home extends React.Component {
         parallaxHeaderHeight={110}
         backgroundSpeed={10}
         renderBackground={() => (
-          <View key='background' style={{ backgroundColor: Colors.snow }} />
+          <View key='background' style={{ backgroundColor: Colors.greenish }} />
         )}
         renderForeground={() => (
           <View key='parallax-header' style={{ backgroundColor: Colors.snow }} >
@@ -438,7 +487,7 @@ class Home extends React.Component {
                   {this.renderCartNumber()}
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity style={styles.searchContainer} onPress={() => this.search()}>
+              <TouchableOpacity style={styles.searchContainer} onPress={() => this.setState({modalSearch: true})}>
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
                   <Text style={styles.inputText}>
@@ -452,7 +501,7 @@ class Home extends React.Component {
 
         renderStickyHeader={() => (
           <View key='sticky-header' style={{ backgroundColor: Colors.snow }}>
-            <TouchableOpacity style={styles.floatingSearch} onPress={() => this.search()}>
+            <TouchableOpacity style={styles.floatingSearch} onPress={() => this.setState({modalSearch: true})}>
               <Image source={Images.searchGrey} style={styles.searchImage} />
               <View style={styles.textInputContainer}>
                 <Text style={styles.inputText}>
@@ -495,6 +544,18 @@ class Home extends React.Component {
             </Text>
             <Image source={Images.rightArrow} style={styles.imageCategory} />
           </TouchableOpacity>
+          <ModalSearchGeneral
+            visible={this.state.modalSearch}
+            onClose={() => this.setState({modalSearch: false})}
+            onBack={() => this.setState({modalSearch: false})}
+            refreshing={this.state.refreshSearch}
+            value={this.state.search}
+            onChangeText={this.handleTextSearch}
+            notFound={this.state.isFound}
+            dataSource={this.dataSourceSearch.cloneWithRows(this.state.resultSearch)}
+            renderRow={this.renderRowSearch.bind(this)}
+            onChangeSearch={() => this.searchFocus()}
+          />
         </View>
       </ParallaxScrollView>
     )
@@ -507,7 +568,8 @@ const mapStateToProps = (state) => {
     propsProducts: state.products,
     datalogin: state.isLogin,
     propsWishlist: state.addWishlist,
-    propsCart: state.cart
+    propsCart: state.cart,
+    dataSearch: state.searchProduct
   }
 }
 
@@ -515,12 +577,12 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getKategori: () => dispatch(homeAction.categoryList()),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
     getWishlist: () => dispatch(wishlistAction.wishlist()),
     getCart: () => dispatch(cartAction.getCart()),
-    getCartReset: () => dispatch(cartAction.getCartReset())
+    getCartReset: () => dispatch(cartAction.getCartReset()),
+    getSearch: (param) => dispatch(homeAction.search(param))
   }
 }
 

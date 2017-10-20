@@ -69,8 +69,6 @@ import PaymentDoku from '../Containers/PaymentDoku'
 import PaymentAlfamart from '../Containers/PaymentAlfamart'
 import PaymentSuccess from '../Containers/PaymentSuccess'
 import PaymentAlfamartDetail from '../Containers/PaymentAlfamartDetail'
-import SearchByCategory from '../Containers/SearchByCategory'
-import SearchResultByCategory from '../Containers/SearchResultByCategory'
 import ChooseItemDropship from '../Containers/ChooseItemDropship'
 import PlaceInCatalog from '../Containers/PlaceInCatalog'
 import ProductListByCatalog from '../Containers/ProductListByCatalog'
@@ -676,20 +674,6 @@ class NavigationRouter extends Component {
             key='paymentalfamartdetail'
             component={PaymentAlfamartDetail}
             title='Detail Transaksi'
-            navBar={CustomNavBar}
-            hideNavBar
-            hideBackImage={false} />
-          <Scene
-            key='searchresultbycategory'
-            component={SearchResultByCategory}
-            title='Search Result'
-            navBar={CustomNavBar}
-            hideNavBar
-            hideBackImage={false} />
-          <Scene
-            key='searchbycategory'
-            component={SearchByCategory}
-            title='Search'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage={false} />

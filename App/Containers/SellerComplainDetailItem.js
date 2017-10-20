@@ -18,6 +18,7 @@ import moment from 'moment'
 import {MaskService} from 'react-native-masked-text'
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as complaintAction from '../actions/transaction'
+import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/SellerComplainDetailItemStyle'
 import {Colors, Images, Fonts} from '../Themes'
@@ -125,6 +126,7 @@ class SellerComplainDetailItem extends React.Component {
         ...this.submitting,
         detail: true
       }
+      Reactotron.log('detail complain item ' + this.state.idComplain)
       this.props.getDetailComplaintSeller(this.state.idComplain)
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)

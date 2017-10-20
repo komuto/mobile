@@ -1,9 +1,9 @@
 import React from 'react'
-import { TextInput, RefreshControl, Text, View, Image, Modal, TouchableOpacity, ListView } from 'react-native'
-import styles from './Styles/SearchByCategoryStyle'
-import {Images, Colors} from '../Themes'
+import { RefreshControl, View, ListView, Text, TouchableOpacity, Image, TextInput, Modal } from 'react-native'
+import styles from './Styles/SearchJsStyle'
+import { Images, Colors } from '../Themes'
 
-export default class SearchByCategory extends React.Component {
+export default class Search extends React.Component {
 
   constructor (props) {
     super(props)
@@ -12,8 +12,8 @@ export default class SearchByCategory extends React.Component {
   }
 
   renderResult () {
-    const { isFound, dataSource, renderRow, refreshing, onChangeSearch } = this.props
-    if (isFound) {
+    const { notFound, dataSource, renderRow, refreshing, onChangeSearch } = this.props
+    if (notFound) {
       return (
         <View style={styles.notFoundContainer}>
           <Image
@@ -52,19 +52,19 @@ export default class SearchByCategory extends React.Component {
               progressBackgroundColor={Colors.snow}
             />
           }
-        />
+          />
       )
     }
   }
 
   render () {
-    const { onChangeText, value } = this.props
+    const { visible, onRequestClose, value, onChangeText } = this.props
     return (
       <Modal
         animationType={'fade'}
         transparent
-        visible={this.props.visible}
-        onRequestClose={this.props.onRequestClose}
+        visible={visible}
+        onRequestClose={onRequestClose}
       >
         <View style={styles.container}>
           <View style={styles.headerContainer}>
@@ -76,7 +76,7 @@ export default class SearchByCategory extends React.Component {
             </TouchableOpacity>
             <View style={styles.textInputContainer}>
               <TextInput
-                ref='searchCat'
+                ref='search'
                 autoFocus
                 style={styles.inputText}
                 value={value}
@@ -95,3 +95,14 @@ export default class SearchByCategory extends React.Component {
     )
   }
 }
+
+// // Prop type warnings
+// Search.propTypes = {
+//   someProperty: React.PropTypes.object,
+//   someSetting: React.PropTypes.bool.isRequired
+// }
+//
+// // Defaults for props
+// Search.defaultProps = {
+//   someSetting: false
+// }

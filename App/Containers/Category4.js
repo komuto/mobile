@@ -22,32 +22,31 @@ import {isFetching, isError, isFound} from '../Services/Status'
 import Reactotron from 'reactotron-react-native'
 
 import * as produkAction from '../actions/product'
+import * as homeAction from '../actions/home'
 
 import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors, Metrics, Fonts } from '../Themes'
+import { Images, Colors, Fonts } from '../Themes'
 
 class Category4 extends React.Component {
 
   constructor (props) {
     super(props)
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    this.dataSourceSearch = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.submitting = {
       wishlist: false,
       category: false,
-      search: false
+      search: false,
+      loadFromSearch: false
     }
     this.state = {
       search: '',
-      dataProduct: props.dataFilter || null,
+      dataProduct: props.propsProduct || null,
       listDataSource: [],
       rowDataSource: [],
       header: this.props.header || 'search',
-      tipe: this.props.tipe || 'kategori',
       tipeView: 'list',
       sortModal: false,
       terbaruColor: Colors.lightblack,
@@ -62,14 +61,13 @@ class Category4 extends React.Component {
       page: 1,
       loadmore: false,
       isRefreshing: true,
-      isLoading: true,
+      isLoading: false,
       kondisi: '',
       pengiriman: '',
       price: '',
       address: '',
       brand: '',
       other: '',
-      statusFilter: false,
       sort: 'newest',
       wishlist: props.propsWishlist || null,
       searchfrom: this.props.searchfrom,
@@ -78,7 +76,9 @@ class Category4 extends React.Component {
       resultSearch: [],
       from: this.props.from,
       isFound: false,
-      modalSearch: false
+      modalSearch: false,
+      refreshSearch: false,
+      valueSearch: ''
     }
   }
 
@@ -88,45 +88,54 @@ class Category4 extends React.Component {
         ...this.submitting,
         category: true
       }
-      this.props.getFilterProduk({category_id: this.state.id, page: 1})
+      this.props.getProduct({category_id: this.state.id})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
+    this.submitting.loadFromSearch = false
+    this.setState({search: ''})
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsWishlist, dataFilter, dataSearch} = nextProps
-    if (!isFetching(dataFilter) && this.submitting.category) {
+    const {propsWishlist, propsProduct, dataSearch} = nextProps
+
+    if (!isFetching(propsProduct) && this.submitting.category) {
       this.submitting = { ...this.submitting, category: false }
-      if (isError(dataFilter)) {
-        ToastAndroid.show(dataFilter.message, ToastAndroid.SHORT)
+      if (isError(propsProduct)) {
+        ToastAndroid.show(propsProduct.message, ToastAndroid.SHORT)
       }
-      if (isFound(dataFilter)) {
-        const isFound = dataFilter.products.length
-        if (isFound > 0) {
-          const data = [...this.state.listDataSource, ...dataFilter.products]
+      if (isFound(propsProduct)) {
+        const isFound = propsProduct.products.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
           this.setState({
-            dataProduct: dataFilter,
+            dataProduct: propsProduct,
             listDataSource: data,
             rowDataSource: data,
             isLoading: false,
-            isRefreshing: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            isRefreshing: false
           })
         } else {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
           this.setState({
-            isLoading: true,
-            isRefreshing: false,
+            dataProduct: propsProduct,
+            listDataSource: data,
+            rowDataSource: data,
+            isLoading: false,
             loadmore: false,
-            page: 1
+            page: 1,
+            isRefreshing: false
           })
         }
       }
     }
+
     if (!isFetching(dataSearch) && this.submitting.search) {
       this.submitting = { ...this.submitting, search: false }
       if (isError(dataSearch)) {
@@ -137,16 +146,19 @@ class Category4 extends React.Component {
         if (result.length === 0) {
           this.setState({
             resultSearch: dataSearch.products,
-            isFound: true
+            isFound: true,
+            refreshSearch: false
           })
         } else {
           this.setState({
             resultSearch: dataSearch.products,
-            isFound: false
+            isFound: false,
+            refreshSearch: false
           })
         }
       }
     }
+
     if (!isFetching(propsWishlist) && this.submitting.wishlist) {
       this.submitting = { ...this.submitting, wishlist: false }
       if (isError(propsWishlist)) {
@@ -158,138 +170,97 @@ class Category4 extends React.Component {
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
-    const { id, search } = this.state
-    this.props.getFilterProduk(search, id, 1, kondisi, pengiriman, price, address, brand, other, sort)
-    this.setState({
-      filter: false,
-      page: 1,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
-      statusFilter: true,
-      isRefreshing: true
-    })
-  }
-
   handleBack = () => {
-    if (this.state.tipe === 'search') {
-      this.setState({
-        tipe: 'data'
-      })
-      return true
-    } else if (NavigationActions.pop()) {
-      return true
-    }
+    NavigationActions.pop()
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text })
+    this.setState({ search: text, valueSearch: text, isFound: false, refreshSearch: true })
     this.trySearch(text)
   }
 
   trySearch (text) {
     if (text !== '') {
       this.submitting.search = true
-      this.props.getSearch({q: text, category_id: this.state.id})
+      setTimeout(() => {
+        this.props.getSearch({q: text, category_id: this.state.id})
+      }, 1000)
     }
   }
 
   detailResult (name) {
-    this.setState({ modalSearch: false, search: '', header: name, page: 1, listDataSource: [], rowDataSource: [] })
+    this.setState({ modalSearch: false, header: name, page: 1, search: '', rowDataSource: [], listDataSource: [] })
     if (!this.submitting.category) {
       this.submitting = {
         ...this.submitting,
-        category: true
+        category: true,
+        loadFromSearch: true
       }
-      Reactotron.log('detail')
-      this.props.getFilterProduk({q: name, category_id: this.state.id, page: 1})
+      this.props.getProduct({q: name, category_id: this.state.id, page: 1})
     }
   }
 
-  renderRow (rowData) {
+  renderRowSearch (rowData) {
     return (
-      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.product.name)}>
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.name)}>
         <Text style={styles.textResult}>
-          {rowData.product.name}
+          {rowData.name}
         </Text>
       </TouchableOpacity>
     )
   }
 
-  backButton () {
-    NavigationActions.pop()
-  }
-
-  backSearch () {
+  searchFocus () {
     this.setState({
-      tipe: 'data'
+      isFound: false,
+      search: ''
     })
   }
 
-  loadMore () {
-    // const { search, id, page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
-    const { search, id, page, loadmore, isLoading } = this.state
+  loadMore = () => {
+    Reactotron.log('load more')
+    const {isLoading, loadmore, valueSearch, kondisi, pengiriman, price, address, brand, other, page, sort, id} = this.state
     if (!isLoading) {
       if (loadmore) {
-        Reactotron.log('loadmore')
         this.submitting.category = true
-        this.props.getFilterProduk({
-          q: search,
+        this.props.getProduct({
+          q: valueSearch,
           category_id: id,
-          page: page
+          condition: kondisi,
+          services: pengiriman,
+          price: price,
+          address: address,
+          brands: brand,
+          other: other,
+          page: page,
+          sort: sort
         })
       }
     }
   }
 
   refresh = () => {
-    Reactotron.log('refresh')
-    // const { search, id, page, kondisi, pengiriman, price, address, brand, other, sort } = this.state
-    const { search, id } = this.state
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
-    this.submitting.category = true
-    this.props.getFilterProduk({
-      q: search,
+    const { id } = this.state
+    const { lightblack } = Colors
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
+    this.submitting = {
+      wishlist: false,
+      category: true,
+      search: false,
+      loadFromSearch: false,
+      sort: false
+    }
+    this.props.getProduct({
       category_id: id,
       page: 1
     })
   }
 
   renderHeader () {
-    const { search } = this.state
-    if (this.state.tipe === 'search') {
-      return (
-        <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backSearch()}>
-            <Image
-              source={Images.leftArrow}
-              style={stylesSearch.imageStyle}
-            />
-          </TouchableOpacity>
-          <View style={stylesSearch.textInputContainer}>
-            <TextInput
-              ref='search'
-              autoFocus
-              style={stylesSearch.inputText}
-              value={search}
-              keyboardType='default'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleTextSearch}
-              underlineColorAndroid='transparent'
-              placeholder='Cari barang atau toko'
-            />
-          </View>
-        </View>
-      )
-    }
     return (
       <View style={stylesSearch.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => NavigationActions.pop()}>
           <Image
             source={Images.iconBack}
             style={stylesSearch.imageStyle}
@@ -298,7 +269,7 @@ class Category4 extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
+        <TouchableOpacity onPress={() => this.setState({modalSearch: true})}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -306,88 +277,6 @@ class Category4 extends React.Component {
         </TouchableOpacity>
       </View>
     )
-  }
-
-  openFilter () {
-    this.setState({
-      filter: true
-    })
-  }
-
-  closeModal () {
-    this.setState({
-      filter: false
-    })
-  }
-
-  setSortModal (visible) {
-    this.setState({sortModal: visible})
-  }
-
-  _onPress (field) {
-    const {bluesky, lightblack} = Colors
-    const {search, id, kondisi, pengiriman, price, address, brand, other} = this.state
-    if (field === 'terbaru') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
-      this.props.getFilterProduk(search, id, 1, kondisi, pengiriman, price, address, brand, other, 'newest')
-    } else if (field === 'termahal') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
-      this.props.getFilterProduk(search, id, 1, kondisi, pengiriman, price, address, brand, other, 'expensive')
-    } else if (field === 'termurah') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
-      return this.props.getFilterProduk(search, id, 1, kondisi, pengiriman, price, address, brand, other, 'cheapest')
-    } else if (field === 'terlaris') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
-      this.props.getFilterProduk(search, id, 1, kondisi, pengiriman, price, address, brand, other, 'selling')
-    }
-  }
-
-  modalSort () {
-    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
-    return (
-      <Modal
-        animationType={'slide'}
-        transparent
-        visible={this.state.sortModal}
-        onRequestClose={() => this.setState({ sortModal: false })}
-        >
-        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
-        <View style={styles.modalSortContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Urutkan Berdasarkan</Text>
-          </View>
-          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termurah')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termahal')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-    )
-  }
-
-  openSearch () {
-    this.setState({modalSearch: true})
-    // NavigationActions.searchbycategory({ type: ActionConst.PUSH, from: this.state.searchfrom, id: this.state.id })
   }
 
   renderVerified (status) {
@@ -422,7 +311,7 @@ class Category4 extends React.Component {
     )
   }
 
-  addWishList (id) {
+  onClickWishList (id) {
     const {listDataSource} = this.state
     if (this.props.datalogin.login) {
       this.submitting = {
@@ -435,7 +324,7 @@ class Category4 extends React.Component {
           myProduct.product.is_liked = !myProduct.product.is_liked
         }
       })
-      this.props.addWishList({id: id})
+      this.props.addWishList({id})
       this.setState({ listDataSource })
     } else {
       Alert.alert('Pesan', 'Anda belum login')
@@ -445,13 +334,13 @@ class Category4 extends React.Component {
   renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity onPress={() => this.addWishList({id: id})}>
+        <TouchableOpacity onPress={() => this.onClickWishList(id)}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => this.addWishList({id: id})}>
+      <TouchableOpacity onPress={() => this.onClickWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -500,7 +389,7 @@ class Category4 extends React.Component {
 
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
+        this.onClickProdukDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <View style={styles.containerTitle}>
@@ -547,7 +436,7 @@ class Category4 extends React.Component {
     })
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
+        this.onClickProdukDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
@@ -573,7 +462,7 @@ class Category4 extends React.Component {
     )
   }
 
-  produkDetail (id) {
+  onClickProdukDetail (id) {
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id
@@ -596,9 +485,9 @@ class Category4 extends React.Component {
     if (this.state.tipeView === 'grid') {
       return (
         <ListView
-          contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+          contentContainerStyle={{flexDirection: 'row', flexWrap: 'wrap'}}
           enableEmptySections
-          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          dataSource={this.dataSourceList.cloneWithRows(this.state.rowDataSource)}
           renderRow={this.renderRowGrid.bind(this)}
           refreshControl={
             <RefreshControl
@@ -610,13 +499,13 @@ class Category4 extends React.Component {
               titleColor={Colors.red}
               progressBackgroundColor={Colors.snow}
             />
-        }
-          onEndReached={this.loadMore(this)}
+          }
+          onEndReached={this.loadMore}
           renderFooter={() => {
             if (this.state.loadmore) {
               return (
                 <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50, marginLeft: Metrics.screenWidth / 2 - 20 }]}
+                  style={[styles.loadingStyle, { height: 50 }]}
                   size='small'
                   color='#ef5656'
                 />
@@ -645,7 +534,7 @@ class Category4 extends React.Component {
             progressBackgroundColor={Colors.snow}
           />
         }
-        onEndReached={this.loadMore(this)}
+        onEndReached={this.loadMore}
         renderFooter={() => {
           if (this.state.loadmore) {
             return (
@@ -687,7 +576,7 @@ class Category4 extends React.Component {
             <Text style={styles.modalHeaderText}>
               Filter
             </Text>
-            <TouchableOpacity onPress={() => this.closeModal()}>
+            <TouchableOpacity onPress={() => this.setState({filter: false})}>
               <Image
                 source={Images.close}
                 style={styles.imageCancel}
@@ -702,13 +591,142 @@ class Category4 extends React.Component {
     )
   }
 
+  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
+    const { id, valueSearch, page, sort } = this.state
+    this.submitting.category = true
+    this.props.getProduct({
+      q: valueSearch,
+      category_id: id,
+      condition: kondisi,
+      services: pengiriman,
+      price: price,
+      address: address,
+      brands: brand,
+      other: other,
+      page: page,
+      sort: sort
+    })
+    this.setState({
+      filter: false,
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other,
+      isRefreshing: true,
+      rowDataContainer: [],
+      listDataSource: []
+    })
+  }
+
+  modalSort () {
+    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.sortModal}
+        onRequestClose={() => this.setState({ sortModal: false })}
+        >
+        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
+        <View style={styles.modalSortContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Urutkan Berdasarkan</Text>
+          </View>
+          <TouchableOpacity onPress={() => this.onClickSort('terbaru')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('termurah')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('termahal')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('terlaris')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  }
+
+  dispatchSort (typesort) {
+    const {lightblack} = Colors
+    this.setState({
+      isRefreshing: true,
+      listDataSource: [],
+      rowDataSource: [],
+      page: 1,
+      terbaruColor: lightblack,
+      termurahColor: lightblack,
+      termahalColor: lightblack,
+      terlarisColor: lightblack,
+      terbaruCek: 0,
+      termurahCek: 0,
+      termahalCek: 0,
+      terlarisCek: 0
+    })
+    const {
+      valueSearch,
+      kondisi,
+      pengiriman,
+      price,
+      address,
+      brand,
+      other,
+      page,
+      sort,
+      id
+    } = this.state
+    this.submitting.category = true
+    this.props.getProduct({
+      q: valueSearch,
+      category_id: id,
+      condition: kondisi,
+      services: pengiriman,
+      price: price,
+      address: address,
+      brands: brand,
+      other: other,
+      page: page,
+      sort: sort
+    })
+  }
+
+  onClickSort (field) {
+    const {bluesky, lightblack} = Colors
+    if (field === 'terbaru') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'newest'})
+      this.dispatchSort('newest')
+    } else if (field === 'termahal') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'expensive'})
+      this.dispatchSort('expensive')
+    } else if (field === 'termurah') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'cheapest'})
+      this.dispatchSort('cheapest')
+    } else if (field === 'terlaris') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, sortModal: false, sort: 'selling'})
+      this.dispatchSort('selling')
+    }
+  }
+
   render () {
     let background
-    if (this.state.tipe === 'search') {
-      background = stylesSearch.search
-    } else {
-      background = stylesSearch.kategori
-    }
+    background = stylesSearch.kategori
     return (
       <View style={styles.container}>
         <View style={[styles.headerContainer, background]}>
@@ -716,13 +734,13 @@ class Category4 extends React.Component {
         </View>
         {this.viewProduk()}
         <View style={styles.footerMenu}>
-          <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.sort} />
               <Text style={styles.footerButton}>Urutkan</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.blah} onPress={() => this.openFilter()}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.filter} />
               <Text style={styles.footerButton}>Filter</Text>
@@ -739,13 +757,16 @@ class Category4 extends React.Component {
         {this.modalSort()}
         <ModalSearch
           visible={this.state.modalSearch}
+          ref='searchCat'
           onClose={() => this.setState({modalSearch: false})}
           onBack={() => this.setState({modalSearch: false})}
+          refreshing={this.state.refreshSearch}
           value={this.state.search}
           onChangeText={this.handleTextSearch}
           isFound={this.state.isFound}
-          dataSource={this.dataSourceRow.cloneWithRows(this.state.resultSearch)}
-          renderRow={this.renderRow.bind(this)}
+          dataSource={this.dataSourceList.cloneWithRows(this.state.resultSearch)}
+          renderRow={this.renderRowSearch.bind(this)}
+          onChangeSearch={() => this.searchFocus()}
         />
       </View>
     )
@@ -754,18 +775,18 @@ class Category4 extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataFilter: state.productByCategory,
+    propsProduct: state.productByCategory,
     propsWishlist: state.addWishlist,
     datalogin: state.isLogin,
-    dataSearch: state.productBySearch
+    dataSearch: state.searchProduct
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
-    getFilterProduk: (param) => dispatch(produkAction.listProductByCategory(param)),
-    getSearch: (param) => dispatch(produkAction.listProductBySearch(param))
+    getProduct: (param) => dispatch(produkAction.listProductByCategory(param)),
+    getSearch: (param) => dispatch(homeAction.search(param))
   }
 }
 

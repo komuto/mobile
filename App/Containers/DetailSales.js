@@ -17,6 +17,7 @@ import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import StarRating from 'react-native-star-rating'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -68,64 +69,6 @@ class DetailSales extends React.Component {
       receiptNumber: 123412341234,
       statusReceipt: 1,
       modalChangeReceiptNumber: false,
-      photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}],
-      itemProblem: [{
-        product: [
-          {
-            images: Images.contohproduct, productName: 'Sepatu Jogging Nike Hitam'
-          },
-          {
-            images: Images.contohproduct, productName: 'Sepatu Jogging Nike Hitam '
-          }
-        ],
-        problem: 'Barang tidak sesuai deskripsi, Produk tidak lengkap, Barang rusak',
-        solution: 'Refund Dana'
-      }],
-      dataReview: [
-        {
-          'id': 142,
-          'review': 'Mantap gan barangnya',
-          'quality': 5,
-          'accuracy': 5,
-          'created_at': 1505433716,
-          'product': {
-            'id': 96.42,
-            'name': 'TV Kecil',
-            'image': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg',
-            'store': {
-              'id': 42,
-              'name': 'Toko TV',
-              'logo': 'https://komutodev.aptmi.com/uploads/toko/5c36c93e1e5246008eb520b0e1d2372202e10da3_YouTube-icon-full_color.png'
-            }
-          },
-          'user': {
-            'id': 32,
-            'name': 'bleble',
-            'photo': 'https://komutodev.aptmi.com/uploads/user/https://scontent.xx.fbcdn.net/v/t1.0-1/s200x200/12190927_1051452451551693_3353738072722896044_n.jpg?oh=1a89bdfda8446cc6b3c82a4536970ba3&oe=599E476F'
-          }
-        },
-        {
-          'id': 141,
-          'review': 'Mantap gan barangnya',
-          'quality': 5,
-          'accuracy': 5,
-          'created_at': 1505433486,
-          'product': {
-            'id': 96.42,
-            'name': 'TV Kecil',
-            'image': 'https://komutodev.aptmi.com/uploads/produk/8011774ba21b8cc99a20583008bc07e43d19bdc1_klepon1.jpg',
-            'store': {
-              'id': 42,
-              'name': 'Toko TV',
-              'logo': 'https://komutodev.aptmi.com/uploads/toko/5c36c93e1e5246008eb520b0e1d2372202e10da3_YouTube-icon-full_color.png'
-            }
-          },
-          'user': {
-            'id': 32,
-            'name': 'bleble',
-            'photo': 'https://komutodev.aptmi.com/uploads/user/https://scontent.xx.fbcdn.net/v/t1.0-1/s200x200/12190927_1051452451551693_3353738072722896044_n.jpg?oh=1a89bdfda8446cc6b3c82a4536970ba3&oe=599E476F'
-          }
-        }],
       stateDetailSale: [],
       dispute: [],
       shipping: [],
@@ -163,6 +106,7 @@ class DetailSales extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('Detail Sales ' + this.state.idSales)
     this.props.getDetailSales(this.state.idSales)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -725,9 +669,10 @@ class DetailSales extends React.Component {
   }
 
   handleDetailComplaint (id) {
+    Reactotron.log('complain id ' + id)
     NavigationActions.sellercomplaindetail({
       type: ActionConst.PUSH,
-      idComplaint: id
+      idComplain: id
     })
   }
 
@@ -940,7 +885,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getDetailSales: (id) => dispatch(salesAction.getSaleDetail({id: id})),
+  getDetailSales: (id) => dispatch(salesAction.getSaleDetail({id})),
   updateReceipeNumber: (id, receipeNumber) => dispatch(salesAction.inputAirwayBill({id: id, airway_bill: receipeNumber}))
 })
 

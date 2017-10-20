@@ -281,5 +281,16 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     paddingTop: 100
+  },
+  buttonStyle: {
+    flex: 1,
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textResult: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey
   }
 })

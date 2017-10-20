@@ -28,7 +28,9 @@ class Payment extends React.Component {
       token: '',
       loading: false,
       transaction: this.props.transaction,
-      payWithSaldo: false
+      payWithSaldo: false,
+      statusTransaction: -1,
+      isWallet: 0
     }
   }
 
@@ -150,6 +152,9 @@ class Payment extends React.Component {
             idCart: nextProps.dataTransaction.transaction.bucket.id
           })
         }
+        this.setState({
+          statusTransaction: nextProps.dataTransaction.transaction.bucket.status
+        })
       }
     } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
       ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.LONG)
@@ -306,7 +311,15 @@ class Payment extends React.Component {
     this.setState({
       payWithSaldo: true
     })
-    this.props.checkout(true)
+    if (this.state.statusTransaction !== 3) {
+      this.props.checkout()
+    } else {
+      this.props.getDetailTransaction(this.state.idCart)
+      NavigationActions.paymentbalance({
+        type: ActionConst.PUSH,
+        transaction: this.state.transaction
+      })
+    }
   }
 
   midtrans () {
@@ -319,7 +332,9 @@ class Payment extends React.Component {
       this.setState({
         loading: true
       })
-      this.props.checkout(false)
+      if (this.state.statusTransaction !== 3) {
+        this.props.checkout()
+      }
     }
   }
 
@@ -356,7 +371,7 @@ const mapDispatchToProps = (dispatch) => {
     getSnapToken: (id) => dispatch(paymentAction.getMidtransToken({id: id, platform: 'apps'})),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getCart: dispatch(cartAction.getCart()),
-    checkout: (wallet) => dispatch(cartAction.checkout({is_wallet: wallet})),
+    checkout: () => dispatch(cartAction.checkout()),
     getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id})),
     getProfile: dispatch(userAction.getProfile())
   }

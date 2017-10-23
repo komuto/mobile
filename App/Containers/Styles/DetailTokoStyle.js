@@ -162,7 +162,6 @@ export default StyleSheet.create({
     color: Colors.darkgrey
   },
   scrollView: {
-    paddingTop: 10,
-    paddingBottom: 10
+    flex: 1
   }
 })

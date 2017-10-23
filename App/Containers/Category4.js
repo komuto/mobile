@@ -82,6 +82,13 @@ class Category4 extends React.Component {
     }
   }
 
+  backToHome () {
+    NavigationActions.backtab({
+      type: ActionConst.RESET
+    })
+    return true
+  }
+
   componentDidMount () {
     if (!this.submitting.category) {
       this.submitting = {
@@ -131,7 +138,8 @@ class Category4 extends React.Component {
             isLoading: false,
             loadmore: false,
             page: 1,
-            isRefreshing: false
+            isRefreshing: false,
+            gettingData: false
           })
         }
       }
@@ -173,6 +181,7 @@ class Category4 extends React.Component {
 
   handleBack = () => {
     NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {

@@ -31,7 +31,9 @@ class Category3 extends React.Component {
   }
 
   backToHome () {
-    NavigationActions.popTo('backtab')
+    NavigationActions.backtab({
+      type: ActionConst.RESET
+    })
     return true
   }
 

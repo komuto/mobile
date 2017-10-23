@@ -7,7 +7,6 @@ import {
   ListView,
   BackAndroid,
   ActivityIndicator,
-  Alert,
   ToastAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -15,6 +14,7 @@ import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors, Fonts } from '../Themes'
+import ModalLogin from '../Components/ModalLogin'
 import { marketplace } from '../config'
 
 import {isFetching, isError, isFound} from '../Services/Status'
@@ -57,7 +57,8 @@ class Home extends React.Component {
       isFound: false,
       modalSearch: false,
       refreshSearch: false,
-      resultSearch: []
+      resultSearch: [],
+      modalLogin: false
     }
   }
 
@@ -238,7 +239,9 @@ class Home extends React.Component {
       this.props.addWishList(id)
       this.setState({ product })
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      this.setState({
+        modalLogin: true
+      })
     }
   }
 
@@ -412,7 +415,10 @@ class Home extends React.Component {
       this.props.getWishlist()
       NavigationActions.wishlist({ type: ActionConst.PUSH })
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      // Alert.alert('Pesan', 'Anda belum login')
+      this.setState({
+        modalLogin: true
+      })
     }
   }
 
@@ -463,8 +469,19 @@ class Home extends React.Component {
     }
   }
 
+  onClose () {
+    this.setState({
+      modalLogin: false
+    })
+  }
+
   render () {
     const name = marketplace
+    const { modalLogin } = this.state
+    let view = null
+    if (modalLogin) {
+      view = <ModalLogin visible={modalLogin} onClose={() => this.onClose()} />
+    }
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
@@ -527,7 +544,7 @@ class Home extends React.Component {
             </View>
           </Swiper>
           <Text style={styles.titleCategory}>
-            Kategory Produk
+            Kategori Produk
           </Text>
           {this.renderKategori()}
           <TouchableOpacity style={styles.allCategory} onPress={() => this.semuaKategori()}>
@@ -546,6 +563,7 @@ class Home extends React.Component {
             </Text>
             <Image source={Images.rightArrow} style={styles.imageCategory} />
           </TouchableOpacity>
+          {view}
           <ModalSearchGeneral
             visible={this.state.modalSearch}
             onClose={() => this.setState({modalSearch: false})}

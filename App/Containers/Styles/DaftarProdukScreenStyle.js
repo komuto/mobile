@@ -79,9 +79,9 @@ export default StyleSheet.create({
   },
   floatButton: {
     position: 'absolute',
-    top: Metrics.screenHeight - Metrics.navBarHeight - 130,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 140,
     left: 10,
-    backgroundColor: 'rgba(64,72,82,0.8)',
+    backgroundColor: 'rgba(64,72,82,0.6)',
     borderRadius: 5,
     width: 150,
     height: 45,
@@ -103,7 +103,7 @@ export default StyleSheet.create({
   },
   create: {
     position: 'absolute',
-    top: Metrics.screenHeight - Metrics.navBarHeight - 140,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 150,
     right: 10,
     backgroundColor: Colors.bluesky,
     borderRadius: 200,

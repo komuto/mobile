@@ -70,9 +70,7 @@ export default StyleSheet.create({
   },
   imageProduct: {
     height: 35,
-    width: 35,
-    borderRadius: 3,
-    marginLeft: 19.3
+    width: 35
   },
   maskedImage: {
     height: 35,
@@ -80,6 +78,10 @@ export default StyleSheet.create({
     borderRadius: 3,
     marginLeft: 19.3,
     backgroundColor: Colors.paleGreyFive
+  },
+  image: {
+    height: 35,
+    width: 35
   },
   box: {
     width: 25,

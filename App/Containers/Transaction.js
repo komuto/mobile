@@ -74,7 +74,7 @@ class Transaction extends React.Component {
           if (tempCountDown[i].bucket.status === 3) {
             const time = tempCountDown[i].summary_transaction.time_left
             if (time.days === 0 && time.hours === 0 && time.minutes === 0) {
-              tempCountDown[i].bucket.status = 7
+              tempCountDown[i].bucket.status = 5
               this.setState({
                 data: tempCountDown
               })

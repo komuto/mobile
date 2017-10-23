@@ -32,13 +32,15 @@ class SendMessageStore extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataPesan.status === 200 && this.props.typeMessage === 'sendMessageStore') {
+    if (nextProps.dataPesan.status === 200) {
       this.setState({
         loading: false,
         notification: true,
         judul: '',
         pertanyaan: ''
       })
+      ToastAndroid.show('Pesan Berhasil Dikirim', ToastAndroid.LONG)
+      Actions.pop()
       this.props.resetSendMessage()
     } else if (nextProps.dataPesan.status !== 200 && nextProps.dataPesan.status !== 0) {
       this.setState({
@@ -108,17 +110,23 @@ class SendMessageStore extends React.Component {
 
   kirimpesan () {
     const { id, judul, pertanyaan } = this.state
-    this.setState({
-      loading: true
-    })
-    if (this.state.typeMessage === 'sendMessageStore') {
-      this.props.sendMessage(id, judul, pertanyaan)
-    } if (this.state.typeMessage === 'sendMessageBuyer') {
-      this.props.sendMessageBuyer(id, judul, pertanyaan)
-    } if (this.state.typeMessage === 'sendMessageSeller') {
-      this.props.sendMessageSeller(id, judul, pertanyaan)
-    } if (this.state.typeMessage === 'sendMessageReseller') {
-      this.props.sendMessageReseller(id, judul, pertanyaan)
+    if (judul === '') {
+      ToastAndroid.show('Judul Pesan tidak boleh kosong', ToastAndroid.LONG)
+    } else if (pertanyaan === '') {
+      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.LONG)
+    } else if (judul !== '' && pertanyaan !== '') {
+      this.setState({
+        loading: true
+      })
+      if (this.state.typeMessage === 'sendMessageStore') {
+        this.props.sendMessage(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageBuyer') {
+        this.props.sendMessageBuyer(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageSeller') {
+        this.props.sendMessageSeller(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageReseller') {
+        this.props.sendMessageReseller(id, judul, pertanyaan)
+      }
     }
   }
 

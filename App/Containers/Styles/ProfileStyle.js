@@ -5,12 +5,13 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.paleGrey,
+    backgroundColor: Colors.snow1,
     marginBottom: Metrics.tabBarHeight
   },
   loginContainer: {
     backgroundColor: Colors.snow,
-    paddingBottom: 50
+    paddingBottom: 50,
+    paddingTop: 50
   },
   imagestyle: {
     height: 186,
@@ -21,6 +22,7 @@ export default StyleSheet.create({
   welcomeContainer: {
     width: Metrics.screenWidth,
     marginTop: 46,
+    marginBottom: 20,
     justifyContent: 'center'
   },
   welcomeText: {

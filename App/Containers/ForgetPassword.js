@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   BackAndroid
 } from 'react-native'
+import { marketplace } from '../config'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as forgotPasswordAction from '../actions/user'
@@ -104,6 +105,7 @@ class ForgetPassword extends React.Component {
 
   render () {
     const {email} = this.state
+    const name = marketplace
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -114,7 +116,7 @@ class ForgetPassword extends React.Component {
           <View style={styles.textContainer}>
             <Text style={styles.text}>
               Silahkan menuliskan alamat email yang Anda{'\n'}
-              gunakan untuk mendaftar di Komuto
+              gunakan untuk mendaftar di {name}
             </Text>
           </View>
           <View style={styles.inputContainer}>

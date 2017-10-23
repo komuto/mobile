@@ -243,9 +243,9 @@ class StoreDetail extends React.Component {
           tabBarTextStyle={styles.textTab}
           locked
         >
-          <ScrollView tabLabel='Produk' ref='Product' style={styles.scrollView}>
+          <View tabLabel='Produk' ref='Product' style={styles.scrollView}>
             <StoreDetailProduct />
-          </ScrollView>
+          </View>
           <ScrollView tabLabel='Profile' ref='Profile' style={styles.scrollView}>
             <StoreDetailProfile />
           </ScrollView>
@@ -253,8 +253,6 @@ class StoreDetail extends React.Component {
             <StoreDetailRating />
           </ScrollView>
         </ScrollableTabView>
-        {this.renderFloatButton()}
-        {this.renderModal()}
       </View>
     )
   }

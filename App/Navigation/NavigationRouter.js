@@ -139,6 +139,7 @@ import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
 import ListFavoriteStores from '../Containers/ListFavoriteStores'
 import BuyerComplainConfirmation from '../Containers/BuyerComplainConfirmation'
 import BuyerComplainRefundReview from '../Containers/BuyerComplainRefundReview'
+import StoreDetailProductCatalogs from '../Containers/StoreDetailProductCatalogs'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1155,6 +1156,13 @@ class NavigationRouter extends Component {
             key='buyercomplainrefundreview'
             component={BuyerComplainRefundReview}
             title='Memberi Review'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='storedetailproductcatalogs'
+            component={StoreDetailProductCatalogs}
+            title=''
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

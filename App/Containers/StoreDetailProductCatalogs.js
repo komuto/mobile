@@ -49,27 +49,18 @@ class Wishlist extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataWishlist.status === 200) {
-      if (nextProps.dataWishlist.wishlist.length === 0) {
-        this.setState({
-          listDataSource: nextProps.dataWishlist.wishlist,
-          rowDataSource: nextProps.dataWishlist.wishlist,
-          loading: false,
-          empty: true
-        })
-      } else {
-        this.setState({
-          listDataSource: nextProps.dataWishlist.wishlist,
-          rowDataSource: nextProps.dataWishlist.wishlist,
-          loading: false,
-          empty: false
-        })
-      }
-    } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
+    if (nextProps.dataFilter.status === 200) {
+      this.setState({
+        listDataSource: nextProps.dataFilter.products,
+        rowDataSource: nextProps.dataFilter.products,
+        loading: false,
+        empty: false
+      })
+    } else if (nextProps.dataFilter.status !== 200 && nextProps.dataFilter.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataFilter.message, ToastAndroid.LONG)
     }
   }
 
@@ -229,7 +220,7 @@ class Wishlist extends React.Component {
     return (
       <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} />
+        <Image source={{ uri: rowData.product.image }} style={stylesProduk.imageProduct} />
         <View style={stylesProduk.containerDiskon}>
           <Text style={stylesProduk.diskon}>
             {rowData.product.discount} %
@@ -285,7 +276,7 @@ class Wishlist extends React.Component {
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         <View style={stylesHome.containerDiskon}>
           <Text style={stylesHome.diskon}>
             {rowData.product.discount} %
@@ -470,7 +461,7 @@ class Wishlist extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataWishlist: state.wishlist
+    dataFilter: state.productBySearch
   }
 }
 

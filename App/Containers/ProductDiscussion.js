@@ -126,8 +126,6 @@ class ProductDiscussion extends React.Component {
 
   renderRow (rowData) {
     const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
-    console.log(moment().format('x'))
-    console.log(rowData.created_at * 1000)
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>

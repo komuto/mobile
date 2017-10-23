@@ -184,13 +184,13 @@ class Profile extends React.Component {
               Masuk ke Akun Anda untuk { '\n' }mempermudah proses pembelian
             </Text>
           </View>
-          <View style={styles.welcome2Container}>
+          {/* <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
               Terima Kasih, Anda telah berhasil melakukan { '\n' }
               pembelian Token Listrik. Untuk melihat Token { '\n' }
               silahkan menuju bagian Transaksi
             </Text>
-          </View>
+          </View> */}
           <View style={styles.containerButton}>
             <TouchableOpacity style={styles.buttonRegister} onPress={() => this.register()}>
               <Text style={styles.textButtonRegister}>

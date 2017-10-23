@@ -127,6 +127,7 @@ class Payment extends React.Component {
         loading: false
       })
       ToastAndroid.show(nextProps.dataToken.message, ToastAndroid.LONG)
+      nextProps.dataToken.status = 0
     }
 
     if (nextProps.dataTransaction.status === 200) {

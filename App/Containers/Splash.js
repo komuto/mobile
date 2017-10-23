@@ -1,8 +1,9 @@
 import React from 'react'
-import { AsyncStorage, Linking } from 'react-native'
+import { AsyncStorage, Linking, ToastAndroid } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import { baseUrl } from '../config'
 import * as loginaction from '../actions/user'
 import FCM from 'react-native-fcm'
 import * as messageAction from '../actions/message'
@@ -66,14 +67,34 @@ class Splash extends React.Component {
     })
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataVerify.status === 200) {
+      NavigationActions.notification({
+        type: ActionConst.REPLACE,
+        tipeNotikasi: 'welcome'
+      })
+      this.props.stateLogin(true)
+      nextProps.dataVerify.status = 0
+    } else if (nextProps.dataVerify.status !== 200 && nextProps.dataVerify.status !== 0) {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+      ToastAndroid.show(nextProps.dataVerify.message, ToastAndroid.LONG)
+      nextProps.dataVerify.status = 0
+    }
+  }
+
   openUrl (url) {
     if (url.includes('product')) {
-      const id = url.replace('https://komuto.skyshi.com/product-detail?id=', '')
+      const id = url.replace(baseUrl + 'product-detail?id=', '')
       NavigationActions.detailproduct({
         type: ActionConst.REPLACE,
         id: id
       })
       this.props.getDetailProduk(id)
+    } else if (url.includes('verification')) {
+      const verifyToken = url.replace(baseUrl + 'signup-verification?token=', '')
+      this.props.verify(verifyToken)
     }
   }
 
@@ -117,7 +138,8 @@ class Splash extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataVerify: state.verification
   }
 }
 
@@ -127,7 +149,8 @@ const mapDispatchToProps = (dispatch) => {
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getDetailDiscussion: (id) => dispatch(productAction.getComment({id})),
     getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
-    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
+    verify: (token) => dispatch(loginaction.verification({token: token}))
   }
 }
 

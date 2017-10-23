@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Modal, TouchableOpacity, ToastAndroid } from 'react-native'
+import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import styles from './Styles/CameraModalStyle'
 import ImagePicker from 'react-native-image-crop-picker'
 
@@ -11,7 +11,7 @@ export default class CameraModal extends React.Component {
       height: 500
     }).then(image => {
       this.props.onPhotoCaptured(image.path)
-    }).catch(e => ToastAndroid.show('Terjadi Kesalahan..' + e, ToastAndroid.SHORT))
+    }).catch(e => {})
   }
 
   pickSingleBase64 () {
@@ -21,7 +21,7 @@ export default class CameraModal extends React.Component {
       cropping: true
     }).then(image => {
       this.props.onPhotoCaptured(image.path)
-    }).catch(e => ToastAndroid.show('Terjadi Kesalahan..' + e, ToastAndroid.SHORT))
+    }).catch(e => {})
   }
 
   render () {

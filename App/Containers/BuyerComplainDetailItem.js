@@ -71,10 +71,14 @@ class BuyerComplainDetailItem extends React.Component {
         dateNotification: limitDay + ' ' + limitTextMonth + ' ' + limitYear,
         resi: data.dispute_number,
         disputeId: data.id,
-        refundNumber: data.refund.refund_number,
         responseStatus: data.response_status,
         fineProductsTotal: data.fine_products.length
       })
+      if (data.solution === 1) {
+        this.setState({
+          refundNumber: data.refund.refund_number
+        })
+      }
     } else if (nextProps.dataComplain.status !== 200 && nextProps.dataComplain.status !== 0) {
       ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
     }
@@ -218,7 +222,7 @@ class BuyerComplainDetailItem extends React.Component {
       <View style={styles.dataContainer}>
         <Text style={[styles.textLabel, {flex: 1}]}>Penjual</Text>
         <Image source={{ uri: image }} style={styles.image} />
-        <Text style={styles.textData}>{shopName}</Text>
+        <Text style={[styles.textData, { flex: 1 }]}>{shopName}</Text>
       </View>
     )
   }

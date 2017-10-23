@@ -1,8 +1,10 @@
 import React from 'react'
-import { View, Text, ListView, TouchableOpacity, Image } from 'react-native'
+import { View, Text, ListView, TouchableOpacity, Image, ScrollView, Modal } from 'react-native'
 import { connect } from 'react-redux'
 import { Images, Metrics } from '../Themes'
 import { MaskService } from 'react-native-masked-text'
+import * as productAction from '../actions/product'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -15,10 +17,15 @@ class DetailTokoProduk extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.position = []
+    this.positionCatalog = []
     this.state = {
       data: [],
       namaToko: '',
-      verified: false
+      verified: false,
+      katalog: false,
+      modal: false,
+      idStore: -1
     }
   }
 
@@ -27,20 +34,30 @@ class DetailTokoProduk extends React.Component {
       this.setState({
         data: nextProps.dataToko.store.catalogs,
         namaToko: nextProps.dataToko.store.name,
-        verified: nextProps.dataToko.store.is_verified
+        verified: nextProps.dataToko.store.is_verified,
+        idStore: nextProps.dataToko.store.id
       })
     }
+  }
+
+  catalogProducts (id, title) {
+    const { idStore } = this.state
+    NavigationActions.storedetailproductcatalogs({
+      type: ActionConst.PUSH,
+      title: title
+    })
+    this.props.getProductByCatalog(idStore, id)
   }
 
   renderList (rowData) {
     if (rowData.products.length > 0) {
       return (
-        <View style={styles.containerListView}>
+        <View style={styles.containerListView} onLayout={this.onLayout}>
           <View style={styles.containerKategori}>
             <View style={styles.kategori}>
               <Text style={styles.textKategori}>{rowData.name}</Text>
             </View>
-            <TouchableOpacity style={styles.lihat}>
+            <TouchableOpacity style={styles.lihat} onPress={() => this.catalogProducts(rowData.id, rowData.name)}>
               <Text style={styles.textButton}>Lihat Semuanya</Text>
             </TouchableOpacity>
           </View>
@@ -55,7 +72,7 @@ class DetailTokoProduk extends React.Component {
       )
     }
     return (
-      <View style={styles.containerListView}>
+      <View style={styles.containerListView} onLayout={this.onLayout}>
         <View style={styles.containerKategori}>
           <View style={styles.kategori}>
             <Text style={styles.textKategori}>{rowData.name}</Text>
@@ -69,6 +86,14 @@ class DetailTokoProduk extends React.Component {
         </View>
       </View>
     )
+  }
+
+  produkDetail (id) {
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
   }
 
   renderRow (rowData) {
@@ -96,6 +121,7 @@ class DetailTokoProduk extends React.Component {
       <TouchableOpacity
         style={[stylesHome.rowDataContainer, {width: (Metrics.screenWidth / 2) + 20}]}
         activeOpacity={0.5}
+        onPress={() => this.produkDetail(rowData.id)}
       >
         {this.renderImage(image)}
         <View style={stylesHome.containerDiskon}>
@@ -189,14 +215,106 @@ class DetailTokoProduk extends React.Component {
     return hargaDiskon
   }
 
+  renderFloatButton () {
+    if (!this.state.katalog) {
+      return (
+        <TouchableOpacity style={styles.floatButton} onPress={() => this.openKatalog()}>
+          <Image source={Images.katalog} style={styles.floatImage} />
+          <Text style={styles.katalog}>Daftar Katalog</Text>
+        </TouchableOpacity>
+      )
+    }
+    return null
+  }
+
+  openKatalog () {
+    if (this.state.katalog) {
+      this.setState({
+        katalog: false,
+        modal: false
+      })
+    } else {
+      this.setState({
+        modal: true,
+        katalog: true
+      })
+    }
+  }
+
+  renderModal () {
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent
+        visible={this.state.modal}
+        onRequestClose={() => this.setState({ modal: false })}
+        >
+        <TouchableOpacity style={styles.modalContainer} onPress={() => this.openKatalog()}>
+          <View style={styles.listViewModal}>
+            <ListView
+              enableEmptySections
+              contentContainerStyle={{ flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.data)}
+              renderRow={this.renderRowCatalog.bind(this)}
+            />
+          </View>
+          <TouchableOpacity style={styles.floatButtonClose} onPress={() => this.openKatalog()}>
+            <Image source={Images.closewhite} style={styles.floatImage} />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
+  scroll (rowId) {
+    let temp = this.positionCatalog
+    this.setState({
+      katalog: false,
+      modal: false
+    })
+    this.refs.produkTampil.scrollTo({y: temp[rowId]})
+  }
+
+  renderRowCatalog (rowData, sectionId, rowId) {
+    if (parseInt(rowId) === this.state.data.length - 1) {
+      return (
+        <TouchableOpacity
+          style={styles.containerDataLast}
+          onPress={() => this.scroll(rowId)}
+        >
+          <Text style={styles.kategori2}>{rowData.name}</Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity
+          style={styles.containerData}
+          onPress={() => this.scroll(rowId)}
+        >
+          <Text style={styles.kategori2}>{rowData.name}</Text>
+        </TouchableOpacity>
+      )
+    }
+  }
+
+  onLayout = event => {
+    let {y} = event.nativeEvent.layout
+    this.position.push(y)
+    this.positionCatalog = this.position
+  }
+
   render () {
     return (
       <View style={styles.container}>
-        <ListView
-          enableEmptySections
-          dataSource={this.dataSource.cloneWithRows(this.state.data)}
-          renderRow={this.renderList.bind(this)}
-        />
+        <ScrollView style={{ flex: 1 }} ref='produkTampil'>
+          <ListView
+            enableEmptySections
+            dataSource={this.dataSource.cloneWithRows(this.state.data)}
+            renderRow={this.renderList.bind(this)}
+          />
+        </ScrollView>
+        {this.renderFloatButton()}
+        {this.renderModal()}
       </View>
     )
   }
@@ -210,6 +328,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
+    getProductByCatalog: (idStore, idCatalog) =>
+      dispatch(productAction.listProductBySearch({store_id: idStore, catalog_id: idCatalog}))
   }
 }
 

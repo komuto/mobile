@@ -239,6 +239,8 @@ class MovingProduct extends React.Component {
             <Image
               source={{uri: rowData.image}}
               style={styles.imageProduct}
+              resizeMode='cover'
+              borderRadius={5}
             />
           </View>
           <Text style={[styles.title, {marginLeft: 20.7}]}>{rowData.name}</Text>
@@ -331,7 +333,7 @@ class MovingProduct extends React.Component {
     const {product} = this.state
     if (product[i].is_checked) {
       product[i].is_checked = false
-      const newDataSource = product[i].map(data => {
+      const newDataSource = product.map(data => {
         return {...data}
       })
       this.setState({

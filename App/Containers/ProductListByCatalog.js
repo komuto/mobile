@@ -10,6 +10,8 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
+import * as productAction from '../actions/product'
+
 // import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -91,6 +93,7 @@ class ListProdukByCatalog extends React.Component {
       })
       this.props.getCatalog()
     } else {
+      this.props.getDetailProduct({id: id})
       NavigationActions.detailproductstore({
         type: ActionConst.PUSH,
         productName: name,
@@ -266,7 +269,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
-    getProductByCatalogs: (param) => dispatch(storeAction.getStoreCatalogProducts(param))
+    getProductByCatalogs: (param) => dispatch(storeAction.getStoreCatalogProducts(param)),
+    getDetailProduct: (param) => dispatch(productAction.getProduct(param))
   }
 }
 

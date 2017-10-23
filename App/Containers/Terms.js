@@ -144,7 +144,7 @@ class TermsScreenScreen extends React.Component {
         >
           <ScrollView style={{marginBottom: this.state.margin}}>
             <Text style={styles.headerTitle}>
-              Terms and Conditions akan ditampilkan pada profil toko dan detal barang Anda.
+              Terms and Conditions akan ditampilkan pada profil toko dan detail barang Anda.
             </Text>
             <View style={styles.body}>
               <TextInput

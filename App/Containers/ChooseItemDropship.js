@@ -461,6 +461,7 @@ class ChooseItemDropship extends React.Component {
       dropship: true,
       buttonText: 'Pilih Barang ini'
     })
+    this.props.getDetailProduk({id: id})
   }
 
   renderRowList (rowData) {
@@ -809,7 +810,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
-  getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+  getDetailProduk: (param) => dispatch(produkAction.getProduct(param)),
   getDropshipper: (param) => dispatch(produkAction.getDropshipProducts(param)),
   getCategory1: () => dispatch(categoriAction.categoryList())
 })

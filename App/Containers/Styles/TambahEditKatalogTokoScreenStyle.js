@@ -41,7 +41,7 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -1,
     color: Colors.lightblack,
-    fontFamily: Fonts.type.semiBolds,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,

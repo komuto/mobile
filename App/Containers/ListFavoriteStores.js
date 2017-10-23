@@ -143,21 +143,21 @@ class ListFavoriteStores extends React.Component {
   }
 
   loadMore () {
-    // const { page, loadmore } = this.state
-    // if (loadmore) {
-    //   this.submitting.list = true
-    //   this.props.getListFavStore(page)
-    // }
+    const { page, loadmore } = this.state
+    if (loadmore) {
+      this.submitting.list = true
+      this.props.getListFavStore(page)
+    }
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, listStore: [], page: 1 })
+    this.setState({ isRefreshing: true, gettingData: true, listStore: [], page: 1 })
     this.submitting.search = true
     this.props.getListFavStore({page: 1})
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text })
+    this.setState({ search: text, listStore: [] })
     this.trySearch(text)
   }
 
@@ -165,8 +165,8 @@ class ListFavoriteStores extends React.Component {
     if (text !== '') {
       this.submitting.search = true
       setTimeout(() => {
-        this.props.getListFavStore({page: 1, q: text})
-      }, 500)
+        this.props.getListFavStore({q: text})
+      }, 3000)
     } else {
       this.props.getListFavStore()
       this.submitting.list = true
@@ -309,7 +309,7 @@ class ListFavoriteStores extends React.Component {
           </View>
           <View style={styles.column}>
             <View style={styles.flexRow1}>
-              <Text style={styles.fontboldSlate}>{rowData.store.name}</Text>
+              <Text ellipsizeMode={'tail'} numberOfLines={1} style={styles.fontboldSlate}>{rowData.store.name}</Text>
               <Image source={Images.infoDone} style={styles.iconOval} />
             </View>
             <Text style={styles.fontregularBrowGrey}>{rowData.store.province.name}</Text>
@@ -342,7 +342,7 @@ class ListFavoriteStores extends React.Component {
         ...this.submitting,
         updateFavorite: true
       }
-      this.setState({isRefreshing: true, listStore: []})
+      this.setState({isRefreshing: true, gettingData: true, listStore: []})
       this.props.putFavoriteStore({id: id})
     }
   }
@@ -403,7 +403,40 @@ class ListFavoriteStores extends React.Component {
         )
       }
     } else {
-      view = null
+      view = (
+        <View style={{
+          flex: 1
+        }}>
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.listStore)}
+            renderRow={this.renderRowListStore.bind(this)}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+            }
+            onEndReached={this.loadMore.bind(this)}
+            renderFooter={() => {
+              if (this.state.loadmore) {
+                return (
+                  <ActivityIndicator
+                    style={[styles.loadingStyle, { height: 50 }]}
+                    size='small'
+                    color='#ef5656'
+                  />
+                )
+              }
+              return <View />
+            }}
+          />
+        </View>
+      )
     }
     return (
       <View style={styles.container}>

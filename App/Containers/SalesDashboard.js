@@ -112,8 +112,8 @@ class SalesDashboard extends React.Component {
   checkAmountSale (data) {
     if (!this.submitting.countorder) {
       return (
-        <View style={styles.circleRed}>
-          <Text style={[styles.statusAmount, {color: Colors.snow}]}>
+        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+          <Text style={[styles.statusAmount]}>
             {data}
           </Text>
         </View>

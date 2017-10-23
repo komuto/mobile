@@ -80,14 +80,17 @@ class AddEditStoreCatalog extends React.Component {
   }
 
   tambahKatalog () {
-    if (this.props.edit) {
-      console.log('edit')
-      this.props.updateCatalog(this.state.idkatalog, this.state.namaKatalog)
+    if (this.state.namaKatalog === '') {
+      ToastAndroid.show('Nama Katalog Harus diisi', ToastAndroid.SHORT)
     } else {
-      this.setState({
-        loading: true
-      })
-      this.props.createCatalog(this.state.namaKatalog)
+      if (this.props.edit) {
+        this.props.updateCatalog(this.state.idkatalog, this.state.namaKatalog)
+      } else {
+        this.setState({
+          loading: true
+        })
+        this.props.createCatalog(this.state.namaKatalog)
+      }
     }
   }
 

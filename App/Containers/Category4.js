@@ -821,7 +821,7 @@ class Category4 extends React.Component {
           visible={this.state.modalSearch}
           ref='searchCat'
           onClose={() => this.setState({modalSearch: false})}
-          onBack={() => this.setState({modalSearch: false})}
+          onRequestClose={() => this.setState({modalSearch: false})}
           refreshing={this.state.refreshSearch}
           value={this.state.search}
           onChangeText={this.handleTextSearch}

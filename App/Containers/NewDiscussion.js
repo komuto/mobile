@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator, ToastAndroid } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -31,6 +32,7 @@ class NewDiscussion extends React.Component {
         loading: false
       })
       ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })
       ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)

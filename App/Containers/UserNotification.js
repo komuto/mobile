@@ -90,11 +90,16 @@ class UserNotification extends React.Component {
     )
   }
 
+  onClose () {
+    this.setState({ isLogin: true })
+    NavigationActions.home()
+  }
+
   render () {
     const { isLogin } = this.state
     let view = null
     if (!isLogin) {
-      view = <ModalLogin visible={!isLogin} onClose={() => this.setState({ isLogin: true })} />
+      view = <ModalLogin visible={!isLogin} onClose={() => this.onClose()} />
     }
     return (
       <ScrollView style={styles.container}>

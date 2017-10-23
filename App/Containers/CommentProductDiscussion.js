@@ -10,6 +10,7 @@ import {
   Alert,
   ToastAndroid
 } from 'react-native'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Colors } from '../Themes'
@@ -78,7 +79,7 @@ class DiskusiProdukKomentar extends React.Component {
       ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
     }
     if (nextProps.tambahKomentar.status === 200) {
-      ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
+      ToastAndroid.show('Komentar berhasil ditambahkan', ToastAndroid.LONG)
       this.setState({ data: [], komentar: '', page: 1 })
       this.props.getComment(this.state.discussionId, 1)
       this.props.resetNewComment()
@@ -126,6 +127,7 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>
@@ -135,7 +137,7 @@ class DiskusiProdukKomentar extends React.Component {
               {rowData.user.name}
             </Text>
             <Text style={styles.textKelola}>
-              {rowData.created_at}
+              {time}
             </Text>
           </View>
         </View>

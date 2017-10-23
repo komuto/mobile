@@ -15,6 +15,7 @@ import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import { MaskService } from 'react-native-masked-text'
 import { Images, Colors, Fonts } from '../Themes'
+import { marketplace } from '../config'
 
 import {isFetching, isError, isFound} from '../Services/Status'
 import ModalSearchGeneral from '../Components/Search'
@@ -427,6 +428,7 @@ class Home extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   handleDetailKategori (rowId, title) {
@@ -462,6 +464,7 @@ class Home extends React.Component {
   }
 
   render () {
+    const name = marketplace
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
@@ -476,7 +479,7 @@ class Home extends React.Component {
             <View style={styles.headerContainer}>
               <View style={styles.header}>
                 <Text style={styles.textHeader}>
-                  Galaksi Parabola
+                  {name}
                 </Text>
                 <TouchableOpacity style={styles.buttonHeader} onPress={() => this.wishlist()}>
                   <Image source={Images.love} style={styles.imagestyle} />
@@ -581,7 +584,8 @@ const mapDispatchToProps = (dispatch) => {
     getWishlist: () => dispatch(wishlistAction.wishlist()),
     getCart: () => dispatch(cartAction.getCart()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
-    getSearch: (param) => dispatch(homeAction.search(param))
+    getSearch: (param) => dispatch(homeAction.search(param)),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
   }
 }
 

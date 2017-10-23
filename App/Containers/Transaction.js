@@ -396,6 +396,11 @@ class Transaction extends React.Component {
     NavigationActions.home()
   }
 
+  onClose () {
+    this.setState({ isLogin: true })
+    NavigationActions.home()
+  }
+
   render () {
     const { loading, isLogin } = this.state
     if (loading) {
@@ -408,7 +413,7 @@ class Transaction extends React.Component {
     }
     let view = null
     if (!isLogin) {
-      view = <ModalLogin visible={!isLogin} onClose={() => this.setState({ isLogin: true })} />
+      view = <ModalLogin visible={!isLogin} onClose={() => this.onClose()} />
     }
     return (
       <View style={styles.container}>

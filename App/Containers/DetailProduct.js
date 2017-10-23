@@ -192,11 +192,14 @@ class DetailProduct extends React.Component {
         photoProductDropship: tempPhoto,
         expeditionDropship: tempExpedition
       })
-      nextProps.dataDetailProduk.status = 0
-      this.props.resetProduk()
+      // nextProps.dataDetailProduk.status = 0
+      // this.props.resetProduk()
     } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
       ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.LONG)
-      nextProps.dataDetailProduk.status = 0
+      this.setState({
+        loadingProduk: false
+      })
+      // nextProps.dataDetailProduk.status = 0
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
@@ -258,7 +261,7 @@ class DetailProduct extends React.Component {
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-    this.props.getDetailProduk(this.state.id)
+    // this.props.getDetailProduk(this.state.id)
     this.props.getProvinsi()
     this.props.getKota(11)
   }
@@ -1435,6 +1438,10 @@ class DetailProduct extends React.Component {
       })
     }
   }
+  onClose () {
+    this.setState({ isLogin: false })
+    NavigationActions.pop()
+  }
 
   render () {
     const { loadingProduk, modalLogin } = this.state
@@ -1447,7 +1454,7 @@ class DetailProduct extends React.Component {
     }
     let view = null
     if (modalLogin) {
-      view = <ModalLogin visible={modalLogin} onClose={() => this.setState({ modalLogin: false })} />
+      view = <ModalLogin visible={modalLogin} onClose={() => this.onClose()} />
     }
     return (
       <View style={styles.container}>

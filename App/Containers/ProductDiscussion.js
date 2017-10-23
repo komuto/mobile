@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ToastAndroid
 } from 'react-native'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -34,11 +35,21 @@ class ProductDiscussion extends React.Component {
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false
+      isLoading: false,
+      callback: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.refresh()
+        this.setState({
+          callback: nextProps.callback,
+          isLoading: false
+        })
+      }
+    }
     if (nextProps.dataDiskusi.status === 200) {
       if (nextProps.dataDiskusi.discussions.length > 0) {
         console.log(nextProps.dataDiskusi.discussions)
@@ -114,6 +125,9 @@ class ProductDiscussion extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
+    console.log(moment().format('x'))
+    console.log(rowData.created_at * 1000)
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>
@@ -123,7 +137,7 @@ class ProductDiscussion extends React.Component {
               {rowData.user.name}
             </Text>
             <Text style={styles.textKelola}>
-              {rowData.created_at}
+              {time}
             </Text>
           </View>
         </View>
@@ -202,7 +216,8 @@ class ProductDiscussion extends React.Component {
       id: this.state.id,
       foto: this.state.foto,
       price: this.state.price,
-      namaProduk: this.props.namaProduk
+      namaProduk: this.props.namaProduk,
+      callback: this.state.callback
     })
   }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, Image, AsyncStorage, BackAndroid } from 'react-native'
+import { View, Text, TouchableOpacity, Image, AsyncStorage, BackAndroid, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 // const LoginManager = require('react-native').NativeModules.FBLoginManager
 import * as loginaction from '../actions/user'
@@ -26,12 +26,22 @@ class AccountManage extends React.Component {
       statusNoHp: '' || this.props.dataProfile.user.user.is_phone_verified,
       nomerHape: '' || this.props.dataProfile.user.user.phone_number,
       textStatusNoHP: 'Belum terverifikasi',
-      notif: this.props.notif,
-      pesanNotif: this.props.pesanNotif
+      notif: false,
+      pesanNotif: '',
+      callback: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.setState({
+          callback: nextProps.callback,
+          notif: true,
+          pesanNotif: nextProps.pesanNotif
+        })
+      }
+    }
   }
 
   componentDidMount () {
@@ -76,7 +86,11 @@ class AccountManage extends React.Component {
     NavigationActions.changepassword({
       type: ActionConst.PUSH,
       statusVerifikasi: this.state.statusNoHp,
-      nomerHape: this.state.nomerHape
+      nomerHape: this.state.nomerHape,
+      callback: this.state.callback
+    })
+    this.setState({
+      notif: false
     })
   }
 
@@ -140,88 +154,90 @@ class AccountManage extends React.Component {
     return (
       <View style={styles.container}>
         {this.notif()}
-        <View style={styles.dataProfileContainer}>
-          <TouchableOpacity onPress={() => this.handleBiodata()} style={styles.profile}>
-            <Image source={Images.biodata} style={styles.imageCategory} />
-            <View style={styles.borderContainer}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Biodata
-                </Text>
+        <ScrollView>
+          <View style={styles.dataProfileContainer}>
+            <TouchableOpacity onPress={() => this.handleBiodata()} style={styles.profile}>
+              <Image source={Images.biodata} style={styles.imageCategory} />
+              <View style={styles.borderContainer}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Biodata
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.profile]}onPress={() => this.handlenomerHape()}>
-            <Image source={Images.noHp} style={styles.imageCategory} />
-            <View style={[styles.borderContainer]}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Nomor Handphone
-                </Text>
-                {this.handleCekNoHp()}
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.profile]}onPress={() => this.handlenomerHape()}>
+              <Image source={Images.noHp} style={styles.imageCategory} />
+              <View style={[styles.borderContainer]}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Nomor Handphone
+                  </Text>
+                  {this.handleCekNoHp()}
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.profile} onPress={() => this.handleDataRekening()}>
-            <Image source={Images.rekening} style={styles.imageCategory} />
-            <View style={styles.borderContainer}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Rekening Bank
-                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.profile} onPress={() => this.handleDataRekening()}>
+              <Image source={Images.rekening} style={styles.imageCategory} />
+              <View style={styles.borderContainer}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Rekening Bank
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.profile} onPress={() => this.handleDataAlamat()}>
-            <Image source={Images.dataAlamat} style={styles.imageCategory} />
-            <View style={styles.borderContainer}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Data Alamat
-                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.profile} onPress={() => this.handleDataAlamat()}>
+              <Image source={Images.dataAlamat} style={styles.imageCategory} />
+              <View style={styles.borderContainer}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Data Alamat
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.profile} onPress={() => this.handleGantiPassword()}>
-            <Image source={Images.gantiPassword} style={styles.imageCategory} />
-            <View style={styles.borderContainer}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Ganti Password
-                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.profile} onPress={() => this.handleGantiPassword()}>
+              <Image source={Images.gantiPassword} style={styles.imageCategory} />
+              <View style={styles.borderContainer}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Ganti Password
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.profile} onPress={() => this.handlePengaturan()}>
-            <Image source={Images.pengaturanNotif} style={styles.imageCategory} />
-            <View style={[styles.borderContainer, {borderBottomWidth: 0}]}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Pengaturan Notifikasi
-                </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.profile} onPress={() => this.handlePengaturan()}>
+              <Image source={Images.pengaturanNotif} style={styles.imageCategory} />
+              <View style={[styles.borderContainer, {borderBottomWidth: 0}]}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Pengaturan Notifikasi
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={[styles.dataProfileContainer]}>
-          <TouchableOpacity style={styles.profile} onPress={() => this.logout()}>
-            <Image source={Images.logout} style={styles.imageCategory} />
-            <View style={[styles.borderContainer, {borderBottomWidth: 0}]}>
-              <View style={styles.namaContainer}>
-                <Text style={styles.textNama}>
-                  Logout
-                </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={[styles.dataProfileContainer]}>
+            <TouchableOpacity style={styles.profile} onPress={() => this.logout()}>
+              <Image source={Images.logout} style={styles.imageCategory} />
+              <View style={[styles.borderContainer, {borderBottomWidth: 0}]}>
+                <View style={styles.namaContainer}>
+                  <Text style={styles.textNama}>
+                    Logout
+                  </Text>
+                </View>
+                <Image source={Images.rightArrow} style={styles.rightArrow} />
               </View>
-              <Image source={Images.rightArrow} style={styles.rightArrow} />
-            </View>
-          </TouchableOpacity>
-        </View>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     )
   }

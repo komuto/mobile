@@ -5,7 +5,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginTop: Metrics.navBarHeight,
-    backgroundColor: Colors.snow1,
+    backgroundColor: Colors.paleGrey,
     marginBottom: Metrics.tabBarHeight
   },
   loginContainer: {

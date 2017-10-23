@@ -252,7 +252,7 @@ class Category4 extends React.Component {
   refresh = () => {
     const { id } = this.state
     const { lightblack } = Colors
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
+    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
     this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
     this.submitting = {
       wishlist: false,
@@ -477,6 +477,7 @@ class Category4 extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   changeView () {
@@ -782,7 +783,31 @@ class Category4 extends React.Component {
         )
       }
     } else {
-      view = null
+      view = (
+        <View style={{ flex: 1 }}>
+          {this.viewProduk()}
+          <View style={styles.footerMenu}>
+            <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
+              <View style={styles.buttonFooter}>
+                <Image style={styles.imageFooter} source={Images.sort} />
+                <Text style={styles.footerButton}>Urutkan</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
+              <View style={styles.buttonFooter}>
+                <Image style={styles.imageFooter} source={Images.filter} />
+                <Text style={styles.footerButton}>Filter</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blah} onPress={() => this.changeView()}>
+              <View style={styles.buttonFooter}>
+                {this.renderImageTypeView()}
+                <Text style={styles.footerButton}>Tampilan</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
     }
     return (
       <View style={styles.container}>
@@ -823,6 +848,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
     getProduct: (param) => dispatch(produkAction.listProductByCategory(param)),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
     getSearch: (param) => dispatch(homeAction.search(param))
   }
 }

@@ -151,7 +151,7 @@ class MovingProduct extends React.Component {
           ...this.submitting,
           products: true
         }
-        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
       }
     } else if (this.props.actionType === 'deleteProduct') {
       if (!this.submitting.alter) {
@@ -159,7 +159,7 @@ class MovingProduct extends React.Component {
           ...this.submitting,
           products: true
         }
-        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
       }
     } else if (this.props.actionType === 'moveCatalog') {
       if (!this.submitting.alter) {
@@ -169,7 +169,7 @@ class MovingProduct extends React.Component {
           catalog: true
         }
         this.props.getCatalog()
-        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
       }
     } else if (this.props.actionType === 'moveDropship') {
       if (!this.submitting.alter) {
@@ -416,27 +416,45 @@ class MovingProduct extends React.Component {
   finalAction () {
     if (this.state.actionType === 'hideProduct') {
       let data = this.state.arrayIdProduct
-      this.submitting.alter = true
-      this.setState({
-        loading: true
-      })
-      this.props.setHideProduct({product_ids: data})
+      if (data.length > 0) {
+        this.submitting.alter = true
+        this.setState({
+          loading: true
+        })
+        this.props.setHideProduct({product_ids: data})
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     } else if (this.state.actionType === 'deleteProduct') {
       this.setState({
         modalDelete: true
       })
     } else if (this.state.actionType === 'moveCatalog') {
-      this.submitting.alter = true
-      this.setState({
-        modalCatalog: true
-      })
+      let data = this.state.arrayIdProduct
+      if (data.length > 0) {
+        let data = this.state.arrayIdProduct
+        if (data.length > 0) {
+          this.submitting.alter = true
+          this.setState({
+            modalCatalog: true
+          })
+        } else {
+          ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+        }
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     } else if (this.state.actionType === 'moveDropship') {
       let data = this.state.arrayIdProduct
-      this.submitting.alter = true
-      this.setState({
-        loading: true
-      })
-      this.props.updateProductToDropship({product_ids: data})
+      if (data.length > 0) {
+        this.submitting.alter = true
+        this.setState({
+          loading: true
+        })
+        this.props.updateProductToDropship({product_ids: data})
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     }
   }
 

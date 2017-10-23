@@ -7,6 +7,7 @@ import Reactotron from 'reactotron-react-native'
 
 import * as categoriAction from '../actions/home'
 import * as storeAction from '../actions/stores'
+import * as productAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -32,7 +33,7 @@ class DetailProductStore extends React.Component {
       category: '',
       imageProduct: [],
       nameCategory: '',
-      id: this.props.idProduct,
+      id: [this.props.idProduct],
       isRefreshing: false,
       callback: false
     }
@@ -74,6 +75,16 @@ class DetailProductStore extends React.Component {
         loading: false,
         nameCategory: nextProps.dataKategoriParent.categories.name
       })
+    }
+    if (nextProps.dataDeleteProducts.status === 200) {
+      ToastAndroid.show('Produk berhasil dihapus', ToastAndroid.LONG)
+      NavigationActions.pop()
+      this.props.getListProduk({hidden: false})
+      this.props.getHiddenProduct()
+      nextProps.dataDeleteProducts.status = 0
+    } else if (nextProps.dataDeleteProducts.status !== 200 && nextProps.dataDeleteProducts.status !== 0) {
+      ToastAndroid.show(nextProps.dataDeleteProducts.message, ToastAndroid.LONG)
+      nextProps.dataDeleteProducts.status = 0
     }
   }
 
@@ -130,7 +141,7 @@ class DetailProductStore extends React.Component {
         <Text style={styles.headerText}>
           {this.state.productName}
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.delete()}>
           <Image
             source={Images.deletWhite}
             style={styles.imageStyle}
@@ -138,6 +149,12 @@ class DetailProductStore extends React.Component {
         </TouchableOpacity>
       </View>
     )
+  }
+
+  delete () {
+    let data = []
+    data.push(this.state.product.id)
+    this.props.deleteItems({product_ids: data})
   }
 
   handleEditStatusStockDropshipping (title, action, color, id, data) {
@@ -585,7 +602,8 @@ class DetailProductStore extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataDetailProduct: state.storeProductDetail,
-    dataKategoriParent: state.subCategory
+    dataKategoriParent: state.subCategory,
+    dataDeleteProducts: state.alterProducts
   }
 }
 
@@ -596,7 +614,8 @@ const mapDispatchToProps = (dispatch) => {
     getKategori: (id) => dispatch(categoriAction.subCategory({id: id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
     getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
-    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id: id}))
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id: id})),
+    deleteItems: (param) => dispatch(productAction.deleteProducts(param))
   }
 }
 

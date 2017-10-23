@@ -31,7 +31,7 @@ class NewDiscussion extends React.Component {
         pertanyaan: '',
         loading: false
       })
-      ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
+      ToastAndroid.show('Diskusi berhasil ditambahkan', ToastAndroid.LONG)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })

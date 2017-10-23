@@ -255,9 +255,11 @@ class DetailProduct extends React.Component {
       } else {
         this.setState({isStoreFavorite: true})
       }
-      ToastAndroid.show('Toko Berhasil Difaforitkan', ToastAndroid.SHORT)
+      ToastAndroid.show('Toko Berhasil Difavoritkan', ToastAndroid.SHORT)
+      nextProps.dataFavorit.status = 0
     } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
-      ToastAndroid.show('Gagal Memfavoritkan Toko', ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
+      nextProps.dataFavorit.status = 0
     }
   }
 
@@ -1442,7 +1444,6 @@ class DetailProduct extends React.Component {
   }
   onClose () {
     this.setState({ isLogin: false })
-    NavigationActions.pop()
   }
 
   render () {

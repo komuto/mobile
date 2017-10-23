@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import * as EmailValidator from 'email-validator'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as userActions from '../actions/user'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -26,7 +26,8 @@ class ChangePassword extends React.Component {
       colorPassLama: Colors.snow,
       colorPassBaru: Colors.snow,
       colorUlangPass: Colors.snow,
-      loading: false
+      loading: false,
+      callback: this.props.callback
     }
   }
 
@@ -34,11 +35,12 @@ class ChangePassword extends React.Component {
     console.log(nextProps.dataPassword)
     if (nextProps.dataPassword.status === 200) {
       this.setState({loading: false})
-      NavigationActions.manageaccount({
-        type: ActionConst.PUSH,
-        notif: true,
-        pesanNotif: 'Sukses mengganti password Anda'
-      })
+      // NavigationActions.manageaccount({
+      //   type: ActionConst.PUSH,
+      //   notif: true,
+      //   pesanNotif: 'Sukses mengganti password Anda'
+      // })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'Sukses mengganti password Anda' } })
     } else if (nextProps.dataPassword.status !== 200 && nextProps.dataPassword.status !== 0) {
       this.setState({
         loading: false

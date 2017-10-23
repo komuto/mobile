@@ -186,6 +186,7 @@ class NewProduct extends React.Component {
 
   handleBack = () => {
     NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {
@@ -578,6 +579,7 @@ class NewProduct extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+    this.props.getDetailProduk(id)
   }
 
   changeView () {

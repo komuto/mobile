@@ -45,8 +45,7 @@ class ProductDiscussion extends React.Component {
       if (nextProps.callback !== this.state.callback) {
         this.refresh()
         this.setState({
-          callback: nextProps.callback,
-          isLoading: false
+          callback: nextProps.callback
         })
       }
     }

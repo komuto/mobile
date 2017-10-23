@@ -238,6 +238,12 @@ class PurchaseUserInfo extends React.Component {
           this.setState({
             provinsi: rowData.name,
             idProvinsi: rowData.id,
+            kabupaten: 'Kota / Kabupaten',
+            kecamatan: 'Kecamatan',
+            kelurahan: 'Kelurahan',
+            dataKabupaten: [],
+            dataKecamatan: [],
+            dataKelurahan: [],
             modalProvinsi: false })
           this.props.getKota(rowData.id)
         }}
@@ -256,6 +262,10 @@ class PurchaseUserInfo extends React.Component {
           this.setState({
             kabupaten: rowData.name,
             idKabupaten: rowData.id,
+            kecamatan: 'Kecamatan',
+            kelurahan: 'Kelurahan',
+            dataKecamatan: [],
+            dataKelurahan: [],
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
         }}
@@ -274,6 +284,8 @@ class PurchaseUserInfo extends React.Component {
           this.setState({
             kecamatan: rowData.name,
             idKecamatan: rowData.id,
+            kelurahan: 'Kelurahan',
+            dataKelurahan: [],
             modalKecamatan: false
           })
           this.props.getVillage(rowData.id)

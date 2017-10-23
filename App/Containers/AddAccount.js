@@ -60,7 +60,7 @@ class AddAccount extends React.Component {
         loading: false
       })
       NavigationActions.otpcode({
-        type: ActionConst.PUSH,
+        type: ActionConst.REPLACE,
         typeVerifikasi: this.state.typeVerifikasi,
         fieldPass: this.state.nomerHape,
         idAccount: this.state.idAccount,
@@ -108,7 +108,6 @@ class AddAccount extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'pemilikAkun':
         this.setState({

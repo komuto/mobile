@@ -23,8 +23,9 @@ class AccountData extends React.Component {
       nomerHape: this.props.nomerHape,
       rowTerpilih: '',
       idBankAccount: '',
-      notif: this.props.notif,
-      pesanNotif: this.props.pesanNotif
+      notif: false,
+      pesanNotif: this.props.pesanNotif,
+      callback: false
     }
   }
 
@@ -33,6 +34,15 @@ class AccountData extends React.Component {
       this.setState({
         listBank: nextProps.dataRekenings.listBankAccounts
       })
+    }
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.setState({
+          callback: nextProps.callback,
+          pesanNotif: nextProps.pesanNotif,
+          notif: true
+        })
+      }
     }
   }
 
@@ -66,6 +76,9 @@ class AccountData extends React.Component {
       titleButton: 'Verifikasi kode OTP',
       typeVerifikasi: 'otptambahrekening'
     })
+    this.setState({
+      notif: false
+    })
   }
 
   handleEditAccount (id) {
@@ -93,7 +106,8 @@ class AccountData extends React.Component {
       fieldPass: this.state.nomerHape,
       textButton: 'Verifikasi kode OTP',
       title: 'Hapus Data Rekening',
-      typeVerifikasi: 'verificationdeleteaccount'
+      typeVerifikasi: 'verificationdeleteaccount',
+      callback: this.state.callback
     })
   }
 

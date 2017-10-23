@@ -41,7 +41,8 @@ class OTPCode extends React.Component {
       loading: false,
       textButton: this.props.textButton || 'Verifikasi Nomor Telepon',
       amount: this.props.amount,
-      idBankAccount: this.props.idBankAccount
+      idBankAccount: this.props.idBankAccount,
+      callback: this.props.callback
     }
   }
 
@@ -63,29 +64,17 @@ class OTPCode extends React.Component {
     } if (nextProps.deleteAccount.status === 200 && nextProps.typeVerifikasi === 'verificationdeleteaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'menghapus rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'menghapus rekening' } })
       nextProps.deleteAccount.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'menambah rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'menambah rekening' } })
       nextProps.createRek.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'verificationeditaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'mengubah rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'mengubah rekening' } })
       nextProps.createRek.status = 0
     }
     if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'newaccountbalance') {

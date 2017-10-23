@@ -51,7 +51,7 @@ class Biodata extends React.Component {
       this.setState({fotoProfil: nextProps.dataPhoto.payload.images[0].name})
     }
     if (nextProps.dataUpdate.status === 200) {
-      this.props.getProfil(this.state.idKabTerpilih)
+      this.props.getProfil()
       this.setState({notif: true})
       nextProps.dataUpdate.status = 0
     }

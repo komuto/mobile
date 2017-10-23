@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import { TextInputMask, MaskService } from 'react-native-masked-text'
+import { MaskService } from 'react-native-masked-text'
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
@@ -243,20 +243,13 @@ class EditProductPriceAndSpecification extends React.Component {
           <View style={styles.flexRow}>
             <View style={styles.left}>
               <Text style={styles.textLabel}>Harga Produk</Text>
-              <TextInputMask
+              <TextInput
                 style={styles.inputText}
                 value={String(this.state.harga)}
                 keyboardType='numeric'
                 returnKeyType='done'
                 autoCapitalize='none'
-                type='money'
                 maxLength={18}
-                options={{
-                  unit: 'Rp ',
-                  separator: '.',
-                  delimiter: '.',
-                  precision: 3
-                }}
                 autoCorrect
                 onChangeText={this.changeHarga}
                 underlineColorAndroid='transparent'

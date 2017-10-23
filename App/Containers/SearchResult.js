@@ -183,10 +183,12 @@ class SearchResult extends React.Component {
 
   handleBack = () => {
     NavigationActions.pop()
+    return true
   }
 
   backButton () {
     NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {

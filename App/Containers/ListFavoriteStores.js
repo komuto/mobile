@@ -9,12 +9,13 @@ import {
   TouchableOpacity,
   ListView,
   RefreshControl,
-  ScrollView
+  ScrollView,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import {MaskService} from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import Reactotron from 'reactotron-react-native'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -33,62 +34,94 @@ class ListFavoriteStores extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.submitting = {
       list: false,
-      search: false
+      search: false,
+      updateFavorite: false
     }
     this.state = {
       search: '',
       listStore: [],
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
+      loadmore: false,
+      isRefreshing: true,
       isLoading: true,
-      loadingPage: true
+      loadingPage: true,
+      gettingData: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsListStore} = nextProps
-    if (propsListStore.status === 200 && this.submitting.list) {
+    const {propsListStore, propsFavStore} = nextProps
+
+    if (!isFetching(propsListStore) && this.submitting.list) {
       this.submitting = { ...this.submitting, list: false }
-      if (propsListStore.stores.length > 0) {
-        Reactotron.log('in')
-        let data = [...this.state.listStore, ...propsListStore.stores]
+      if (isError(propsListStore)) {
+        ToastAndroid.show(propsListStore.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsListStore)) {
+        const isFound = propsListStore.stores.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          const data = [...this.state.listStore, ...propsListStore.stores]
+          this.setState({
+            listStore: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          const data = [...this.state.listStore, ...propsListStore.stores]
+          this.setState({
+            listStore: data,
+            isLoading: false,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        }
+      }
+    }
+
+    if (!isFetching(propsListStore) && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      if (isError(propsListStore)) {
+        ToastAndroid.show(propsListStore.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsListStore)) {
         this.setState({
-          listStore: data,
+          listStore: propsListStore.stores,
           page: this.state.page + 1,
           isRefreshing: false,
           isLoading: false,
           loadmore: true,
           loadingPage: false
         })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
       }
     }
-    if (propsListStore.status === 200 && this.submitting.search) {
-      this.submitting = { ...this.submitting, search: false }
-      this.setState({
-        listStore: propsListStore.stores,
-        page: this.state.page + 1,
-        isRefreshing: false,
-        isLoading: false,
-        loadmore: true,
-        loadingPage: false
-      })
+
+    if (!isFetching(propsFavStore) && this.submitting.updateFavorite) {
+      this.submitting = { ...this.submitting, updateFavorite: false, list: true }
+      if (isError(propsFavStore)) {
+        ToastAndroid.show(propsFavStore.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsFavStore)) {
+        this.submitting.list = true
+        this.props.getListFavStore({page: 1})
+        ToastAndroid.show('Berhasil Menghapus Toko Favorit', ToastAndroid.SHORT)
+      }
     }
   }
 
   componentDidMount () {
     const {listStore} = this.state
-    if (listStore) {
+    if (!listStore.isFound || !this.submitting.list) {
       this.submitting = {
         ...this.submitting,
         list: true
       }
-      this.props.getListFavStore(1)
+      this.props.getListFavStore()
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -102,18 +135,25 @@ class ListFavoriteStores extends React.Component {
     return true
   }
 
+  backToHome () {
+    NavigationActions.backtab({
+      type: ActionConst.RESET
+    })
+    return true
+  }
+
   loadMore () {
-    const { page, loadmore } = this.state
-    if (loadmore) {
-      this.submitting.list = true
-      this.props.getListFavStore(page)
-    }
+    // const { page, loadmore } = this.state
+    // if (loadmore) {
+    //   this.submitting.list = true
+    //   this.props.getListFavStore(page)
+    // }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, listStore: [], page: 1 })
     this.submitting.search = true
-    this.props.getListFavStore(1)
+    this.props.getListFavStore({page: 1})
   }
 
   handleTextSearch = (text) => {
@@ -125,10 +165,10 @@ class ListFavoriteStores extends React.Component {
     if (text !== '') {
       this.submitting.search = true
       setTimeout(() => {
-        this.props.getListFavStore(1, text)
+        this.props.getListFavStore({page: 1, q: text})
       }, 500)
     } else {
-      this.props.getListFavStore(1, '')
+      this.props.getListFavStore()
       this.submitting.list = true
     }
   }
@@ -284,12 +324,12 @@ class ListFavoriteStores extends React.Component {
   }
 
   handleDetailStore (id) {
-    this.props.getStore(id)
+    this.props.getStore({id: id})
     NavigationActions.storedetail({ type: ActionConst.PUSH })
   }
 
   handleDetailProduct (id) {
-    this.props.getDetailProduct(id)
+    this.props.getDetailProduct({id: id})
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id
@@ -297,49 +337,78 @@ class ListFavoriteStores extends React.Component {
   }
 
   handlePutFavStore (id) {
-    this.props.putFavoriteStore(id)
+    if (!this.submitting.list) {
+      this.submitting = {
+        ...this.submitting,
+        updateFavorite: true
+      }
+      this.setState({isRefreshing: true, listStore: []})
+      this.props.putFavoriteStore({id: id})
+    }
   }
 
   render () {
-    if (this.state.loadingPage) {
-      return (
-        <View style={styles.spinner}>
-          <ActivityIndicator color={Colors.red} size='large' />
-        </View>
-      )
+    const {gettingData, listStore} = this.state
+    let view
+    if (!gettingData) {
+      if (listStore.length > 0) {
+        view = (
+          <View style={{
+            flex: 1
+          }}>
+            <ListView
+              dataSource={this.dataSource.cloneWithRows(this.state.listStore)}
+              renderRow={this.renderRowListStore.bind(this)}
+              refreshControl={
+                <RefreshControl
+                  refreshing={this.state.isRefreshing}
+                  onRefresh={this.refresh}
+                  tintColor={Colors.red}
+                  colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                  title='Loading...'
+                  titleColor={Colors.red}
+                  progressBackgroundColor={Colors.snow}
+                />
+              }
+              onEndReached={this.loadMore.bind(this)}
+              renderFooter={() => {
+                if (this.state.loadmore) {
+                  return (
+                    <ActivityIndicator
+                      style={[styles.loadingStyle, { height: 50 }]}
+                      size='small'
+                      color='#ef5656'
+                    />
+                  )
+                }
+                return <View />
+              }}
+            />
+          </View>
+        )
+      } else {
+        view = (
+          <View style={styles.imageContainer}>
+            <Image source={Images.notFound} style={styles.image} />
+            <Text style={styles.textLabel}>Toko Favorit Anda Kosong</Text>
+            <Text style={styles.textInfo}>
+              Anda belum menambah toko apapun ke dalam daftar toko favorit
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>
+                <Text style={styles.textButton}>Kembali ke Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      view = null
     }
     return (
       <View style={styles.container}>
         {this.renderSearch()}
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.listStore)}
-          renderRow={this.renderRowListStore.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
-          }
-          onEndReached={this.loadMore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadmore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
-        />
+        {view}
       </View>
     )
   }
@@ -351,10 +420,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListFavStore: (page, q) => dispatch(userAction.listFavorite({page: page, q: q})),
-  putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id})),
-  getStore: (id) => dispatch(storeAction.getStores({ id: id })),
-  getDetailProduct: (id) => dispatch(productAction.getProduct({id: id}))
+  getListFavStore: (param) => dispatch(userAction.listFavorite(param)),
+  putFavoriteStore: (param) => dispatch(userAction.favoriteStore(param)),
+  getStore: (param) => dispatch(storeAction.getStores(param)),
+  getDetailProduct: (param) => dispatch(productAction.getProduct(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListFavoriteStores)

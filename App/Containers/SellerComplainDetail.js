@@ -16,11 +16,18 @@ class SellerComplainDetail extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      idComplain: this.props.idComplain
+      idComplain: this.props.idComplain,
+      countUnread: this.props.countUnread,
+      textUnread: String('Diskusi (' + this.props.countUnread + ')')
     }
   }
 
   render () {
+    if (this.state.countUnread === 0) {
+      this.labelDiscussion = 'Diskusi'
+    } else {
+      this.labelDiscussion = this.state.textUnread
+    }
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -36,7 +43,7 @@ class SellerComplainDetail extends React.Component {
           <ScrollView tabLabel='Detail'>
             <SellerComplainDetailItem idComplain={this.state.idComplain} />
           </ScrollView>
-          <View tabLabel='Diskusi'ref='discussion' idComplain={this.state.idComplain}
+          <View tabLabel={this.labelDiscussion} ref='discussion' idComplain={this.state.idComplain}
             style={{flex: 1, flexDirection: 'column', backgroundColor: Colors.snow}} >
             <SellerComplainDiscussion />
           </View>

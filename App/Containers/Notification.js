@@ -4,8 +4,6 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import { Images } from '../Themes'
 import { connect } from 'react-redux'
 import * as storeAction from '../actions/stores'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/NotifikasiStyle'
@@ -34,7 +32,8 @@ class Notification extends React.Component {
 
   handleDaftarProduk () {
     NavigationActions.storeproduct({
-      type: ActionConst.PUSH_OR_POP
+      type: ActionConst.PUSH_OR_POP,
+      callback: true
     })
   }
 

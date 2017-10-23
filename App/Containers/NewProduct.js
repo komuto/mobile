@@ -5,7 +5,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TextInput,
   BackAndroid,
   Modal,
   ActivityIndicator,
@@ -20,9 +19,11 @@ import Reactotron from 'reactotron-react-native'
 
 import Filter from '../Components/Filter'
 import {isFetching, isError, isFound} from '../Services/Status'
+import ModalSearchGeneral from '../Components/Search'
 
 // import YourActions from '../Redux/YourRedux'
 import * as produkAction from '../actions/product'
+import * as homeAction from '../actions/home'
 
 // Styles
 import styles from './Styles/ProdukTerbaruScreenStyle'
@@ -35,17 +36,18 @@ class NewProduct extends React.Component {
 
   constructor (props) {
     super(props)
-    this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.submitting = {
-      wishlist: false
+      wishlist: false,
+      product: false,
+      search: false
     }
     this.state = {
       search: '',
       listDataSource: [],
       rowDataSource: [],
+      dataProduct: props.propsProduct || null,
       header: this.props.header || 'search',
-      tipe: this.props.tipe || 'kategori',
       tipeView: 'list',
       sortModal: false,
       terbaruColor: Colors.lightblack,
@@ -70,13 +72,23 @@ class NewProduct extends React.Component {
       statusFilter: false,
       sort: 'newest',
       wishlist: props.propsWishlist || null,
-      params: this.props.params || null
+      storeId: this.props.storeId || '',
+      isFound: false,
+      modalSearch: false,
+      refreshSearch: false,
+      resultSearch: []
     }
   }
 
   componentDidMount () {
-    Reactotron.log(this.state.params)
-    this.props.getProdukTerbaru(this.state.params)
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      Reactotron.log('new product')
+      this.props.getListProduct({store_id: this.state.storeId})
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -85,43 +97,66 @@ class NewProduct extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsWishlist, dataFilter} = nextProps
-    if (dataFilter.status === 200) {
-      if (!this.state.statusFilter) {
-        if (dataFilter.products.length > 0) {
-          let data = [...this.state.listDataSource, ...dataFilter.products]
+    const {propsWishlist, propsProduct, dataSearch} = nextProps
+
+    if (!isFetching(propsProduct) && this.submitting.product) {
+      this.submitting = { ...this.submitting, product: false }
+      if (isError(propsProduct)) {
+        ToastAndroid.show(propsProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsProduct)) {
+        const isFound = propsProduct.products.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
           this.setState({
+            dataProduct: propsProduct,
             listDataSource: data,
             rowDataSource: data,
-            isRefreshing: false,
             isLoading: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
+          this.setState({
+            dataProduct: propsProduct,
+            listDataSource: data,
+            rowDataSource: data,
+            isLoading: false,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false
+          })
+        }
+      }
+    }
+
+    if (!isFetching(dataSearch) && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      if (isError(dataSearch)) {
+        ToastAndroid.show(dataSearch.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataSearch)) {
+        const result = dataSearch.products
+        if (result.length === 0) {
+          this.setState({
+            resultSearch: dataSearch.products,
+            isFound: true,
+            refreshSearch: false
           })
         } else {
           this.setState({
-            loadmore: false,
-            isLoading: false
+            resultSearch: dataSearch.products,
+            isFound: false,
+            refreshSearch: false
           })
         }
-      } else {
-        this.setState({
-          listDataSource: dataFilter.products,
-          rowDataSource: dataFilter.products,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true,
-          statusFilter: false,
-          page: 2
-        })
       }
-    } else if (dataFilter.status > 200) {
-      this.setState({
-        isRefreshing: false,
-        isLoading: false,
-        loadmore: true
-      })
     }
+
     if (!isFetching(propsWishlist) && this.submitting.wishlist) {
       this.submitting = { ...this.submitting, wishlist: false }
       if (isError(propsWishlist)) {
@@ -150,81 +185,84 @@ class NewProduct extends React.Component {
   }
 
   handleBack = () => {
-    if (this.state.tipe === 'search') {
-      this.setState({
-        tipe: 'data'
-      })
-      return true
-    } else if (NavigationActions.pop()) {
-      return true
-    }
-  }
-
-  handleTextSearch = (text) => {
-    this.setState({ search: text })
-  }
-
-  search () {
-    console.log('dispatch search')
-  }
-
-  backButton () {
     NavigationActions.pop()
   }
 
-  backSearch () {
+  handleTextSearch = (text) => {
+    this.setState({ search: text, isFound: false, refreshSearch: true })
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.submitting.search = true
+      setTimeout(() => {
+        this.props.getSearch({q: text})
+      }, 1000)
+    }
+  }
+
+  detailResult (name) {
+    this.setState({ modalSearch: false, page: 1, resultSearch: [], search: '' })
+    NavigationActions.searchresult({ header: name, type: ActionConst.PUSH, params: {q: name} })
+  }
+
+  searchFocus () {
     this.setState({
-      tipe: 'data'
+      isFound: false,
+      search: ''
     })
   }
 
+  renderRowSearch (rowData) {
+    return (
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.name)}>
+        <Text style={styles.textResult}>
+          {rowData.name}
+        </Text>
+      </TouchableOpacity>
+    )
+  }
+
   loadMore () {
-    const { page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    const { storeId, page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other, sort } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, page)
+        this.submitting.product = true
+        this.props.getListProduct({
+          store_id: storeId,
+          condition: kondisi,
+          services: pengiriman,
+          price: price,
+          address: address,
+          brands: brand,
+          other: other,
+          page: page,
+          sort: sort
+        })
       }
     }
   }
 
   refresh = () => {
-    const { kondisi, pengiriman, price, address, brand, other, sort } = this.state
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1, sort)
+    const { storeId } = this.state
+    const { lightblack } = Colors
+    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
+    this.submitting = {
+      wishlist: false,
+      product: true
+    }
+    this.props.getProduct({
+      store_id: storeId,
+      page: 1
+    })
   }
 
   renderHeader () {
-    const { search } = this.state
-    if (this.state.tipe === 'search') {
-      return (
-        <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backSearch()}>
-            <Image
-              source={Images.leftArrow}
-              style={stylesSearch.imageStyle}
-            />
-          </TouchableOpacity>
-          <View style={stylesSearch.textInputContainer}>
-            <TextInput
-              ref='search'
-              autoFocus
-              onSubmitEditing={() => this.search()}
-              style={stylesSearch.inputText}
-              value={search}
-              keyboardType='default'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleTextSearch}
-              underlineColorAndroid='transparent'
-              placeholder='Cari Barang'
-            />
-          </View>
-        </View>
-      )
-    }
     return (
       <View style={stylesSearch.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => NavigationActions.pop()}>
           <Image
             source={Images.iconBack}
             style={stylesSearch.imageStyle}
@@ -233,7 +271,7 @@ class NewProduct extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
+        <TouchableOpacity onPress={() => this.setState({modalSearch: true})}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -315,6 +353,34 @@ class NewProduct extends React.Component {
               <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  }
+
+  renderModalFilter () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.filter}
+        onRequestClose={() => { this.setState({ filter: false }) }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeaderContainer}>
+            <Text style={styles.modalHeaderText}>
+              Filter
+            </Text>
+            <TouchableOpacity onPress={() => this.closeModal()}>
+              <Image
+                source={Images.close}
+                style={styles.imageCancel}
+              />
+            </TouchableOpacity>
+          </View>
+          <Filter
+            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
+            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
         </View>
       </Modal>
     )
@@ -512,7 +578,6 @@ class NewProduct extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
-    this.props.getDetailProduk(id)
   }
 
   changeView () {
@@ -533,7 +598,7 @@ class NewProduct extends React.Component {
         <ListView
           contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
           enableEmptySections
-          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          dataSource={this.dataSource.cloneWithRows(this.state.rowDataSource)}
           renderRow={this.renderRowGrid.bind(this)}
           refreshControl={
             <RefreshControl
@@ -567,7 +632,7 @@ class NewProduct extends React.Component {
       <ListView
         contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
         enableEmptySections
-        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        dataSource={this.dataSource.cloneWithRows(this.state.listDataSource)}
         renderRow={this.renderRowList.bind(this)}
         refreshControl={
           <RefreshControl
@@ -611,11 +676,7 @@ class NewProduct extends React.Component {
 
   render () {
     let background
-    if (this.state.tipe === 'search') {
-      background = stylesSearch.search
-    } else {
-      background = stylesSearch.kategori
-    }
+    background = stylesSearch.kategori
     return (
       <View style={styles.container}>
         <View style={[styles.headerContainer, background]}>
@@ -642,29 +703,19 @@ class NewProduct extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
-        <Modal
-          animationType={'slide'}
-          transparent
-          visible={this.state.filter}
-          onRequestClose={() => { this.setState({ filter: false }) }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeaderContainer}>
-              <Text style={styles.modalHeaderText}>
-                Filter
-              </Text>
-              <TouchableOpacity onPress={() => this.closeModal()}>
-                <Image
-                  source={Images.close}
-                  style={styles.imageCancel}
-                />
-              </TouchableOpacity>
-            </View>
-            <Filter
-              handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-              this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
-          </View>
-        </Modal>
+        <ModalSearchGeneral
+          visible={this.state.modalSearch}
+          onClose={() => this.setState({modalSearch: false})}
+          onBack={() => this.setState({modalSearch: false})}
+          refreshing={this.state.refreshSearch}
+          value={this.state.search}
+          onChangeText={this.handleTextSearch}
+          notFound={this.state.isFound}
+          dataSource={this.dataSource.cloneWithRows(this.state.resultSearch)}
+          renderRow={this.renderRowSearch.bind(this)}
+          onChangeSearch={() => this.searchFocus()}
+        />
+        {this.renderModalFilter()}
         {this.renderModalSort()}
       </View>
     )
@@ -673,28 +724,19 @@ class NewProduct extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.products,
-    dataFilter: state.productBySearch,
+    propsProduct: state.productBySearch,
     propsWishlist: state.addWishlist,
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataSearch: state.searchProduct
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: (param) => dispatch(produkAction.listProductBySearch(param)),
+    getListProduct: (param) => dispatch(produkAction.listProductBySearch(param)),
     addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
-    getFilterProduk: (condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductBySearch({
-      condition: condition,
-      services: services,
-      price: price,
-      address: address,
-      brands: brands,
-      other: other,
-      page: page,
-      sort: sort
-    })),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    getSearch: (param) => dispatch(homeAction.search(param))
   }
 }
 

@@ -199,5 +199,56 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.semiBolds,
     color: Colors.charcoalGrey
+  },
+  imageContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 50,
+    marginTop: 50
+  },
+  image: {
+    width: 173,
+    height: 164
+  },
+  textLabel: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 14,
+    lineHeight: 22,
+    letterSpacing: 0.19,
+    textAlign: 'center',
+    color: Colors.darkgrey,
+    marginTop: 15,
+    marginBottom: 5
+  },
+  textInfo: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.brownishGrey
+  },
+  buttonContainer: {
+    height: 56,
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 20
+  },
+  button: {
+    flex: 1,
+    height: 56,
+    backgroundColor: Colors.bluesky,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 14,
+    lineHeight: 22,
+    letterSpacing: 0.19,
+    textAlign: 'center',
+    color: Colors.snow
   }
 })

@@ -255,9 +255,9 @@ class DetailProduct extends React.Component {
       } else {
         this.setState({isStoreFavorite: true})
       }
-      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
+      ToastAndroid.show('Toko Berhasil Difaforitkan', ToastAndroid.SHORT)
     } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
-      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
+      ToastAndroid.show('Gagal Memfavoritkan Toko', ToastAndroid.SHORT)
     }
   }
 
@@ -1308,7 +1308,7 @@ class DetailProduct extends React.Component {
     NavigationActions.newproduct({
       type: ActionConst.PUSH,
       header: 'Produk Terbaru',
-      params: {store_id: id}
+      storeId: id
     })
   }
 

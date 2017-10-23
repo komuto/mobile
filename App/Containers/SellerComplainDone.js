@@ -31,9 +31,9 @@ class SellerComplainDone extends React.Component {
     this.state = {
       datacomplains: props.propsResolvedCompaint || null,
       complains: [],
-      page: 1,
+      page: 0,
       loadmore: false,
-      isRefreshing: false,
+      isRefreshing: true,
       isLoading: false
     }
   }
@@ -48,7 +48,7 @@ class SellerComplainDone extends React.Component {
       }
       if (isFound(propsResolvedCompaint)) {
         const isFound = propsResolvedCompaint.orders.length
-        if (isFound > 0) {
+        if (isFound >= 10) {
           let data = [...this.state.complains, ...propsResolvedCompaint.orders]
           this.setState({
             datacomplaint: propsResolvedCompaint,
@@ -59,11 +59,14 @@ class SellerComplainDone extends React.Component {
             isLoading: false
           })
         } else {
+          let data = [...this.state.complains, ...propsResolvedCompaint.orders]
           this.setState({
+            datacomplaint: propsResolvedCompaint,
+            complains: data,
             isLoading: false,
             isRefreshing: false,
             loadmore: false,
-            page: 1
+            page: 0
           })
         }
       }
@@ -77,7 +80,7 @@ class SellerComplainDone extends React.Component {
         ...this.submitting,
         complain: true
       }
-      this.props.getComplain({page: 1, is_resolved: true})
+      this.props.getComplain({page: 0, is_resolved: true})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -182,10 +185,10 @@ class SellerComplainDone extends React.Component {
 
   renderRow (rowData, x, y) {
     return (
-      <TouchableOpacity onPress={() => this.onclick(rowData.id)} activeOpacity={0.8} key={y} style={styles.containerList}>
+      <TouchableOpacity onPress={() => this.onclick(rowData.id, rowData.count_unread)} activeOpacity={0.8} key={y} style={styles.containerList}>
         <View style={styles.flexRowBorder}>
           <Text style={styles.textSemiBoldGrey}>{rowData.user.name}</Text>
-          {this.checkAmountComplain(rowData.dispute_products.length)}
+          {this.checkAmountComplain(rowData.count_unread)}
         </View>
         <View style={styles.flexRowNoBorder}>
           {this.renderImageProduct(rowData.dispute_products)}
@@ -195,21 +198,15 @@ class SellerComplainDone extends React.Component {
     )
   }
 
-  onclick (id) {
+  onclick (id, countUnread) {
     NavigationActions.sellercomplaindetail({
       type: ActionConst.PUSH,
-      idComplain: id
+      idComplain: id,
+      countUnread: countUnread
     })
   }
 
   render () {
-    if (this.submitting.fetching) {
-      return (
-        <View style={styles.spinner}>
-          <ActivityIndicator color={Colors.red} size='large' />
-        </View>
-      )
-    }
     return (
       <View style={styles.container}>
         <ListView

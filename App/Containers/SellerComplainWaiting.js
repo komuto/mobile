@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as salesAction from '../actions/transaction'
+import Reactotron from 'reactotron-react-native'
 
 // Styles
 import styles from './Styles/SellerComplainWaitingStyle'
@@ -32,9 +33,9 @@ class SellerComplainWaiting extends React.Component {
     this.state = {
       datacomplaint: props.propsUnresolvedCompaint || null,
       complains: [],
-      page: 1,
+      page: 0,
       loadmore: false,
-      isRefreshing: false,
+      isRefreshing: true,
       isLoading: false
     }
   }
@@ -49,7 +50,7 @@ class SellerComplainWaiting extends React.Component {
         ToastAndroid.show(propsUnresolvedCompaint.message, ToastAndroid.SHORT)
       }
       if (isFound(propsUnresolvedCompaint)) {
-        if (isFounds > 0) {
+        if (isFounds >= 10) {
           let data = [...this.state.complains, ...propsUnresolvedCompaint.orders]
           this.setState({
             datacomplaint: propsUnresolvedCompaint,
@@ -59,10 +60,13 @@ class SellerComplainWaiting extends React.Component {
             loadmore: true
           })
         } else {
+          let data = [...this.state.complains, ...propsUnresolvedCompaint.orders]
           this.setState({
+            datacomplaint: propsUnresolvedCompaint,
+            complains: data,
             isRefreshing: false,
             loadmore: false,
-            page: 1
+            page: 0
           })
         }
       }
@@ -70,6 +74,7 @@ class SellerComplainWaiting extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('complain waiting')
     const { complains } = this.state
     if (!complains.isFound || !this.submitting.complain) {
       this.submitting = {
@@ -101,7 +106,7 @@ class SellerComplainWaiting extends React.Component {
   refresh = () => {
     this.setState({ isRefreshing: true, complains: [], isLoading: true })
     this.submitting.complain = true
-    this.props.getComplain({page: 1, is_resolved: false})
+    this.props.getComplain({page: 0, is_resolved: false})
   }
 
   checkAmountComplain (data) {
@@ -179,10 +184,10 @@ class SellerComplainWaiting extends React.Component {
 
   renderRow (rowData, x, y) {
     return (
-      <TouchableOpacity onPress={() => this.onclick(rowData.id)} activeOpacity={0.8} key={y} style={styles.containerList}>
+      <TouchableOpacity onPress={() => this.onclick(rowData.id, rowData.count_unread)} activeOpacity={0.8} key={y} style={styles.containerList}>
         <View style={styles.flexRowBorder}>
           <Text style={styles.textSemiBoldGrey}>{rowData.user.name}</Text>
-          {this.checkAmountComplain(rowData.dispute_products.length)}
+          {this.checkAmountComplain(rowData.count_unread)}
         </View>
         <View style={styles.flexRowNoBorder}>
           {this.renderImageProduct(rowData.dispute_products)}
@@ -192,21 +197,15 @@ class SellerComplainWaiting extends React.Component {
     )
   }
 
-  onclick (id) {
+  onclick (id, countUnread) {
     NavigationActions.sellercomplaindetail({
       type: ActionConst.PUSH,
-      idComplain: id
+      idComplain: id,
+      countUnread: countUnread
     })
   }
 
   render () {
-    if (this.submitting.fetching) {
-      return (
-        <View style={styles.spinner}>
-          <ActivityIndicator color={Colors.red} size='large' />
-        </View>
-      )
-    }
     return (
       <View style={styles.container}>
         <View style={styles.header}>

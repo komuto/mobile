@@ -151,7 +151,7 @@ class MovingProduct extends React.Component {
           ...this.submitting,
           products: true
         }
-        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
       }
     } else if (this.props.actionType === 'deleteProduct') {
       if (!this.submitting.alter) {
@@ -159,7 +159,7 @@ class MovingProduct extends React.Component {
           ...this.submitting,
           products: true
         }
-        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
       }
     } else if (this.props.actionType === 'moveCatalog') {
       if (!this.submitting.alter) {
@@ -169,7 +169,7 @@ class MovingProduct extends React.Component {
           catalog: true
         }
         this.props.getCatalog()
-        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
       }
     } else if (this.props.actionType === 'moveDropship') {
       if (!this.submitting.alter) {

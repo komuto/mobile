@@ -566,8 +566,8 @@ class Home extends React.Component {
           {view}
           <ModalSearchGeneral
             visible={this.state.modalSearch}
-            onClose={() => this.setState({modalSearch: false})}
             onBack={() => this.setState({modalSearch: false})}
+            onRequestClose={() => this.setState({modalSearch: false})}
             refreshing={this.state.refreshSearch}
             value={this.state.search}
             onChangeText={this.handleTextSearch}

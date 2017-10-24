@@ -84,7 +84,7 @@ class Splash extends React.Component {
     }
   }
 
-  openUrl (url) {
+  async openUrl (url) {
     if (url.includes('product')) {
       const id = url.replace(baseUrl + 'product-detail?id=', '')
       NavigationActions.detailproduct({
@@ -93,7 +93,7 @@ class Splash extends React.Component {
       })
       this.props.getDetailProduk(id)
     } else if (url.includes('verification')) {
-      const verifyToken = url.replace(baseUrl + 'signup-verification?token=', '')
+      const verifyToken = await url.replace(baseUrl + 'signup/verification?token=', '')
       this.props.verify(verifyToken)
     }
   }

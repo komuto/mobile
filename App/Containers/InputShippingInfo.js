@@ -9,6 +9,7 @@ import {
   BackAndroid,
   ActivityIndicator,
   TextInput,
+  ToastAndroid,
   Modal
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -87,7 +88,11 @@ class InputShippingInfo extends React.Component {
         loading: false,
         typeInvoice: nextProps.dataDetail.orderDetail.invoice.type
       })
-    } if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
+    } else if (nextProps.dataDetail.status !== 0 && nextProps.dataDetail.status !== 200) {
+      this.setState({loading: false})
+      ToastAndroid.show(nextProps.dataDetail.status, ToastAndroid.LONG)
+    }
+    if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
       this.setState({modalNumberReceive: true, modalLoading: false, statusConfrim: false})
       nextProps.dataProcessDeliveryOrder.status = 0
     }

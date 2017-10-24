@@ -534,6 +534,7 @@ class EditAddress extends React.Component {
           onChangeText={this.handleChangeKodePos}
           underlineColorAndroid='transparent'
           placeholder='Kode Pos'
+          maxLength={5}
         />
         <View style={[styles.lokasiSeparator, {marginBottom: 30.8}]} />
       </View>

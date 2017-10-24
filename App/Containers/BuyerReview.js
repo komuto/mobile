@@ -1,9 +1,20 @@
 import React from 'react'
-import { Text, View, Image, ListView, TouchableOpacity, ActivityIndicator, RefreshControl, ToastAndroid } from 'react-native'
+import {
+  Text,
+  View,
+  Image,
+  ListView,
+  BackAndroid,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  ToastAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -17,58 +28,86 @@ class BuyerReview extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      review: false
+    }
     this.state = {
       data: [],
       page: 1,
       loadmore: false,
-      isRefreshing: false,
-      isLoading: false,
-      loadingPage: true
+      isRefreshing: true,
+      isLoading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataReview.status === 200) {
-      this.setState({
-        loadingPage: false
-      })
-      if (nextProps.dataReview.buyerReview.length > 0) {
-        let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
-        this.setState({
-          data: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {dataReview} = nextProps
+
+    if (!isFetching(dataReview) && this.submitting.review) {
+      this.submitting = { ...this.submitting, review: false }
+      if (isError(dataReview)) {
+        ToastAndroid.show(dataReview.message, ToastAndroid.SHORT)
       }
-    } else if (nextProps.dataReview.status !== 200 && nextProps.dataReview.status !== 0) {
-      this.setState({
-        isRefreshing: false,
-        isLoading: false,
-        loadmore: false
-      })
-      ToastAndroid.show(nextProps.dataReview.message, ToastAndroid.LONG)
+      if (isFound(dataReview)) {
+        const isFound = dataReview.buyerReview.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
+          this.setState({
+            data: data,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            gettingData: false
+          })
+        } else {
+          let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
+          this.setState({
+            data: data,
+            page: 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: false,
+            gettingData: false
+          })
+        }
+      }
     }
+  }
+
+  componentDidMount () {
+    if (!this.submitting.review) {
+      this.submitting = {
+        ...this.submitting,
+        review: true
+      }
+      this.props.getListReview()
+    }
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
   }
 
   loadMore () {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListReview(page)
+        this.props.getListReview({page: page})
       }
     }
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: true })
-    this.props.getListReview(1)
+    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.props.getListReview({page: 1})
   }
 
   handleDetailProduct (id) {
@@ -76,7 +115,7 @@ class BuyerReview extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
-    this.props.getDetailProduct(id)
+    this.props.getDetailProduct({id})
   }
 
   renderRow (rowData) {
@@ -151,7 +190,7 @@ class BuyerReview extends React.Component {
   }
 
   checkStateReview (data) {
-    if (this.state.loadingPage) {
+    if (this.state.isRefreshing) {
       return (
         <View />
       )
@@ -219,8 +258,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id})),
-  getListReview: (page) => dispatch(reviewAction.getBuyerReview({ page: page }))
+  getDetailProduct: (param) => dispatch(produkAction.getProduct(param)),
+  getListReview: (param) => dispatch(reviewAction.getBuyerReview(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BuyerReview)

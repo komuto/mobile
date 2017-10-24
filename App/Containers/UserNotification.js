@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
-import * as reviewAction from '../actions/review'
 import * as transactionAction from '../actions/transaction'
 import ModalLogin from '../Components/ModalLogin'
 
@@ -33,7 +32,6 @@ class UserNotification extends React.Component {
   }
 
   handleReview () {
-    this.props.getListReview()
     NavigationActions.buyerreview({
       type: ActionConst.PUSH
     })
@@ -137,7 +135,6 @@ const mapDispatchToProps = (dispatch) => {
     getListMessages: () => dispatch(messageAction.getBuyerMessages()),
     getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
     getListDiscussion: () => dispatch(userAction.getDiscussion()),
-    getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
     getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions()),
     getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false })),

@@ -78,7 +78,19 @@ class PurchaseUserInfo extends React.Component {
       loadingCart: false,
       gettingKab: false,
       gettingKec: false,
-      gettingKel: false
+      gettingKel: false,
+      colorNamaAlias: Colors.snow,
+      colorNamaPenerima: Colors.snow,
+      colorNoHape: Colors.snow,
+      colorFulladdress: Colors.snow,
+      colorProvince: Colors.snow,
+      colorDistrict: Colors.snow,
+      colorSubdistict: Colors.snow,
+      colorVillage: Colors.snow,
+      colorPostalcode: Colors.snow,
+      isDisable2: true,
+      isDisable3: true,
+      isDisable4: true
     }
   }
 
@@ -94,7 +106,8 @@ class PurchaseUserInfo extends React.Component {
       if (this.state.gettingKab) {
         this.setState({
           dataKabupaten: this.state.tambahanKabupaten.concat(nextProps.dataKota.districts),
-          gettingKab: false
+          gettingKab: false,
+          isDisable2: false
         })
       }
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
@@ -104,7 +117,8 @@ class PurchaseUserInfo extends React.Component {
       if (this.state.gettingKec) {
         this.setState({
           dataKecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts),
-          gettingKec: false
+          gettingKec: false,
+          isDisable3: false
         })
       }
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
@@ -114,7 +128,8 @@ class PurchaseUserInfo extends React.Component {
       if (this.state.gettingKel) {
         this.setState({
           dataKelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages),
-          gettingKel: false
+          gettingKel: false,
+          isDisable4: false
         })
       }
     } else if (nextProps.dataVillage.status !== 200 && nextProps.dataVillage.status !== 0) {
@@ -159,6 +174,164 @@ class PurchaseUserInfo extends React.Component {
     this.setState({ kodepos: text })
   }
 
+  onError = (field) => {
+    switch (field) {
+      case 'alias':
+        this.setState({
+          colorNamaAlias: Colors.red
+        })
+        break
+      case 'penerima':
+        this.setState({
+          colorNamaPenerima: Colors.red
+        })
+        break
+      case 'nohape':
+        this.setState({
+          colorNoHape: Colors.red
+        })
+        break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.red
+        })
+        break
+      case 'province':
+        this.setState({
+          colorProvince: Colors.red
+        })
+        break
+      case 'distric':
+        this.setState({
+          colorDistrict: Colors.red
+        })
+        break
+      case 'subdistric':
+        this.setState({
+          colorSubdistict: Colors.red
+        })
+        break
+      case 'village':
+        this.setState({
+          colorVillage: Colors.red
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.red
+        })
+        break
+      case 'empty':
+        this.setState({
+          colorNamaAlias: Colors.red,
+          colorNamaPenerima: Colors.red,
+          colorNoHape: Colors.red,
+          colorFulladdress: Colors.red,
+          colorProvince: Colors.red,
+          colorDistrict: Colors.red,
+          colorSubdistict: Colors.red,
+          colorVillage: Colors.red,
+          colorPostalcode: Colors.red
+        })
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
+  }
+
+  onFocus = (field) => {
+    switch (field) {
+      case 'alias':
+        this.setState({
+          colorNamaAlias: Colors.snow
+        })
+        break
+      case 'penerima':
+        this.setState({
+          colorNamaPenerima: Colors.snow
+        })
+        break
+      case 'nohape':
+        this.setState({
+          colorNoHape: Colors.snow
+        })
+        break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.snow
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.snow
+        })
+        break
+      case 'empty':
+        this.setState({
+          colorNamaAlias: Colors.snow,
+          colorNamaPenerima: Colors.snow,
+          colorNoHape: Colors.snow,
+          colorFulladdress: Colors.snow,
+          colorProvince: Colors.snow,
+          colorDistrict: Colors.snow,
+          colorSubdistict: Colors.snow,
+          colorVillage: Colors.snow,
+          colorPostalcode: Colors.snow
+        })
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
+  }
+
+  onBlur = (field) => {
+    switch (field) {
+      case 'alias':
+        this.setState({
+          colorNamaAlias: Colors.snow
+        })
+        break
+      case 'penerima':
+        this.setState({
+          colorNamaPenerima: Colors.snow
+        })
+        break
+      case 'nohape':
+        this.setState({
+          colorNoHape: Colors.snow
+        })
+        break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.snow
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.snow
+        })
+        break
+      case 'empty':
+        this.setState({
+          colorNamaAlias: Colors.snow,
+          colorNamaPenerima: Colors.snow,
+          colorNoHape: Colors.snow,
+          colorFulladdress: Colors.snow,
+          colorProvince: Colors.snow,
+          colorDistrict: Colors.snow,
+          colorSubdistict: Colors.snow,
+          colorVillage: Colors.snow,
+          colorPostalcode: Colors.snow
+        })
+        break
+      default:
+        window.alert('Internal Error')
+        break
+    }
+  }
+
   renderModalProvinsi () {
     return (
       <Modal
@@ -179,6 +352,7 @@ class PurchaseUserInfo extends React.Component {
       </Modal>
     )
   }
+
   renderModalKabupaten () {
     return (
       <Modal
@@ -199,6 +373,7 @@ class PurchaseUserInfo extends React.Component {
       </Modal>
     )
   }
+
   renderModalKecamatan () {
     return (
       <Modal
@@ -257,7 +432,8 @@ class PurchaseUserInfo extends React.Component {
             dataKecamatan: [],
             dataKelurahan: [],
             gettingKab: true,
-            modalProvinsi: false })
+            modalProvinsi: false,
+            colorProvince: Colors.snow })
           this.props.getKota(rowData.id)
         }}
       >
@@ -280,7 +456,8 @@ class PurchaseUserInfo extends React.Component {
             dataKecamatan: [],
             dataKelurahan: [],
             gettingKec: true,
-            modalKabupaten: false })
+            modalKabupaten: false,
+            colorDistrict: Colors.snow })
           this.props.getSubDistrict(rowData.id)
         }}
       >
@@ -301,7 +478,8 @@ class PurchaseUserInfo extends React.Component {
             kelurahan: 'Kelurahan',
             dataKelurahan: [],
             gettingKel: true,
-            modalKecamatan: false
+            modalKecamatan: false,
+            colorSubdistict: Colors.snow
           })
           this.props.getVillage(rowData.id)
         }}
@@ -320,7 +498,8 @@ class PurchaseUserInfo extends React.Component {
           this.setState({
             kelurahan: rowData.name,
             idKelurahan: rowData.id,
-            modalKelurahan: false
+            modalKelurahan: false,
+            colorVillage: Colors.snow
           })
         }}
       >
@@ -330,9 +509,6 @@ class PurchaseUserInfo extends React.Component {
   }
 
   buatAlamat () {
-    this.setState({
-      loadingCart: true
-    })
     const {
       namaAlamat,
       nama,
@@ -343,23 +519,59 @@ class PurchaseUserInfo extends React.Component {
       idKabupaten,
       idKecamatan,
       idKelurahan
-  } = this.state
-    this.props.createAddress(
-      idProvinsi,
-      idKabupaten,
-      idKecamatan,
-      idKelurahan,
-      nama,
-      nomorHp,
-      kodepos,
-      alamat,
-      namaAlamat,
-      true
-    )
+    } = this.state
+    if (namaAlamat === '' && nama === '' && nomorHp === '' && alamat === '' && kodepos === '' && idProvinsi === 0 && idKabupaten === 0 && idKecamatan === 0 && idKelurahan === 0) {
+      this.onError('empty')
+    } else if (namaAlamat === '') {
+      this.onError('alias')
+    } else if (nama === '') {
+      this.onError('penerima')
+    } else if (nomorHp === '') {
+      this.onError('nohape')
+    } else if (alamat === '') {
+      this.onError('fulladdress')
+    } else if (idProvinsi === 0) {
+      this.onError('province')
+    } else if (idKabupaten === 0) {
+      this.onError('distric')
+    } else if (idKecamatan === 0) {
+      this.onError('subdistric')
+    } else if (idKelurahan === 0) {
+      this.onError('vilage')
+    } else if (kodepos === '') {
+      this.onError('postalCode')
+    } else {
+      this.setState({
+        loadingCart: true
+      })
+      const {
+        namaAlamat,
+        nama,
+        nomorHp,
+        alamat,
+        kodepos,
+        idProvinsi,
+        idKabupaten,
+        idKecamatan,
+        idKelurahan
+    } = this.state
+      this.props.createAddress(
+        idProvinsi,
+        idKabupaten,
+        idKecamatan,
+        idKelurahan,
+        nama,
+        nomorHp,
+        kodepos,
+        alamat,
+        namaAlamat,
+        true
+      )
+    }
   }
 
   render () {
-    const { provinsi, kabupaten, kecamatan, kelurahan, namaAlamat, nama, nomorHp, alamat, kodepos, loadingCart } = this.state
+    const { colorFulladdress, colorNamaAlias, colorNoHape, colorNamaPenerima, colorDistrict, colorPostalcode, colorProvince, colorSubdistict, colorVillage, isDisable2, isDisable3, isDisable4, provinsi, kabupaten, kecamatan, kelurahan, namaAlamat, nama, nomorHp, alamat, kodepos, loadingCart } = this.state
     const spinner = loadingCart
     ? (<View style={[styles.spinner, {backgroundColor: Colors.bluesky}]}>
       <ActivityIndicator color={Colors.snow} size='large' />
@@ -397,8 +609,11 @@ class PurchaseUserInfo extends React.Component {
               onChangeText={this.handleNamaAlamat}
               underlineColorAndroid='transparent'
               placeholder='Nama Alias'
+              onFocus={() => this.onFocus('alias')}
+              onBlur={() => this.onBlur('alias')}
             />
             <Text style={styles.teks}>Contoh: Rumah Sendiri, Kantor</Text>
+            <Text style={[styles.textLabel, {color: colorNamaAlias}]}>Nama alias harus diisi</Text>
             <TextInput
               ref='nama'
               style={styles.input}
@@ -408,10 +623,13 @@ class PurchaseUserInfo extends React.Component {
               keyboardType='default'
               autoCapitalize='none'
               autoCorrect
+              onFocus={() => this.onFocus('penerima')}
+              onBlur={() => this.onBlur('penerima')}
               onChangeText={this.handleNama}
               underlineColorAndroid='transparent'
               placeholder='Nama Penerima'
             />
+            <Text style={[styles.textLabel, {color: colorNamaPenerima}]}>Nama penerima harus diisi</Text>
             <TextInput
               ref='nomorHp'
               style={styles.input}
@@ -421,10 +639,14 @@ class PurchaseUserInfo extends React.Component {
               keyboardType='numeric'
               autoCapitalize='none'
               autoCorrect
+              maxLength={13}
               onChangeText={this.handleNomorHp}
               underlineColorAndroid='transparent'
               placeholder='Nomor Handphone'
+              onFocus={() => this.onFocus('nohape')}
+              onBlur={() => this.onBlur('nohape')}
             />
+            <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomer Handphone harus diisi</Text>
           </View>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Info Lokasi</Text>
@@ -441,7 +663,10 @@ class PurchaseUserInfo extends React.Component {
               onChangeText={this.handleAlamat}
               underlineColorAndroid='transparent'
               placeholder='Alamat Lengkap'
+              onFocus={() => this.onFocus('fulladdress')}
+              onBlur={() => this.onBlur('fulladdress')}
             />
+            <Text style={[styles.textLabel, {color: colorFulladdress}]}>Alamat lengkap harus diisi</Text>
             <TouchableOpacity
               style={styles.containerPicker}
               onPress={() => this.setState({ modalProvinsi: true })}
@@ -449,27 +674,34 @@ class PurchaseUserInfo extends React.Component {
               <Text style={[styles.teksPicker, { flex: 1 }]}>{provinsi}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
+            <Text style={[styles.textLabelErrorInfo, {color: colorProvince}]}>Provinsi harus dipilih</Text>
             <TouchableOpacity
               style={styles.containerPicker}
+              disabled={isDisable2}
               onPress={() => this.setState({ modalKabupaten: true })}
             >
               <Text style={[styles.teksPicker, { flex: 1 }]}>{kabupaten}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
+            <Text style={[styles.textLabelErrorInfo, {color: colorDistrict}]}>Kabupaten harus dipilih</Text>
             <TouchableOpacity
               style={styles.containerPicker}
+              disabled={isDisable3}
               onPress={() => this.setState({ modalKecamatan: true })}
             >
               <Text style={[styles.teksPicker, { flex: 1 }]}>{kecamatan}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
+            <Text style={[styles.textLabelErrorInfo, {color: colorSubdistict}]}>Kecamatan harus dipilih</Text>
             <TouchableOpacity
               style={styles.containerPicker}
+              disabled={isDisable4}
               onPress={() => this.setState({ modalKelurahan: true })}
             >
               <Text style={[styles.teksPicker, { flex: 1 }]}>{kelurahan}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
+            <Text style={[styles.textLabelErrorInfo, {color: colorVillage}]}>Kelurahan harus dipilih</Text>
             <TextInput
               ref='kodepos'
               style={styles.input}
@@ -481,7 +713,10 @@ class PurchaseUserInfo extends React.Component {
               onChangeText={this.handleKodePos}
               underlineColorAndroid='transparent'
               placeholder='Kode Pos'
+              onFocus={() => this.onFocus('postalCode')}
+              onBlur={() => this.onBlur('postalCode')}
             />
+            <Text style={[styles.textLabelErrorInfo, {color: colorPostalcode}]}>Kode pos harus diisi</Text>
           </View>
           <View style={styles.buttonContainer}>
             {tombol}

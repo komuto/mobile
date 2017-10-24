@@ -1,10 +1,22 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView, TouchableOpacity, TextInput, ActivityIndicator, BackAndroid } from 'react-native'
+import {
+  View,
+  ScrollView,
+  Text,
+  Image,
+  ListView,
+  ToastAndroid,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  BackAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
 import * as storeAction from '../actions/stores'
 import * as loginaction from '../actions/user'
+import {isFetching, isError, isFound} from '../Services/Status'
 // import * as expeditionAction from '../actions/expedition'
 
 import { Images, Colors } from '../Themes'
@@ -16,6 +28,9 @@ class InfoStore extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      updateInfoStore: false
+    }
     this.state = {
       namaToko: this.props.dataProfile.user.store.name || '',
       slogan: this.props.dataProfile.user.store.slogan || '',
@@ -39,11 +54,13 @@ class InfoStore extends React.Component {
       textSlogan: ' sisa karakter',
       createStore: this.props.createStores,
       textButton: this.props.textButton,
-      editAbles: this.props.editAble
+      editAbles: this.props.editAble,
+      notif: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    const {dataUpdate} = nextProps
     if (nextProps.dataPhoto.status === 200) {
       this.setState({
         loading: false,
@@ -53,12 +70,19 @@ class InfoStore extends React.Component {
       this.setState({
         loading: false
       })
-    } if (nextProps.dataUpdate.status === 200) {
-      this.setState({
-        loading: false
-      })
-      this.props.getProfile()
-      nextProps.dataUpdate.status = 0
+    }
+    if (!isFetching(dataUpdate) && this.submitting.updateInfoStore) {
+      this.submitting = { ...this.submitting, updateInfoStore: false }
+      if (isError(dataUpdate)) {
+        ToastAndroid.show(dataUpdate.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataUpdate)) {
+        this.props.getProfile()
+        this.setState({
+          loading: false,
+          notif: true
+        })
+      }
     }
   }
 
@@ -77,6 +101,23 @@ class InfoStore extends React.Component {
 
   backButton () {
     NavigationActions.pop()
+  }
+
+  notif () {
+    if (this.state.notif) {
+      return (
+        <View style={styles.notif}>
+          <Text style={styles.textNotif}>Berhasil memperbarui informasi toko</Text>
+          <TouchableOpacity onPress={() => this.setState({notif: false})}>
+            <Image source={Images.closeGreen} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
   }
 
   handleChangename = (text) => {
@@ -237,7 +278,7 @@ class InfoStore extends React.Component {
 
   renderStateOne () {
     const {textButton, editAbles, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
-    if (textPemilik === '') {
+    if (slogan.length === 0) {
       this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{textSlogan}</Text>)
     } else {
       this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{this.state.maxLine - slogan.length}{textSlogan}</Text>)
@@ -342,18 +383,18 @@ class InfoStore extends React.Component {
 
   nextState () {
     const {createStore, namaToko, slogan, descToko, store, stores, fotoToko} = this.state
-    if (createStore) {
-      if (namaToko === '' && slogan === '' && descToko === '') {
-        this.onError('empty')
-      } else if (namaToko === '') {
-        this.onError('pemilik')
-      } else if (slogan === '') {
-        this.onError('slogan')
-      } else if (descToko === '') {
-        this.onError('desc')
-      } else if (fotoToko === '') {
-        this.onError('foto')
-      } else {
+    if (namaToko === '' && slogan === '' && descToko === '') {
+      this.onError('empty')
+    } else if (namaToko === '') {
+      this.onError('pemilik')
+    } else if (slogan === '') {
+      this.onError('slogan')
+    } else if (descToko === '') {
+      this.onError('desc')
+    } else if (fotoToko === '') {
+      this.onError('foto')
+    } else {
+      if (createStore) {
         store[0] = namaToko
         store[1] = slogan
         store[2] = descToko
@@ -363,10 +404,11 @@ class InfoStore extends React.Component {
           type: ActionConst.PUSH,
           dataStore: stores
         })
+      } else {
+        this.setState({loading: true})
+        this.submitting.updateInfoStore = true
+        this.props.updateInfoTokos(namaToko, slogan, descToko, fotoToko)
       }
-    } else {
-      this.setState({loading: true})
-      this.props.updateInfoTokos(namaToko, slogan, descToko, fotoToko)
     }
   }
 
@@ -405,6 +447,7 @@ class InfoStore extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
+        {this.notif()}
         {this.stateIndicator()}
         <ScrollView>
           {this.renderStateOne()}

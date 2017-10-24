@@ -89,6 +89,7 @@ class TransactionItemReceived extends React.Component {
       this.setState({
         loading: false
       })
+      nextProps.dataAddReview.status = 0
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddReview.message, ToastAndroid.LONG)
     }
     if (nextProps.dataPhoto.status === 200) {
@@ -132,6 +133,7 @@ class TransactionItemReceived extends React.Component {
       this.setState({
         loading: false
       })
+      nextProps.dataAddComplain.status = 0
       ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddComplain.message, ToastAndroid.LONG)
     }
   }

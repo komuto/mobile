@@ -40,9 +40,7 @@ class PaymentSuccess extends React.Component {
           Pembayaran Telah Berhasil
         </Text>
         <Text style={styles.textIsi}>
-          Lorem ipsum dolor sit amet, consectetur
-          adipiscing elit, sed do eiusmod tempor
-          incididunt ut labore et dolore magna aliqua
+          Terima kasih Anda telah melakukan pembayaran. Pesanan Anda akan segera diproses oleh penjual.
         </Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => this.transaksi()}>

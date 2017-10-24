@@ -47,9 +47,6 @@ class SellerNotificationReview extends React.Component {
     }
     if (nextProps.dataDetailProduk.status === 200) {
       this.setState({loadingPage: false})
-      NavigationActions.detailproduct({
-        type: ActionConst.PUSH
-      })
     }
   }
 
@@ -105,6 +102,10 @@ class SellerNotificationReview extends React.Component {
   handleDetailProduct (id) {
     this.setState({loadingPage: true})
     this.props.getDetailProduct(id)
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
   }
 
   renderRow (rowData) {

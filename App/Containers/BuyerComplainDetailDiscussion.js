@@ -3,6 +3,7 @@ import { View, ListView, Image, Text, ScrollView, TextInput, BackAndroid, Refres
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
+import moment from 'moment'
 import * as transactionAction from '../actions/transaction'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -65,6 +66,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
     return (
       <View style={styles.rowContainer}>
         <Image source={{ uri: rowData.user.photo }} style={styles.photo} />
@@ -77,7 +79,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
           </Text>
         </View>
         <Text style={styles.date}>
-          {rowData.created_at}
+          {time}
         </Text>
       </View>
     )

@@ -285,7 +285,7 @@ class TransaksiDetailStatusBarang extends React.Component {
           <View style={styles.disputeContainer}>
             <Text style={[styles.textTitle, { marginRight: 30 }]}>Masalah</Text>
             <View style={{ flex: 1 }} />
-            <Text style={[styles.teks, { textAlign: 'right' }]}>
+            <Text style={[styles.teks, { textAlign: 'right', marginRight: 80 }]}>
               {dispute.problems}
             </Text>
           </View>

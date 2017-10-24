@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   AsyncStorage,
-  Alert,
+  ToastAndroid,
   BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -72,7 +72,7 @@ class Register extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataRegister.message)
+      ToastAndroid.show(nextProps.dataRegister.message, ToastAndroid.LONG)
     }
   }
 
@@ -124,13 +124,17 @@ class Register extends React.Component {
       } else if (konfirmasiPassword !== password) {
         this.onError('passwordBeda')
       } else {
-        this.setState({
-          loading: true
-        })
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
             console.log('token', tokenFCM)
-            this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+            if (password.length > 4) {
+              this.setState({
+                loading: true
+              })
+              this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+            } else {
+              ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.LONG)
+            }
           }
         })
       }

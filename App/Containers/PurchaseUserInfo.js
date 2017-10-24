@@ -75,7 +75,10 @@ class PurchaseUserInfo extends React.Component {
       modalKabupaten: false,
       modalKecamatan: false,
       modalKelurahan: false,
-      loadingCart: false
+      loadingCart: false,
+      gettingKab: false,
+      gettingKec: false,
+      gettingKel: false
     }
   }
 
@@ -88,23 +91,32 @@ class PurchaseUserInfo extends React.Component {
       ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
     }
     if (nextProps.dataKota.status === 200) {
-      this.setState({
-        dataKabupaten: this.state.tambahanKabupaten.concat(nextProps.dataKota.districts)
-      })
+      if (this.state.gettingKab) {
+        this.setState({
+          dataKabupaten: this.state.tambahanKabupaten.concat(nextProps.dataKota.districts),
+          gettingKab: false
+        })
+      }
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
       ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
     }
     if (nextProps.dataSubDistrict.status === 200) {
-      this.setState({
-        dataKecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
-      })
+      if (this.state.gettingKec) {
+        this.setState({
+          dataKecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts),
+          gettingKec: false
+        })
+      }
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
       ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
     }
     if (nextProps.dataVillage.status === 200) {
-      this.setState({
-        dataKelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
-      })
+      if (this.state.gettingKel) {
+        this.setState({
+          dataKelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages),
+          gettingKel: false
+        })
+      }
     } else if (nextProps.dataVillage.status !== 200 && nextProps.dataVillage.status !== 0) {
       ToastAndroid.show(nextProps.dataVillage.message, ToastAndroid.LONG)
     }
@@ -244,6 +256,7 @@ class PurchaseUserInfo extends React.Component {
             dataKabupaten: [],
             dataKecamatan: [],
             dataKelurahan: [],
+            gettingKab: true,
             modalProvinsi: false })
           this.props.getKota(rowData.id)
         }}
@@ -266,6 +279,7 @@ class PurchaseUserInfo extends React.Component {
             kelurahan: 'Kelurahan',
             dataKecamatan: [],
             dataKelurahan: [],
+            gettingKec: true,
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
         }}
@@ -286,6 +300,7 @@ class PurchaseUserInfo extends React.Component {
             idKecamatan: rowData.id,
             kelurahan: 'Kelurahan',
             dataKelurahan: [],
+            gettingKel: true,
             modalKecamatan: false
           })
           this.props.getVillage(rowData.id)

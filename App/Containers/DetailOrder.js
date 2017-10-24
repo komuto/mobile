@@ -279,11 +279,11 @@ class DetailOrder extends React.Component {
   }
 
   renderPriceDetail (data) {
-    var subTotal = this.maskedMoney(data.total_bill)
+    var subTotal = this.maskedMoney(data.total_bill - data.delivery_cost - data.insurance_fee)
     var insuranceFee = this.maskedMoney(data.insurance_fee)
     var postalFee = this.maskedMoney(data.delivery_cost)
 
-    var total = data.total_bill + data.insurance_fee + data.delivery_cost
+    var total = data.total_bill
     var totalMasked = this.maskedMoney(total)
 
     return (
@@ -297,7 +297,7 @@ class DetailOrder extends React.Component {
           <Text style={styles.valueStyle}>{insuranceFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {borderColor: Colors.silver, borderBottomWidth: 0.5}]}>
-          <Text style={styles.labelStyle}>Biaya Asuransi</Text>
+          <Text style={styles.labelStyle}>Ongkos Kirim</Text>
           <Text style={styles.valueStyle}>{postalFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {padding: 15}]}>

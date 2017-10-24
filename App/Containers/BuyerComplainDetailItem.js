@@ -102,7 +102,7 @@ class BuyerComplainDetailItem extends React.Component {
           </Text>
         </View>
       )
-    } else if (complainSolved || status === 8) {
+    } else if (complainSolved || status === 8 || status === 9) {
       return (
         <View style={styles.notificationContainerGreen}>
           <Image source={Images.infoDone} style={[styles.imageInfo, { marginTop: 2 }]} />
@@ -203,7 +203,7 @@ class BuyerComplainDetailItem extends React.Component {
   renderStatus () {
     let warna = Colors.red
     let teks = 'Menunggu Penyelesaian'
-    if (this.state.complainSolved || this.state.status === 8) {
+    if (this.state.complainSolved || this.state.status === 8 || this.state.status === 9) {
       warna = Colors.greenish
       teks = 'Terselesaikan'
     }

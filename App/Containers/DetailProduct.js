@@ -267,7 +267,7 @@ class DetailProduct extends React.Component {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
     // this.props.getDetailProduk(this.state.id)
     this.props.getProvinsi()
-    this.props.getKota(11)
+    // this.props.getKota(11)
   }
 
   componentWillUnmount () {

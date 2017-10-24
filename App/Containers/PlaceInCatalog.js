@@ -84,7 +84,7 @@ class PlaceInCatalog extends React.Component {
       })
       nextProps.alterProduct.status = 0
     } if (nextProps.dataCreateProdukDropshipper.status === 400) {
-      ToastAndroid.show('Produk sudah ada di daftar dropship..', ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCreateProdukDropshipper.message, ToastAndroid.LONG)
       this.setState({
         loading: false
       })

@@ -205,7 +205,7 @@ class InputShippingInfo extends React.Component {
   }
 
   renderRowProduct (rowData, x, y) {
-    var moneyMasked = this.maskedMoney(rowData.total_price)
+    var moneyMasked = this.maskedMoney(rowData.product.price)
     return (
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
@@ -320,11 +320,11 @@ class InputShippingInfo extends React.Component {
   }
 
   renderPriceDetail (data) {
-    var subTotal = this.maskedMoney(data.total_bill)
+    var subTotal = this.maskedMoney(data.total_bill - data.insurance_fee - data.delivery_cost)
     var insuranceFee = this.maskedMoney(data.insurance_fee)
     var postalFee = this.maskedMoney(data.delivery_cost)
 
-    var total = data.total_bill + data.insurance_fee + data.delivery_cost
+    var total = data.total_bill
     var totalMasked = this.maskedMoney(total)
 
     return (
@@ -338,7 +338,7 @@ class InputShippingInfo extends React.Component {
           <Text style={styles.valueStyle}>{insuranceFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {borderColor: Colors.silver, borderBottomWidth: 0.5}]}>
-          <Text style={styles.labelStyle}>Biaya Asuransi</Text>
+          <Text style={styles.labelStyle}>Ongkos Kirim</Text>
           <Text style={styles.valueStyle}>{postalFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {padding: 15}]}>
@@ -546,7 +546,7 @@ class InputShippingInfo extends React.Component {
                 maxLength={30}
                 style={[styles.inputText]}
                 value={this.state.receipeNumber}
-                keyboardType='numeric'
+                keyboardType='default'
                 returnKeyType='done'
                 autoCapitalize='none'
                 autoCorrect

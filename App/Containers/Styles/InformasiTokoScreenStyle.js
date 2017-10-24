@@ -287,5 +287,11 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  information: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    letterSpacing: 0.23,
+    color: Colors.labelgrey
   }
 })

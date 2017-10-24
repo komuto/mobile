@@ -275,6 +275,7 @@ class InfoStore extends React.Component {
                 placeholder='Nama Toko Anda'
               />
             </View>
+            <Text style={styles.information}>Nama Toko Tidak Dapat Diubah</Text>
             <Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textPemilikColor}]}>{textPemilik}</Text>
             <Text style={styles.textLabel}>Slogan</Text>
             <View style={styles.inputContainer}>

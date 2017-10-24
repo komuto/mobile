@@ -132,7 +132,6 @@ class PurchaseAddToCart extends React.Component {
       })
     }
     if (nextProps.dataAddress.status === 200) {
-      console.log(nextProps.dataAddress.address)
       if (nextProps.dataAddress.address.address === '' || nextProps.dataAddress.address.address === null || nextProps.dataAddress.address.address === undefined) {
         if (this.state.dataAlamat.length > 0) {
           this.setState({

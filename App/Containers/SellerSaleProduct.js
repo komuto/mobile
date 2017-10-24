@@ -81,7 +81,7 @@ class SellerSaleProduct extends React.Component {
         ...this.submitting,
         product: true
       }
-      this.props.getListSales({page: 1})
+      this.props.getListSales(1)
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -342,7 +342,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListSales: (param) => dispatch(salesAction.getSales(param))
+  getListSales: (page) => dispatch(salesAction.getSales({page: page}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SellerSaleProduct)

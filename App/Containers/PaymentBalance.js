@@ -79,6 +79,7 @@ class PaymentBalance extends React.Component {
       this.setState({
         loading: false
       })
+      nextProps.dataPayment.status = 0
       ToastAndroid.show('Pembayaran Gagal.. ' + nextProps.dataPayment.message, ToastAndroid.LONG)
     }
   }

@@ -90,11 +90,14 @@ class InputShippingInfo extends React.Component {
       })
     } else if (nextProps.dataDetail.status !== 0 && nextProps.dataDetail.status !== 200) {
       this.setState({loading: false})
-      ToastAndroid.show(nextProps.dataDetail.status, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetail.message, ToastAndroid.LONG)
     }
     if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
       this.setState({modalNumberReceive: true, modalLoading: false, statusConfrim: false})
       nextProps.dataProcessDeliveryOrder.status = 0
+    } else if (nextProps.dataProcessDeliveryOrder.status !== 0 && nextProps.dataProcessDeliveryOrder.status !== 200) {
+      this.setState({loading: false})
+      ToastAndroid.show(nextProps.dataProcessDeliveryOrder.message, ToastAndroid.LONG)
     }
   }
 
@@ -575,7 +578,7 @@ class InputShippingInfo extends React.Component {
 
   onclickProcessInfoDelivery (data) {
     this.setState({statusConfrim: true, modalLoading: true})
-    this.props.processDeliveryConfrim(this.state.invoice.id, +this.state.receipeNumber)
+    this.props.processDeliveryConfrim(this.state.invoice.id, this.state.receipeNumber)
   }
 
   sendMessageToSaller (titles, invoiceId, data, type, actionType) {

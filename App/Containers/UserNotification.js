@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
@@ -19,21 +19,17 @@ class UserNotification extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      isLogin: this.props.datalogin.login
+      isLogin: this.props.datalogin.login,
+      disputes: 0
     }
   }
 
-  ComponentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-  }
-
-  componentWillUnmount () {
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-  }
-
-  handleBack = () => {
-    NavigationActions.pop()
-    return true
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDisputes.status === 200) {
+      this.setState({
+        disputes: nextProps.dataDisputes.disputes
+      })
+    }
   }
 
   handleReview () {
@@ -75,6 +71,18 @@ class UserNotification extends React.Component {
   }
 
   menu (borderStyle, image, titleMenu, onPress) {
+    let view
+    if (titleMenu.includes('Komplain')) {
+      if (this.state.disputes > 0) {
+        view = (
+          <View style={styles.containerNumber}>
+            <Text style={styles.number}>
+              {String(this.state.disputes)}
+            </Text>
+          </View>
+        )
+      }
+    }
     return (
       <TouchableOpacity style={styles.profile} onPress={onPress}>
         <Image source={image} style={styles.imageCategory} />
@@ -84,6 +92,7 @@ class UserNotification extends React.Component {
               {titleMenu}
             </Text>
           </View>
+          {view}
           <Image source={Images.rightArrow} style={styles.rightArrow} />
         </View>
       </TouchableOpacity>
@@ -118,7 +127,8 @@ class UserNotification extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataDisputes: state.unreadDisputes
   }
 }
 
@@ -131,7 +141,8 @@ const mapDispatchToProps = (dispatch) => {
     getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
     getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions()),
     getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false })),
-    getDisputeListDone: () => dispatch(transactionAction.getComplainedOrdersBuyer2({ is_resolved: true }))
+    getDisputeListDone: () => dispatch(transactionAction.getComplainedOrdersBuyer2({ is_resolved: true })),
+    getUnreadDisputes: dispatch(userAction.getUnreadDispute())
   }
 }
 

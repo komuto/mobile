@@ -19,9 +19,9 @@ class SalesDashboard extends React.Component {
     }
     this.state = {
       countOrder: props.dataCount || null,
-      order: '',
-      delivery: '',
-      sale: ''
+      order: this.props.dataDisputes.disputes.sales.new_order,
+      delivery: this.props.dataDisputes.disputes.sales.processing_order,
+      sale: this.props.dataDisputes.disputes.sales.sale
     }
   }
 
@@ -174,7 +174,8 @@ class SalesDashboard extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataCount: state.saleCount
+  dataCount: state.saleCount,
+  dataDisputes: state.unreadDisputesStore
 })
 
 const mapDispatchToProps = (dispatch) => ({

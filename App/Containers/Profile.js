@@ -15,6 +15,7 @@ import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
+import * as storeAction from '../actions/stores'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -385,6 +386,7 @@ class Profile extends React.Component {
           type: ActionConst.PUSH,
           title: 'Toko Anda'
         })
+        this.props.getUnreadDispute()
       } else {
         NavigationActions.infostore({
           type: ActionConst.PUSH,
@@ -423,7 +425,8 @@ const mapDispatchToProps = (dispatch) => {
     getProfile: (login) => dispatch(loginaction.getProfile()),
     logout: (login) => dispatch(loginaction.logout()),
     sentOTP: () => dispatch(loginaction.sendOTPPhone()),
-    resendVerification: () => dispatch(loginaction.resendSignup())
+    resendVerification: () => dispatch(loginaction.resendSignup()),
+    getUnreadDispute: () => dispatch(storeAction.getUnreadDisputeStore())
   }
 }
 

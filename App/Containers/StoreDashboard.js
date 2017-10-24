@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
@@ -26,7 +26,7 @@ class StoreDashboard extends React.Component {
       email: '',
       foto: 'default',
       statusVerifikasi: true,
-      complainItems: 6
+      complainItems: 0
     }
   }
 
@@ -36,6 +36,17 @@ class StoreDashboard extends React.Component {
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDisputes.status === 200) {
+      this.setState({
+        complainItems: nextProps.dataDisputes.disputes.disputes,
+        unreadSales: nextProps.dataDisputes.disputes.sales
+      })
+    } else if (nextProps.dataDisputes.status !== 0 && nextProps.dataDisputes.status !== 200) {
+      ToastAndroid.show(nextProps.dataDisputes.message, ToastAndroid.LONG)
+    }
   }
 
   handleBack = () => {
@@ -146,6 +157,17 @@ class StoreDashboard extends React.Component {
   }
 
   render () {
+    const { complainItems } = this.state
+    let view = null
+    if (complainItems > 0) {
+      view = (
+        <View style={styles.containerNumber}>
+          <Text style={styles.number}>
+            {String(this.state.complainItems)}
+          </Text>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -248,11 +270,7 @@ class StoreDashboard extends React.Component {
                       Komplain Barang
                     </Text>
                   </View>
-                  <View style={styles.containerNumber}>
-                    <Text style={styles.number}>
-                      {String(this.state.complainItems)}
-                    </Text>
-                  </View>
+                  {view}
                   <Image source={Images.rightArrow} style={styles.rightArrow} />
                 </View>
               </View>
@@ -267,6 +285,7 @@ class StoreDashboard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataDisputes: state.unreadDisputesStore
   }
 }
 

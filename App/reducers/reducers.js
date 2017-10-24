@@ -45,7 +45,8 @@ const user = {
   unresolvedResolutions: userReducers.getUnresolvedResolutions,
   resolutionDetail: userReducers.getResolutionDetail,
   createResolution: userReducers.createResolution,
-  replyResolution: userReducers.replyResolution
+  replyResolution: userReducers.replyResolution,
+  unreadDisputes: userReducers.unreadDisputes
 }
 
 const home = {
@@ -95,7 +96,8 @@ const store = {
   updateStoreAddress: storeReducers.updateStoreAddress,
   hiddenStoreProducts: storeReducers.getHiddenStoreProducts,
   storeDiscussions: storeReducers.getStoreDiscussions,
-  storeProductsByCatalog: storeReducers.getStoreProductsByCatalog
+  storeProductsByCatalog: storeReducers.getStoreProductsByCatalog,
+  unreadDisputesStore: storeReducers.unreadDisputesStore
 }
 
 const address = {

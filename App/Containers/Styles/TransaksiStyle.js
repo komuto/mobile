@@ -6,7 +6,7 @@ export default StyleSheet.create({
     flex: 1,
     marginTop: Metrics.navBarHeight,
     marginBottom: 45,
-    backgroundColor: Colors.paleGrey
+    backgroundColor: Colors.snow
   },
   rowContainer: {
     flexDirection: 'column',

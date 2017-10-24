@@ -129,3 +129,8 @@ export const getStoreProductsByCatalog = ({ id, ...data }) => {
   const query = buildQuery(data)
   return axios.get(`users/store/products/catalogs/${id}/list?${query}`)
 }
+
+export const getUnreadDisputeStore = () => {
+  const axios = authApiKomuto()
+  return axios.get('pages/store')
+}

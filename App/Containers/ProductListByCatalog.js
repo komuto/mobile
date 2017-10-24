@@ -5,7 +5,8 @@ import {
   Image,
   View,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -47,7 +48,19 @@ class ListProdukByCatalog extends React.Component {
       this.setState({
         produk: nextProps.dataProduk.storeCatalogProducts.products
       })
+      nextProps.dataProduk.status = 0
+    } else if (nextProps.dataProduk.status !== 200 && nextProps.dataProduk.status !== 0) {
+      ToastAndroid.show(nextProps.dataProduk.message, ToastAndroid.SHORT)
+      nextProps.dataProduk.status = 0
     }
+  }
+
+  handleTextSearch = (text) => {
+    this.setState({ search: text })
+  }
+
+  search () {
+    console.log('asd')
   }
 
   renderSearch () {

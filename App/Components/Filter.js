@@ -13,7 +13,7 @@ class Filter extends React.Component {
     const dataObjects = [
       {id: 1, title: 'Kondisi', active: true},
       {id: 2, title: 'Jasa Pengiriman', active: false},
-      {id: 3, title: 'Rentan Harga', active: false},
+      {id: 3, title: 'Rentang Harga', active: false},
       {id: 4, title: 'Dikirim Dari', active: false},
       {id: 5, title: 'Brand', active: false},
       {id: 6, title: 'Lainnya', active: false}

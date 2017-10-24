@@ -1,8 +1,22 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, ActivityIndicator, BackAndroid, ListView, TouchableOpacity, Image, Modal } from 'react-native'
+import {
+  ScrollView,
+  ToastAndroid,
+  Text,
+  View,
+  TextInput,
+  ActivityIndicator,
+  BackAndroid,
+  ListView,
+  TouchableOpacity,
+  Image,
+  Modal
+} from 'react-native'
 import { connect } from 'react-redux'
 import * as addressAction from '../actions/address'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -19,6 +33,15 @@ class AddAddress extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      province: false,
+      district: false,
+      subdistrict: false,
+      village: false,
+      addAddress: false,
+      detailAddress: false,
+      editAddress: false
+    }
     this.state = {
       titleButton: this.props.titleButton,
       edit: this.props.edit,
@@ -30,10 +53,15 @@ class AddAddress extends React.Component {
       alamatLengkap: '',
       kodePos: '',
       idAlamat: this.props.idAlamat,
-      namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
-      colorNamaAlias: Colors.lightblack,
+      colorNamaAlias: Colors.snow,
       colorNamaPenerima: Colors.snow,
       colorNoHape: Colors.snow,
+      colorFulladdress: Colors.snow,
+      colorProvince: Colors.snow,
+      colorDistrict: Colors.snow,
+      colorSubdistict: Colors.snow,
+      colorVillage: Colors.snow,
+      colorPostalcode: Colors.snow,
       colorPickerProv: Colors.labelgrey,
       colorPickerKab: Colors.labelgrey,
       colorPickerKec: Colors.labelgrey,
@@ -55,83 +83,175 @@ class AddAddress extends React.Component {
       modalKecamatan: false,
       modalKelurahan: false,
       isPrimary: false,
-      loading: false
+      loading: false,
+      isDisable2: true,
+      isDisable3: true,
+      isDisable4: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProvinsi.status === 200) {
-      this.setState({
-        provinsi: nextProps.dataProvinsi.provinces
-      })
-    } if (nextProps.dataKota.status === 200) {
-      this.setState({
-        kabupaten: nextProps.dataKota.districts
-      })
-    } if (nextProps.dataSubDistrict.status === 200) {
-      this.setState({
-        kecamatan: nextProps.dataSubDistrict.subdistricts
-      })
-    } if (nextProps.dataVilage.status === 200) {
-      this.setState({
-        kelurahan: nextProps.dataVilage.villages
-      })
+    const {
+      dataProvinsi,
+      dataKota,
+      dataSubDistrict,
+      dataVilage,
+      dataAddress,
+      detailAddress,
+      updateAddress
+    } = nextProps
+
+    if (!isFetching(dataProvinsi) && this.submitting.province) {
+      this.submitting = { ...this.submitting, province: false }
+      if (isError(dataProvinsi)) {
+        ToastAndroid.show(dataProvinsi.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProvinsi)) {
+        this.setState({
+          provinsi: dataProvinsi.provinces
+        })
+      }
     }
-    if (nextProps.dataAddress.status === 200) {
-      this.setState({
-        loading: false
-      })
-      this.props.getAlamat()
-      NavigationActions.addressdata({
-        type: ActionConst.PUSH,
-        notif: true,
-        pesanNotif: 'menambahkan alamat baru'
-      })
-      nextProps.dataAddress.status = 0
-    } if (nextProps.dataAddress.status > 200) {
-      this.setState({
-        loading: false
-      })
+
+    if (!isFetching(dataKota) && this.submitting.district) {
+      this.submitting = { ...this.submitting, district: false }
+      if (isError(dataKota)) {
+        ToastAndroid.show(dataKota.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataKota)) {
+        this.setState({
+          kabupaten: dataKota.districts,
+          isDisable2: false
+        })
+      }
     }
-    if (nextProps.detailAddress.status === 200 && this.props.edit === true) {
-      this.setState({
-        loading: false,
-        namaAlias: nextProps.detailAddress.address.alias_address,
-        namaPenerima: nextProps.detailAddress.address.name,
-        nomerHape: nextProps.detailAddress.address.phone_number,
-        alamatLengkap: nextProps.detailAddress.address.address,
-        kodePos: nextProps.detailAddress.address.postal_code,
-        colorPickerProv: Colors.lightblack,
-        colorPickerKab: Colors.lightblack,
-        colorPickerKec: Colors.lightblack,
-        colorPickerKel: Colors.lightblack,
-        provinsiTerpilih: nextProps.detailAddress.address.province.name,
-        kabTerpilih: nextProps.detailAddress.address.district.name,
-        kecTerpilih: nextProps.detailAddress.address.subDistrict.name,
-        kelurahanterpilih: nextProps.detailAddress.address.village.name,
-        idProvinsiTerpilih: nextProps.detailAddress.address.province.id,
-        idKabTerpilih: nextProps.detailAddress.address.district.id,
-        idKecTerpilih: nextProps.detailAddress.address.subDistrict.id,
-        idkelTerpilih: nextProps.detailAddress.address.village.id,
-        isPrimary: nextProps.detailAddress.address.is_primary_address
-      })
+
+    if (!isFetching(dataSubDistrict) && this.submitting.subdistrict) {
+      this.submitting = { ...this.submitting, subdistrict: false }
+      if (isError(dataSubDistrict)) {
+        ToastAndroid.show(dataSubDistrict.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataSubDistrict)) {
+        this.setState({
+          kecamatan: dataSubDistrict.subdistricts,
+          isDisable3: false
+        })
+      }
     }
-    if (nextProps.updateAddress.status === 200) {
-      this.setState({
-        loading: false
-      })
-      this.props.getAlamat()
-      NavigationActions.addressdata({
-        type: ActionConst.PUSH,
-        notif: true,
-        pesanNotif: 'mengubah alamat'
-      })
-      nextProps.updateAddress.status = 0
+
+    if (!isFetching(dataVilage) && this.submitting.village) {
+      this.submitting = { ...this.submitting, village: false }
+      if (isError(dataVilage)) {
+        ToastAndroid.show(dataVilage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataVilage)) {
+        this.setState({
+          kelurahan: dataVilage.villages,
+          loading: false,
+          isDisable4: false
+        })
+      }
+    }
+
+    if (!isFetching(dataAddress) && this.submitting.addAddress) {
+      this.submitting = { ...this.submitting, addAddress: false }
+      if (isError(dataVilage)) {
+        ToastAndroid.show(dataAddress.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataAddress)) {
+        this.setState({
+          loading: false
+        })
+        this.props.getAlamat()
+        NavigationActions.addressdata({
+          type: ActionConst.PUSH,
+          notif: true,
+          pesanNotif: 'menambahkan alamat baru'
+        })
+      }
+    }
+
+    if (!isFetching(detailAddress) && this.props.edit && this.submitting.editAddress) {
+      this.submitting = {
+        ...this.submitting,
+        editAddress: false
+      }
+      if (isError(dataVilage)) {
+        ToastAndroid.show(detailAddress.message, ToastAndroid.SHORT)
+      }
+      if (isFound(detailAddress)) {
+        this.setState({
+          loading: false,
+          namaAlias: detailAddress.address.alias_address,
+          namaPenerima: detailAddress.address.name,
+          nomerHape: detailAddress.address.phone_number,
+          alamatLengkap: detailAddress.address.address,
+          kodePos: detailAddress.address.postal_code,
+          colorPickerProv: Colors.lightblack,
+          colorPickerKab: Colors.lightblack,
+          colorPickerKec: Colors.lightblack,
+          colorPickerKel: Colors.lightblack,
+          provinsiTerpilih: detailAddress.address.province.name,
+          kabTerpilih: detailAddress.address.district.name,
+          kecTerpilih: detailAddress.address.subDistrict.name,
+          kelurahanterpilih: detailAddress.address.village.name,
+          idProvinsiTerpilih: detailAddress.address.province.id,
+          idKabTerpilih: detailAddress.address.district.id,
+          idKecTerpilih: detailAddress.address.subDistrict.id,
+          idkelTerpilih: detailAddress.address.village.id,
+          isPrimary: detailAddress.address.is_primary_address
+        })
+        if (!this.submitting.district && !this.submitting.subDistrict && !this.submitting.village) {
+          this.submitting = {
+            ...this.submitting,
+            district: true,
+            subdistrict: true,
+            village: true
+          }
+          this.props.getKota(detailAddress.address.province.id)
+          this.props.getSubDistrict(detailAddress.address.district.id)
+          this.props.getVillage(detailAddress.address.subDistrict.id)
+        }
+      }
+    }
+
+    if (!isFetching(updateAddress) && this.submitting.updateAddress) {
+      this.submitting = { ...this.submitting, updateAddress: false }
+      if (isError(dataVilage)) {
+        ToastAndroid.show(updateAddress.message, ToastAndroid.SHORT)
+      }
+      if (isFound(updateAddress)) {
+        this.setState({
+          loading: false
+        })
+        this.props.getAlamat()
+        NavigationActions.addressdata({
+          type: ActionConst.PUSH,
+          notif: true,
+          pesanNotif: 'mengubah alamat'
+        })
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getProvinsi()
+    if (!this.submitting.province && this.props.edit && !this.submitting.editAddress) {
+      this.submitting = {
+        ...this.submitting,
+        editAddress: true,
+        province: true
+      }
+      this.props.getDetailAlamat(this.state.idAlamat)
+      this.props.getProvinsi()
+    } else {
+      Reactotron.log('biasa')
+      this.submitting = {
+        ...this.submitting,
+        province: true
+      }
+      this.props.getProvinsi()
+    }
+
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -169,11 +289,9 @@ class AddAddress extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'alias':
         this.setState({
-          namaAliasLabel: 'Nama Alias harus diisi',
           colorNamaAlias: Colors.red
         })
         break
@@ -187,16 +305,51 @@ class AddAddress extends React.Component {
           colorNoHape: Colors.red
         })
         break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.red
+        })
+        break
+      case 'province':
+        this.setState({
+          colorProvince: Colors.red
+        })
+        break
+      case 'distric':
+        this.setState({
+          colorDistrict: Colors.red
+        })
+        break
+      case 'subdistric':
+        this.setState({
+          colorSubdistict: Colors.red
+        })
+        break
+      case 'village':
+        this.setState({
+          colorVillage: Colors.red
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.red
+        })
+        break
       case 'empty':
         this.setState({
-          namaAliasLabel: 'Nama Pemilik harus diisi',
           colorNamaAlias: Colors.red,
           colorNamaPenerima: Colors.red,
-          colorNoHape: Colors.red
+          colorNoHape: Colors.red,
+          colorFulladdress: Colors.red,
+          colorProvince: Colors.red,
+          colorDistrict: Colors.red,
+          colorSubdistict: Colors.red,
+          colorVillage: Colors.red,
+          colorPostalcode: Colors.red
         })
         break
       default:
-        window.alert('Internal Error OnError')
+        window.alert('Internal Error')
         break
     }
   }
@@ -205,8 +358,7 @@ class AddAddress extends React.Component {
     switch (field) {
       case 'alias':
         this.setState({
-          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
-          colorNamaAlias: Colors.lightblack
+          colorNamaAlias: Colors.snow
         })
         break
       case 'penerima':
@@ -219,16 +371,31 @@ class AddAddress extends React.Component {
           colorNoHape: Colors.snow
         })
         break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.snow
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.snow
+        })
+        break
       case 'empty':
         this.setState({
-          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
-          colorNamaAlias: Colors.lightblack,
+          colorNamaAlias: Colors.snow,
           colorNamaPenerima: Colors.snow,
-          colorNoHape: Colors.snow
+          colorNoHape: Colors.snow,
+          colorFulladdress: Colors.snow,
+          colorProvince: Colors.snow,
+          colorDistrict: Colors.snow,
+          colorSubdistict: Colors.snow,
+          colorVillage: Colors.snow,
+          colorPostalcode: Colors.snow
         })
         break
       default:
-        window.alert('Internal Error Focus')
+        window.alert('Internal Error')
         break
     }
   }
@@ -237,8 +404,7 @@ class AddAddress extends React.Component {
     switch (field) {
       case 'alias':
         this.setState({
-          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
-          colorNamaAlias: Colors.lightblack
+          colorNamaAlias: Colors.snow
         })
         break
       case 'penerima':
@@ -251,16 +417,31 @@ class AddAddress extends React.Component {
           colorNoHape: Colors.snow
         })
         break
+      case 'fulladdress':
+        this.setState({
+          colorFulladdress: Colors.snow
+        })
+        break
+      case 'postalCode':
+        this.setState({
+          colorPostalcode: Colors.snow
+        })
+        break
       case 'empty':
         this.setState({
-          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
-          colorNamaAlias: Colors.lightblack,
+          colorNamaAlias: Colors.snow,
           colorNamaPenerima: Colors.snow,
-          colorNoHape: Colors.snow
+          colorNoHape: Colors.snow,
+          colorFulladdress: Colors.snow,
+          colorProvince: Colors.snow,
+          colorDistrict: Colors.snow,
+          colorSubdistict: Colors.snow,
+          colorVillage: Colors.snow,
+          colorPostalcode: Colors.snow
         })
         break
       default:
-        window.alert('Internal Error Blur')
+        window.alert('Internal Error')
         break
     }
   }
@@ -284,7 +465,7 @@ class AddAddress extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Nama Alias'
         />
-        <Text style={[styles.textLabel, {color: colorNamaAlias}]}>{this.state.namaAliasLabel}</Text>
+        <Text style={[styles.textLabel, {color: colorNamaAlias}]}>Nama Alias harus diisi</Text>
         <TextInput
           ref='penerima'
           style={styles.inputText}
@@ -309,6 +490,7 @@ class AddAddress extends React.Component {
           returnKeyType='done'
           autoCapitalize='none'
           autoCorrect
+          maxLength={13}
           onFocus={() => this.onFocus('nohape')}
           onBlur={() => this.onBlur('nohape')}
           onChangeText={this.handleChangeNoHape}
@@ -330,7 +512,9 @@ class AddAddress extends React.Component {
             provinsiTerpilih: rowData.name,
             idProvinsiTerpilih: rowData.id,
             colorPickerProv: Colors.lightblack,
-            modalProvinsi: false })
+            modalProvinsi: false,
+            colorProvince: Colors.snow })
+          this.submitting.district = true
           this.props.getKota(rowData.id)
         }}
       >
@@ -349,7 +533,9 @@ class AddAddress extends React.Component {
             kabTerpilih: rowData.name,
             idKabTerpilih: rowData.id,
             colorPickerKab: Colors.lightblack,
-            modalKabupaten: false })
+            modalKabupaten: false,
+            colorDistrict: Colors.snow })
+          this.submitting.subdistrict = true
           this.props.getSubDistrict(rowData.id)
         }}
       >
@@ -368,8 +554,10 @@ class AddAddress extends React.Component {
             kecTerpilih: rowData.name,
             idKecTerpilih: rowData.id,
             colorPickerKec: Colors.lightblack,
-            modalKecamatan: false
+            modalKecamatan: false,
+            colorSubdistict: Colors.snow
           })
+          this.submitting.village = true
           this.props.getVillage(rowData.id)
         }}
       >
@@ -388,7 +576,8 @@ class AddAddress extends React.Component {
             kelurahanterpilih: rowData.name,
             colorPickerKel: Colors.lightblack,
             idkelTerpilih: rowData.id,
-            modalKelurahan: false
+            modalKelurahan: false,
+            colorVillage: Colors.snow
           })
         }}
       >
@@ -406,14 +595,13 @@ class AddAddress extends React.Component {
         onRequestClose={() => this.setState({ modalProvinsi: false })}
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.setState({modalProvinsi: false})}>
-          <ScrollView style={styles.menuProvinsiContainer}>
-            <ListView
-              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
-              renderRow={this.renderListProvinsi.bind(this)}
-              enableEmptySections
-            />
-          </ScrollView>
+          <ListView
+            style={styles.menuProvinsiContainer}
+            contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+            dataSource={this.dataSource.cloneWithRows(this.state.provinsi)}
+            renderRow={this.renderListProvinsi.bind(this)}
+            enableEmptySections
+          />
         </TouchableOpacity>
       </Modal>
     )
@@ -428,14 +616,13 @@ class AddAddress extends React.Component {
         onRequestClose={() => this.setState({ modalKabupaten: false })}
         >
         <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKabupaten: false})}>
-          <ScrollView>
-            <ListView
-              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
-              dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
-              renderRow={this.renderListKabupaten.bind(this)}
-              enableEmptySections
-            />
-          </ScrollView>
+          <ListView
+            style={styles.menuProvinsiContainer}
+            contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+            dataSource={this.dataSource.cloneWithRows(this.state.kabupaten)}
+            renderRow={this.renderListKabupaten.bind(this)}
+            enableEmptySections
+          />
         </TouchableOpacity>
       </Modal>
     )
@@ -450,13 +637,12 @@ class AddAddress extends React.Component {
         onRequestClose={() => this.setState({ modalKecamatan: false })}
         >
         <TouchableOpacity style={[styles.modalContainer]} onPress={() => this.setState({modalKecamatan: false})}>
-          <ScrollView>
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
-              renderRow={this.renderListKecamatan.bind(this)}
-              enableEmptySections
-            />
-          </ScrollView>
+          <ListView
+            style={styles.menuProvinsiContainer}
+            dataSource={this.dataSource.cloneWithRows(this.state.kecamatan)}
+            renderRow={this.renderListKecamatan.bind(this)}
+            enableEmptySections
+          />
         </TouchableOpacity>
       </Modal>
     )
@@ -471,20 +657,20 @@ class AddAddress extends React.Component {
         onRequestClose={() => this.setState({ modalKelurahan: false })}
         >
         <TouchableOpacity activeOpacity={1} style={[styles.modalContainer]} onPress={() => this.setState({modalKelurahan: false})}>
-          <ScrollView>
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.kelurahan)}
-              renderRow={this.renderListKelurahan.bind(this)}
-              enableEmptySections
-            />
-          </ScrollView>
+          <ListView
+            style={styles.menuProvinsiContainer}
+            dataSource={this.dataSource.cloneWithRows(this.state.kelurahan)}
+            renderRow={this.renderListKelurahan.bind(this)}
+            enableEmptySections
+          />
         </TouchableOpacity>
       </Modal>
     )
   }
 
   renderInfoLokasi () {
-    const {isPrimary, colorPickerProv, colorPickerKab, colorPickerKec, colorPickerKel} = this.state
+    const {isPrimary, colorPickerProv, colorPickerKab, colorPickerKec, colorPickerKel, isDisable2, isDisable3, isDisable4} = this.state
+    const {colorFulladdress, colorProvince, colorDistrict, colorSubdistict, colorVillage, colorPostalcode} = this.state
     const img = isPrimary ? Images.centangBiru : null
     return (
       <View style={styles.textInput}>
@@ -498,42 +684,53 @@ class AddAddress extends React.Component {
           onChangeText={this.handleChangeAlamatLengkap}
           underlineColorAndroid='transparent'
           placeholder='Alamat Lengkap'
+          onFocus={() => this.onFocus('fulladdress')}
+          onBlur={() => this.onBlur('fulladdress')}
         />
-        <View style={[styles.lokasiSeparator, {marginTop: 45}]}>
+        <Text style={[styles.textLabel, {color: colorFulladdress}]}>Alamat lengkap harus diisi</Text>
+        <View style={[styles.lokasiSeparator, {marginTop: 25}]}>
           <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalProvinsi: true })}>
             <Text style={[styles.inputText2, {flex: 1, marginLeft: 0, color: colorPickerProv}]}>{this.state.provinsiTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
+          <Text style={[styles.textLabelErrorInfo, {color: colorProvince}]}>Provinsi harus dipilih</Text>
         </View>
         <View style={styles.lokasiSeparator}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
+          <TouchableOpacity disabled={isDisable2} style={styles.pilihDestinasi} onPress={() => this.setState({ modalKabupaten: true })}>
             <Text style={[styles.inputText2, {flex: 1, marginLeft: 0, color: colorPickerKab}]}>{this.state.kabTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
+          <Text style={[styles.textLabelErrorInfo, {color: colorDistrict}]}>Kabupaten harus dipilih</Text>
         </View>
         <View style={styles.lokasiSeparator}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKecamatan: true })}>
+          <TouchableOpacity disabled={isDisable3} style={styles.pilihDestinasi} onPress={() => this.setState({ modalKecamatan: true })}>
             <Text style={[styles.inputText2, {flex: 1, marginLeft: 0, color: colorPickerKec}]}>{this.state.kecTerpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
+          <Text style={[styles.textLabelErrorInfo, {color: colorSubdistict}]}>Kecamatan harus dipilih</Text>
         </View>
         <View style={styles.lokasiSeparator}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalKelurahan: true })}>
+          <TouchableOpacity disabled={isDisable4} style={styles.pilihDestinasi} onPress={() => this.setState({ modalKelurahan: true })}>
             <Text style={[styles.inputText2, {flex: 1, marginLeft: 0, color: colorPickerKel}]}>{this.state.kelurahanterpilih}</Text>
             <Image source={Images.down} style={styles.imagePicker} />
           </TouchableOpacity>
+          <Text style={[styles.textLabelErrorInfo, {color: colorVillage}]}>Kelurahan harus dipilih</Text>
         </View>
         <TextInput
           style={[styles.inputText, {marginTop: -5}]}
           value={this.state.kodePos}
-          keyboardType='default'
+          keyboardType='numeric'
           returnKeyType='done'
           autoCapitalize='none'
           autoCorrect
+          maxLength={5}
           onChangeText={this.handleChangeKodePos}
           underlineColorAndroid='transparent'
           placeholder='Kode Pos'
+          onFocus={() => this.onFocus('postalCode')}
+          onBlur={() => this.onBlur('postalCode')}
         />
+        <Text style={[styles.textLabelErrorInfo, {color: colorPostalcode}]}>Kode pos harus diisi</Text>
         <View style={[styles.lokasiSeparator, {marginBottom: 30.8}]} />
         <TouchableOpacity onPress={() => this.hadnleisPrimary()}>
           <View style={styles.containerEkspedisi}>
@@ -559,19 +756,37 @@ class AddAddress extends React.Component {
   }
 
   createAlamat () {
-    const {namaAlias, namaPenerima, nomerHape,
-      alamatLengkap, kodePos, isPrimary,
-      idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
-    if (this.state.edit) {
-      this.setState({loading: true})
-      this.props.editAddress(idAlamat, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
-        idkelTerpilih, namaPenerima, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
-      this.setState({edit: false})
+    const {namaAlias, namaPenerima, nomerHape, alamatLengkap, kodePos, isPrimary, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
+    if (namaAlias === '' && namaPenerima === '' && nomerHape === '' && alamatLengkap === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
+      this.onError('empty')
+    } else if (namaAlias === '') {
+      this.onError('alias')
+    } else if (namaPenerima === '') {
+      this.onError('penerima')
+    } else if (nomerHape === '') {
+      this.onError('nohape')
+    } else if (alamatLengkap === '') {
+      this.onError('fulladdress')
+    } else if (idProvinsiTerpilih === 0) {
+      this.onError('province')
+    } else if (idKabTerpilih === 0) {
+      this.onError('distric')
+    } else if (idkelTerpilih === 0) {
+      this.onError('subdistric')
+    } else if (idkelTerpilih === 0) {
+      this.onError('vilage')
+    } else if (kodePos === '') {
+      this.onError('postalCode')
     } else {
-      if (namaAlias === '' && namaPenerima === '' && nomerHape === '') {
-        this.onError('empty')
+      if (this.state.edit) {
+        this.setState({loading: true})
+        this.submitting.updateAddress = true
+        this.props.editAddress(idAlamat, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
+          idkelTerpilih, namaPenerima, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
+        this.setState({edit: false})
       } else {
         this.setState({loading: true})
+        this.submitting.addAddress = true
         this.props.createAddress(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih,
           idkelTerpilih, namaPenerima, nomerHape, kodePos, alamatLengkap, namaAlias, isPrimary)
       }
@@ -654,7 +869,8 @@ const mapDispatchToProps = (dispatch) => {
           address: alamatLengkap,
           alias_address: namaAlias,
           is_primary: isPrimary
-        }))
+        })),
+    getDetailAlamat: (id) => dispatch(addressAction.getAddressDetail({id}))
   }
 }
 

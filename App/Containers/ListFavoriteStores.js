@@ -84,22 +84,22 @@ class ListFavoriteStores extends React.Component {
       }
     }
 
-    if (!isFetching(propsListStore) && this.submitting.search) {
-      this.submitting = { ...this.submitting, search: false }
-      if (isError(propsListStore)) {
-        ToastAndroid.show(propsListStore.message, ToastAndroid.SHORT)
-      }
-      if (isFound(propsListStore)) {
-        this.setState({
-          listStore: propsListStore.stores,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true,
-          loadingPage: false
-        })
-      }
-    }
+    // if (!isFetching(propsListStore) && this.submitting.search) {
+    //   this.submitting = { ...this.submitting, search: false }
+    //   if (isError(propsListStore)) {
+    //     ToastAndroid.show(propsListStore.message, ToastAndroid.SHORT)
+    //   }
+    //   if (isFound(propsListStore)) {
+    //     this.setState({
+    //       listStore: propsListStore.stores,
+    //       page: this.state.page + 1,
+    //       isRefreshing: false,
+    //       isLoading: false,
+    //       loadmore: true,
+    //       loadingPage: false
+    //     })
+    //   }
+    // }
 
     if (!isFetching(propsFavStore) && this.submitting.updateFavorite) {
       this.submitting = { ...this.submitting, updateFavorite: false, list: true }
@@ -143,10 +143,10 @@ class ListFavoriteStores extends React.Component {
   }
 
   loadMore () {
-    const { page, loadmore } = this.state
+    const { page, loadmore, search } = this.state
     if (loadmore) {
       this.submitting.list = true
-      this.props.getListFavStore(page)
+      this.props.getListFavStore({page: page, q: search})
     }
   }
 
@@ -157,19 +157,19 @@ class ListFavoriteStores extends React.Component {
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text, listStore: [] })
+    this.setState({ isRefreshing: true, search: text, gettingData: true, listStore: [] })
     this.trySearch(text)
   }
 
   trySearch (text) {
     if (text !== '') {
-      this.submitting.search = true
+      this.submitting.list = true
       setTimeout(() => {
         this.props.getListFavStore({q: text})
       }, 3000)
     } else {
-      this.props.getListFavStore()
       this.submitting.list = true
+      this.props.getListFavStore()
     }
   }
 

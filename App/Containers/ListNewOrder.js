@@ -7,13 +7,15 @@ import {
   BackAndroid,
   Image,
   ListView,
-  RefreshControl
+  RefreshControl,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
 import * as salesAction from '../actions/transaction'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -27,38 +29,61 @@ class ListNewOrder extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      orders: false
+    }
     this.state = {
       stateListOrder: [],
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: true,
-      loadingPage: true
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: false
     }
   }
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataOrder.status === 200) {
-      if (nextProps.dataOrder.orders.length > 0) {
-        let data = [...this.state.stateListOrder, ...nextProps.dataOrder.orders]
-        this.setState({
-          stateListOrder: data,
-          loadingPage: false,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {dataOrder} = nextProps
+
+    if (!isFetching(dataOrder) && this.submitting.orders) {
+      this.submitting = { ...this.submitting, orders: false }
+      if (isError(dataOrder)) {
+        ToastAndroid.show(dataOrder.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataOrder)) {
+        const isFound = dataOrder.orders.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          let data = [...this.state.stateListOrder, ...dataOrder.orders]
+          this.setState({
+            stateListOrder: data,
+            isRefreshing: false,
+            saleList: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1
+          })
+        } else {
+          let data = [...this.state.stateListOrder, ...dataOrder.orders]
+          this.setState({
+            stateListOrder: data,
+            isRefreshing: false,
+            saleList: data,
+            isLoading: false,
+            loadmore: false,
+            page: 0
+          })
+        }
       }
     }
   }
 
   componentDidMount () {
-    this.props.getListOrder(1)
+    if (!this.submitting.orders) {
+      this.submitting = {
+        ...this.submitting,
+        orders: true
+      }
+      this.props.getListOrder()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -75,14 +100,16 @@ class ListNewOrder extends React.Component {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListOrder(page)
+        this.submitting.orders = true
+        this.props.getListOrder({page: page})
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, stateListOrder: [], page: 1, isLoading: true })
-    this.props.getListOrder(1)
+    this.submitting.orders = true
+    this.props.getListOrder()
   }
 
   maskedMoney (value) {
@@ -210,13 +237,6 @@ class ListNewOrder extends React.Component {
   }
 
   render () {
-    if (this.state.loadingPage) {
-      return (
-        <View style={styles.spinner}>
-          <ActivityIndicator color={Colors.red} size='large' />
-        </View>
-      )
-    }
     return (
       <View style={styles.container}>
         <ListView
@@ -259,7 +279,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   getDetailOrder: (id) => dispatch(salesAction.getNewOrderDetail({id: id})),
-  getListOrder: (page) => dispatch(salesAction.getNewOrders({page: page}))
+  getListOrder: (param) => dispatch(salesAction.getNewOrders(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListNewOrder)

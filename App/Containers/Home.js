@@ -203,7 +203,7 @@ class Home extends React.Component {
 
   detailResult (name) {
     this.setState({ modalSearch: false, page: 1, resultSearch: [], search: '' })
-    NavigationActions.searchresult({ header: name, type: ActionConst.PUSH, params: {q: name} })
+    NavigationActions.newproduct({ header: name, type: ActionConst.PUSH, query: name })
   }
 
   searchFocus () {

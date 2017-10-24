@@ -108,10 +108,11 @@ class SellerSaleDropshipper extends React.Component {
     return true
   }
 
-  loadMore () {
+  loadmore () {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
+        this.submitting.product = true
         this.props.getListSales({page: page, is_dropship: true})
       }
     }
@@ -119,21 +120,8 @@ class SellerSaleDropshipper extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
+    this.submitting.product = true
     this.props.getListSales({page: 1, is_dropship: true})
-  }
-
-  loadmore () {
-    const { page, loadmore, isLoading } = this.state
-    if (!isLoading) {
-      if (loadmore) {
-        this.props.getListSalesDropship(page, true)
-      }
-    }
-  }
-
-  refresh = () => {
-    this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
-    this.props.getListSalesDropship(1, true)
   }
 
   maskedMoney (value) {
@@ -322,7 +310,7 @@ class SellerSaleDropshipper extends React.Component {
         refreshControl={
           <RefreshControl
             refreshing={this.state.isRefreshing}
-            onRefresh={this.isRefreshing}
+            onRefresh={this.refresh}
             tintColor={Colors.red}
             colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
             title='Loading...'

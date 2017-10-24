@@ -56,6 +56,19 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     color: Colors.labelgrey
   },
+  textLabelError1: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.lightblack,
+    paddingTop: 5,
+    paddingBottom: 20
+  },
+  textLabelErrorInfo: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.lightblack,
+    paddingTop: 5
+  },
   inputContainer: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver
@@ -63,7 +76,7 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -4,
     color: Colors.lightblack,
-    fontFamily: Fonts.type.semiBolds,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     paddingBottom: 8.3
   },

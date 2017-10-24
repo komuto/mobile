@@ -23,7 +23,7 @@ class InfoStoreOwner extends React.Component {
       noHp: this.props.dataProfile.user.user.phone_number,
       dataStore: this.props.dataStore,
       tempData: [],
-      textNoIdentitas: 'NO Identitas',
+      textNoIdentitas: 'No Identitas',
       textNamaIbu: 'Nama Ibu',
       textNoIdentitasColor: Colors.snow,
       textNamaIbuColor: Colors.snow,
@@ -41,7 +41,6 @@ class InfoStoreOwner extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'noidentitas':
         this.setState({
@@ -131,7 +130,7 @@ class InfoStoreOwner extends React.Component {
               ref='noindentitas'
               style={[styles.inputText]}
               value={noIdentitas}
-              keyboardType='default'
+              keyboardType='numeric'
               returnKeyType='next'
               onFocus={() => this.onFocus('noidentitas')}
               onBlur={() => this.onBlur('noidentitas')}
@@ -193,7 +192,6 @@ class InfoStoreOwner extends React.Component {
         dataStore: dataStore,
         createStores: true
       })
-      console.log(dataStore)
     }
   }
 

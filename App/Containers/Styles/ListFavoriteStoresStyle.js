@@ -70,8 +70,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.bold,
     color: Colors.slate,
-    marginRight: 10,
-    flex: 1
+    marginRight: 10
   },
   fontregularBrowGrey: {
     fontSize: Fonts.size.smallMed,

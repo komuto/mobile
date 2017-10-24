@@ -141,6 +141,9 @@ class EditProductPhoto extends React.Component {
           onClose={() => {
             this.setState({showModalCamera: false})
           }}
+          onPress={() => {
+            this.setState({showModalCamera: false})
+          }}
           onPhotoCaptured={(path) => {
             this.addPhoto(path)
           }}

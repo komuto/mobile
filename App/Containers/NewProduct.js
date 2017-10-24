@@ -59,7 +59,7 @@ class NewProduct extends React.Component {
       termahalCek: 0,
       terlarisCek: 0,
       filter: false,
-      page: 1,
+      page: 0,
       loadmore: false,
       isRefreshing: true,
       isLoading: false,
@@ -76,6 +76,7 @@ class NewProduct extends React.Component {
       isFound: false,
       modalSearch: false,
       refreshSearch: false,
+      valueSearch: this.props.query || '',
       resultSearch: []
     }
   }
@@ -87,7 +88,7 @@ class NewProduct extends React.Component {
         product: true
       }
       Reactotron.log('new product')
-      this.props.getListProduct({store_id: this.state.storeId})
+      this.props.getListProduct({store_id: this.state.storeId, q: this.state.valueSearch})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -168,22 +169,6 @@ class NewProduct extends React.Component {
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1, sort)
-    this.setState({
-      filter: false,
-      page: 2,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
-      statusFilter: true,
-      isRefreshing: true
-    })
-  }
-
   handleBack = () => {
     NavigationActions.pop()
     return true
@@ -198,14 +183,21 @@ class NewProduct extends React.Component {
     if (text !== '') {
       this.submitting.search = true
       setTimeout(() => {
-        this.props.getSearch({q: text})
+        this.props.getSearch({q: text, store_id: this.state.storeId})
       }, 1000)
     }
   }
 
   detailResult (name) {
-    this.setState({ modalSearch: false, page: 1, resultSearch: [], search: '' })
-    NavigationActions.searchresult({ header: name, type: ActionConst.PUSH, params: {q: name} })
+    this.setState({ header: name, isRefreshing: true, listDataSource: [], rowDataSource: [], modalSearch: false, page: 1, resultSearch: [], search: '', valueSearch: name })
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      Reactotron.log('search result detail ' + name)
+      this.props.getListProduct({q: name})
+    }
   }
 
   searchFocus () {
@@ -226,11 +218,25 @@ class NewProduct extends React.Component {
   }
 
   loadMore () {
-    const { storeId, page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other, sort } = this.state
+    const {
+      valueSearch,
+      storeId,
+      page,
+      loadmore,
+      isLoading,
+      kondisi,
+      pengiriman,
+      price,
+      address,
+      brand,
+      other,
+      sort
+    } = this.state
     if (!isLoading) {
       if (loadmore) {
         this.submitting.product = true
         this.props.getListProduct({
+          q: valueSearch,
           store_id: storeId,
           condition: kondisi,
           services: pengiriman,
@@ -248,13 +254,13 @@ class NewProduct extends React.Component {
   refresh = () => {
     const { storeId } = this.state
     const { lightblack } = Colors
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
+    this.setState({ header: 'Produk Terbaru', isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
     this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
     this.submitting = {
       wishlist: false,
       product: true
     }
-    this.props.getProduct({
+    this.props.getListProduct({
       store_id: storeId,
       page: 1
     })
@@ -280,115 +286,6 @@ class NewProduct extends React.Component {
         </TouchableOpacity>
       </View>
     )
-  }
-
-  openFilter () {
-    this.setState({
-      filter: true
-    })
-  }
-
-  closeModal () {
-    this.setState({
-      filter: false
-    })
-  }
-
-  setSortModal (visible) {
-    this.setState({sortModal: visible})
-  }
-
-  _onPress (field) {
-    const {bluesky, lightblack} = Colors
-    const {kondisi, pengiriman, price, address, brand, other} = this.state
-    if (field === 'terbaru') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'newest')
-    } else if (field === 'termahal') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'expensive')
-    } else if (field === 'termurah') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
-      return this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'cheapest')
-    } else if (field === 'terlaris') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'selling')
-    }
-  }
-
-  renderModalSort () {
-    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
-    return (
-      <Modal
-        animationType={'slide'}
-        transparent
-        visible={this.state.sortModal}
-        onRequestClose={() => this.setState({ sortModal: false })}
-        >
-        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
-        <View style={styles.modalSortContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Urutkan Berdasarkan</Text>
-          </View>
-          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termurah')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termahal')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-    )
-  }
-
-  renderModalFilter () {
-    return (
-      <Modal
-        animationType={'slide'}
-        transparent
-        visible={this.state.filter}
-        onRequestClose={() => { this.setState({ filter: false }) }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeaderContainer}>
-            <Text style={styles.modalHeaderText}>
-              Filter
-            </Text>
-            <TouchableOpacity onPress={() => this.closeModal()}>
-              <Image
-                source={Images.close}
-                style={styles.imageCancel}
-              />
-            </TouchableOpacity>
-          </View>
-          <Filter
-            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
-        </View>
-      </Modal>
-    )
-  }
-
-  openSearch () {
-    NavigationActions.search({ type: ActionConst.PUSH, from: 'product' })
   }
 
   renderVerified (status) {
@@ -676,6 +573,159 @@ class NewProduct extends React.Component {
     )
   }
 
+  renderModalFilter () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.filter}
+        onRequestClose={() => { this.setState({ filter: false }) }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeaderContainer}>
+            <Text style={styles.modalHeaderText}>
+              Filter
+            </Text>
+            <TouchableOpacity onPress={() => this.setState({filter: false})}>
+              <Image
+                source={Images.close}
+                style={styles.imageCancel}
+              />
+            </TouchableOpacity>
+          </View>
+          <Filter
+            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
+            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+        </View>
+      </Modal>
+    )
+  }
+
+  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
+    const { storeId, valueSearch, page, sort } = this.state
+    this.submitting.product = true
+    this.props.getListProduct({
+      q: valueSearch,
+      store_id: storeId,
+      condition: kondisi,
+      services: pengiriman,
+      price: price,
+      address: address,
+      brands: brand,
+      other: other,
+      page: page,
+      sort: sort
+    })
+    this.setState({
+      filter: false,
+      page: 1,
+      kondisi: kondisi,
+      pengiriman: pengiriman,
+      price: price,
+      address: address,
+      brand: brand,
+      other: other,
+      isRefreshing: true,
+      rowDataContainer: [],
+      listDataSource: []
+    })
+  }
+
+  modalSort () {
+    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.sortModal}
+        onRequestClose={() => this.setState({ sortModal: false })}
+        >
+        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
+        <View style={styles.modalSortContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Urutkan Berdasarkan</Text>
+          </View>
+          <TouchableOpacity onPress={() => this.onClickSort('newest')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('cheapest')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('expensive')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('selling')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  }
+
+  dispatchSort (typesort) {
+    this.setState({
+      isRefreshing: true,
+      listDataSource: [],
+      rowDataSource: [],
+      page: 1,
+      sortModal: false,
+      sort: typesort,
+      gettingData: true
+    })
+    const {
+      valueSearch,
+      kondisi,
+      pengiriman,
+      price,
+      address,
+      brand,
+      other,
+      id
+    } = this.state
+    this.submitting.product = true
+    this.props.getListProduct({
+      q: valueSearch,
+      category_id: id,
+      condition: kondisi,
+      services: pengiriman,
+      price: price,
+      address: address,
+      brands: brand,
+      other: other,
+      page: 1,
+      sort: typesort
+    })
+  }
+
+  onClickSort (field) {
+    const {bluesky, lightblack} = Colors
+    if (field === 'newest') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'cheapest') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'expensive') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'selling') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.dispatchSort(field)
+    }
+  }
+
   render () {
     let background
     background = stylesSearch.kategori
@@ -686,13 +736,13 @@ class NewProduct extends React.Component {
         </View>
         {this.viewProduk()}
         <View style={styles.footerMenu}>
-          <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.sort} />
               <Text style={styles.footerButton}>Urutkan</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.blah} onPress={() => this.openFilter()}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.filter} />
               <Text style={styles.footerButton}>Filter</Text>
@@ -718,7 +768,7 @@ class NewProduct extends React.Component {
           onChangeSearch={() => this.searchFocus()}
         />
         {this.renderModalFilter()}
-        {this.renderModalSort()}
+        {this.modalSort()}
       </View>
     )
   }

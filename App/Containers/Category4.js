@@ -37,8 +37,7 @@ class Category4 extends React.Component {
     this.submitting = {
       wishlist: false,
       category: false,
-      search: false,
-      loadFromSearch: false
+      search: false
     }
     this.state = {
       search: '',
@@ -69,11 +68,11 @@ class Category4 extends React.Component {
       other: '',
       sort: 'newest',
       wishlist: props.propsWishlist || null,
-      searchfrom: this.props.searchfrom,
+      // searchfrom: this.props.searchfrom,
       id: this.props.id,
-      query: this.props.search,
+      // query: this.props.search,
       resultSearch: [],
-      from: this.props.from,
+      // from: this.props.from,
       isFound: false,
       modalSearch: false,
       refreshSearch: false,
@@ -185,7 +184,7 @@ class Category4 extends React.Component {
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text, valueSearch: text, isFound: false, refreshSearch: true })
+    this.setState({ gettingData: true, search: text, valueSearch: text, isFound: false, refreshSearch: true })
     this.trySearch(text)
   }
 
@@ -199,7 +198,7 @@ class Category4 extends React.Component {
   }
 
   detailResult (name) {
-    this.setState({ modalSearch: false, header: name, page: 1, search: '', rowDataSource: [], listDataSource: [] })
+    this.setState({ gettingData: true, modalSearch: false, header: name, page: 1, search: '', rowDataSource: [], listDataSource: [] })
     if (!this.submitting.category) {
       this.submitting = {
         ...this.submitting,
@@ -628,7 +627,8 @@ class Category4 extends React.Component {
       other: other,
       isRefreshing: true,
       rowDataContainer: [],
-      listDataSource: []
+      listDataSource: [],
+      gettingData: true
     })
   }
 
@@ -646,25 +646,25 @@ class Category4 extends React.Component {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Urutkan Berdasarkan</Text>
           </View>
-          <TouchableOpacity onPress={() => this.onClickSort('terbaru')}>
+          <TouchableOpacity onPress={() => this.onClickSort('newest')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
               <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.onClickSort('termurah')}>
+          <TouchableOpacity onPress={() => this.onClickSort('cheapest')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
               <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.onClickSort('termahal')}>
+          <TouchableOpacity onPress={() => this.onClickSort('expensive')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
               <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.onClickSort('terlaris')}>
+          <TouchableOpacity onPress={() => this.onClickSort('selling')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
               <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
@@ -676,20 +676,14 @@ class Category4 extends React.Component {
   }
 
   dispatchSort (typesort) {
-    const {lightblack} = Colors
     this.setState({
       isRefreshing: true,
       listDataSource: [],
       rowDataSource: [],
       page: 1,
-      terbaruColor: lightblack,
-      termurahColor: lightblack,
-      termahalColor: lightblack,
-      terlarisColor: lightblack,
-      terbaruCek: 0,
-      termurahCek: 0,
-      termahalCek: 0,
-      terlarisCek: 0
+      sortModal: false,
+      sort: typesort,
+      gettingData: true
     })
     const {
       valueSearch,
@@ -699,8 +693,6 @@ class Category4 extends React.Component {
       address,
       brand,
       other,
-      page,
-      sort,
       id
     } = this.state
     this.submitting.category = true
@@ -713,25 +705,25 @@ class Category4 extends React.Component {
       address: address,
       brands: brand,
       other: other,
-      page: page,
-      sort: sort
+      page: 1,
+      sort: typesort
     })
   }
 
   onClickSort (field) {
     const {bluesky, lightblack} = Colors
-    if (field === 'terbaru') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'newest'})
-      this.dispatchSort('newest')
-    } else if (field === 'termahal') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'expensive'})
-      this.dispatchSort('expensive')
-    } else if (field === 'termurah') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'cheapest'})
-      this.dispatchSort('cheapest')
-    } else if (field === 'terlaris') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, sortModal: false, sort: 'selling'})
-      this.dispatchSort('selling')
+    if (field === 'newest') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'cheapest') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'expensive') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'selling') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.dispatchSort(field)
     }
   }
 

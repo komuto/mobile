@@ -7,12 +7,14 @@ import {
   ListView,
   BackAndroid,
   Image,
+  ToastAndroid,
   ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -27,39 +29,62 @@ class DeliveryConfirmation extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      delivery: false
+    }
     this.state = {
       stateConfrimOrder: [],
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: true,
-      loadingPage: true
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataListConfrimOrder.status === 200) {
-      if (nextProps.dataListConfrimOrder.orders.length > 0) {
-        let data = [...this.state.stateConfrimOrder, ...nextProps.dataListConfrimOrder.orders]
-        this.setState({
-          stateConfrimOrder: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true,
-          loadingPage: false
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {dataListConfrimOrder} = nextProps
+
+    if (!isFetching(dataListConfrimOrder) && this.submitting.delivery) {
+      this.submitting = { ...this.submitting, delivery: false }
+      if (isError(dataListConfrimOrder)) {
+        ToastAndroid.show(dataListConfrimOrder.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataListConfrimOrder)) {
+        const isFound = dataListConfrimOrder.orders.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          const data = [...this.state.stateConfrimOrder, ...nextProps.dataListConfrimOrder.orders]
+          this.setState({
+            stateConfrimOrder: data,
+            isRefreshing: false,
+            saleList: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1
+          })
+        } else {
+          const data = [...this.state.stateConfrimOrder, ...nextProps.dataListConfrimOrder.orders]
+          this.setState({
+            stateConfrimOrder: data,
+            isRefreshing: false,
+            saleList: data,
+            isLoading: false,
+            loadmore: false,
+            page: 1
+          })
+        }
       }
     }
   }
 
   componentDidMount () {
-    this.props.getListProcessingOrder(1)
+    if (!this.submitting.delivery) {
+      this.submitting = {
+        ...this.submitting,
+        delivery: true
+      }
+      this.props.getListProcessingOrder()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -78,14 +103,16 @@ class DeliveryConfirmation extends React.Component {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListProcessingOrder(page)
+        this.submitting.delivery = true
+        this.props.getListProcessingOrder({page: page})
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, stateConfrimOrder: [], page: 1, isLoading: true })
-    this.props.getListProcessingOrder(1)
+    this.submitting.delivery = true
+    this.props.getListProcessingOrder()
   }
 
   maskedMoney (value) {
@@ -235,13 +262,6 @@ class DeliveryConfirmation extends React.Component {
   }
 
   render () {
-    if (this.state.loadingPage) {
-      return (
-        <View style={styles.spinner}>
-          <ActivityIndicator color={Colors.red} size='large' />
-        </View>
-      )
-    }
     return (
       <View style={styles.container}>
         <ListView
@@ -284,7 +304,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   getDetailConfrimOrder: (id) => dispatch(salesAction.getProcessingOrderDetail({id: id})),
-  getListProcessingOrder: (page) => dispatch(salesAction.getProcessingOrders({page: page}))
+  getListProcessingOrder: (param) => dispatch(salesAction.getProcessingOrders(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DeliveryConfirmation)

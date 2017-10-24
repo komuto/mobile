@@ -168,7 +168,6 @@ class EditAddress extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'alias':
         this.setState({
@@ -528,7 +527,7 @@ class EditAddress extends React.Component {
         <TextInput
           style={[styles.inputText, {marginTop: -5}]}
           value={this.state.kodePos}
-          keyboardType='default'
+          keyboardType='numeric'
           returnKeyType='done'
           autoCapitalize='none'
           autoCorrect

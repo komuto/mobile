@@ -81,7 +81,7 @@ class SellerSaleProduct extends React.Component {
         ...this.submitting,
         product: true
       }
-      this.props.getListSales(1)
+      this.props.getListSales()
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -96,32 +96,21 @@ class SellerSaleProduct extends React.Component {
     })
     return true
   }
+
   loadMore () {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListSales(page)
+        this.submitting.product = true
+        this.props.getListSales({page: page})
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
-    this.props.getListSales(1)
-  }
-
-  loadMoreDropship () {
-    const { pagedDropship, loadmoreDropship, isLoadingDropship } = this.state
-    if (!isLoadingDropship) {
-      if (loadmoreDropship) {
-        this.props.getListSalesDropship(pagedDropship, true)
-      }
-    }
-  }
-
-  refresh = () => {
-    this.setState({ isRefreshingDropship: true, saleListDropship: [], pageDropship: 1, isLoadingDropship: true })
-    this.props.getListSalesDropship(1, true)
+    this.submitting.product = true
+    this.props.getListSales()
   }
 
   maskedMoney (value) {
@@ -304,35 +293,37 @@ class SellerSaleProduct extends React.Component {
 
   render () {
     return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
-        renderRow={this.renderRowProduct.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
-        onEndReached={this.loadMore.bind(this)}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
-              />
-            )
+      <View>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
+          renderRow={this.renderRowProduct.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
           }
-          return <View />
-        }}
-        enableEmptySections
-      />
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+        />
+      </View>
     )
   }
 }

@@ -22,6 +22,12 @@ export default StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 20
   },
+  textLabelErrorInfo: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.lightblack,
+    paddingTop: 5
+  },
   textInput: {
     paddingTop: 40,
     paddingLeft: 20.5,
@@ -63,7 +69,7 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)'
   },
   lokasiSeparator: {
-    marginBottom: 45
+    marginBottom: 30
   },
   textLabel2: {
     fontFamily: Fonts.type.regular,

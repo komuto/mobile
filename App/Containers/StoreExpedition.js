@@ -1,5 +1,14 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View,
+  ScrollView,
+  ToastAndroid,
+  Text,
+  Image,
+  ListView,
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as expeditionAction from '../actions/expedition'
@@ -27,6 +36,8 @@ class StoreExpedition extends React.Component {
         dataListEkspedisi: nextProps.dataEkspedisiList.expeditions,
         loading: false
       })
+    } else if (nextProps.dataEkspedisiList.status > 200) {
+      ToastAndroid.show(nextProps.dataEkspedisiList.message, ToastAndroid.SHORT)
     }
   }
 
@@ -46,11 +57,15 @@ class StoreExpedition extends React.Component {
       })
     })
 
-    dataStore[1] = temp
-    NavigationActions.infostoreowner({
-      type: ActionConst.PUSH,
-      dataStore: dataStore
-    })
+    if (temp.length === 0) {
+      ToastAndroid.show('Pilih ekspedisi terlebih dahulu', ToastAndroid.SHORT)
+    } else {
+      dataStore[1] = temp
+      NavigationActions.infostoreowner({
+        type: ActionConst.PUSH,
+        dataStore: dataStore
+      })
+    }
   }
 
   checkParent (title) {

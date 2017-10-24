@@ -66,7 +66,6 @@ class ChangePassword extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'emailNotValid':
         window.alert('Email tidak valid')

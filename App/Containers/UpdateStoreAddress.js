@@ -344,7 +344,7 @@ class UpdateStoreAddress extends React.Component {
                 <TextInput
                   style={[styles.inputText]}
                   value={kodePos}
-                  keyboardType='default'
+                  keyboardType='numeric'
                   returnKeyType='next'
                   autoCapitalize='none'
                   autoCorrect

@@ -90,7 +90,7 @@ class PlaceInCatalog extends React.Component {
       })
       nextProps.dataCreateProdukDropshipper.status = 0
     } if (nextProps.dataCreateProdukDropshipper.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
+      ToastAndroid.show('Terjadi Kesalahan ' + nextProps.dataCreateProdukDropshipper, ToastAndroid.LONG)
       this.setState({
         loading: false
       })

@@ -97,9 +97,7 @@ class AddressData extends React.Component {
   }
 
   handlleEditAlamat (idAlamat) {
-    console.log(idAlamat)
     this.setState({statusDot: false})
-    this.props.getDetailAlamat(idAlamat)
     NavigationActions.addaddress({
       type: ActionConst.PUSH,
       edit: true,
@@ -238,8 +236,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     deleteAddress: (id) => dispatch(addressAction.deleteAddress({id})),
-    getAlamat: () => dispatch(addressAction.getListAddress()),
-    getDetailAlamat: (id) => dispatch(addressAction.getAddressDetail({id}))
+    getAlamat: () => dispatch(addressAction.getListAddress())
   }
 }
 

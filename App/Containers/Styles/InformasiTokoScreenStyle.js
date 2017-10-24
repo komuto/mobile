@@ -93,7 +93,7 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -4,
     color: Colors.darkgrey,
-    fontFamily: Fonts.type.semiBolds,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     paddingBottom: 8.3
   },

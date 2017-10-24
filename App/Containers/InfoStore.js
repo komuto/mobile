@@ -20,7 +20,7 @@ class InfoStore extends React.Component {
       namaToko: this.props.dataProfile.user.store.name || '',
       slogan: this.props.dataProfile.user.store.slogan || '',
       descToko: this.props.dataProfile.user.store.description || '',
-      fotoToko: this.props.dataProfile.user.store.logo || 'kucing',
+      fotoToko: this.props.dataProfile.user.store.logo || '',
       showModalCamera: false,
       store: [],
       stores: [],
@@ -125,7 +125,7 @@ class InfoStore extends React.Component {
     switch (field) {
       case 'pemilik':
         this.setState({
-          textPemilik: 'Nama Pemilik harus diisi',
+          textPemilik: 'Nama toko harus diisi',
           textPemilikColor: Colors.red
         })
         break
@@ -236,13 +236,21 @@ class InfoStore extends React.Component {
   }
 
   renderStateOne () {
-    const {textButton, editAbles, lineLeft, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
+    const {textButton, editAbles, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
+    if (textPemilik === '') {
+      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{textSlogan}</Text>)
+    } else {
+      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{this.state.maxLine - slogan.length}{textSlogan}</Text>)
+    }
     return (
       <View>
         <View style={{flex: 1}}>
           <CameraModal
             visible={this.state.showModalCamera}
             onClose={() => {
+              this.setState({showModalCamera: false})
+            }}
+            onPress={() => {
               this.setState({showModalCamera: false})
             }}
             onPhotoCaptured={(path) => {
@@ -281,8 +289,7 @@ class InfoStore extends React.Component {
             <View style={styles.inputContainer}>
               <TextInput
                 ref='slogan'
-                style={[styles.inputText, {height: Math.max(35, this.state.heightSlogan)}]}
-                multiline
+                style={[styles.inputText]}
                 value={slogan}
                 maxLength={maxLine}
                 keyboardType='default'
@@ -293,23 +300,11 @@ class InfoStore extends React.Component {
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeSlogan}
-                onChange={(event) => {
-                  this.setState({
-                    slogan: event.nativeEvent.text,
-                    heightSlogan: event.nativeEvent.contentSize.height,
-                    lineLeft: lineLeft - 1
-                  })
-                  if (this.state.slogan.length === 0) {
-                    this.setState({
-                      lineLeft: 25
-                    })
-                  }
-                }}
                 underlineColorAndroid='transparent'
                 placeholder='Slogan Toko Anda'
               />
             </View>
-            <Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{lineLeft}{textSlogan}</Text>
+            {this.sloganError}
             <Text style={styles.textLabel}>Deskripsi Toko</Text>
             <View style={styles.inputContainer}>
               <TextInput
@@ -333,7 +328,7 @@ class InfoStore extends React.Component {
                 placeholder='Deskripsi Toko Anda'
               />
             </View>
-            <Text style={[styles.textLabel, {color: textDescColor}]}>Deskripsi Toko {textDesc}</Text>
+            <Text style={[styles.textLabel, {fontSize: 12, color: textDescColor}]}>Deskripsi Toko {textDesc}</Text>
           </View>
           <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
             <Text style={styles.textButtonNext}>
@@ -350,13 +345,13 @@ class InfoStore extends React.Component {
     if (createStore) {
       if (namaToko === '' && slogan === '' && descToko === '') {
         this.onError('empty')
-      } if (namaToko === '') {
+      } else if (namaToko === '') {
         this.onError('pemilik')
-      } if (slogan === '') {
+      } else if (slogan === '') {
         this.onError('slogan')
-      } if (descToko === '') {
-        this.onError('descToko')
-      } if (fotoToko === null) {
+      } else if (descToko === '') {
+        this.onError('desc')
+      } else if (fotoToko === '') {
         this.onError('foto')
       } else {
         store[0] = namaToko
@@ -364,13 +359,10 @@ class InfoStore extends React.Component {
         store[2] = descToko
         store[3] = fotoToko
         stores[0] = store
-        // this.props.getExpedition()
-        // this.props.getServicesExpedition()
         NavigationActions.storeexpedition({
           type: ActionConst.PUSH,
           dataStore: stores
         })
-        console.log(stores)
       }
     } else {
       this.setState({loading: true})
@@ -442,8 +434,6 @@ const mapDispatchToProps = (dispatch) => {
       logo: photo
     })),
     getProfile: (login) => dispatch(loginaction.getProfile())
-    // getExpedition: () => dispatch(expeditionAction.getExpedition()),
-    // getServicesExpedition: () => dispatch(expeditionAction.getServices())
   }
 }
 

@@ -88,8 +88,6 @@ class ForgetPassword extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field')
-    console.tron.log(field)
     switch (field) {
       case 'emailNotValid':
         window.alert('Email tidak valid')

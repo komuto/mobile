@@ -99,7 +99,7 @@ class ChooseItemDropship extends React.Component {
       }
       Reactotron.log('ChooseItemDropship')
       this.props.getCategory1()
-      this.props.getDropshipper({is_dropship: true})
+      this.props.getDropshipper()
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -811,7 +811,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
   getDetailProduk: (param) => dispatch(produkAction.getProduct(param)),
-  getDropshipper: (param) => dispatch(produkAction.getDropshipProducts(param)),
+  getDropshipper: () => dispatch(produkAction.getDropshipProducts()),
   getCategory1: () => dispatch(categoriAction.categoryList())
 })
 

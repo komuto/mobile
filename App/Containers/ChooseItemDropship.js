@@ -223,16 +223,8 @@ class ChooseItemDropship extends React.Component {
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
-    this.trySearch(text)
-  }
-
-  trySearch (text) {
-    if (text !== '') {
-      setTimeout(() => {
-        this.setState({listDataSource: [], rowDataSource: []})
-        this.props.getDropshipper({q: text})
-      }, 1000)
-    }
+    this.setState({listDataSource: [], rowDataSource: []})
+    this.props.getDropshipper({q: text})
   }
 
   openFilter () {

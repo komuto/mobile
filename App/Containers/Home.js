@@ -496,7 +496,7 @@ class Home extends React.Component {
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
         dataSource={this.dataSource.cloneWithRows(this.state.category.categories)}
-        initialListSize={3}
+        initialListSize={2}
         renderRow={this.renderRowKategori.bind(this)}
         enableEmptySections
       />

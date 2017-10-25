@@ -99,7 +99,6 @@ export const addDropshipProducts = ({ id, ...params }) => {
 export const getDropshipProducts = (data) => {
   const axios = authApiKomuto()
   const query = prepareGetProducts(data)
-  console.log(`products/dropship?${query}`)
   return axios.get(`products/dropship?${query}`)
 }
 

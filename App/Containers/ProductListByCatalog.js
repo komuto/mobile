@@ -1,19 +1,22 @@
 import React from 'react'
 import {
-  ScrollView,
   Text,
   Image,
   View,
   TouchableOpacity,
   TextInput,
-  ToastAndroid
+  ToastAndroid,
+  ListView,
+  RefreshControl,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import * as productAction from '../actions/product'
+import {isFetching, isError, isFound} from '../Services/Status'
 
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -28,39 +31,98 @@ class ListProdukByCatalog extends React.Component {
 
   constructor (props) {
     super(props)
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.submitting = {
+      product: false
+    }
     this.state = {
       loading: false,
       produk: [],
       catalogId: this.props.catalogId,
-      tabViewStyle: {
-        backgroundColor: 'transparent'
-      },
-      search: ''
+      search: '',
+      page: 1,
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: true
     }
   }
 
   componentDidMount () {
-    this.props.getProductByCatalogs({id: this.state.catalogId})
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
+    }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      this.setState({
-        produk: nextProps.dataProduk.storeCatalogProducts.products
-      })
-      nextProps.dataProduk.status = 0
-    } else if (nextProps.dataProduk.status !== 200 && nextProps.dataProduk.status !== 0) {
-      ToastAndroid.show(nextProps.dataProduk.message, ToastAndroid.SHORT)
-      nextProps.dataProduk.status = 0
+    const {dataProduk} = nextProps
+
+    if (!isFetching(dataProduk) && this.submitting.product) {
+      this.submitting = { ...this.submitting, product: false }
+      if (isError(dataProduk)) {
+        ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProduk)) {
+        const isFound = dataProduk.storeCatalogProducts.products.length
+        if (isFound >= 10) {
+          const data = [...this.state.produk, ...dataProduk.storeCatalogProducts.products]
+          this.setState({
+            produk: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false
+          })
+        } else {
+          const data = [...this.state.produk, ...dataProduk.storeCatalogProducts.products]
+          this.setState({
+            produk: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false
+          })
+        }
+      }
     }
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text })
+    this.setState({ search: text, produk: [], isRefreshing: true })
+    this.trySearch(text)
   }
 
-  search () {
-    console.log('asd')
+  trySearch (text) {
+    const {catalogId} = this.state
+    if (text !== '') {
+      this.submitting.product = true
+      setTimeout(() => {
+        this.props.getProductByCatalogs({id: catalogId, q: text, hidden: false})
+      }, 3000)
+    }
+  }
+
+  refresh = () => {
+    const { catalogId } = this.state
+    this.setState({ isRefreshing: true, produk: [], page: 1, isLoading: true })
+    this.submitting = {
+      product: false
+    }
+    this.props.getProductByCatalogs({id: catalogId, page: 1, hidden: false})
+  }
+
+  loadMore = () => {
+    Reactotron.log('load more')
+    const {isLoading, loadmore, catalogId, page} = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        this.submitting.product = true
+        this.props.getProductByCatalogs({id: catalogId, page: page, hidden: false})
+      }
+    }
   }
 
   renderSearch () {
@@ -72,7 +134,6 @@ class ListProdukByCatalog extends React.Component {
             ref='search'
             style={styles.inputText}
             value={this.state.search}
-            onSubmitEditing={() => this.search()}
             keyboardType='default'
             autoCapitalize='none'
             autoCorrect
@@ -81,14 +142,6 @@ class ListProdukByCatalog extends React.Component {
             placeholder='Cari Produk'
           />
         </View>
-      </View>
-    )
-  }
-
-  DaftarProdukDiTampilkan () {
-    return (
-      <View>
-        {this.mapSingleProduk()}
       </View>
     )
   }
@@ -223,34 +276,18 @@ class ListProdukByCatalog extends React.Component {
     }
   }
 
-  mapSingleProduk () {
-    const { produk, catalogId } = this.state
-    const mapProduk = produk.map((data, i) => {
-      return (
-        <TouchableOpacity key={i} activeOpacity={0.5} style={styles.dataListProduk}
-          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data, catalogId)}>
-          <View style={styles.flexRow}>
-            <Image source={{uri: data.image}} style={styles.imageProduk} />
-            <View style={styles.column}>
-              {this.checkLabelProduct(data.name, data.is_discount, data.is_wholesaler)}
-              {this.labeldaridropshipper(data)}
-            </View>
+  renderRow (rowdata) {
+    return (
+      <TouchableOpacity activeOpacity={0.5} style={styles.dataListProduk}
+        onPress={() => this.produkDetail(rowdata.id, rowdata.name, rowdata.image, rowdata.price, rowdata, this.state.catalogId)}>
+        <View style={styles.flexRow}>
+          <Image source={{uri: rowdata.image}} style={styles.imageProduk} />
+          <View style={styles.column}>
+            {this.checkLabelProduct(rowdata.name, rowdata.is_discount, rowdata.is_wholesaler)}
+            {this.labeldaridropshipper(rowdata)}
           </View>
-        </TouchableOpacity>
-      )
-    })
-    return (
-      <View>
-        {mapProduk}
-      </View>
-    )
-  }
-
-  DaftarProdukDiSembunyikan () {
-    return (
-      <View>
-        {this.mapSingleProduk()}
-      </View>
+        </View>
+      </TouchableOpacity>
     )
   }
 
@@ -263,10 +300,37 @@ class ListProdukByCatalog extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <ScrollView>
-          {this.renderSearch()}
-          {this.DaftarProdukDiTampilkan()}
-        </ScrollView>
+        {this.renderSearch()}
+        <ListView
+          enableEmptySections
+          dataSource={this.dataSource.cloneWithRows(this.state.produk)}
+          renderRow={this.renderRow.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+          onEndReached={this.loadMore}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          style={styles.listView}
+        />
       </View>
     )
   }

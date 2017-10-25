@@ -78,7 +78,7 @@ class UpdateStoreAddress extends React.Component {
       dataProvinsi,
       dataKota,
       dataSubDistrict,
-      dataVilage,
+      dataVillage,
       dataUpdate
     } = nextProps
 
@@ -120,14 +120,14 @@ class UpdateStoreAddress extends React.Component {
       }
     }
 
-    if (!isFetching(dataVilage) && this.submitting.village) {
+    if (!isFetching(dataVillage) && this.submitting.village) {
       this.submitting = { ...this.submitting, village: false }
-      if (isError(dataVilage)) {
-        ToastAndroid.show(dataVilage.message, ToastAndroid.SHORT)
+      if (isError(dataVillage)) {
+        ToastAndroid.show(dataVillage.message, ToastAndroid.SHORT)
       }
-      if (isFound(dataVilage)) {
+      if (isFound(dataVillage)) {
         this.setState({
-          kelurahan: dataVilage.villages,
+          kelurahan: dataVillage.villages,
           loading: false,
           isDisable4: false
         })
@@ -576,21 +576,25 @@ class UpdateStoreAddress extends React.Component {
 
   handleNextState () {
     const {idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, kodePos, alamatPemilik} = this.state
-    if (alamatPemilik === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
-      this.onError('empty')
-    } else if (alamatPemilik === '') {
+    if (alamatPemilik === '') {
       this.onError('fulladdress')
-    } else if (idProvinsiTerpilih === 0) {
+    }
+    if (idProvinsiTerpilih === 0) {
       this.onError('province')
-    } else if (idKabTerpilih === 0) {
+    }
+    if (idKabTerpilih === 0) {
       this.onError('distric')
-    } else if (idkelTerpilih === 0) {
+    }
+    if (idkelTerpilih === 0) {
       this.onError('subdistric')
-    } else if (idkelTerpilih === 0) {
-      this.onError('vilage')
-    } else if (kodePos === '') {
+    }
+    if (idkelTerpilih === 0) {
+      this.onError('village')
+    }
+    if (kodePos === '') {
       this.onError('postalCode')
-    } else {
+    }
+    if (alamatPemilik === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
       this.setState({loading: true})
       this.submitting.updateAddress = true
       this.props.updateAlamatToko(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, kodePos, alamatPemilik)
@@ -622,7 +626,7 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataVilage: state.villages,
+    dataVillage: state.villages,
     dataUpdate: state.updateStoreAddress
   }
 }

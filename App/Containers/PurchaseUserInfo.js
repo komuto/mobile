@@ -520,27 +520,35 @@ class PurchaseUserInfo extends React.Component {
       idKecamatan,
       idKelurahan
     } = this.state
-    if (namaAlamat === '' && nama === '' && nomorHp === '' && alamat === '' && kodepos === '' && idProvinsi === 0 && idKabupaten === 0 && idKecamatan === 0 && idKelurahan === 0) {
-      this.onError('empty')
-    } else if (namaAlamat === '') {
+
+    if (namaAlamat === '') {
       this.onError('alias')
-    } else if (nama === '') {
+    }
+    if (nama === '') {
       this.onError('penerima')
-    } else if (nomorHp === '') {
+    }
+    if (nomorHp === '') {
       this.onError('nohape')
-    } else if (alamat === '') {
+    }
+    if (alamat === '') {
       this.onError('fulladdress')
-    } else if (idProvinsi === 0) {
+    }
+    if (idProvinsi === 0) {
       this.onError('province')
-    } else if (idKabupaten === 0) {
+    }
+    if (idKabupaten === 0) {
       this.onError('distric')
-    } else if (idKecamatan === 0) {
+    }
+    if (idKecamatan === 0) {
       this.onError('subdistric')
-    } else if (idKelurahan === 0) {
-      this.onError('vilage')
-    } else if (kodepos === '') {
+    }
+    if (idKelurahan === 0) {
+      this.onError('village')
+    }
+    if (kodepos === '') {
       this.onError('postalCode')
-    } else {
+    }
+    if (namaAlamat !== '' && nama !== '' && nomorHp !== '' && alamat !== '' && kodepos !== '' && idProvinsi !== 0 && idKabupaten !== 0 && idKecamatan !== 0 && idKelurahan !== 0) {
       this.setState({
         loadingCart: true
       })

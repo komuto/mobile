@@ -71,7 +71,7 @@ class InfoAddressStore extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataAlamats, dataProvinsi, dataKota, dataSubDistrict, dataVilage, dataStores} = nextProps
+    const {dataAlamats, dataProvinsi, dataKota, dataSubDistrict, dataVillage, dataStores} = nextProps
 
     if (!isFetching(dataAlamats) && this.submitting.address) {
       this.submitting = { ...this.submitting, address: false }
@@ -130,15 +130,15 @@ class InfoAddressStore extends React.Component {
       }
     }
 
-    if (!isFetching(dataVilage) && this.submitting.village) {
+    if (!isFetching(dataVillage) && this.submitting.village) {
       this.submitting = { ...this.submitting, village: false }
-      if (isError(dataVilage)) {
-        ToastAndroid.show(dataVilage.message, ToastAndroid.SHORT)
+      if (isError(dataVillage)) {
+        ToastAndroid.show(dataVillage.message, ToastAndroid.SHORT)
       }
-      if (isFound(dataVilage)) {
-        Reactotron.log('vilage')
+      if (isFound(dataVillage)) {
+        Reactotron.log('village')
         this.setState({
-          kelurahan: dataVilage.villages,
+          kelurahan: dataVillage.villages,
           loading: false,
           isDisable4: false
         })
@@ -216,9 +216,6 @@ class InfoAddressStore extends React.Component {
           colorPostalcode: Colors.red
         })
         break
-      default:
-        window.alert('Internal Error')
-        break
     }
   }
 
@@ -244,9 +241,6 @@ class InfoAddressStore extends React.Component {
           colorPostalcode: Colors.snow
         })
         break
-      default:
-        window.alert('Internal Error')
-        break
     }
   }
 
@@ -271,9 +265,6 @@ class InfoAddressStore extends React.Component {
           colorVillage: Colors.snow,
           colorPostalcode: Colors.snow
         })
-        break
-      default:
-        window.alert('Internal Error')
         break
     }
   }
@@ -682,21 +673,25 @@ class InfoAddressStore extends React.Component {
       noHp
     } = this.state
 
-    if (alamatPemilik === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
-      this.onError('empty')
-    } else if (alamatPemilik === '') {
+    if (alamatPemilik === '') {
       this.onError('owneraddress')
-    } else if (idProvinsiTerpilih === 0) {
+    }
+    if (idProvinsiTerpilih === 0) {
       this.onError('province')
-    } else if (idKabTerpilih === 0) {
+    }
+    if (idKabTerpilih === 0) {
       this.onError('distric')
-    } else if (idkelTerpilih === 0) {
+    }
+    if (idkelTerpilih === 0) {
       this.onError('subdistric')
-    } else if (idkelTerpilih === 0) {
-      this.onError('vilage')
-    } else if (kodePos === '') {
+    }
+    if (idkelTerpilih === 0) {
+      this.onError('village')
+    }
+    if (kodePos === '') {
       this.onError('postalCode')
-    } else {
+    }
+    if (alamatPemilik !== '' && idProvinsiTerpilih !== 0 && idKabTerpilih !== 0 && idKecTerpilih !== 0 && idkelTerpilih !== 0 && kodePos !== '') {
       this.setState({loading: true})
       addressTemp[0] = idProvinsiTerpilih
       addressTemp[1] = idKabTerpilih
@@ -742,7 +737,7 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataVilage: state.villages,
+    dataVillage: state.villages,
     dataStores: state.createStore,
     dataUpdate: state.updateStore
   }

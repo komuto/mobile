@@ -230,7 +230,7 @@ class ChooseItemDropship extends React.Component {
     if (text !== '') {
       setTimeout(() => {
         this.setState({listDataSource: [], rowDataSource: []})
-        this.props.getDropshipper({is_dropship: true, q: text})
+        this.props.getDropshipper({q: text})
       }, 1000)
     }
   }
@@ -652,8 +652,7 @@ class ChooseItemDropship extends React.Component {
           brands: brand,
           other: other,
           page: page,
-          sort: sort,
-          is_dropship: true
+          sort: sort
         })
       }
     }
@@ -661,7 +660,7 @@ class ChooseItemDropship extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, listDataSource: [], page: 1, search: '', idCategory1: '' })
-    this.props.getDropshipper({is_dropship: true})
+    this.props.getDropshipper()
   }
 
   renderImageTypeView () {

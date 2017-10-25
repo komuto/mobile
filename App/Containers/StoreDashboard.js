@@ -1,9 +1,11 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
 
+import Reactotron from 'reactotron-react-native'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as messageAction from '../actions/message'
@@ -25,8 +27,11 @@ class StoreDashboard extends React.Component {
       status: '1',
       email: '',
       foto: 'default',
-      statusVerifikasi: true,
-      complainItems: 0
+      statusVerifikasi: this.props.isStoreVerify,
+      createStoresAt: this.props.createStoresAt,
+      notif: false,
+      complainItems: 0,
+      callback: false
     }
   }
 
@@ -39,6 +44,16 @@ class StoreDashboard extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      Reactotron.log('callback ' + nextProps.callback)
+      if (nextProps.callback !== this.state.callback) {
+        this.setState({
+          callback: nextProps.callback,
+          notif: true,
+          statusVerifikasi: true
+        })
+      }
+    }
     if (nextProps.dataDisputes.status === 200) {
       this.setState({
         complainItems: nextProps.dataDisputes.disputes.disputes,
@@ -55,9 +70,9 @@ class StoreDashboard extends React.Component {
   }
 
   nextState () {
-    NavigationActions.notification({
+    NavigationActions.storeinputcodeverification({
       type: ActionConst.PUSH,
-      tipeNotikasi: 'successBukaToko'
+      callback: this.state.callback
     })
   }
 
@@ -79,16 +94,38 @@ class StoreDashboard extends React.Component {
     })
   }
 
+  countDownDaysVerification (date) {
+    var startdate = moment.unix(date).format('DD MMMM YYYY').toString()
+    var dateEnd = moment(startdate, 'DD MMMM YYYY').add(30, 'days').format('DD MMMM YYYY').toString()
+    var datetoday = moment().format('DD MMMM YYYY').toString()
+
+    var dayEnd = moment(dateEnd).format('DD')
+    var monthEnd = moment(dateEnd).format('MM')
+    var yearEnd = moment(dateEnd).format('YYYY')
+
+    var dayToday = moment(datetoday).format('DD')
+    var monthToday = moment(datetoday).format('MM')
+    var yearToday = moment(datetoday).format('YYYY')
+
+    var end = moment([yearEnd, monthEnd, dayEnd])
+    var today = moment([yearToday, monthToday, dayToday])
+    var dayDiff = end.diff(today, 'days')
+
+    return dayDiff
+  }
+
   renderNotifAktivasi () {
-    if (this.state.statusVerifikasi) {
+    var daysLeft = this.countDownDaysVerification(this.state.createStoresAt)
+
+    if (!this.state.statusVerifikasi) {
       return (
-        <View>
+        <View style={{marginBottom: 30}}>
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.textMenu, {paddingTop: 15.5, paddingBottom: 15.2, fontSize: Fonts.size.smallMed}]}>
               Batas Waktu Penjualan:
             </Text>
             <Text style={[styles.textMenu, {paddingTop: 15.5, paddingBottom: 15.2, paddingLeft: 8, fontSize: Fonts.size.smallMed, color: Colors.brownishGrey}]}>
-              28 Hari
+              {daysLeft} Hari
             </Text>
           </View>
           <View style={[styles.dataProfileContainer, {justifyContent: 'center', alignItems: 'center', paddingLeft: -20}]}>
@@ -106,9 +143,13 @@ class StoreDashboard extends React.Component {
           </View>
         </View>
       )
-    } else {
+    }
+  }
+
+  notification () {
+    if (this.state.notif) {
       return (
-        <View>
+        <View style={{marginBottom: 30}}>
           <View style={{flexDirection: 'row', backgroundColor: Colors.duckEggBlue}}>
             <Text style={[styles.textMenu, {flex: 1, color: Colors.darkMint, paddingTop: 15.5, paddingBottom: 15.2, fontSize: Fonts.size.smallMed}]}>
               Selamat, Toko Anda telah terverifikasi.{'\n'}Kini Anda adalah verified seller
@@ -123,9 +164,7 @@ class StoreDashboard extends React.Component {
   }
 
   notifClose () {
-    return (
-      <View />
-    )
+    this.setState({notif: false})
   }
 
   openMessageNotification () {
@@ -172,7 +211,8 @@ class StoreDashboard extends React.Component {
       <View style={styles.container}>
         <ScrollView>
           {this.renderNotifAktivasi()}
-          <View style={[styles.dataProfileContainer, {marginTop: 30}]}>
+          {this.notification()}
+          <View style={[styles.dataProfileContainer]}>
             <TouchableOpacity onPress={() => this.handleKelolaToko()}>
               <View style={styles.profile}>
                 <Image source={Images.pengaturanToko} style={styles.imageCategory} />

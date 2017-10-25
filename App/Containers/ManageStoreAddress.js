@@ -131,8 +131,6 @@ class ManageStoreAddress extends React.Component {
     })
   }
 
-  infoalamattoko
-
   render () {
     const {alamatLengkap, provinsi, kabupaten, kecamatan, kelurahan, kodePos} = this.state
     return (

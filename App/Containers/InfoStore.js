@@ -278,11 +278,13 @@ class InfoStore extends React.Component {
 
   renderStateOne () {
     const {textButton, editAbles, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
-    if (slogan.length === 0) {
+
+    if (slogan.length !== 0) {
       this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{textSlogan}</Text>)
     } else {
-      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{this.state.maxLine - slogan.length}{textSlogan}</Text>)
+      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{this.state.maxLine - slogan.length} {textSlogan}</Text>)
     }
+
     return (
       <View>
         <View style={{flex: 1}}>
@@ -383,17 +385,19 @@ class InfoStore extends React.Component {
 
   nextState () {
     const {createStore, namaToko, slogan, descToko, store, stores, fotoToko} = this.state
-    if (namaToko === '' && slogan === '' && descToko === '') {
-      this.onError('empty')
-    } else if (namaToko === '') {
+    if (namaToko === '') {
       this.onError('pemilik')
-    } else if (slogan === '') {
+    }
+    if (slogan === '') {
       this.onError('slogan')
-    } else if (descToko === '') {
+    }
+    if (descToko === '') {
       this.onError('desc')
-    } else if (fotoToko === '') {
+    }
+    if (fotoToko === '') {
       this.onError('foto')
-    } else {
+    }
+    if (namaToko !== '' && slogan !== '' && descToko !== '') {
       if (createStore) {
         store[0] = namaToko
         store[1] = slogan

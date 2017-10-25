@@ -348,9 +348,6 @@ class AddAddress extends React.Component {
           colorPostalcode: Colors.red
         })
         break
-      default:
-        window.alert('Internal Error')
-        break
     }
   }
 
@@ -394,9 +391,6 @@ class AddAddress extends React.Component {
           colorPostalcode: Colors.snow
         })
         break
-      default:
-        window.alert('Internal Error')
-        break
     }
   }
 
@@ -439,9 +433,6 @@ class AddAddress extends React.Component {
           colorVillage: Colors.snow,
           colorPostalcode: Colors.snow
         })
-        break
-      default:
-        window.alert('Internal Error')
         break
     }
   }
@@ -757,27 +748,35 @@ class AddAddress extends React.Component {
 
   createAlamat () {
     const {namaAlias, namaPenerima, nomerHape, alamatLengkap, kodePos, isPrimary, idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, idAlamat} = this.state
-    if (namaAlias === '' && namaPenerima === '' && nomerHape === '' && alamatLengkap === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
-      this.onError('empty')
-    } else if (namaAlias === '') {
+    if (namaAlias === '') {
       this.onError('alias')
-    } else if (namaPenerima === '') {
+    }
+    if (namaPenerima === '') {
       this.onError('penerima')
-    } else if (nomerHape === '') {
+    }
+    if (nomerHape === '') {
       this.onError('nohape')
-    } else if (alamatLengkap === '') {
+    }
+    if (alamatLengkap === '') {
       this.onError('fulladdress')
-    } else if (idProvinsiTerpilih === 0) {
+    }
+    if (idProvinsiTerpilih === 0) {
       this.onError('province')
-    } else if (idKabTerpilih === 0) {
+    }
+    if (idKabTerpilih === 0) {
       this.onError('distric')
-    } else if (idkelTerpilih === 0) {
+    }
+    if (idkelTerpilih === 0) {
       this.onError('subdistric')
-    } else if (idkelTerpilih === 0) {
-      this.onError('vilage')
-    } else if (kodePos === '') {
+    }
+    if (idkelTerpilih === 0) {
+      this.onError('village')
+    }
+    if (kodePos === '') {
       this.onError('postalCode')
-    } else {
+    }
+
+    if (namaAlias !== '' && namaPenerima !== '' && nomerHape !== '' && alamatLengkap !== '' && idProvinsiTerpilih !== 0 && idKabTerpilih !== 0 && idKecTerpilih !== 0 && idkelTerpilih !== 0 && kodePos !== '') {
       if (this.state.edit) {
         this.setState({loading: true})
         this.submitting.updateAddress = true

@@ -140,6 +140,7 @@ import ListFavoriteStores from '../Containers/ListFavoriteStores'
 import BuyerComplainConfirmation from '../Containers/BuyerComplainConfirmation'
 import BuyerComplainRefundReview from '../Containers/BuyerComplainRefundReview'
 import StoreDetailProductCatalogs from '../Containers/StoreDetailProductCatalogs'
+import StoreInputCodeVerification from '../Containers/StoreInputCodeVerification'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -1163,6 +1164,13 @@ class NavigationRouter extends Component {
             key='storedetailproductcatalogs'
             component={StoreDetailProductCatalogs}
             title=''
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='storeinputcodeverification'
+            component={StoreInputCodeVerification}
+            title='Verifikasi toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

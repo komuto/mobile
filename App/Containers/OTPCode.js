@@ -343,7 +343,6 @@ class OTPCode extends React.Component {
       </View>
     )
   }
-
 }
 
 const mapStateToProps = (state) => {

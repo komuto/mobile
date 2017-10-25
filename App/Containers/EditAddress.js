@@ -97,9 +97,9 @@ class EditAddress extends React.Component {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
-    } else if (nextProps.dataVilage.status === 200) {
+    } else if (nextProps.dataVillage.status === 200) {
       this.setState({
-        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVilage.villages)
+        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
       })
     } else if (nextProps.detailalamat.status === 200) {
       console.log(nextProps)
@@ -600,7 +600,7 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataVilage: state.villages,
+    dataVillage: state.villages,
     detailalamat: state.address
   }
 }

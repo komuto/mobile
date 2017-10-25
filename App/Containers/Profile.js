@@ -43,7 +43,9 @@ class Profile extends React.Component {
       statusToko: '',
       verifyNoHp: '',
       nomerHape: '',
-      loading: false
+      loading: false,
+      isStoreVerify: true,
+      createStoresAt: ''
     }
   }
 
@@ -64,7 +66,9 @@ class Profile extends React.Component {
         nomerHape: nextProps.dataProfile.user.user.phone_number,
         namaToko: nextProps.dataProfile.user.store.name,
         fotoToko: nextProps.dataProfile.user.store.logo,
-        statusToko: nextProps.dataProfile.user.store.status
+        statusToko: nextProps.dataProfile.user.store.status,
+        isStoreVerify: nextProps.dataProfile.user.store.is_verified,
+        createStoresAt: nextProps.dataProfile.user.store.created_at
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
@@ -384,7 +388,9 @@ class Profile extends React.Component {
       if (this.state.statusToko === 1) {
         NavigationActions.storedashboard({
           type: ActionConst.PUSH,
-          title: 'Toko Anda'
+          title: 'Toko Anda',
+          isStoreVerify: this.state.isStoreVerify,
+          createStoresAt: this.state.createStoresAt
         })
         this.props.getUnreadDispute()
       } else {

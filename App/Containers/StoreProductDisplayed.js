@@ -328,7 +328,7 @@ class StoreProductDisplayed extends React.Component {
   renderRowCatalog (rowData, sectionId, rowId) {
     const mapCatalog = rowData.storeProducts.map((data, i) => {
       return (
-        <TouchableOpacity style={styles.containerData} onPress={() => this.clickCatalog(i)}>
+        <TouchableOpacity key={i} style={styles.containerData} onPress={() => this.clickCatalog(i)}>
           <Text style={styles.kategori}>{data.catalog.name}</Text>
         </TouchableOpacity>
       )

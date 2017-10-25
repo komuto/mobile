@@ -98,7 +98,8 @@ const store = {
   storeDiscussions: storeReducers.getStoreDiscussions,
   storeProductsByCatalog: storeReducers.getStoreProductsByCatalog,
   unreadDisputesStore: storeReducers.unreadDisputesStore,
-  storeCatalogProductsSearch: storeReducers.getStoreProductsByCatalogSearch
+  storeCatalogProductsSearch: storeReducers.getStoreProductsByCatalogSearch,
+  dropshipfaq: storeReducers.getDropshipperFaq
 }
 
 const address = {

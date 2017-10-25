@@ -20,38 +20,20 @@ class Dropshipping extends React.Component {
       loading: false,
       showContent: '',
       buttonVisible: this.props.visibleButton,
-      infoDropshipping: [
-        {
-          'id': 0,
-          'isChecked': true,
-          'title': 'Apa itu Dropshipping?',
-          'desc': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco'
-        },
-        {
-          'id': 1,
-          'isChecked': false,
-          'title': 'Berapa persen komisi yang reseller dapat??',
-          'desc': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco'
-        },
-        {
-          'id': 2,
-          'isChecked': false,
-          'title': 'Bagaimana cara melakukan dropshipping??',
-          'desc': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco'
-        },
-        {
-          'id': 3,
-          'isChecked': false,
-          'title': 'Bagaimana jika ada yang bertanya tentang produk ini. siapa yang akan menjawab?. pemilik barang atau reseller?',
-          'desc': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco'
-        },
-        {
-          'id': 4,
-          'isChecked': false,
-          'title': 'Bagaimana jika terjadi refund?',
-          'desc': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamcoLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamcoLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamcoLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamcoLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco'
-        }
-      ]
+      infoDropshipping: []
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataFaq.status === 200) {
+      let data = [...nextProps.dataFaq.faq]
+      var i
+      for (i = 0; i < nextProps.dataFaq.faq.length; i++) {
+        data[i].isChecked = false
+      }
+      this.setState({
+        infoDropshipping: data
+      })
     }
   }
 
@@ -61,12 +43,12 @@ class Dropshipping extends React.Component {
       return (
         <View key={i} style={styles.containerinfoDropshipping}>
           <View style={styles.containerHeader}>
-            <Text style={styles.title}>{data.title}</Text>
+            <Text style={styles.title}>{data.question}</Text>
             <TouchableOpacity onPress={() => this.changeCheck(i)}>
               <Image source={img} style={{height: 24, width: 24}} />
             </TouchableOpacity>
           </View>
-          {this.mapDesc(data.desc, data.isChecked)}
+          {this.mapDesc(data.answer, data.isChecked)}
         </View>
       )
     })
@@ -92,6 +74,7 @@ class Dropshipping extends React.Component {
   }
 
   changeCheck (i) {
+    console.log(i)
     const {infoDropshipping} = this.state
     const newDataSourceOld = infoDropshipping.map(data => {
       data.isChecked = false
@@ -155,6 +138,7 @@ class Dropshipping extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataFaq: state.dropshipfaq
   }
 }
 

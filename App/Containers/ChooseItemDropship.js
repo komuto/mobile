@@ -219,6 +219,7 @@ class ChooseItemDropship extends React.Component {
 
   handleBack = () => {
     NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {
@@ -680,7 +681,7 @@ class ChooseItemDropship extends React.Component {
             autoCorrect
             onChangeText={this.handleTextSearch.bind(this)}
             underlineColorAndroid='transparent'
-            placeholder='Cari Produk atau Nama Toko'
+            placeholder='Cari Produk'
           />
         </View>
       </View>

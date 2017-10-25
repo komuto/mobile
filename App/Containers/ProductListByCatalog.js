@@ -55,7 +55,7 @@ class ListProdukByCatalog extends React.Component {
         ...this.submitting,
         product: true
       }
-      // this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
+      this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
     }
   }
 
@@ -98,7 +98,6 @@ class ListProdukByCatalog extends React.Component {
       }
       if (isFound(dataProductSearch)) {
         const isFound = dataProductSearch.products.length
-        console.log('lol ' + isFound + dataProductSearch.products)
         if (isFound >= 10) {
           const data = [...this.state.produk, ...dataProductSearch.products]
           this.setState({
@@ -129,15 +128,15 @@ class ListProdukByCatalog extends React.Component {
       search: true,
       loadFromSearch: true
     }
-    this.trySearch(text)
-  }
-
-  trySearch (text) {
-    const {catalogId} = this.state
     if (text !== '') {
-      setTimeout(() => {
-        this.props.getProductByCatalogSearch({catalog_id: catalogId, q: text})
-      }, 3000)
+      const {catalogId} = this.state
+      this.props.getProductByCatalogSearch({catalog_id: catalogId, q: text})
+    } else {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
     }
   }
 

@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import * as storeAction from '../actions/stores'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -19,6 +20,7 @@ class AddProduct extends React.Component {
   }
 
   handleDropshiper () {
+    this.props.getDropshipFaq()
     NavigationActions.dropshipping({
       type: ActionConst.PUSH,
       marginNavbars: Metrics.navBarHeight,
@@ -63,6 +65,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDropshipFaq: () => dispatch(storeAction.getDropshipperFaq())
   }
 }
 

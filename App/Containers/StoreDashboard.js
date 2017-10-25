@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import moment from 'moment'
+// import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
 
@@ -95,22 +95,22 @@ class StoreDashboard extends React.Component {
   }
 
   countDownDaysVerification (date) {
-    var startdate = moment.unix(date).format('DD MMMM YYYY').toString()
-    var dateEnd = moment(startdate, 'DD MMMM YYYY').add(30, 'days').format('DD MMMM YYYY').toString()
-    var datetoday = moment().format('DD MMMM YYYY').toString()
+    // var startdate = moment.unix(date).format('DD MMMM YYYY').toString()
+    // var dateEnd = moment(startdate, 'DD MMMM YYYY').add(30, 'days').format('DD MMMM YYYY').toString()
+    // var datetoday = moment().format('DD MMMM YYYY').toString()
 
-    var dayEnd = moment(dateEnd).format('DD')
-    var monthEnd = moment(dateEnd).format('MM')
-    var yearEnd = moment(dateEnd).format('YYYY')
+    // var dayEnd = moment(dateEnd).format('DD')
+    // var monthEnd = moment(dateEnd).format('MM')
+    // var yearEnd = moment(dateEnd).format('YYYY')
 
-    var dayToday = moment(datetoday).format('DD')
-    var monthToday = moment(datetoday).format('MM')
-    var yearToday = moment(datetoday).format('YYYY')
+    // var dayToday = moment(datetoday).format('DD')
+    // var monthToday = moment(datetoday).format('MM')
+    // var yearToday = moment(datetoday).format('YYYY')
 
-    var end = moment([yearEnd, monthEnd, dayEnd])
-    var today = moment([yearToday, monthToday, dayToday])
-    var dayDiff = end.diff(today, 'days')
-
+    // var end = moment([yearEnd, monthEnd, dayEnd])
+    // var today = moment([yearToday, monthToday, dayToday])
+    // var dayDiff = end.diff(today, 'days')
+    const dayDiff = 12
     return dayDiff
   }
 

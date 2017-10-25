@@ -160,20 +160,13 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    const { product, category, cartItems } = this.state
+    const { product, cartItems } = this.state
     if (!product.isFound) {
       this.submitting = {
         ...this.submitting,
         products: true
       }
       this.props.getProdukTerbaru(6)
-    }
-    if (!category.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        category: true
-      }
-      this.props.getKategori()
     }
 
     if (!cartItems.isFound) {
@@ -183,6 +176,12 @@ class Home extends React.Component {
       }
       this.props.getCart()
     }
+    this.submitting = {
+      ...this.submitting,
+      category: true
+    }
+    this.props.getKategori()
+    this.props.getKategori()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -205,7 +204,12 @@ class Home extends React.Component {
         ToastAndroid.show(propsCategory.message, ToastAndroid.SHORT)
       }
       if (isFound(propsCategory)) {
-        this.setState({ category: propsCategory })
+        let tempData = []
+        var i
+        for (i = 0; i < 6; i++) {
+          tempData.push(propsCategory.categories[i])
+        }
+        this.setState({ category: tempData })
       }
     }
 
@@ -495,8 +499,7 @@ class Home extends React.Component {
     return (
       <ListView
         contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-        dataSource={this.dataSource.cloneWithRows(this.state.category.categories)}
-        initialListSize={2}
+        dataSource={this.dataSource.cloneWithRows(this.state.category)}
         renderRow={this.renderRowKategori.bind(this)}
         enableEmptySections
       />
@@ -692,7 +695,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getKategori: () => dispatch(homeAction.categoryList()),
+    getKategori: () => dispatch(homeAction.categoryList({ limit: 6 })),
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),

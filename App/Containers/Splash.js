@@ -28,11 +28,11 @@ class Splash extends React.Component {
           if (value === null || value === undefined || value === '') {
           } else {
             this.props.stateLogin(true)
-            NavigationActions.storedashboard({ type: ActionConst.REPLACE })
+            NavigationActions.backtab({ type: ActionConst.REPLACE })
             SplashScreen.hide()
           }
           SplashScreen.hide()
-          NavigationActions.storedashboard({ type: ActionConst.REPLACE })
+          NavigationActions.backtab({ type: ActionConst.REPLACE })
         })
       } else {
         this.openUrl(url)

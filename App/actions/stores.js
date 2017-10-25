@@ -22,6 +22,7 @@ export const GET_STORE_DISCUSSIONS = 'GET_STORE_DISCUSSIONS'
 export const GET_STORE_PRODUCTS_BY_CATALOG = 'GET_STORE_PRODUCTS_BY_CATALOG'
 export const GET_STORE_PRODUCTS_BY_CATALOG_SEARCH = 'GET_STORE_PRODUCTS_BY_CATALOG_SEARCH'
 export const UNREAD_DISPUTES_STORE = 'UNREAD_DISPUTES_STORE'
+export const GET_DROPSHIPPER_FAQ = 'GET_DROPSHIPPER_FAQ'
 
 /**
  * @params id {int} store id
@@ -147,3 +148,5 @@ export const getStoreProductsByCatalog = params => buildAction(typeReq(GET_STORE
 export const getStoreProductsByCatalogSearch = params => buildAction(typeReq(GET_STORE_PRODUCTS_BY_CATALOG_SEARCH), params)
 
 export const getUnreadDisputeStore = () => buildAction(typeReq(UNREAD_DISPUTES_STORE))
+
+export const getDropshipperFaq = () => buildAction(typeReq(GET_DROPSHIPPER_FAQ))

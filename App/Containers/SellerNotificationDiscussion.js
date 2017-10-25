@@ -35,6 +35,10 @@ class SellerNotificationDiscussion extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.refresh()
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.listDiscussion.status === 200) {
       if (nextProps.listDiscussion.storeDiscussions.length > 0) {

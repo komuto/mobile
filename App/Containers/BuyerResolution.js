@@ -116,6 +116,10 @@ class BuyerResolution extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.refresh()
+  }
+
   loadMore () {
     const { id, page, loadmore, isLoading } = this.state
     if (!isLoading) {

@@ -41,6 +41,12 @@ class BuyerDetailMessage extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.state.idMessage !== this.props.idMessage) {
+      this.props.getDetailMessage(this.props.idMessage)
+      this.setState({
+        idMessage: this.props.idMessage
+      })
+    }
     if (nextProps.detailMessage.status === 200) {
       this.setState({
         data: nextProps.detailMessage.buyerDetailMessage,
@@ -108,6 +114,7 @@ class BuyerDetailMessage extends React.Component {
   }
 
   componentDidMount () {
+    this.props.getDetailMessage(this.props.idMessage)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 

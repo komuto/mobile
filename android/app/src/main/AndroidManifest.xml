@@ -39,18 +39,38 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="fcm.ACTION.HELLO" />
                 <action android:name="SELLER_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="SELLER_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="SELLER_REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="SELLER_RESOLUTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="BUYER_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="BUYER_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="BUYER_REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
                 <action android:name="BUYER_RESOLUTION" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
             <intent-filter android:label="Komuto App">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

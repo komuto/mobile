@@ -27,6 +27,10 @@ class SellerNotificationReview extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.refresh()
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataReview.status === 200) {
       if (nextProps.dataReview.sellerReview.length > 0) {

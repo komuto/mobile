@@ -30,6 +30,47 @@ import * as wishlistAction from '../actions/user'
 // Styles
 import styles from './Styles/HomeStyle'
 
+import FCM, {FCMEvent} from 'react-native-fcm'
+
+const handleFCM = (data) => {
+  console.log(data) // data.id, data.click_action
+  switch (data.click_action) {
+    case 'SELLER_MESSAGE' :
+      return NavigationActions.sellernotificationmessagedetail({ type: ActionConst.PUSH, idMessage: data.id })
+    case 'SELLER_DISCUSSION':
+      return NavigationActions.sellernotificationdiscussion({ type: ActionConst.PUSH })
+    case 'SELLER_REVIEW':
+      return NavigationActions.sellernotificationreview({ type: ActionConst.PUSH })
+    case 'SELLER_RESOLUTION':
+      return NavigationActions.sellernotificationresolution({ type: ActionConst.PUSH })
+    case 'BUYER_MESSAGE':
+      return NavigationActions.buyerdetailmessage({ type: ActionConst.PUSH, idMessage: data.id })
+    case 'BUYER_DISCUSSION':
+      return NavigationActions.buyerdiscussion({ type: ActionConst.PUSH })
+    case 'BUYER_RESOLUTION':
+      return NavigationActions.buyerresolution({ type: ActionConst.PUSH })
+    // case 'List_Follower': return Actions.follower({ userId: data.my_costum_data.user_id })
+    // case 'List_Pending_Follow': return Actions.follower({ userId: data.my_costum_data.user_id })
+    // case 'Detail_Conversation': return Actions.conversationDetail({conversationId: data.my_costum_data.conversation_id, friend: data.my_costum_data.friend})
+  }
+}
+
+FCM.on(FCMEvent.Notification, async (notif) => {
+  console.log(notif)
+  if (notif.opened_from_tray) {
+    let myCostumData = notif.id
+    const data = {
+      click_action: notif.type,
+      id: myCostumData
+    }
+    handleFCM(data)
+  }
+})
+
+FCM.on(FCMEvent.RefreshToken, (token) => {
+  console.log(token)
+})
+
 class Home extends React.Component {
 
   constructor (props) {
@@ -60,6 +101,47 @@ class Home extends React.Component {
       resultSearch: [],
       modalLogin: false
     }
+  }
+
+  componentWillMount () {
+    FCM.getInitialNotification().then(notif => {
+      console.log(notif)
+      let myCostumData = notif.id
+      const data = {
+        click_action: notif.type,
+        id: myCostumData
+      }
+      if (data.id !== undefined) {
+        handleFCM(data)
+      }
+    })
+  }
+
+  componentDidMount () {
+    const { product, category, cartItems } = this.state
+    if (!product.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        products: true
+      }
+      this.props.getProdukTerbaru(6)
+    }
+    if (!category.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        category: true
+      }
+      this.props.getKategori()
+    }
+
+    if (!cartItems.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        cart: true
+      }
+      this.props.getCart()
+    }
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -136,33 +218,6 @@ class Home extends React.Component {
         }
       }
     }
-  }
-
-  componentDidMount () {
-    const { product, category, cartItems } = this.state
-    if (!product.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        products: true
-      }
-      this.props.getProdukTerbaru(6)
-    }
-    if (!category.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        category: true
-      }
-      this.props.getKategori()
-    }
-
-    if (!cartItems.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        cart: true
-      }
-      this.props.getCart()
-    }
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {

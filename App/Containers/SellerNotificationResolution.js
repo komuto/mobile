@@ -43,19 +43,23 @@ class SellerNotificationResolution extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.refresh()
+  }
+
   loadMore () {
-    const { id, page, loadmore, isLoading } = this.state
-    if (!isLoading) {
-      if (loadmore) {
-        this.props.reviewAction(id, page)
-      }
-    }
+    // const { id, page, loadmore, isLoading } = this.state
+    // if (!isLoading) {
+    //   if (loadmore) {
+    //     this.props.reviewAction(id, page)
+    //   }
+    // }
   }
 
   refresh = () => {
-    const { id } = this.state
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.reviewAction(id, 1)
+    // const { id } = this.state
+    // this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    // this.props.reviewAction(id, 1)
   }
 
   listViewUlasan () {

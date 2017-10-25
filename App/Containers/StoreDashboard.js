@@ -137,14 +137,14 @@ class StoreDashboard extends React.Component {
   }
 
   openDiscussionNotification () {
-    this.props.getStoreDiscussions(1)
+    // this.props.getStoreDiscussions(1)
     NavigationActions.sellernotificationdiscussion({
       type: ActionConst.PUSH
     })
   }
 
   openReviewNotification () {
-    this.props.getListReview(1)
+    // this.props.getListReview(1)
     NavigationActions.sellernotificationreview({
       type: ActionConst.PUSH
     })

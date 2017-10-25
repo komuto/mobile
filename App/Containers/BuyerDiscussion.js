@@ -37,6 +37,10 @@ class BuyerDiscussion extends React.Component {
     }
   }
 
+  componentDidMount () {
+    this.refresh()
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.listDiscussion.status === 200) {
       this.setState({

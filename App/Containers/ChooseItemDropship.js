@@ -811,7 +811,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
   getDetailProduk: (param) => dispatch(produkAction.getProduct(param)),
-  getDropshipper: () => dispatch(produkAction.getDropshipProducts()),
+  getDropshipper: (param) => dispatch(produkAction.getDropshipProducts(param)),
   getCategory1: () => dispatch(categoriAction.categoryList())
 })
 

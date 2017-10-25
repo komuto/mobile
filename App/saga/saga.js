@@ -146,6 +146,7 @@ const store = function * () {
   yield takeEvery(typeReq(storeActions.GET_STORE_DISCUSSIONS), storeSaga.getStoreDiscussions)
   yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG), storeSaga.getStoreProductsByCatalog)
   yield takeEvery(typeReq(storeActions.UNREAD_DISPUTES_STORE), storeSaga.getUnreadDisputesStore)
+  yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH), storeSaga.getStoreProductsByCatalogSearch)
 }
 
 const address = function * () {

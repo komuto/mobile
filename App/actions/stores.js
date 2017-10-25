@@ -20,6 +20,7 @@ export const GET_ADDRESS = 'GET_ADDRESS'
 export const UPDATE_STORE_ADDRESS = 'UPDATE_STORE_ADDRESS'
 export const GET_STORE_DISCUSSIONS = 'GET_STORE_DISCUSSIONS'
 export const GET_STORE_PRODUCTS_BY_CATALOG = 'GET_STORE_PRODUCTS_BY_CATALOG'
+export const GET_STORE_PRODUCTS_BY_CATALOG_SEARCH = 'GET_STORE_PRODUCTS_BY_CATALOG_SEARCH'
 export const UNREAD_DISPUTES_STORE = 'UNREAD_DISPUTES_STORE'
 
 /**
@@ -79,9 +80,7 @@ export const getOwnStore = () => buildAction(typeReq(GET_OWN_STORE))
 export const getStoreProducts = params => buildAction(typeReq(GET_STORE_PRODUCTS), params)
 
 /**
- * @params id {int} catalog id, optional
- * if id is omitted, will get products without catalog
- * @params hidden {boolean}
+ * @params id {int} catalog id, q
  * @state storeCatalogProducts
  */
 export const getStoreCatalogProducts = params => buildAction(typeReq(GET_STORE_CATALOG_PRODUCTS), params)
@@ -138,5 +137,13 @@ export const getStoreProductDetail = params => buildAction(typeReq(GET_STORE_PRO
  * @state storeProductsByCatalog
  */
 export const getStoreProductsByCatalog = params => buildAction(typeReq(GET_STORE_PRODUCTS_BY_CATALOG), params)
+
+/**
+ * @params id {int} catalog id, optional
+ * if id is omitted, will get products without catalog
+ * @params hidden {boolean}
+ * @state storeCatalogProductsSearch
+ */
+export const getStoreProductsByCatalogSearch = params => buildAction(typeReq(GET_STORE_PRODUCTS_BY_CATALOG_SEARCH), params)
 
 export const getUnreadDisputeStore = () => buildAction(typeReq(UNREAD_DISPUTES_STORE))

@@ -21,3 +21,4 @@ export const getStoreDiscussions = buildSaga(apis.getStoreDiscussions, actions.G
 export const getStoreProductDetail = buildSaga(apis.getStoreProductDetail, actions.GET_STORE_PRODUCT_DETAIL)
 export const getStoreProductsByCatalog = buildSaga(apis.getStoreProductsByCatalog, actions.GET_STORE_PRODUCTS_BY_CATALOG)
 export const getUnreadDisputesStore = buildSaga(apis.getUnreadDisputeStore, actions.UNREAD_DISPUTES_STORE)
+export const getStoreProductsByCatalogSearch = buildSaga(apis.getStoreProductsByCatalogSearch, actions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH)

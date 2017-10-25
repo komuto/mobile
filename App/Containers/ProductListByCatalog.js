@@ -33,7 +33,9 @@ class ListProdukByCatalog extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.submitting = {
-      product: false
+      product: false,
+      search: false,
+      loadFromSearch: false
     }
     this.state = {
       loading: false,
@@ -53,12 +55,12 @@ class ListProdukByCatalog extends React.Component {
         ...this.submitting,
         product: true
       }
-      this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
+      // this.props.getProductByCatalogs({id: this.state.catalogId, hidden: false})
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataProduk} = nextProps
+    const {dataProduk, dataProductSearch} = nextProps
 
     if (!isFetching(dataProduk) && this.submitting.product) {
       this.submitting = { ...this.submitting, product: false }
@@ -88,39 +90,84 @@ class ListProdukByCatalog extends React.Component {
         }
       }
     }
+
+    if (!isFetching(dataProductSearch) && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      if (isError(dataProductSearch)) {
+        ToastAndroid.show(dataProductSearch.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProductSearch)) {
+        const isFound = dataProductSearch.products.length
+        console.log('lol ' + isFound + dataProductSearch.products)
+        if (isFound >= 10) {
+          const data = [...this.state.produk, ...dataProductSearch.products]
+          this.setState({
+            produk: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false
+          })
+        } else {
+          const data = [...this.state.produk, ...dataProductSearch.products]
+          this.setState({
+            produk: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false
+          })
+        }
+      }
+    }
   }
 
   handleTextSearch = (text) => {
     this.setState({ search: text, produk: [], isRefreshing: true })
+    this.submitting = {
+      ...this.submitting,
+      search: true,
+      loadFromSearch: true
+    }
     this.trySearch(text)
   }
 
   trySearch (text) {
     const {catalogId} = this.state
     if (text !== '') {
-      this.submitting.product = true
       setTimeout(() => {
-        this.props.getProductByCatalogs({id: catalogId, q: text, hidden: false})
+        this.props.getProductByCatalogSearch({catalog_id: catalogId, q: text})
       }, 3000)
     }
   }
 
   refresh = () => {
     const { catalogId } = this.state
-    this.setState({ isRefreshing: true, produk: [], page: 1, isLoading: true })
+    this.setState({ isRefreshing: true, produk: [], page: 1, isLoading: true, search: '' })
     this.submitting = {
-      product: false
+      product: false,
+      search: false,
+      loadFromSearch: false
     }
     this.props.getProductByCatalogs({id: catalogId, page: 1, hidden: false})
   }
 
   loadMore = () => {
     Reactotron.log('load more')
-    const {isLoading, loadmore, catalogId, page} = this.state
-    if (!isLoading) {
-      if (loadmore) {
-        this.submitting.product = true
-        this.props.getProductByCatalogs({id: catalogId, page: page, hidden: false})
+    const {isLoading, loadmore, catalogId, page, search} = this.state
+    if (this.submitting.loadFromSearch) {
+      if (!isLoading) {
+        if (loadmore) {
+          this.submitting.search = true
+          this.props.getProductByCatalogSearch({catalog_id: catalogId, q: search})
+        }
+      }
+    } else {
+      if (!isLoading) {
+        if (loadmore) {
+          this.submitting.product = true
+          this.props.getProductByCatalogs({id: catalogId, page: page, hidden: false})
+        }
       }
     }
   }
@@ -339,7 +386,8 @@ class ListProdukByCatalog extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProduk: state.storeCatalogProducts
+    dataProduk: state.storeCatalogProducts,
+    dataProductSearch: state.storeCatalogProductsSearch
   }
 }
 
@@ -347,6 +395,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
     getProductByCatalogs: (param) => dispatch(storeAction.getStoreCatalogProducts(param)),
+    getProductByCatalogSearch: (param) => dispatch(storeAction.getStoreProductsByCatalogSearch(param)),
     getDetailProduct: (param) => dispatch(productAction.getProduct(param))
   }
 }

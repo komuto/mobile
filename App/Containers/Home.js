@@ -57,12 +57,33 @@ const handleFCM = (data) => {
 
 FCM.on(FCMEvent.Notification, async (notif) => {
   console.log(notif)
+  let myCostumData = notif.id
+  const data = {
+    click_action: notif.type,
+    id: myCostumData
+  }
+  FCM.presentLocalNotification({
+    id: data.id,
+    title: data.title,
+    body: data.body,
+    sound: 'default',
+    priority: 'high',
+    click_action: data.click_action,
+    auto_cancel: true,
+    large_icon: 'ic_launcher',
+    icon: 'ic_launcher',
+    big_text: data.title,
+    sub_text: data.body,
+    color: 'red',
+    vibrate: 400,
+    group: 'group',
+    picture: 'ic_launcher',
+    ongoing: true,
+    my_custom_data: data,
+    lights: true,
+    show_in_foreground: true
+  })
   if (notif.opened_from_tray) {
-    let myCostumData = notif.id
-    const data = {
-      click_action: notif.type,
-      id: myCostumData
-    }
     handleFCM(data)
   }
 })
@@ -111,7 +132,28 @@ class Home extends React.Component {
         click_action: notif.type,
         id: myCostumData
       }
-      if (data.id !== undefined) {
+      if (data !== undefined) {
+        FCM.presentLocalNotification({
+          id: data.id,
+          title: data.title,
+          body: data.body,
+          sound: 'default',
+          priority: 'high',
+          click_action: data.click_action,
+          auto_cancel: true,
+          large_icon: 'ic_launcher',
+          icon: 'ic_launcher',
+          big_text: data.title,
+          sub_text: data.body,
+          color: 'red',
+          vibrate: 400,
+          group: 'group',
+          picture: 'ic_launcher',
+          ongoing: true,
+          my_custom_data: data,
+          lights: true,
+          show_in_foreground: true
+        })
         handleFCM(data)
       }
     })

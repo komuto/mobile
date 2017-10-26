@@ -121,18 +121,20 @@ class BuyerResolution extends React.Component {
   }
 
   loadMore () {
-    const { id, page, loadmore, isLoading } = this.state
+    const { loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.reviewAction(id, page)
+        // this.props.reviewAction(id, page)
+        this.setState({
+          loadmore: false
+        })
       }
     }
   }
 
   refresh = () => {
-    const { id } = this.state
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.reviewAction(id, 1)
+    this.setState({ isRefreshing: true, isLoading: true })
+    this.props.getListResolutionUnresolve()
   }
 
   listViewUlasan () {

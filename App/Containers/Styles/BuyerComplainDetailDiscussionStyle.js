@@ -57,5 +57,14 @@ export default StyleSheet.create({
     letterSpacing: 0.22,
     paddingLeft: 10,
     paddingRight: 10
+  },
+  sendContainer: {
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sendMessage: {
+    height: 30,
+    width: 30
   }
 })

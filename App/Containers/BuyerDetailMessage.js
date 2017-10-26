@@ -247,22 +247,27 @@ class BuyerDetailMessage extends React.Component {
             enableEmptySections
           />
         </ScrollView>
-        <TextInput
-          style={[styles.inputText]}
-          value={this.state.messages}
-          keyboardType='default'
-          returnKeyType='done'
-          autoCapitalize='none'
-          autoCorrect
-          onChange={(event) => {
-            this.setState({
-              messages: event.nativeEvent.text
-            })
-          }}
-          onSubmitEditing={() => this.sendReply()}
-          underlineColorAndroid='transparent'
-          placeholder='Tulis pesan Anda disini'
-        />
+        <View style={styles.floatImageContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={this.state.messages}
+            keyboardType='default'
+            returnKeyType='done'
+            autoCapitalize='none'
+            autoCorrect
+            onChange={(event) => {
+              this.setState({
+                messages: event.nativeEvent.text
+              })
+            }}
+            onSubmitEditing={() => this.sendReply()}
+            underlineColorAndroid='transparent'
+            placeholder='Tulis pesan Anda disini'
+          />
+          <TouchableOpacity style={styles.sendContainer} onPress={() => this.sendReply()}>
+            <Image source={Images.sendMessage} style={styles.sendMessage} />
+          </TouchableOpacity>
+        </View>
         {this.modalPopupMenu()}
       </View>
     )

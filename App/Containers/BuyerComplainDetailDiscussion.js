@@ -1,8 +1,8 @@
 import React from 'react'
-import { View, ListView, Image, Text, ScrollView, TextInput, BackAndroid, RefreshControl, ToastAndroid } from 'react-native'
+import { View, ListView, Image, Text, ScrollView, TextInput, TouchableOpacity, BackAndroid, RefreshControl, ToastAndroid } from 'react-native'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
-import { Colors } from '../Themes'
+import { Colors, Images } from '../Themes'
 import moment from 'moment'
 import * as transactionAction from '../actions/transaction'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -54,7 +54,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
       ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
     }
     if (nextProps.dataReply.status === 200) {
-      this.refresh()
+      this.props.getDetailDispute(this.state.id)
       this.setState({
         content: ''
       })
@@ -134,6 +134,9 @@ class BuyerComplainDetailDiscussion extends React.Component {
             underlineColorAndroid='transparent'
             placeholder='Tulis Komentar'
           />
+          <TouchableOpacity style={styles.sendContainer} onPress={() => this.send()}>
+            <Image source={Images.sendMessage} style={styles.sendMessage} />
+          </TouchableOpacity>
         </View>
       </View>
     )

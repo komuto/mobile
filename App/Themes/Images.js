@@ -154,7 +154,8 @@ const images = {
   filterWhite: require('../Images/Icons/icon-filter-white.png'),
   infoOcher: require('../Images/Icons/icon-info-ocher.png'),
   infoDone: require('../Images/Icons/icon-done-green.png'),
-  emptyTransaction: require('../Images/empty-transaction.png')
+  emptyTransaction: require('../Images/empty-transaction.png'),
+  sendMessage: require('../Images/Icons/send-message.png')
 }
 
 export default images

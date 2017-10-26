@@ -181,7 +181,6 @@ class Home extends React.Component {
       category: true
     }
     this.props.getKategori()
-    this.props.getKategori()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -292,9 +291,9 @@ class Home extends React.Component {
     this.setState({ search: text, isFound: false, refreshSearch: true })
     this.submitting.search = true
     if (text !== '') {
-      this.props.getSearch({q: 'text'})
+      this.props.getSearch({q: text})
     } else {
-      this.props.getSearch({q: 'sadfkjashfos'})
+      this.props.getSearch({q: 'null'})
     }
   }
 

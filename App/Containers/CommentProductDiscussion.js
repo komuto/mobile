@@ -8,12 +8,13 @@ import {
   RefreshControl,
   TextInput,
   Alert,
-  ToastAndroid
+  ToastAndroid,
+  TouchableOpacity
 } from 'react-native'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { MaskService } from 'react-native-masked-text'
-import { Colors } from '../Themes'
+import { Colors, Images } from '../Themes'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -226,6 +227,9 @@ class DiskusiProdukKomentar extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Tulis Komentar'
         />
+        <TouchableOpacity style={styles.sendContainer} onPress={() => this.kirimKomentar()}>
+          <Image source={Images.sendMessage} style={styles.sendMessage} />
+        </TouchableOpacity>
       </View>
     )
   }

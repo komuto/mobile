@@ -8,7 +8,8 @@ import {
   ListView,
   BackAndroid,
   ActivityIndicator,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -37,7 +38,8 @@ class BuyerMessage extends React.Component {
       dataArchive: [],
       notif: this.props.notif,
       messageNotif: this.props.messageNotif,
-      page: this.props.page
+      page: this.props.page,
+      isRefreshing: false
     }
   }
 
@@ -46,12 +48,14 @@ class BuyerMessage extends React.Component {
       this.setState({
         dataConversation: nextProps.dataMessage.buyerMessages,
         dataArchive: nextProps.dataArchiveMessage.archiveMessages,
+        isRefreshing: false,
         loading: false
       })
       nextProps.dataMessage.status = 0
       nextProps.dataArchiveMessage.status = 0
     } else if (nextProps.dataMessage.status !== 200 && nextProps.dataMessage.status !== 0) {
       this.setState({
+        isRefreshing: false,
         loading: false
       })
       ToastAndroid.show(nextProps.dataMessage.message, ToastAndroid.LONG)
@@ -170,6 +174,12 @@ class BuyerMessage extends React.Component {
     }
   }
 
+  refresh = () => {
+    this.setState({ isRefreshing: true, loading: true })
+    this.props.getListMessages()
+    this.props.getListArchiveMessages()
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -188,12 +198,42 @@ class BuyerMessage extends React.Component {
           locked
           initialPage={this.state.page}
         >
-          <ScrollView tabLabel='Percakapan' ref='conversation' style={styles.scrollView}>
+          <ScrollView
+            tabLabel='Percakapan'
+            ref='conversation'
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+            }
+          >
             {this.notif()}
             {spinner}
             {this.checkStateMessage(this.state.dataConversation)}
           </ScrollView>
-          <ScrollView tabLabel='Arsip' ref='files' style={styles.scrollView}>
+          <ScrollView
+            tabLabel='Arsip'
+            ref='files'
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+            }
+          >
             {this.notif()}
             {spinner}
             {this.checkStateArchive(this.state.dataArchive)}
@@ -213,7 +253,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id}))
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
+    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
+    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages())
   }
 }
 

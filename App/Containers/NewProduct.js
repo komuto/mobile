@@ -180,7 +180,7 @@ class NewProduct extends React.Component {
     if (text !== '') {
       this.props.getSearch({q: text, store_id: this.state.storeId})
     } else {
-      this.props.getSearch({q: 'asjndjkhsdkjfhsaljdk', store_id: this.state.storeId})
+      this.props.getSearch({q: 'null', store_id: this.state.storeId})
     }
   }
 

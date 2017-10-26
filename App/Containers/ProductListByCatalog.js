@@ -144,7 +144,7 @@ class ListProdukByCatalog extends React.Component {
     const { catalogId } = this.state
     this.setState({ isRefreshing: true, produk: [], page: 1, isLoading: true, search: '' })
     this.submitting = {
-      product: false,
+      product: true,
       search: false,
       loadFromSearch: false
     }
@@ -203,7 +203,6 @@ class ListProdukByCatalog extends React.Component {
         fotoToko: photo,
         price: price
       })
-      this.props.getCatalog()
     } else {
       this.props.getDetailProduct({id: id})
       NavigationActions.detailproductstore({

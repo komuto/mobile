@@ -34,7 +34,7 @@ export default StyleSheet.create({
   },
   headerText: {
     flex: 1,
-    fontSize: Fonts.size.regular,
+    fontSize: 16,
     fontFamily: Fonts.type.bold,
     top: -1,
     marginLeft: 10,

@@ -250,7 +250,6 @@ class StoreProductHidden extends React.Component {
         fotoToko: photo,
         price: price
       })
-      this.props.getCatalog()
     } else {
       NavigationActions.detailproductstore({
         type: ActionConst.PUSH,

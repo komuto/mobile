@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
 import Reactotron from 'reactotron-react-native'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as categoriAction from '../actions/home'
 import * as storeAction from '../actions/stores'
@@ -21,6 +22,9 @@ class DetailProductStore extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      deleteProduct: false
+    }
     this.state = {
       productName: this.props.productName,
       loading: true,
@@ -40,6 +44,7 @@ class DetailProductStore extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    const {dataDeleteProducts} = nextProps
     if (nextProps.callback !== undefined) {
       if (nextProps.callback !== this.state.callback) {
         this.refresh()
@@ -64,9 +69,9 @@ class DetailProductStore extends React.Component {
         loading: false,
         isRefreshing: false
       })
-      Reactotron.log('masuk detail')
+      Reactotron.log(nextProps.dataDetailProduct.storeProductDetail.category)
       nextProps.dataDetailProduct.status = 0
-      this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.parent_id)
+      this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
     } else if (nextProps.dataDetailProduct.status > 200) {
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataDetailProduct.message, ToastAndroid.LONG)
     }
@@ -76,15 +81,17 @@ class DetailProductStore extends React.Component {
         nameCategory: nextProps.dataKategoriParent.categories.name
       })
     }
-    if (nextProps.dataDeleteProducts.status === 200) {
-      ToastAndroid.show('Produk berhasil dihapus', ToastAndroid.LONG)
-      NavigationActions.pop()
-      this.props.getListProduk({hidden: false})
-      this.props.getHiddenProduct()
-      nextProps.dataDeleteProducts.status = 0
-    } else if (nextProps.dataDeleteProducts.status !== 200 && nextProps.dataDeleteProducts.status !== 0) {
-      ToastAndroid.show(nextProps.dataDeleteProducts.message, ToastAndroid.LONG)
-      nextProps.dataDeleteProducts.status = 0
+
+    if (!isFetching(dataDeleteProducts) && this.submitting.deleteProduct) {
+      this.submitting = { ...this.submitting, deleteProduct: false }
+      if (isError(dataDeleteProducts)) {
+        ToastAndroid.show(dataDeleteProducts.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteProducts)) {
+        this.setState({ loading: false })
+        NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+        return true
+      }
     }
   }
 
@@ -153,8 +160,14 @@ class DetailProductStore extends React.Component {
 
   delete () {
     let data = []
-    data.push(this.state.product.id)
-    this.props.deleteItems({product_ids: data})
+    data[0] = this.state.product.id
+    if (!this.submitting.deleteProduct) {
+      this.submitting = {
+        ...this.submitting,
+        deleteProduct: true
+      }
+      this.props.deleteItems({product_ids: data})
+    }
   }
 
   handleEditStatusStockDropshipping (title, action, color, id, data) {
@@ -611,7 +624,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getDetailProduk: (id) => dispatch(storeAction.getStoreProductDetail({id: id})),
     allCategory: () => dispatch(categoriAction.categoryList()),
-    getKategori: (id) => dispatch(categoriAction.subCategory({id: id})),
+    getKategori: (id) => dispatch(categoriAction.subCategory({id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
     getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
     getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id: id})),

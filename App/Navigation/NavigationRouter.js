@@ -459,9 +459,8 @@ class NavigationRouter extends Component {
             key='addressdata'
             component={AddressData}
             title='Data Alamat'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='addaccount'
             component={AddAccount}
@@ -501,9 +500,8 @@ class NavigationRouter extends Component {
             key='cellphone'
             component={Cellphone}
             title='Nomor Handphone'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='changepassword'
             component={ChangePassword}
@@ -690,9 +688,8 @@ class NavigationRouter extends Component {
             key='placeincatalog'
             component={PlaceInCatalog}
             title='Tempatkan di Katalog'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='productlistbycatalog'
             component={ProductListByCatalog}
@@ -781,9 +778,8 @@ class NavigationRouter extends Component {
             key='managestoreaddress'
             component={ManageStoreAddress}
             title='Info Alamat'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='updatestoreaddress'
             component={UpdateStoreAddress}

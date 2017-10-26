@@ -2,6 +2,7 @@ import React from 'react'
 import { Modal, TouchableOpacity, View, Text, BackAndroid, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -34,7 +35,6 @@ class ManageStoreAddress extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataAlamats.status === 200) {
-      console.log('masuk')
       this.setState({
         alamatLengkap: nextProps.dataAlamats.storeAddress.address,
         kodePos: nextProps.dataAlamats.storeAddress.postal_code,
@@ -51,6 +51,7 @@ class ManageStoreAddress extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('manage store add')
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -59,7 +60,7 @@ class ManageStoreAddress extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.popTo('managestore')
     return true
   }
 
@@ -131,10 +132,27 @@ class ManageStoreAddress extends React.Component {
     })
   }
 
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Info Alamat
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     const {alamatLengkap, provinsi, kabupaten, kecamatan, kelurahan, kodePos} = this.state
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.notif()}
         <View style={styles.containerAlamat}>
           <View style={styles.containerField}>

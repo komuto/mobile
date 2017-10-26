@@ -4,7 +4,6 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.background
   },
   spinner: {
@@ -130,5 +129,26 @@ export default StyleSheet.create({
     color: Colors.blueText,
     fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.smallMed
+  },
+  headerTextContainer: {
+    height: Metrics.navBarHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: Colors.red
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
+  },
+  headerText: {
+    flex: 1,
+    fontSize: Fonts.size.regular,
+    fontFamily: Fonts.type.bold,
+    top: -1,
+    marginLeft: 5,
+    marginRight: 10,
+    color: Colors.snow
   }
 })

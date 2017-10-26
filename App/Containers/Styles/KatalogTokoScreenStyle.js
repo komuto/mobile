@@ -8,12 +8,10 @@ export default StyleSheet.create({
   },
   headerInfoAlamat: {
     flexDirection: 'row',
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver,
     paddingLeft: 20,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingRight: 20,
-    paddingBottom: 20
+    paddingBottom: 30
   },
   textHeader: {
     flex: 1,
@@ -39,13 +37,24 @@ export default StyleSheet.create({
   },
   edit: {
     position: 'absolute',
-    top: 23,
+    top: 15,
     right: 20,
+    height: 80,
+    width: 100,
+    borderRadius: 3,
     backgroundColor: Colors.snow
   },
   touch: {
     justifyContent: 'center',
-    padding: 5
+    flex: 0.7,
+    paddingLeft: 20,
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  textEdit: {
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
   },
   create: {
     position: 'absolute',

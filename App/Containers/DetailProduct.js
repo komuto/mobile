@@ -1435,7 +1435,6 @@ class DetailProduct extends React.Component {
           id: this.state.id,
           createDropshipper: true
         })
-        this.props.getCatalog()
       }
     } else {
       this.setState({

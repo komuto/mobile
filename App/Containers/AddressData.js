@@ -57,16 +57,7 @@ class AddressData extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.accountmanage({
-      type: ActionConst.POP_AND_REPLACE
-    })
-    return true
-  }
-
-  backButton () {
-    NavigationActions.accountmanage({
-      type: ActionConst.PUSH_OR_POP
-    })
+    NavigationActions.popTo('accountmanage')
     return true
   }
 
@@ -114,7 +105,7 @@ class AddressData extends React.Component {
   renderHeader () {
     return (
       <View style={styles.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
           <Image
             source={Images.iconBack}
             style={styles.imageStyle}
@@ -203,6 +194,7 @@ class AddressData extends React.Component {
     if (!loading) {
       return (
         <View style={styles.container}>
+          {this.renderHeader()}
           {this.notif()}
           <ScrollView>
             <View style={styles.infoAlamat}>

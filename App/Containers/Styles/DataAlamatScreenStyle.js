@@ -4,8 +4,7 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.paleGrey,
-    marginTop: Metrics.navBarHeight
+    backgroundColor: Colors.paleGrey
   },
   headerTextContainer: {
     height: Metrics.navBarHeight,
@@ -24,7 +23,7 @@ export default StyleSheet.create({
     fontSize: Fonts.size.regular,
     fontFamily: Fonts.type.bold,
     top: -1,
-    marginLeft: 10,
+    marginLeft: 5,
     marginRight: 10,
     color: Colors.snow
   },

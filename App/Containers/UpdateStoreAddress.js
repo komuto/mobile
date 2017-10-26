@@ -14,6 +14,7 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -32,10 +33,10 @@ class UpdateStoreAddress extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.submitting = {
       update: false,
-      province: true,
-      district: true,
-      subDistrict: true,
-      village: true
+      province: false,
+      district: false,
+      subDistrict: false,
+      village: false
     }
     this.state = {
       alamatPemilik: this.props.alamat,
@@ -56,7 +57,7 @@ class UpdateStoreAddress extends React.Component {
       modalKabupaten: false,
       modalKecamatan: false,
       modalKelurahan: false,
-      loading: false,
+      loading: true,
       modalSuskesHapus: false,
       isDisable2: true,
       isDisable3: true,
@@ -89,7 +90,8 @@ class UpdateStoreAddress extends React.Component {
       }
       if (isFound(dataProvinsi)) {
         this.setState({
-          provinsi: dataProvinsi.provinces
+          provinsi: dataProvinsi.provinces,
+          loading: false
         })
       }
     }
@@ -102,7 +104,8 @@ class UpdateStoreAddress extends React.Component {
       if (isFound(dataKota)) {
         this.setState({
           kabupaten: dataKota.districts,
-          isDisable2: false
+          isDisable2: false,
+          loading: false
         })
       }
     }
@@ -115,7 +118,8 @@ class UpdateStoreAddress extends React.Component {
       if (isFound(dataSubDistrict)) {
         this.setState({
           kecamatan: dataSubDistrict.subdistricts,
-          isDisable3: false
+          isDisable3: false,
+          loading: false
         })
       }
     }
@@ -128,8 +132,8 @@ class UpdateStoreAddress extends React.Component {
       if (isFound(dataVillage)) {
         this.setState({
           kelurahan: dataVillage.villages,
-          loading: false,
-          isDisable4: false
+          isDisable4: false,
+          loading: false
         })
       }
     }
@@ -141,13 +145,16 @@ class UpdateStoreAddress extends React.Component {
       }
       if (isFound(dataUpdate)) {
         this.setState({
-          modalSuskesHapus: true
+          modalSuskesHapus: true,
+          loading: false
         })
       }
     }
   }
 
   componentDidMount () {
+    Reactotron
+    Reactotron.log('update store address')
     if (!this.submitting.province && !this.props.district && !this.submitting.subDistrict && !this.submitting.village) {
       this.submitting = {
         ...this.submitting,
@@ -156,10 +163,10 @@ class UpdateStoreAddress extends React.Component {
         subDistrict: true,
         village: true
       }
-      this.props.getProvinsi(this.state.idProvinsiTerpilih)
-      this.props.getKabupaten(this.state.idKabTerpilih)
-      this.props.getSubDistrict(this.state.idKecTerpilih)
-      this.props.getVillage(this.state.idkelTerpilih)
+      this.props.getProvinsi()
+      this.props.getKabupaten(this.state.idProvinsiTerpilih)
+      this.props.getSubDistrict(this.state.idKabTerpilih)
+      this.props.getVillage(this.state.idKecTerpilih)
     }
   }
 
@@ -291,7 +298,8 @@ class UpdateStoreAddress extends React.Component {
             provinsiTerpilih: rowData.name,
             idProvinsiTerpilih: rowData.id,
             modalProvinsi: false,
-            colorProvince: Colors.snow })
+            colorProvince: Colors.snow,
+            loading: true })
           this.submitting.district = true
           this.props.getKabupaten(rowData.id)
         }}
@@ -311,7 +319,8 @@ class UpdateStoreAddress extends React.Component {
             kabTerpilih: rowData.name,
             idKabTerpilih: rowData.id,
             modalKabupaten: false,
-            colorDistrict: Colors.snow })
+            colorDistrict: Colors.snow,
+            loading: true })
           this.submitting.subdistrict = true
           this.props.getSubDistrict(rowData.id)
         }}
@@ -331,7 +340,8 @@ class UpdateStoreAddress extends React.Component {
             kecTerpilih: rowData.name,
             idKecTerpilih: rowData.id,
             modalKecamatan: false,
-            colorSubdistict: Colors.snow
+            colorSubdistict: Colors.snow,
+            loading: true
           })
           this.submitting.village = true
           this.props.getVillage(rowData.id)
@@ -361,7 +371,7 @@ class UpdateStoreAddress extends React.Component {
     )
   }
 
-  renderModalProvinsi () {
+  modalProvince () {
     return (
       <Modal
         animationType={'slide'}
@@ -382,7 +392,7 @@ class UpdateStoreAddress extends React.Component {
     )
   }
 
-  renderModalKabupaten () {
+  modalDistrict () {
     return (
       <Modal
         animationType={'slide'}
@@ -403,7 +413,7 @@ class UpdateStoreAddress extends React.Component {
     )
   }
 
-  renderModalKecamatan () {
+  modalSubdistrict () {
     return (
       <Modal
         animationType={'slide'}
@@ -423,7 +433,7 @@ class UpdateStoreAddress extends React.Component {
     )
   }
 
-  renderModalKelurahan () {
+  modalVillage () {
     return (
       <Modal
         animationType={'slide'}
@@ -492,7 +502,7 @@ class UpdateStoreAddress extends React.Component {
     )
   }
 
-  modalSuksesUpdateAlamat () {
+  modalSuccesUpdate () {
     return (
       <Modal
         animationType={'slide'}
@@ -594,26 +604,28 @@ class UpdateStoreAddress extends React.Component {
     if (kodePos === '') {
       this.onError('postalCode')
     }
-    if (alamatPemilik === '' && idProvinsiTerpilih === 0 && idKabTerpilih === 0 && idKecTerpilih === 0 && idkelTerpilih === 0 && kodePos === '') {
+    if (alamatPemilik !== '' && idProvinsiTerpilih !== 0 && idKabTerpilih !== 0 && idKecTerpilih !== 0 && idkelTerpilih !== 0 && kodePos.length === 5) {
       this.setState({loading: true})
       this.submitting.updateAddress = true
       this.props.updateAlamatToko(idProvinsiTerpilih, idKabTerpilih, idKecTerpilih, idkelTerpilih, kodePos, alamatPemilik)
+    } else {
+      ToastAndroid.show('Kode Pos tidak valid', ToastAndroid.SHORT)
     }
   }
 
   render () {
-    const spinner = this.state.loadign
+    const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='small' />
+      <ActivityIndicator color='#ef5656' size='large' />
     </View>) : (<View />)
     return (
       <View style={styles.container}>
         {this.renderStateFour()}
-        {this.renderModalProvinsi()}
-        {this.renderModalKabupaten()}
-        {this.renderModalKecamatan()}
-        {this.renderModalKelurahan()}
-        {this.modalSuksesUpdateAlamat()}
+        {this.modalProvince()}
+        {this.modalDistrict()}
+        {this.modalSubdistrict()}
+        {this.modalVillage()}
+        {this.modalSuccesUpdate()}
         {spinner}
       </View>
     )

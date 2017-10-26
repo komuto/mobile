@@ -12,9 +12,37 @@ export default StyleSheet.create({
     height: Metrics.screenHeight,
     opacity: 0.5
   },
+  headerTextContainer: {
+    height: Metrics.navBarHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 5,
+    paddingRight: 10,
+    backgroundColor: Colors.red
+  },
+  headerContainer: {
+    backgroundColor: Colors.background,
+    paddingLeft: 20,
+    paddingTop: 19.3,
+    paddingBottom: 22,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
+  },
+  headerText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: Fonts.type.bold,
+    top: -1,
+    marginLeft: 10,
+    marginRight: 10,
+    color: Colors.snow
+  },
   container: {
     flex: 1,
-    marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
   header: {

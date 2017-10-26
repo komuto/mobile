@@ -54,7 +54,8 @@ export default StyleSheet.create({
   textLabel: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
-    color: Colors.labelgrey
+    color: Colors.labelgrey,
+    paddingBottom: 15
   },
   textLabelError1: {
     fontFamily: Fonts.type.regular,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -9,6 +9,7 @@ import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/NomerHandphoneScreenStyle'
+import {Images, Colors} from '../Themes/'
 
 class Cellphone extends React.Component {
 
@@ -50,12 +51,8 @@ class Cellphone extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.popTo('accountmanage')
     return true
-  }
-
-  backButton () {
-    NavigationActions.pop()
   }
 
   handlenomerHape = (text) => {
@@ -150,13 +147,30 @@ class Cellphone extends React.Component {
     }
   }
 
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Nomor Handphone
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
+      <ActivityIndicator color={Colors.red} size='large' />
     </View>) : (<View />)
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.renderAll()}
         {spinner}
       </View>

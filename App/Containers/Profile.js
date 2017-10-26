@@ -71,7 +71,7 @@ class Profile extends React.Component {
         createStoresAt: nextProps.dataProfile.user.store.created_at
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
-      ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
     }
     if (nextProps.dataResendVerification.status === 200) {
       this.setState({

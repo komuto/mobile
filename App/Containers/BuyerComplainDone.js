@@ -101,7 +101,7 @@ class BuyerComplainDone extends React.Component {
           </Text>
           <View style={styles.disputeNumber}>
             <Text style={[styles.textTitle, { flex: 1, color: Colors.snow }]}>
-              {data.length}
+              {rowData.count_unread}
             </Text>
           </View>
         </View>

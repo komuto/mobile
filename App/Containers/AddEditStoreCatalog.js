@@ -94,7 +94,7 @@ class AddEditStoreCatalog extends React.Component {
     }
   }
 
-  renderTanpaNoHape () {
+  renderFormInputCatalog () {
     return (
       <View>
         <View style={styles.infoContainer}>
@@ -129,7 +129,7 @@ class AddEditStoreCatalog extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
-        {this.renderTanpaNoHape()}
+        {this.renderFormInputCatalog()}
         {spinner}
       </View>
     )

@@ -290,15 +290,11 @@ class Home extends React.Component {
 
   handleTextSearch = (text) => {
     this.setState({ search: text, isFound: false, refreshSearch: true })
-    this.trySearch(text)
-  }
-
-  trySearch (text) {
+    this.submitting.search = true
     if (text !== '') {
-      this.submitting.search = true
-      setTimeout(() => {
-        this.props.getSearch({q: text})
-      }, 1000)
+      this.props.getSearch({q: 'text'})
+    } else {
+      this.props.getSearch({q: 'sadfkjashfos'})
     }
   }
 

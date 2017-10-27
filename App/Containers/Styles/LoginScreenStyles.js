@@ -128,11 +128,11 @@ export default StyleSheet.create({
   labelError: {
     flex: 1,
     marginTop: -10,
-    marginBottom: -10,
+    marginBottom: 10,
+    marginLeft: 20,
     color: Colors.red,
     fontFamily: Fonts.type.regular,
-    fontSize: Fonts.size.small,
-    textAlign: 'center'
+    fontSize: Fonts.size.small
   },
   labelError1: {
     flex: 1,

@@ -67,10 +67,7 @@ class Login extends React.Component {
       if (password === '') {
         this.onError('password')
       } else {
-        this.setState({
-          loading: true
-        })
-
+        this.setState({loading: true})
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
             this.props.attemptLogin(email, password, tokenFCM)
@@ -78,7 +75,10 @@ class Login extends React.Component {
         })
       }
     } else {
-      this.onError('emailNotValid')
+      if (password === '') {
+        this.onError('password')
+        this.onError('emailNotValid')
+      }
     }
   }
 
@@ -101,24 +101,6 @@ class Login extends React.Component {
           passwordText: 'Password harus diisi',
           passErrorColor: Colors.red
         })
-        break
-      case 'NETWORK_ERROR':
-        window.alert('Gangguan Jaringan')
-        break
-      case 'CLIENT_ERROR':
-        this.setState({
-          emailText: 'Email tidak terdaftar',
-          emailErrorColor: Colors.red
-        })
-        break
-      case 'empty':
-        this.setState({
-          emailText: 'Email harus diisi',
-          passwordText: 'Password harus diisi'
-        })
-        break
-      default:
-        window.alert('Internal Error')
         break
     }
   }

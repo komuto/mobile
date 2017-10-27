@@ -97,6 +97,9 @@ class OTPCode extends React.Component {
     } else if (nextProps.dataSaldo.status === 400) {
       this.setState({loading: false})
       ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataSaldo.message, ToastAndroid.LONG)
+    } else if (nextProps.dataOTP.status !== 200 && nextProps.dataOTP.status !== 0) {
+      this.setState({loading: false})
+      ToastAndroid.show(nextProps.dataOTP.message, ToastAndroid.LONG)
     }
   }
 

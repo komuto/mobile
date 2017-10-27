@@ -20,6 +20,15 @@ export default StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
   },
+  listView: {
+    backgroundColor: Colors.snow
+  },
+  loadingStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    marginTop: 10
+  },
   maskedPhoto: {
     height: 40,
     width: 40,

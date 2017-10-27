@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
-  AsyncStorage,
   Modal
 } from 'react-native'
 import Spinner from '../Components/Spinner'
@@ -104,13 +103,6 @@ class Profile extends React.Component {
 
   register () {
     NavigationActions.register({ type: ActionConst.PUSH })
-  }
-
-  logout () {
-    AsyncStorage.setItem('token', '')
-    this.props.stateLogin(false)
-    this.props.logout()
-    // LoginManager.logOut()
   }
 
   resend () {
@@ -262,17 +254,6 @@ class Profile extends React.Component {
           </View>
         </View>
         {this.rernderToko()}
-        <TouchableOpacity style={styles.dataProfileContainer} onPress={() => this.logout()}>
-          <View style={styles.profile}>
-            <Image source={Images.logout} style={styles.imageCategory} />
-            <View style={styles.namaContainer}>
-              <Text style={styles.textNama}>
-                Logout
-              </Text>
-            </View>
-            <Image source={Images.rightArrow} style={styles.rightArrow} />
-          </View>
-        </TouchableOpacity>
         {this.modalVerifikasiNoTelepon()}
       </View>
     )

@@ -1,9 +1,19 @@
 import React from 'react'
-import { Text, View, Image, ListView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
+import {
+  Text,
+  View,
+  ToastAndroid,
+  Image,
+  ListView,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl
+} from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -17,40 +27,61 @@ class SellerNotificationReview extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      review: false
+    }
     this.state = {
       data: [],
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: false,
-      loadingPage: false
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: true,
+      gettingData: true
     }
   }
 
   componentDidMount () {
-    this.refresh()
+    if (!this.submitting.review) {
+      this.submitting = {
+        ...this.submitting,
+        review: true
+      }
+      this.props.getListReview()
+    }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataReview.status === 200) {
-      if (nextProps.dataReview.sellerReview.length > 0) {
-        let data = [...this.state.data, ...nextProps.dataReview.sellerReview]
-        this.setState({
-          data: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {dataReview} = nextProps
+
+    if (!isFetching(dataReview) && this.submitting.review) {
+      this.submitting = { ...this.submitting, review: false }
+      if (isError(dataReview)) {
+        ToastAndroid.show(dataReview.message, ToastAndroid.SHORT)
       }
-    }
-    if (nextProps.dataDetailProduk.status === 200) {
-      this.setState({loadingPage: false})
+      if (isFound(dataReview)) {
+        const isFound = dataReview.sellerReview.length
+        if (isFound >= 10) {
+          let data = [...this.state.data, ...dataReview.sellerReview]
+          this.setState({
+            data: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          let data = [...this.state.data, ...dataReview.sellerReview]
+          this.setState({
+            data: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        }
+      }
     }
   }
 
@@ -58,20 +89,32 @@ class SellerNotificationReview extends React.Component {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListReview(page)
+        if (!this.submitting.review) {
+          this.submitting = {
+            ...this.submitting,
+            review: true
+          }
+          this.props.getListReview({page: page})
+        }
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.getListReview(1)
+    if (!this.submitting.review) {
+      this.submitting = {
+        ...this.submitting,
+        review: true
+      }
+      this.props.getListReview()
+    }
   }
 
-  listViewUlasan () {
+  listViewUlasan (data) {
     return (
       <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
+        dataSource={this.dataSource.cloneWithRows(data)}
         renderRow={this.renderRow.bind(this)}
         refreshControl={
           <RefreshControl
@@ -104,7 +147,6 @@ class SellerNotificationReview extends React.Component {
   }
 
   handleDetailProduct (id) {
-    this.setState({loadingPage: true})
     this.props.getDetailProduct(id)
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
@@ -183,17 +225,33 @@ class SellerNotificationReview extends React.Component {
     )
   }
 
+  renderEmptyState () {
+    return (
+      <View style={[styles.containerEmpty, {marginTop: 100}]}>
+        <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
+        <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
+      </View>
+    )
+  }
+
   render () {
-    const spinner = this.state.loadingPage
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.listViewUlasan(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.listViewUlasan(data))
+    }
     return (
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
-          {this.listViewUlasan()}
+          {view}
         </View>
-        {spinner}
       </View>
     )
   }
@@ -201,13 +259,12 @@ class SellerNotificationReview extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataReview: state.sellerReview,
-  dataDetailProduk: state.productDetail
+  dataReview: state.sellerReview
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id})),
-  getListReview: (page) => dispatch(reviewAction.getSellerReview({ page: page }))
+  getListReview: (params) => dispatch(reviewAction.getSellerReview(params))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(SellerNotificationReview)

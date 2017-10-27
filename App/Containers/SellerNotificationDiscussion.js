@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   ListView,
   RefreshControl,
+  ToastAndroid,
   ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -19,59 +21,93 @@ import * as productAction from '../actions/product'
 
 // Styles
 import styles from './Styles/BuyerDiscussionStyle'
-import { Colors } from '../Themes/'
+import { Colors, Images } from '../Themes/'
 class SellerNotificationDiscussion extends React.Component {
 
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      discussion: false
+    }
     this.state = {
       data: [],
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: false,
-      loadingPage: false
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: true,
+      gettingData: true
     }
   }
 
   componentDidMount () {
-    this.refresh()
+    if (!this.submitting.discussion) {
+      this.submitting = {
+        ...this.submitting,
+        discussion: true
+      }
+      this.props.getListDiscussion()
+    }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.listDiscussion.status === 200) {
-      if (nextProps.listDiscussion.storeDiscussions.length > 0) {
-        let data = [...this.state.data, ...nextProps.listDiscussion.storeDiscussions]
-        this.setState({
-          data: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {listDiscussion} = nextProps
+    if (!isFetching(listDiscussion) && this.submitting.discussion) {
+      this.submitting = { ...this.submitting, discussion: false }
+      if (isError(listDiscussion)) {
+        ToastAndroid.show(listDiscussion.message, ToastAndroid.SHORT)
+      }
+      if (isFound(listDiscussion)) {
+        const isFound = listDiscussion.storeDiscussions.length
+        if (isFound >= 10) {
+          let data = [...this.state.data, ...listDiscussion.storeDiscussions]
+          this.setState({
+            data: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          let data = [...this.state.data, ...listDiscussion.storeDiscussions]
+          this.setState({
+            listMessages: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        }
       }
     }
   }
 
   loadMore () {
     const { page, loadmore, isLoading } = this.state
-    console.log(page)
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListDiscussion(page)
+        if (!this.submitting.discussion) {
+          this.submitting = {
+            ...this.submitting,
+            discussion: true
+          }
+          this.props.getListDiscussion({page: page})
+        }
       }
     }
   }
 
   refresh = () => {
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
-    this.props.getListDiscussion(1)
+    if (!this.submitting.discussion) {
+      this.submitting = {
+        ...this.submitting,
+        discussion: true
+      }
+      this.props.getListDiscussion({page: 1})
+    }
   }
 
   handelDetailDiscussion (idDiscussion, idProduct, name, image, price) {
@@ -102,10 +138,10 @@ class SellerNotificationDiscussion extends React.Component {
     )
   }
 
-  listViewDiscussion () {
+  listViewDiscussion (data) {
     return (
       <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
+        dataSource={this.dataSource.cloneWithRows(data)}
         renderRow={this.renderRowDiscussion.bind(this)}
         refreshControl={
           <RefreshControl
@@ -137,12 +173,31 @@ class SellerNotificationDiscussion extends React.Component {
     )
   }
 
+  renderEmptyState () {
+    return (
+      <View style={[styles.containerEmpty, {marginTop: 100}]}>
+        <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
+        <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
+      </View>
+    )
+  }
+
   render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.listViewDiscussion(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.listViewDiscussion(data))
+    }
     return (
       <View style={styles.container}>
-        <View style={{flex: 1}}>
-          {this.listViewDiscussion()}
-        </View>
+        {view}
       </View>
     )
   }
@@ -154,7 +209,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListDiscussion: (page) => dispatch(storeAction.getStoreDiscussions({page: page})),
+  getListDiscussion: (params) => dispatch(storeAction.getStoreDiscussions(params)),
   getDetailDiscussion: (id) => dispatch(productAction.getComment({id: id}))
 })
 

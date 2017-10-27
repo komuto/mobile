@@ -7,7 +7,7 @@ export const getBuyerMessages = createReducer(buildInitState({ buyerMessages: []
     resultName: 'buyerMessages'
   }).run()
 
-export const getSellerMessages = createReducer(buildInitState({ sellerMessages: [] }))
+export const getSellerMessages = createReducer(buildInitState({ sellerMessages: [] }, true))
   .addReducer({
     type: actions.GET_SELLER_MESSAGES,
     resultName: 'sellerMessages'

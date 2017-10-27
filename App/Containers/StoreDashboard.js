@@ -8,7 +8,6 @@ import * as storeAction from '../actions/stores'
 import Reactotron from 'reactotron-react-native'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import * as messageAction from '../actions/message'
 import * as reviewAction from '../actions/review'
 
 // Styles
@@ -168,10 +167,9 @@ class StoreDashboard extends React.Component {
   }
 
   openMessageNotification () {
-    this.props.getListMessages()
-    this.props.getListArchiveMessages()
     NavigationActions.sellernotificationmessage({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      callback: false
     })
   }
 
@@ -331,8 +329,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListMessages: () => dispatch(messageAction.getSellerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveSellerMessages()),
     getStoreDiscussions: (page) => dispatch(storeAction.getStoreDiscussions({page: page})),
     getListReview: (page) => dispatch(reviewAction.getSellerReview({ page: page }))
   }

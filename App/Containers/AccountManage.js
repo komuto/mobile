@@ -19,6 +19,9 @@ class AccountManage extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      logout: false
+    }
     this.state = {
       token: '',
       name: '' || this.props.dataProfile.user.user.name,
@@ -41,6 +44,12 @@ class AccountManage extends React.Component {
           pesanNotif: nextProps.pesanNotif
         })
       }
+    }
+
+    if (nextProps.dataUser.status === 200 && this.submitting.logout) {
+      this.submitting = {...this.submitting, logout: false}
+      NavigationActions.backtab({ type: ActionConst.RESET })
+      return true
     }
   }
 
@@ -65,7 +74,7 @@ class AccountManage extends React.Component {
     AsyncStorage.setItem('token', '')
     this.props.stateLogin(false)
     this.props.logout()
-    // LoginManager.logOut()
+    this.submitting.logout = true
   }
 
   handleBiodata () {
@@ -246,7 +255,8 @@ class AccountManage extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataProfile: state.profile
+    dataProfile: state.profile,
+    dataUser: state.user
   }
 }
 

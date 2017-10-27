@@ -146,37 +146,25 @@ class Register extends React.Component {
   onError = (field) => {
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
-        window.alert('Email harus diisi')
+        ToastAndroid.show('Email harus diisi', ToastAndroid.SHORT)
         break
       case 'phoneNumber':
-        window.alert('Nomer hp harus diisi')
+        ToastAndroid.show('Nomer hp harus diisi', ToastAndroid.SHORT)
         break
       case 'password':
-        window.alert('Password harus diisi')
+        ToastAndroid.show('Password harus diisi', ToastAndroid.SHORT)
         break
       case 'name':
-        window.alert('name harus diisi')
+        ToastAndroid.show('name harus diisi', ToastAndroid.SHORT)
         break
       case 'konfirmasiPassword':
-        window.alert('Konfirmasi Password harus diisi')
+        ToastAndroid.show('Konfirmasi Password harus diisi', ToastAndroid.SHORT)
         break
       case 'passwordBeda':
-        window.alert('Password tidak cocok')
-        break
-      case 'NETWORK_ERROR':
-        window.alert('Gangguan Jaringan')
-        break
-      case 'CLIENT_ERROR':
-        window.alert('Terjadi kesalahan')
-        break
-      case 'empty':
-        window.alert('Field tidak boleh kosong')
-        break
-      default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Password tidak cocok', ToastAndroid.SHORT)
         break
     }
   }

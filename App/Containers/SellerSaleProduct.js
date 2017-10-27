@@ -313,7 +313,7 @@ class SellerSaleProduct extends React.Component {
             if (this.state.loadmore) {
               return (
                 <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
+                  style={[styles.loadingStyle, { height: 70 }]}
                   size='small'
                   color='#ef5656'
                 />

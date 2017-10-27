@@ -1,8 +1,10 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, Modal, BackAndroid, ListView, TextInput } from 'react-native'
+import { ScrollView, ToastAndroid, Text, View, TouchableOpacity, Image, Modal, BackAndroid, ListView, TextInput } from 'react-native'
 import { connect } from 'react-redux'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import moment from 'moment'
+import {isFetching, isError, isFound} from '../Services/Status'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -17,6 +19,12 @@ class SellerNotificationMessageDetail extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      move: false,
+      detail: false,
+      delete: false,
+      reply: false
+    }
     this.state = {
       loading: false,
       messages: '',
@@ -25,64 +33,94 @@ class SellerNotificationMessageDetail extends React.Component {
       modalPopup: false,
       data: [],
       detailMessageUser: [],
-      typeMessage: 'conversation'
+      typeMessage: 'conversation',
+      callback: this.props.callback,
+      iconSend: Images.sendMessageInactive
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.idMessage !== this.props.idMessage) {
-      this.props.getDetailMessage(this.props.idMessage)
-      this.setState({
-        idMessage: this.props.idMessage
-      })
+    const {detailMessage, dataReplyMessage, dataMoveMessage, dataDeleteMessage} = nextProps
+
+    if (!isFetching(detailMessage) && this.submitting.detail) {
+      this.submitting = { ...this.submitting, detail: false }
+      if (isError(detailMessage)) {
+        ToastAndroid.show(detailMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(detailMessage)) {
+        this.setState({
+          data: detailMessage.sellerDetailMessage,
+          typeMessage: detailMessage.sellerDetailMessage.type,
+          detailMessageUser: nextProps.detailMessage.sellerDetailMessage.detail_messages
+        })
+      }
     }
-    if (nextProps.detailMessage.status === 200) {
-      this.setState({
-        data: nextProps.detailMessage.sellerDetailMessage,
-        typeMessage: nextProps.detailMessage.sellerDetailMessage.type,
-        detailMessageUser: nextProps.detailMessage.sellerDetailMessage.detail_messages
-      })
-      nextProps.detailMessage.status = 0
-    } if (nextProps.dataReplyMessage.status === 200) {
-      nextProps.dataReplyMessage.status = 0
-      this.props.getDetailMessage(this.state.idMessage)
-    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
-      console.log('b')
-      nextProps.dataMoveMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.sellernotificationmessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Arsip',
-        page: 1
-      })
-    } if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
-      console.log('a')
-      nextProps.dataMoveMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.sellernotificationmessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Percakapan',
-        page: 0
-      })
-    } if (nextProps.dataDeleteMessage.status === 200) {
-      nextProps.dataDeleteMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.sellernotificationmessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil menghapus Percakapan',
-        page: 0
-      })
+
+    if (!isFetching(dataReplyMessage) && this.submitting.reply) {
+      this.submitting = { ...this.submitting, reply: false }
+      if (isError(dataReplyMessage)) {
+        ToastAndroid.show(dataReplyMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataReplyMessage)) {
+        this.props.getDetailMessage(this.state.idMessage)
+      }
+    }
+
+    if (!isFetching(dataMoveMessage) && this.submitting.move && this.state.typeMessage === 'conversation') {
+      this.submitting = { ...this.submitting, move: false }
+      if (isError(dataMoveMessage)) {
+        ToastAndroid.show(dataMoveMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataMoveMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackArchive: !this.state.callback,
+            pesanNotifArchive: 'Berhasil memindahkan ke Arsip'
+          }
+        })
+      }
+    }
+
+    if (!isFetching(dataMoveMessage) && this.submitting.move && this.state.typeMessage === 'archive') {
+      this.submitting = { ...this.submitting, move: false }
+      if (isError(dataMoveMessage)) {
+        ToastAndroid.show(dataMoveMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataMoveMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackConversation: !this.state.callback,
+            pesanNotifConversation: 'Berhasil memindahkan ke Percakapan'
+          }
+        })
+      }
+    }
+
+    if (!isFetching(dataDeleteMessage) && this.submitting.delete) {
+      this.submitting = { ...this.submitting, delete: false }
+      if (isError(dataDeleteMessage)) {
+        ToastAndroid.show(dataDeleteMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callback: !this.state.callback,
+            pesanNotif: 'Berhasil menghapus Percakapan',
+            tabs: 0
+          }
+        })
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getDetailMessage(this.props.idMessage)
+    if (!this.submitting.conversation) {
+      this.submitting = {
+        ...this.submitting,
+        detail: true
+      }
+      this.props.getDetailMessage(this.state.idMessage)
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -182,21 +220,42 @@ class SellerNotificationMessageDetail extends React.Component {
 
   handleMoveToArchive () {
     this.setState({ modalPopup: false })
-    if (this.state.typeMessage === 'conversation') {
-      this.props.movingMessage(this.state.idMessage, 'archive')
-    } else {
-      this.props.movingMessage(this.state.idMessage, 'conversation')
+    if (!this.submitting.move) {
+      this.submitting = {
+        ...this.submitting,
+        move: true
+      }
+      if (this.state.typeMessage === 'conversation') {
+        this.props.movingMessage(this.state.idMessage, 'archive')
+      } else {
+        this.props.movingMessage(this.state.idMessage, 'conversation')
+      }
     }
   }
 
   handleDeleteMessage () {
     this.setState({ modalPopup: false })
-    this.props.deleteMessage(this.state.idMessage)
+    if (!this.submitting.delete) {
+      this.submitting = {
+        ...this.submitting,
+        delete: true
+      }
+      this.props.deleteMessage(this.state.idMessage)
+    }
   }
 
   sendReply () {
-    this.setState({messages: ''})
-    this.props.replyMessage(this.state.idMessage, this.state.messages)
+    if (this.state.messages.length === 0) {
+    } else {
+      this.setState({messages: ''})
+      if (!this.submitting.reply) {
+        this.submitting = {
+          ...this.submitting,
+          reply: true
+        }
+        this.props.replyMessage(this.state.idMessage, this.state.messages)
+      }
+    }
   }
 
   render () {
@@ -229,7 +288,6 @@ class SellerNotificationMessageDetail extends React.Component {
             autoCapitalize='none'
             autoCorrect
             blurOnSubmit
-            onSubmitEditing={() => this.sendReply()}
             onChange={(event) => {
               this.setState({
                 messages: event.nativeEvent.text
@@ -262,9 +320,7 @@ const mapDispatchToProps = (dispatch) => {
     replyMessage: (id, content) => dispatch(messageAction.sellerReplyMessage({id: id, content: content})),
     getDetailMessage: (id) => dispatch(messageAction.getSellerDetailMessage({id})),
     deleteMessage: (id) => dispatch(messageAction.sellerDeleteMessage({id})),
-    movingMessage: (id, type) => dispatch(messageAction.updateSellerMessage({id: id, messageType: type})),
-    getListMessages: () => dispatch(messageAction.getSellerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveSellerMessages())
+    movingMessage: (id, type) => dispatch(messageAction.updateSellerMessage({id: id, messageType: type}))
   }
 }
 

@@ -121,7 +121,7 @@ class BuyerDiscussion extends React.Component {
         <View />
       )
     } else {
-      if (data.length > 0) {
+      if (data.length > 0 || this.state.isRefreshing) {
         return (
           <ListView
             dataSource={this.dataSource.cloneWithRows(data)}
@@ -142,7 +142,7 @@ class BuyerDiscussion extends React.Component {
               if (this.state.loadmore) {
                 return (
                   <ActivityIndicator
-                    style={[styles.loadingStyle, { height: 50 }]}
+                    style={[styles.loadingStyle, { marginTop: 10, height: 50 }]}
                     size='small'
                     color='#ef5656'
                   />

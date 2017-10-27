@@ -107,6 +107,10 @@ class BuyerReview extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.submitting = {
+      ...this.submitting,
+      review: true
+    }
     this.props.getListReview({page: 1})
   }
 
@@ -190,53 +194,47 @@ class BuyerReview extends React.Component {
   }
 
   checkStateReview (data) {
-    if (this.state.isRefreshing) {
+    if (data.length > 0 || this.state.isRefreshing) {
       return (
-        <View />
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(data)}
+          renderRow={this.renderRow.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
+          }
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+          style={styles.listView}
+        />
       )
     } else {
-      if (data.length > 0) {
-        return (
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(data)}
-            renderRow={this.renderRow.bind(this)}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.isRefreshing}
-                onRefresh={this.refresh}
-                tintColor={Colors.red}
-                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-                title='Loading...'
-                titleColor={Colors.red}
-                progressBackgroundColor={Colors.snow}
-              />
-            }
-            onEndReached={this.loadMore.bind(this)}
-            renderFooter={() => {
-              if (this.state.loadmore) {
-                return (
-                  <ActivityIndicator
-                    style={[styles.loadingStyle, { height: 50 }]}
-                    size='small'
-                    color='#ef5656'
-                  />
-                )
-              }
-              return <View />
-            }}
-            enableEmptySections
-            style={styles.listView}
-          />
-        )
-      } else {
-        return (
-          <View style={styles.containerEmpty}>
-            <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
-            <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
-            <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
-          </View>
-        )
-      }
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
+          <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
+        </View>
+      )
     }
   }
 

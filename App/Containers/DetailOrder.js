@@ -434,7 +434,7 @@ class DetailOrder extends React.Component {
   handleCheckListDeliveryConfrim () {
     this.setState({modalOrderReceived: false})
     NavigationActions.deliveryConfirmation({
-      type: ActionConst.PUSH })
+      type: ActionConst.REPLACE })
   }
 
   handleAcceptOrder () {

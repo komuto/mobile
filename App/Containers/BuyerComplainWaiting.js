@@ -93,17 +93,23 @@ class BuyerComplainWaiting extends React.Component {
         </View>
       )
     }
+    let renderCounting = null
+    if (rowData.count_unread > 0) {
+      renderCounting = (
+        <View style={styles.disputeNumber}>
+          <Text style={[styles.textTitle, { flex: 1, color: Colors.snow }]}>
+            {rowData.count_unread}
+          </Text>
+        </View>
+      )
+    }
     return (
       <TouchableOpacity style={styles.rowContainer} onPress={() => this.getDetail(rowData.id)}>
         <View style={styles.storeNameContainer}>
           <Text style={[styles.textTitle, { flex: 1 }]}>
             {rowData.store.name}
           </Text>
-          <View style={styles.disputeNumber}>
-            <Text style={[styles.textTitle, { flex: 1, color: Colors.snow }]}>
-              {rowData.count_unread}
-            </Text>
-          </View>
+          {renderCounting}
         </View>
         {renderData}
       </TouchableOpacity>

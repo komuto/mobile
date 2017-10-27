@@ -1005,7 +1005,7 @@ class NavigationRouter extends Component {
           <Scene
             key='listneworder'
             component={ListNewOrder}
-            title='Penjualan Baru'
+            title='Pesanan Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

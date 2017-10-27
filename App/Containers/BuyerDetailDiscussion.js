@@ -19,10 +19,10 @@ class BuyerDetailDiscussion extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      idProduct: this.props.idProduct || 93,
-      nameProduct: this.props.nameProduct || 'Sepatu',
-      imageProduct: this.props.imageProduct || null,
-      priceProduct: this.props.priceProduct || 100000,
+      idProduct: this.props.idProduct,
+      nameProduct: this.props.nameProduct,
+      imageProduct: this.props.imageProduct,
+      priceProduct: this.props.priceProduct || 0,
       idDiscussion: this.props.idDiscussion,
       loading: false,
       discussionMessages: '',
@@ -34,7 +34,11 @@ class BuyerDetailDiscussion extends React.Component {
     if (nextProps.dataDetailDiscussion.status === 200) {
       this.setState({
         loading: false,
-        data: nextProps.dataDetailDiscussion.comments.comments
+        data: nextProps.dataDetailDiscussion.comments.comments,
+        idProduct: nextProps.dataDetailDiscussion.comments.product.id,
+        nameProduct: nextProps.dataDetailDiscussion.comments.product.name,
+        imageProduct: nextProps.dataDetailDiscussion.comments.product.image,
+        priceProduct: nextProps.dataDetailDiscussion.comments.product.price
       })
       nextProps.dataDetailDiscussion.status = 0
     } else if (nextProps.dataDetailDiscussion.status !== 200 && nextProps.dataDetailDiscussion.status !== 0) {
@@ -61,6 +65,7 @@ class BuyerDetailDiscussion extends React.Component {
   }
 
   componentDidMount () {
+    this.props.getDetailDiscussion(this.state.idDiscussion)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 

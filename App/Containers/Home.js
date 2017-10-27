@@ -36,31 +36,40 @@ const handleFCM = (data) => {
   console.log(data) // data.id, data.click_action
   switch (data.click_action) {
     case 'SELLER_MESSAGE' :
-      return NavigationActions.sellernotificationmessagedetail({ type: ActionConst.PUSH, idMessage: data.id })
-    case 'SELLER_DISCUSSION':
+      return NavigationActions.sellernotificationmessagedetail({ type: ActionConst.PUSH, idMessage: data.body.message_id })
+    case 'SELLER_CREATE_DISCUSSION':
       return NavigationActions.sellernotificationdiscussion({ type: ActionConst.PUSH })
+    case 'SELLER_COMMENT_DISCUSSION':
+      return NavigationActions.buyerdetaildiscussion({ type: ActionConst.PUSH, idDiscussion: data.body.discussion_id })
     case 'SELLER_REVIEW':
       return NavigationActions.sellernotificationreview({ type: ActionConst.PUSH })
-    case 'SELLER_RESOLUTION':
-      return NavigationActions.sellernotificationresolution({ type: ActionConst.PUSH })
+    case 'SELLER_TRANSACTION':
+      return NavigationActions.listneworder({ type: ActionConst.PUSH })
+    case 'SELLER_ORDER_RECEIVED':
+      return null
+      // return NavigationActions.detailsales({ type: ActionConst.PUSH, idSales: data.body.invoice_id })
+    case 'SELLER_ORDER_COMPLAINED_REFUND':
+      return NavigationActions.sellercomplain({ type: ActionConst.PUSH })
+    case 'SELLER_ORDER_COMPLAINED_EXCHANGE':
+      return NavigationActions.sellercomplain({ type: ActionConst.PUSH })
     case 'BUYER_MESSAGE':
-      return NavigationActions.buyerdetailmessage({ type: ActionConst.PUSH, idMessage: data.id })
-    case 'BUYER_DISCUSSION':
-      return NavigationActions.buyerdiscussion({ type: ActionConst.PUSH })
-    case 'BUYER_RESOLUTION':
-      return NavigationActions.buyerresolution({ type: ActionConst.PUSH })
-    // case 'List_Follower': return Actions.follower({ userId: data.my_costum_data.user_id })
-    // case 'List_Pending_Follow': return Actions.follower({ userId: data.my_costum_data.user_id })
-    // case 'Detail_Conversation': return Actions.conversationDetail({conversationId: data.my_costum_data.conversation_id, friend: data.my_costum_data.friend})
+      return NavigationActions.buyerdetailmessage({ type: ActionConst.PUSH, idMessage: data.body.message_id })
+    case 'BUYER_COMMENT_DISCUSSION':
+      return NavigationActions.buyerdetaildiscussion({ type: ActionConst.PUSH, idDiscussion: data.body.discussion_id })
+    case 'BUYER_ORDER_PROCEED':
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 2, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
+    case 'BUYER_ORDER_SENT':
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 3, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
+    case 'BUYER_ORDER_REJECTED':
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 0, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
   }
 }
 
 FCM.on(FCMEvent.Notification, async (notif) => {
   console.log(notif)
-  let myCostumData = notif.id
   const data = {
     click_action: notif.type,
-    id: myCostumData
+    body: notif
   }
   FCM.presentLocalNotification({
     id: data.id,
@@ -126,10 +135,9 @@ class Home extends React.Component {
   componentWillMount () {
     FCM.getInitialNotification().then(notif => {
       console.log(notif)
-      let myCostumData = notif.id
       const data = {
         click_action: notif.type,
-        id: myCostumData
+        body: notif
       }
       if (data !== undefined) {
         FCM.presentLocalNotification({

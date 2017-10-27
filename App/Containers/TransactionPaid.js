@@ -283,11 +283,12 @@ class TransactionPaid extends React.Component {
 
   detailBarang (invoiceId, status) {
     const { id } = this.state
-    this.props.getDetailInvoice(id, invoiceId)
+    // this.props.getDetailInvoice(id, invoiceId)
     NavigationActions.transactiondetailstatus({
       type: ActionConst.PUSH,
       statusBarang: status,
-      idBucket: this.state.id
+      idBucket: id,
+      invoiceId: invoiceId
     })
   }
 

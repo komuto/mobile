@@ -7,15 +7,23 @@ import ScrollableTabView from 'react-native-scrollable-tab-view'
 // import YourActions from '../Redux/YourRedux'
 import TransactionDetailStatusItem from './TransactionDetailStatusItem'
 import TransactionDetailStatusPurchase from './TransactionDetailStatusPurchase'
+import * as transactionAction from '../actions/transaction'
 // Styles
 import styles from './Styles/TransaksiDetailStatusStyle'
 
 class TransactionDetailStatus extends React.Component {
 
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
+  constructor (props) {
+    super(props)
+    this.state = {
+      idBucket: this.props.idBucket,
+      invoiceId: this.props.invoiceId
+    }
+  }
+
+  componentDidMount () {
+    this.props.getDetailInvoice(this.state.idBucket, this.state.invoiceId)
+  }
 
   render () {
     return (
@@ -51,6 +59,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId}))
   }
 }
 

@@ -310,42 +310,42 @@ class SellerComplainDetailItem extends React.Component {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>READ_BY_USER</Text>
+          <Text style={styles.regularcharcoalGrey}>Dibaca oleh pembeli</Text>
         </View>
       )
     } if (data === 3) {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>SEND_BY_BUYER</Text>
+          <Text style={styles.regularcharcoalGrey}>Dikirim oleh pembeli</Text>
         </View>
       )
     } if (data === 4) {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>RECEIVE_BY_SELLER</Text>
+          <Text style={styles.regularcharcoalGrey}>Diterima oleh penjual</Text>
         </View>
       )
     } if (data === 5) {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>SEND_BY_SELLER</Text>
+          <Text style={styles.regularcharcoalGrey}>Dikirim oleh penjual</Text>
         </View>
       )
     } if (data === 6) {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>RECEIVE_BY_USER</Text>
+          <Text style={styles.regularcharcoalGrey}>Diterima oleh pembeli</Text>
         </View>
       )
     } if (data === 7) {
       return (
         <View style={styles.flexRowChild}>
           <View style={styles.iconStatus} />
-          <Text style={styles.regularcharcoalGrey}>PROCESS_OF_REFUND</Text>
+          <Text style={styles.regularcharcoalGrey}>Proses Refund</Text>
         </View>
       )
     } if (data === 8) {
@@ -361,11 +361,11 @@ class SellerComplainDetailItem extends React.Component {
   checkSolution (data) {
     if (data === 1) {
       return (
-        <Text style={styles.regularBrowGreyFlextwo}>REFUND</Text>
+        <Text style={styles.regularBrowGreyFlextwo}>Refund</Text>
       )
     } else {
       return (
-        <Text style={styles.regularBrowGreyFlextwo}>EXCHANGE</Text>
+        <Text style={styles.regularBrowGreyFlextwo}>Tukar Baru</Text>
       )
     }
   }

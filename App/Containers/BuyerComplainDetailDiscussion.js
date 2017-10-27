@@ -100,6 +100,12 @@ class BuyerComplainDetailDiscussion extends React.Component {
   }
 
   render () {
+    let image
+    if (this.state.content === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.container}>
         <ScrollView
@@ -135,7 +141,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
             placeholder='Tulis Komentar'
           />
           <TouchableOpacity style={styles.sendContainer} onPress={() => this.send()}>
-            <Image source={Images.sendMessage} style={styles.sendMessage} />
+            <Image source={image} style={styles.sendMessage} />
           </TouchableOpacity>
         </View>
       </View>

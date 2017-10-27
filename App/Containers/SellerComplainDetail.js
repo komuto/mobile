@@ -41,11 +41,11 @@ class SellerComplainDetail extends React.Component {
           locked
         >
           <ScrollView tabLabel='Detail'>
-            <SellerComplainDetailItem idComplain={this.state.idComplain} />
+            <SellerComplainDetailItem idComplain={this.props.idComplain} />
           </ScrollView>
-          <View tabLabel={this.labelDiscussion} ref='discussion' idComplain={this.state.idComplain}
+          <View tabLabel={this.labelDiscussion} ref='discussion'
             style={{flex: 1, flexDirection: 'column', backgroundColor: Colors.snow}} >
-            <SellerComplainDiscussion />
+            <SellerComplainDiscussion idComplain={this.props.idComplain} />
           </View>
         </ScrollableTabView>
       </View>

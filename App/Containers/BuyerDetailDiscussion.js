@@ -140,6 +140,12 @@ class BuyerDetailDiscussion extends React.Component {
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
+    let image
+    if (this.state.discussionMessages === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -174,7 +180,7 @@ class BuyerDetailDiscussion extends React.Component {
             placeholder='Tulis pesan Anda disini'
           />
           <TouchableOpacity style={styles.sendContainer} onPress={() => this.sendComent()}>
-            <Image source={Images.sendMessage} style={styles.sendMessage} />
+            <Image source={image} style={styles.sendMessage} />
           </TouchableOpacity>
         </View>
         {spinner}

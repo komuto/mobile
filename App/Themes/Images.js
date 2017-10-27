@@ -155,7 +155,8 @@ const images = {
   infoOcher: require('../Images/Icons/icon-info-ocher.png'),
   infoDone: require('../Images/Icons/icon-done-green.png'),
   emptyTransaction: require('../Images/empty-transaction.png'),
-  sendMessage: require('../Images/Icons/send-message.png')
+  sendMessage: require('../Images/Icons/send-message.png'),
+  sendMessageInactive: require('../Images/Icons/send-message-inactive.png')
 }
 
 export default images

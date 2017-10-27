@@ -200,6 +200,12 @@ class SellerNotificationMessageDetail extends React.Component {
   }
 
   render () {
+    let image
+    if (this.state.messages === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -233,7 +239,7 @@ class SellerNotificationMessageDetail extends React.Component {
             placeholder='Tulis pesan Anda disini'
           />
           <TouchableOpacity style={styles.sendContainer} onPress={() => this.sendReply()}>
-            <Image source={Images.sendMessage} style={styles.sendMessage} />
+            <Image source={image} style={styles.sendMessage} />
           </TouchableOpacity>
         </View>
         {this.modalPopupMenu()}

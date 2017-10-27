@@ -162,7 +162,7 @@ class SellerComplainDiscussion extends React.Component {
   sendDiscussion () {
     this.submitting.reply = true
     this.setState({modalLoading: true})
-    this.props.replyDiscussion(this.state.idComplain, this.state.messages)
+    this.props.replyDiscussion(this.props.idComplain, this.state.messages)
   }
 
   render () {
@@ -174,6 +174,12 @@ class SellerComplainDiscussion extends React.Component {
         </View>
       )
     }
+    let image
+    if (this.state.messages === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={{flex: 1}} >
         <ScrollView ref='listView'>
@@ -182,17 +188,23 @@ class SellerComplainDiscussion extends React.Component {
         <TouchableOpacity onPress={() => this.scrollToBottom()} style={styles.absolute}>
           <Image source={Images.down} style={{width: 30, height: 30}} />
         </TouchableOpacity>
-        <TextInput
-          style={[styles.inputTextMessage]}
-          value={this.state.messages}
-          keyboardType='default'
-          returnKeyType='done'
-          autoCapitalize='none'
-          autoCorrect
-          onChangeText={(text) => this.setState({messages: text})}
-          onSubmitEditing={() => this.sendDiscussion()}
-          underlineColorAndroid='transparent'
-          placeholder='Tulis pesan Anda disini' />
+        <View style={styles.floatImageContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={this.state.messages}
+            keyboardType='default'
+            autoCapitalize='none'
+            autoCorrect
+            blurOnSubmit
+            onSubmitEditing={() => this.sendDiscussion()}
+            onChangeText={(text) => this.setState({messages: text})}
+            underlineColorAndroid='transparent'
+            placeholder='Tulis pesan Anda disini'
+          />
+          <TouchableOpacity style={styles.sendContainer} onPress={() => this.sendDiscussion()}>
+            <Image source={image} style={styles.sendMessage} />
+          </TouchableOpacity>
+        </View>
         {this.modalLoading()}
       </View>
     )

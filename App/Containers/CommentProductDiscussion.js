@@ -213,6 +213,12 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   renderFloatImage () {
+    let image
+    if (this.state.komentar === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.floatImageContainer}>
         <TextInput
@@ -228,7 +234,7 @@ class DiskusiProdukKomentar extends React.Component {
           placeholder='Tulis Komentar'
         />
         <TouchableOpacity style={styles.sendContainer} onPress={() => this.kirimKomentar()}>
-          <Image source={Images.sendMessage} style={styles.sendMessage} />
+          <Image source={image} style={styles.sendMessage} />
         </TouchableOpacity>
       </View>
     )

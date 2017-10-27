@@ -104,8 +104,13 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
     letterSpacing: 0.2,
-    marginLeft: 5,
-    marginTop: -2
+    marginLeft: 5
+  },
+  commissionText: {
+    fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.greenish,
+    letterSpacing: 0.2
   },
   imageStyleNotLike: {
     width: 24,
@@ -223,8 +228,11 @@ export default StyleSheet.create({
   },
   moneyLikesContainer: {
     flexDirection: 'row',
-    paddingBottom: 28.8,
     alignItems: 'center'
+  },
+  commission: {
+    flex: 1,
+    paddingBottom: 28.8
   },
   listView: {
     flex: 1

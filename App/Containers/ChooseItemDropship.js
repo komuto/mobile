@@ -447,12 +447,13 @@ class ChooseItemDropship extends React.Component {
     return hargaDiskon
   }
 
-  produkDetail (id) {
+  produkDetail (id, commission) {
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id,
       dropship: true,
-      buttonText: 'Pilih Barang ini'
+      buttonText: 'Pilih Barang ini',
+      commission: commission
     })
     this.props.getDetailProduk({id: id})
   }
@@ -471,8 +472,10 @@ class ChooseItemDropship extends React.Component {
       precision: 3
     })
 
+    const commission = (rowData.product.commission * 100)
+
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <View style={styles.containerTitle}>
@@ -486,10 +489,15 @@ class ChooseItemDropship extends React.Component {
             {this.renderVerified(rowData.store.remarks_status)}
           </View>
           {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+          <View style={{flex: 1, marginBottom: 20}}>
+            <Text style={styles.harga}>
+              {money}
+            </Text>
+          </View>
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
-              <Text style={styles.harga}>
-                {money}
+              <Text style={styles.commissionText}>
+                Komisi {commission}%
               </Text>
             </View>
             <View style={styles.likesContainer}>
@@ -517,8 +525,11 @@ class ChooseItemDropship extends React.Component {
       delimiter: '.',
       precision: 3
     })
+
+    const commission = (rowData.product.commission * 100)
+
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
         {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
@@ -534,6 +545,11 @@ class ChooseItemDropship extends React.Component {
         <Text style={stylesHome.harga}>
           {money}
         </Text>
+        <View style={{flex: 1, marginTop: 20}}>
+          <Text style={styles.commissionText}>
+            Komisi {commission}%
+          </Text>
+        </View>
         <View style={stylesHome.likesContainer}>
           {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={styles.like}>

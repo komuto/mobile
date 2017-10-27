@@ -127,7 +127,8 @@ class DetailProduct extends React.Component {
       expeditionDropship: [],
       shareUrl: '',
       isHere: true,
-      modalLogin: false
+      modalLogin: false,
+      commission: this.props.commission || 0
     }
   }
 
@@ -432,14 +433,34 @@ class DetailProduct extends React.Component {
     )
   }
 
+  renderCommission (dropship, commission) {
+    if (dropship) {
+      return (
+        <Text style={styles.commissionText}>
+         - Komisi {commission}%
+        </Text>
+      )
+    }
+  }
+
   renderTitle () {
-    const {grosir, discount} = this.state
+    const {grosir, discount, pickFromDropshipper, commission} = this.state
     const totalHarga = MaskService.toMask('money', this.state.price, {
       unit: 'Rp ',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
+
+    let valueCommission
+    if (pickFromDropshipper) {
+      valueCommission = (
+        <Text style={styles.commissionText}>
+        -{'\b'}Komisi {commission} %
+        </Text>
+      )
+    }
+
     const hargaDiskon = this.discountCalculate(this.state.price, this.state.diskon)
     if (!grosir && !discount) {
       return (
@@ -448,11 +469,14 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper)}
           </View>
-          <Text style={styles.price}>
-            {totalHarga}
-          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.price}>
+              {totalHarga}{'\b'}
+            </Text>
+            {valueCommission}
+          </View>
         </View>
       )
     } else if (discount && !grosir) {
@@ -462,7 +486,7 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -472,9 +496,12 @@ class DetailProduct extends React.Component {
             </View>
             <View>
               {this.renderDiskon(true, totalHarga)}
-              <Text style={[styles.price, {marginTop: 0}]}>
-                {hargaDiskon}
-              </Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={[styles.price, {marginTop: 0}]}>
+                  {hargaDiskon}{'\b'}
+                </Text>
+                {valueCommission}
+              </View>
             </View>
           </View>
         </View>
@@ -489,10 +516,13 @@ class DetailProduct extends React.Component {
               </Text>
             </View>
             <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
-              <Text style={styles.title}>
-                {this.state.title}
-              </Text>
-              {this.renderLikes()}
+              <View>
+                <Text style={styles.title}>
+                  {this.state.title}
+                </Text>
+                {this.renderLikes(pickFromDropshipper)}
+                {valueCommission}
+              </View>
             </View>
           </View>
         </View>
@@ -504,7 +534,7 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -514,9 +544,12 @@ class DetailProduct extends React.Component {
             </View>
             <View>
               {this.renderDiskon(true, totalHarga)}
-              <Text style={[styles.price, {marginTop: 0}]}>
-                {hargaDiskon}
-              </Text>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={[styles.price, {marginTop: 0}]}>
+                  {hargaDiskon}{'\b'}
+                </Text>
+                {valueCommission}
+              </View>
             </View>
           </View>
         </View>
@@ -712,19 +745,21 @@ class DetailProduct extends React.Component {
     }
   }
 
-  renderLikes () {
-    if (this.state.like) {
+  renderLikes (pickFromDropshipper) {
+    if (!pickFromDropshipper) {
+      if (this.state.like) {
+        return (
+          <TouchableOpacity onPress={() => this.addWishList()}>
+            <Image source={Images.lovered} style={styles.imageStyleLike} />
+          </TouchableOpacity>
+        )
+      }
       return (
         <TouchableOpacity onPress={() => this.addWishList()}>
-          <Image source={Images.lovered} style={styles.imageStyleLike} />
+          <Image source={Images.love} style={styles.imageStyleNotLike} />
         </TouchableOpacity>
       )
     }
-    return (
-      <TouchableOpacity onPress={() => this.addWishList()}>
-        <Image source={Images.love} style={styles.imageStyleNotLike} />
-      </TouchableOpacity>
-    )
   }
 
   renderLikesProduk (status) {
@@ -1433,7 +1468,8 @@ class DetailProduct extends React.Component {
           namaToko: this.state.namaToko,
           price: this.state.price,
           id: this.state.id,
-          createDropshipper: true
+          createDropshipper: true,
+          commission: this.state.commission
         })
       }
     } else {
@@ -1442,6 +1478,7 @@ class DetailProduct extends React.Component {
       })
     }
   }
+
   onClose () {
     this.setState({ isLogin: false })
   }

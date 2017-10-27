@@ -53,6 +53,7 @@ class PlaceInCatalog extends React.Component {
       modalTambahKatalog: false,
       namaKatalog: '',
       statusCreateProduct: this.props.createDropshipper || false,
+      commission: this.props.commission || 0,
       textHeader: this.props.title || 'Tempatkan di Katalog',
       loading: true
     }
@@ -170,6 +171,7 @@ class PlaceInCatalog extends React.Component {
       delimiter: '.',
       precision: 3
     })
+
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -185,7 +187,7 @@ class PlaceInCatalog extends React.Component {
               <Text style={styles.textKelola}>
                 {totalHarga}
               </Text>
-              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi 10%</Text>
+              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi {this.state.commission * 100}%</Text>
             </View>
           </View>
         </View>
@@ -336,7 +338,7 @@ class PlaceInCatalog extends React.Component {
   renderHeader () {
     return (
       <View style={styles.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
           <Image
             source={Images.iconBack}
             style={styles.imageStyle}
@@ -356,6 +358,7 @@ class PlaceInCatalog extends React.Component {
   }
 
   render () {
+    Reactotron.log(this.state.commission)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]} size='large' />

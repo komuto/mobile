@@ -114,6 +114,12 @@ export default StyleSheet.create({
     color: Colors.red,
     fontFamily: Fonts.type.bold
   },
+  commissionText: {
+    fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.greenish,
+    letterSpacing: 0.2
+  },
   nominalDiskon: {
     textDecorationLine: 'line-through',
     fontSize: Fonts.size.small,

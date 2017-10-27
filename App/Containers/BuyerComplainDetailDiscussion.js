@@ -26,6 +26,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    console.log('here')
   }
 
   componentWillUnmount () {

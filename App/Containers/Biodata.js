@@ -20,7 +20,7 @@ class Biodata extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     var listMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
-    var timeStampToDate = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
+    var timeStampToDate = moment(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
     var day = moment(timeStampToDate, 'DD/MM/YYYY').date()
     var months = moment(timeStampToDate, 'DD/MM/YYYY').month()
     var years = moment(timeStampToDate, 'DD/MM/YYYY').year()

@@ -49,7 +49,6 @@ class SellerMessageConversation extends React.Component {
     const {dataMessage, callbackArchive, pesanNotifArchive} = nextProps
     if (callbackArchive !== undefined) {
       if (callbackArchive !== this.state.callback) {
-        // this.refresh()
         this.setState({
           callback: callbackArchive,
           messageNotif: pesanNotifArchive,
@@ -112,7 +111,6 @@ class SellerMessageConversation extends React.Component {
   }
 
   loadMore = () => {
-    // Reactotron.log('load conversation')
     const {isLoading, loadmore, page} = this.state
     if (!isLoading) {
       if (loadmore) {
@@ -135,7 +133,6 @@ class SellerMessageConversation extends React.Component {
   }
 
   handelDetailMessage (id) {
-    // this.setState({listMessages: [], gettingData: true})
     NavigationActions.sellernotificationmessagedetail({
       type: ActionConst.PUSH,
       idMessage: id,

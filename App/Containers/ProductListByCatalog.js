@@ -201,7 +201,8 @@ class ListProdukByCatalog extends React.Component {
         catalogId: catalogId,
         productName: name,
         fotoToko: photo,
-        price: price
+        price: price,
+        commission: data.dropship_origin.commission.percent
       })
     } else {
       this.props.getDetailProduct({id: id})
@@ -238,7 +239,8 @@ class ListProdukByCatalog extends React.Component {
 
   labeldaridropshipper (data) {
     if (data.is_dropship === true && data.dropship_origin) {
-      var maskedCommision = this.maskedMoney(data.dropship_origin.commission)
+      var commisson = (data.dropship_origin.commission.nominal * 100)
+      var maskedCommision = this.maskedMoney(commisson)
       return (
         <View>
           <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>

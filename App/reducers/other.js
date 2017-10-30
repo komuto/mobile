@@ -1,7 +1,7 @@
 import * as actions from '../actions/other'
 import { buildInitState, createReducer } from '../config'
 
-export const getCommission = createReducer(buildInitState({ commission: {} }))
+export const getCommission = createReducer(buildInitState({ commission: {} }, true))
   .addReducer({
     type: actions.GET_COMMISSION,
     resultName: 'commission'

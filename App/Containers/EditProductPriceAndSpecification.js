@@ -317,8 +317,8 @@ class EditProductPriceAndSpecification extends React.Component {
     )
   }
 
-  discountCalculate (price, discount) {
-    let hargaDiskon = price - ((discount / 100) * price)
+  discountCalculate (price, commission) {
+    let hargaDiskon = price - commission
     return hargaDiskon
   }
 
@@ -358,12 +358,20 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   maskedText (value) {
-    const price = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    let price
+    if (value < 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp '
+      })
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
     return price
   }
 

@@ -82,6 +82,7 @@ class NewProduct extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('new product')
     if (!this.submitting.product) {
       this.submitting = {
         ...this.submitting,
@@ -339,13 +340,13 @@ class NewProduct extends React.Component {
   renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity onPress={() => this.addWishList({id: id})}>
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => this.addWishList({id: id})}>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )

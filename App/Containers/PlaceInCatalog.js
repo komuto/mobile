@@ -361,7 +361,7 @@ class PlaceInCatalog extends React.Component {
     Reactotron.log(this.state.commission)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]} size='large' />
+      <ActivityIndicator color={Colors.red} size='large' />
     </View>) : (<View />)
     return (
       <View style={[styles.container]}>

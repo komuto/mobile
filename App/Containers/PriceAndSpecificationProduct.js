@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, ToastAndroid, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
@@ -7,6 +7,8 @@ import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
 import * as katalogAction from '../actions/catalog'
+import * as otherAction from '../actions/other'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -20,9 +22,14 @@ class PriceAndSpecificationProduct extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      catalog: false,
+      commission: false,
+      createCatalog: false
+    }
     this.state = {
       images: this.props.images,
-      loading: false,
+      loading: true,
       harga: '',
       diskon: 0,
       beratProduk: '',
@@ -52,23 +59,62 @@ class PriceAndSpecificationProduct extends React.Component {
       minimalGrosir: '0',
       maksimalGrosir: '0',
       hargaGrosir: '0',
-      normalizePrice: 0
+      normalizePrice: 0,
+      commission: 0
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataCatalog.status === 200) {
-      this.setState({
-        listKatalog: nextProps.dataCatalog.catalogs
-      })
-    } if (nextProps.dataCreateCatalog.status === 200) {
-      nextProps.dataCreateCatalog.status = 0
-      this.props.getCatalog()
+    const {dataCatalog, dataCommission, dataCreateCatalog} = nextProps
+
+    if (!isFetching(dataCatalog) && this.submitting.catalog) {
+      this.submitting = { ...this.submitting, catalog: false }
+      if (isError(dataCatalog)) {
+        ToastAndroid.show(dataCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCatalog)) {
+        this.setState({ listKatalog: dataCatalog.catalogs, loading: false })
+      }
+    }
+
+    if (!isFetching(dataCommission) && this.submitting.commission) {
+      this.submitting = { ...this.submitting, commission: false }
+      if (isError(dataCommission)) {
+        ToastAndroid.show(dataCommission.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCommission)) {
+        this.setState({
+          commission: nextProps.dataCommission.commission.commission,
+          loading: false
+        })
+      }
+    }
+
+    if (!isFetching(dataCreateCatalog) && this.submitting.createCatalog) {
+      this.submitting = { ...this.submitting, createCatalog: false }
+      if (isError(dataCreateCatalog)) {
+        ToastAndroid.show(dataCreateCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCreateCatalog)) {
+        if (!this.submitting.catalog) {
+          this.submitting = {
+            ...this.submitting,
+            catalog: true
+          }
+          this.props.getCatalog()
+        }
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getCatalog()
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        catalog: true
+      }
+      this.props.getCatalog()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -124,8 +170,14 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   handleTambahKatalog () {
-    this.setState({modalTambahKatalog: false})
-    this.props.createCatalog(this.state.namaKatalog)
+    this.setState({modalTambahKatalog: false, loading: true})
+    if (!this.submitting.createCatalog) {
+      this.submitting = {
+        ...this.submitting,
+        createCatalog: true
+      }
+      this.props.createCatalog(this.state.namaKatalog)
+    }
   }
 
   modalDropshipping () {
@@ -188,6 +240,22 @@ class PriceAndSpecificationProduct extends React.Component {
     )
   }
 
+  handleTextprice = (text) => {
+    this.setState({ harga: text })
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.submitting.commission = true
+      this.setState({loading: true})
+      let commission = +text
+      setTimeout(() => {
+        this.props.getCommissions({price: commission})
+      }, 1000)
+    }
+  }
+
   spesifikasi () {
     return (
       <View>
@@ -203,7 +271,7 @@ class PriceAndSpecificationProduct extends React.Component {
                 autoCapitalize='none'
                 maxLength={18}
                 autoCorrect
-                onChangeText={(text) => this.setState({harga: text})}
+                onChangeText={this.handleTextprice}
                 underlineColorAndroid='transparent'
                 placeholder='Harga Produk'
               />
@@ -281,8 +349,8 @@ class PriceAndSpecificationProduct extends React.Component {
     )
   }
 
-  discountCalculate (price, discount) {
-    let hargaDiskon = price - ((discount / 100) * price)
+  discountCalculate (price, commission) {
+    let hargaDiskon = price - commission
     return hargaDiskon
   }
 
@@ -316,31 +384,39 @@ class PriceAndSpecificationProduct extends React.Component {
     }
   }
 
-  komisiCalculate (value1, value2) {
-    let value = (value1 * value2) / 100
+  komisiCalculate (price, commission) {
+    let value = (price * commission) / 100
     return value
   }
 
   maskedText (value) {
-    const price = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    let price
+    if (value < 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp '
+      })
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
     return price
   }
 
   rincianDiskon () {
     let hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
-    let diskonTemp = +this.state.diskon
+    let commissionTemp = String(this.state.commission)
     let hargaMasked = this.maskedText(hargaTemp)
-    let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
-    let diskonMasked = this.maskedText(komisiCalculate)
-    let diskonCalculate = this.discountCalculate(hargaTemp, diskonTemp)
-    let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let commission = this.komisiCalculate(hargaTemp, this.state.commission)
+    let commissionMasked = this.maskedText(commission)
+    let totalPrice = this.discountCalculate(hargaTemp, commission)
+    let totalPriceMasked = this.maskedText(totalPrice)
 
-    if (this.state.grosirAktif) {
+    if (this.state.harga.length > 0) {
       return (
         <View style={styles.rincianContainrer}>
           <Text style={[styles.title, {paddingLeft: 20, paddingTop: 0}]}>Rincian Penerimaan</Text>
@@ -350,12 +426,12 @@ class PriceAndSpecificationProduct extends React.Component {
               <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
             </View>
             <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Komisi  ({diskonTemp}%  dari {hargaMasked})</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
+              <Text style={styles.textRincian}>Komisi  ({commissionTemp}%  dari {hargaMasked})</Text>
+              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
             </View>
             <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>
               <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
+              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{totalPriceMasked}</Text>
             </View>
           </View>
         </View>
@@ -450,7 +526,7 @@ class PriceAndSpecificationProduct extends React.Component {
     )
   }
 
-  checkrosir () {
+  checkGrosir () {
     return (
       <View style={styles.paddingSix}>
         <Text style={styles.title}>Grosir</Text>
@@ -681,7 +757,7 @@ class PriceAndSpecificationProduct extends React.Component {
           {this.spesifikasi()}
           {this.opsi()}
           {this.katalog()}
-          {this.checkrosir()}
+          {this.checkGrosir()}
           {this.tambahHargaGrosir()}
           {this.buttonTambahDaftarHargaGrosir()}
           <View style={{flex: 1}}>
@@ -703,12 +779,14 @@ class PriceAndSpecificationProduct extends React.Component {
 
 const mapStateToProps = (state) => ({
   dataCatalog: state.getListCatalog,
-  dataCreateCatalog: state.createCatalog
+  dataCreateCatalog: state.createCatalog,
+  dataCommission: state.commission
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getCatalog: () => dispatch(katalogAction.getListCatalog()),
-  createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name}))
+  createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
+  getCommissions: (param) => dispatch(otherAction.getCommission(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(PriceAndSpecificationProduct)

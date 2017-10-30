@@ -118,6 +118,11 @@ class DetailProductStore extends React.Component {
     return hargaDiskon
   }
 
+  fee (price, commission) {
+    let hargaDiskon = price - commission
+    return hargaDiskon
+  }
+
   discountCheck (data) {
     var priceAfterDiscount = this.discountCalculate(data.price, data.discount)
     var maskedPriceAfterDiscount = this.maskedMoney(priceAfterDiscount)
@@ -127,13 +132,21 @@ class DetailProductStore extends React.Component {
   }
 
   maskedMoney (value) {
-    const maskedPrice = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return maskedPrice
+    let price
+    if (value < 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp '
+      })
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   renderHeader () {
@@ -353,23 +366,31 @@ class DetailProductStore extends React.Component {
   }
 
   maskedText (value) {
-    const price = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    let price
+    if (value < 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp '
+      })
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
     return price
   }
 
   detailReception () {
     if (this.state.product.is_wholesaler) {
       let hargaTemp = Number(this.state.product.price)
-      let komisi = 10
+      let komisi = this.state.product.commission
       let hargaMasked = this.maskedText(hargaTemp)
       let komisiCalculate = this.komisiCalculate(hargaTemp, komisi)
       let diskonMasked = this.maskedText(komisiCalculate)
-      let diskonCalculate = this.discountCalculate(hargaTemp, komisi)
+      let diskonCalculate = this.fee(hargaTemp, komisi)
       let hargaDiskonMasked = this.maskedText(diskonCalculate)
 
       return (

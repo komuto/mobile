@@ -456,7 +456,7 @@ class DetailProduct extends React.Component {
     if (pickFromDropshipper) {
       valueCommission = (
         <Text style={styles.commissionText}>
-        -{'\b'}Komisi {commission} %
+        -{'\b'}Komisi {commission * 100} %
         </Text>
       )
     }

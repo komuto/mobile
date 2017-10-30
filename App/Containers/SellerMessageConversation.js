@@ -49,6 +49,7 @@ class SellerMessageConversation extends React.Component {
     const {dataMessage, callbackArchive, pesanNotifArchive} = nextProps
     if (callbackArchive !== undefined) {
       if (callbackArchive !== this.state.callback) {
+        // this.refresh()
         this.setState({
           callback: callbackArchive,
           messageNotif: pesanNotifArchive,
@@ -124,8 +125,13 @@ class SellerMessageConversation extends React.Component {
   refresh = () => {
     this.setState({ isRefreshing: true, gettingData: true, listMessages: [], page: 1, isLoading: true })
     Reactotron.log('refresh conversation')
-    this.submitting.conversation = true
-    this.props.getListMessages({page: 1})
+    if (!this.submitting.conversation) {
+      this.submitting = {
+        ...this.submitting,
+        conversation: true
+      }
+      this.props.getListMessages()
+    }
   }
 
   handelDetailMessage (id) {

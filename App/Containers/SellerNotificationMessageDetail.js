@@ -62,7 +62,13 @@ class SellerNotificationMessageDetail extends React.Component {
         ToastAndroid.show(dataReplyMessage.message, ToastAndroid.SHORT)
       }
       if (isFound(dataReplyMessage)) {
-        this.props.getDetailMessage(this.state.idMessage)
+        if (!this.submitting.conversation) {
+          this.submitting = {
+            ...this.submitting,
+            detail: true
+          }
+          this.props.getDetailMessage(this.state.idMessage)
+        }
       }
     }
 
@@ -96,7 +102,7 @@ class SellerNotificationMessageDetail extends React.Component {
       }
     }
 
-    if (!isFetching(dataDeleteMessage) && this.submitting.delete) {
+    if (!isFetching(dataDeleteMessage) && this.submitting.delete && this.state.typeMessage === 'conversation') {
       this.submitting = { ...this.submitting, delete: false }
       if (isError(dataDeleteMessage)) {
         ToastAndroid.show(dataDeleteMessage.message, ToastAndroid.SHORT)
@@ -104,9 +110,23 @@ class SellerNotificationMessageDetail extends React.Component {
       if (isFound(dataDeleteMessage)) {
         NavigationActions.pop({
           refresh: {
-            callback: !this.state.callback,
-            pesanNotif: 'Berhasil menghapus Percakapan',
-            tabs: 0
+            callbackArchive: !this.state.callback,
+            pesanNotifArchive: 'Berhasil menghapus Percakapan'
+          }
+        })
+      }
+    }
+
+    if (!isFetching(dataDeleteMessage) && this.submitting.delete && this.state.typeMessage === 'archive') {
+      this.submitting = { ...this.submitting, delete: false }
+      if (isError(dataDeleteMessage)) {
+        ToastAndroid.show(dataDeleteMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackConversation: !this.state.callback,
+            pesanNotifConversation: 'Berhasil menghapus Percakapan'
           }
         })
       }

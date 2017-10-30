@@ -17,7 +17,7 @@ class SellerComplainDetail extends React.Component {
     super(props)
     this.state = {
       idComplain: this.props.idComplain,
-      countUnread: this.props.countUnread,
+      countUnread: this.props.countUnread || 0,
       textUnread: String('Diskusi (' + this.props.countUnread + ')')
     }
   }

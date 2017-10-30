@@ -46,22 +46,21 @@ const handleFCM = (data) => {
     case 'SELLER_TRANSACTION':
       return NavigationActions.listneworder({ type: ActionConst.PUSH })
     case 'SELLER_ORDER_RECEIVED':
-      return null
-      // return NavigationActions.detailsales({ type: ActionConst.PUSH, idSales: data.body.invoice_id })
+      return NavigationActions.detailsales({ type: ActionConst.PUSH, idSales: data.body.invoice_id })
     case 'SELLER_ORDER_COMPLAINED_REFUND':
-      return NavigationActions.sellercomplain({ type: ActionConst.PUSH })
+      return NavigationActions.sellercomplain({ type: ActionConst.PUSH, idComplain: data.body.dispute_id })
     case 'SELLER_ORDER_COMPLAINED_EXCHANGE':
-      return NavigationActions.sellercomplain({ type: ActionConst.PUSH })
+      return NavigationActions.sellercomplain({ type: ActionConst.PUSH, idComplain: data.body.dispute_id })
     case 'BUYER_MESSAGE':
       return NavigationActions.buyerdetailmessage({ type: ActionConst.PUSH, idMessage: data.body.message_id })
     case 'BUYER_COMMENT_DISCUSSION':
       return NavigationActions.buyerdetaildiscussion({ type: ActionConst.PUSH, idDiscussion: data.body.discussion_id })
     case 'BUYER_ORDER_PROCEED':
-      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 2, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 2, idBucket: data.body.bucket_id, invoiceId: data.body.invoice_id })
     case 'BUYER_ORDER_SENT':
-      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 3, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 3, idBucket: data.body.bucket_id, invoiceId: data.body.invoice_id })
     case 'BUYER_ORDER_REJECTED':
-      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 0, idBucket: data.body.transaction_id, invoiceId: data.body.invoice_id })
+      return NavigationActions.transactiondetailstatus({ type: ActionConst.PUSH, statusBarang: 0, idBucket: data.body.bucket_id, invoiceId: data.body.invoice_id })
   }
 }
 

@@ -472,7 +472,7 @@ class ChooseItemDropship extends React.Component {
       precision: 3
     })
 
-    const commission = (rowData.product.commission * 100)
+    const commission = (rowData.product.commission)
 
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>
@@ -526,7 +526,7 @@ class ChooseItemDropship extends React.Component {
       precision: 3
     })
 
-    const commission = (rowData.product.commission * 100)
+    const commission = (rowData.product.commission)
 
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>

@@ -69,7 +69,6 @@ class DetailProductStore extends React.Component {
         loading: false,
         isRefreshing: false
       })
-      Reactotron.log(nextProps.dataDetailProduct.storeProductDetail.category)
       nextProps.dataDetailProduct.status = 0
       this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
     } else if (nextProps.dataDetailProduct.status > 200) {
@@ -366,6 +365,7 @@ class DetailProductStore extends React.Component {
   }
 
   maskedText (value) {
+    Reactotron.log(value)
     let price
     if (value < 1000) {
       price = MaskService.toMask('money', value, {
@@ -384,39 +384,33 @@ class DetailProductStore extends React.Component {
   }
 
   detailReception () {
-    if (this.state.product.is_wholesaler) {
-      let hargaTemp = Number(this.state.product.price)
-      let komisi = this.state.product.commission
-      let hargaMasked = this.maskedText(hargaTemp)
-      let komisiCalculate = this.komisiCalculate(hargaTemp, komisi)
-      let diskonMasked = this.maskedText(komisiCalculate)
-      let diskonCalculate = this.fee(hargaTemp, komisi)
-      let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let hargaTemp = Number(this.state.product.price)
+    let komisi = String(this.state.product.commission)
+    let hargaMasked = this.maskedText(hargaTemp)
+    let komisiCalculate = this.komisiCalculate(hargaTemp, this.state.product.commission)
+    let diskonMasked = this.maskedText(komisiCalculate)
+    let diskonCalculate = this.fee(hargaTemp, komisiCalculate)
+    let hargaDiskonMasked = this.maskedText(diskonCalculate)
 
-      return (
-        <View style={styles.rincianContainrer}>
-          <Text style={[styles.titleMenu, {paddingLeft: 20, paddingBottom: 10}]}>Rincian Penerimaan</Text>
-          <View>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Harga Jual</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
-            </View>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Komisi  ({komisi}%  dari {hargaMasked})</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
-            </View>
-            <View style={[styles.containerRincian, {borderBottomWidth: 0, paddingBottom: 0}]}>
-              <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
-            </View>
+    return (
+      <View style={styles.rincianContainrer}>
+        <Text style={[styles.titleMenu, {paddingLeft: 20, paddingBottom: 10}]}>Rincian Penerimaan</Text>
+        <View>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Harga Jual</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
+          </View>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Komisi  ({komisi}%  dari {hargaMasked})</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
+          </View>
+          <View style={[styles.containerRincian, {borderBottomWidth: 0, paddingBottom: 0}]}>
+            <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
           </View>
         </View>
-      )
-    } else {
-      return (
-        <View />
-      )
-    }
+      </View>
+    )
   }
 
   checkDiscount (data) {
@@ -430,7 +424,7 @@ class DetailProductStore extends React.Component {
     }
   }
 
-  changePrice (id, price, discount, weight, insurance, condition) {
+  changePrice (id, price, discount, weight, insurance, condition, commission) {
     NavigationActions.editproductpriceandspecification({
       type: ActionConst.PUSH,
       id: id,
@@ -440,7 +434,8 @@ class DetailProductStore extends React.Component {
       weight: weight,
       insurance: insurance,
       condition: condition,
-      callback: this.state.callback
+      callback: this.state.callback,
+      commission: commission
     })
   }
 
@@ -457,7 +452,8 @@ class DetailProductStore extends React.Component {
             product.discount,
             product.weight,
             product.is_insurance,
-            product.condition
+            product.condition,
+            product.commission
           )}
           >
             <Text style={styles.buttonChange}>

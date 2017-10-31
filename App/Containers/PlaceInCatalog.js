@@ -187,7 +187,7 @@ class PlaceInCatalog extends React.Component {
               <Text style={styles.textKelola}>
                 {totalHarga}
               </Text>
-              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi {this.state.commission * 100}%</Text>
+              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi {this.state.commission}%</Text>
             </View>
           </View>
         </View>

@@ -8,6 +8,8 @@ import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
 import * as katalogAction from '../actions/catalog'
 import * as productAction from '../actions/product'
+import * as otherAction from '../actions/other'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -56,7 +58,8 @@ class EditProductPriceAndSpecification extends React.Component {
       maksimalGrosir: '0',
       hargaGrosir: '0',
       normalizePrice: 0,
-      callback: this.props.callback
+      callback: this.props.callback,
+      commission: this.props.commission
     }
   }
 
@@ -74,7 +77,16 @@ class EditProductPriceAndSpecification extends React.Component {
     } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
       ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.LONG)
     }
-    if (nextProps.dataUpdateData.status === 200) {
+    if (nextProps.dataCommission.status === 200) {
+      nextProps.dataCommission.status = 0
+      this.setState({
+        commission: nextProps.dataCommission.commission.commission,
+        loading: false
+      })
+    } else if (nextProps.dataCommission.status !== 200 && nextProps.dataCommission.status !== 0) {
+      nextProps.dataCommission.status = 0
+      ToastAndroid.show(nextProps.dataCommission.message, ToastAndroid.LONG)
+    } if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
@@ -107,6 +119,17 @@ class EditProductPriceAndSpecification extends React.Component {
 
   changeHarga = (text) => {
     this.setState({harga: text})
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.setState({loading: true})
+      let commission = +text
+      setTimeout(() => {
+        this.props.getCommissions({price: commission})
+      }, 1000)
+    }
   }
 
   changeBeratProduk = (text) => {
@@ -382,12 +405,14 @@ class EditProductPriceAndSpecification extends React.Component {
     } catch (e) {
       hargaTemp = this.state.harga
     }
-    let diskonTemp = +this.state.diskon
+    let diskonTemp = this.state.commission
     let hargaMasked = this.maskedText(hargaTemp)
     let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
     let diskonMasked = this.maskedText(komisiCalculate)
-    let diskonCalculate = this.discountCalculate(hargaTemp, diskonTemp)
+    let diskonCalculate = this.discountCalculate(hargaTemp, komisiCalculate)
     let hargaDiskonMasked = this.maskedText(diskonCalculate)
+
+    Reactotron.log(hargaDiskonMasked + ' ' + diskonCalculate + ' ' + diskonMasked + ' ' + komisiCalculate)
 
     return (
       <View style={styles.rincianContainrer}>
@@ -642,7 +667,8 @@ const mapStateToProps = (state) => {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
     dataUpdateData: state.alterProducts,
-    dataDetailProduct: state.storeProductDetail
+    dataDetailProduct: state.storeProductDetail,
+    dataCommission: state.commission
   }
 }
 
@@ -652,7 +678,8 @@ const mapDispatchToProps = (dispatch) => {
     createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
     updateData: (id, price, weight, condition, isInsurance, discount) => dispatch(productAction.updateProduct({
       id: id, price: price, weight: weight, condition: condition, is_insurance: isInsurance, discount: discount
-    }))
+    })),
+    getCommissions: (param) => dispatch(otherAction.getCommission(param))
   }
 }
 

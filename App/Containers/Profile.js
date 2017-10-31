@@ -44,7 +44,8 @@ class Profile extends React.Component {
       nomerHape: '',
       loading: false,
       isStoreVerify: true,
-      createStoresAt: ''
+      createStoresAt: '',
+      verificationTime: 0
     }
   }
 
@@ -67,7 +68,8 @@ class Profile extends React.Component {
         fotoToko: nextProps.dataProfile.user.store.logo,
         statusToko: nextProps.dataProfile.user.store.status,
         isStoreVerify: nextProps.dataProfile.user.store.is_verified,
-        createStoresAt: nextProps.dataProfile.user.store.created_at
+        createStoresAt: nextProps.dataProfile.user.store.created_at,
+        verificationTime: nextProps.dataProfile.user.store.verification_left
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
@@ -371,7 +373,8 @@ class Profile extends React.Component {
           type: ActionConst.PUSH,
           title: 'Toko Anda',
           isStoreVerify: this.state.isStoreVerify,
-          createStoresAt: this.state.createStoresAt
+          createStoresAt: this.state.createStoresAt,
+          verificationTime: this.state.verificationTime
         })
         this.props.getUnreadDispute()
       } else {

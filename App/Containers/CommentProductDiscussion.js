@@ -128,7 +128,7 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   renderRow (rowData) {
-    const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
+    const time = moment(rowData.created_at * 1000).fromNow()
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>

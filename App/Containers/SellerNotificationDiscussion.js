@@ -123,7 +123,7 @@ class SellerNotificationDiscussion extends React.Component {
   }
 
   renderRowDiscussion (rowData) {
-    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - h:mm').toString()
     return (
       <TouchableOpacity onPress={() => this.handelDetailDiscussion(rowData.id, rowData.product.id, rowData.product.name, rowData.product.image, rowData.product.price)} activeOpacity={0.5} style={styles.containerMessage}>
         <Image source={{uri: rowData.product.image}} style={styles.photo} />

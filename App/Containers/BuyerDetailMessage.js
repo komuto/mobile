@@ -191,7 +191,8 @@ class BuyerDetailMessage extends React.Component {
   }
 
   renderRowMessage (rowData) {
-    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
+    var timeStampToDate = moment(rowData.created_at * 1000).format('DD MMM YYYY - h:mm').toString()
+    // const timeStampToDate = moment(rowData.created_at * 1000).fromNow()
     return (
       <View onPress={() => this.handelDetailMessage()}activeOpacity={0.5} style={styles.containerMessage}>
         <View style={styles.maskedPhoto}>

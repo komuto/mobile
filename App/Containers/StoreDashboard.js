@@ -30,12 +30,19 @@ class StoreDashboard extends React.Component {
       createStoresAt: this.props.createStoresAt,
       notif: false,
       complainItems: 0,
-      callback: false
+      callback: false,
+      verificationTime: this.props.verificationTime,
+      disableButton: false
     }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    if (this.state.verificationTime === 0 && !this.state.statusVerifikasi) {
+      this.setState({
+        disableButton: false
+      })
+    }
   }
 
   componentWillUnmount () {
@@ -93,28 +100,8 @@ class StoreDashboard extends React.Component {
     })
   }
 
-  countDownDaysVerification (date) {
-    // var startdate = moment.unix(date).format('DD MMMM YYYY').toString()
-    // var dateEnd = moment(startdate, 'DD MMMM YYYY').add(30, 'days').format('DD MMMM YYYY').toString()
-    // var datetoday = moment().format('DD MMMM YYYY').toString()
-
-    // var dayEnd = moment(dateEnd).format('DD')
-    // var monthEnd = moment(dateEnd).format('MM')
-    // var yearEnd = moment(dateEnd).format('YYYY')
-
-    // var dayToday = moment(datetoday).format('DD')
-    // var monthToday = moment(datetoday).format('MM')
-    // var yearToday = moment(datetoday).format('YYYY')
-
-    // var end = moment([yearEnd, monthEnd, dayEnd])
-    // var today = moment([yearToday, monthToday, dayToday])
-    // var dayDiff = end.diff(today, 'days')
-    const dayDiff = 12
-    return dayDiff
-  }
-
   renderNotifAktivasi () {
-    var daysLeft = this.countDownDaysVerification(this.state.createStoresAt)
+    var daysLeft = this.state.verificationTime
 
     if (!this.state.statusVerifikasi) {
       return (
@@ -211,7 +198,7 @@ class StoreDashboard extends React.Component {
           {this.renderNotifAktivasi()}
           {this.notification()}
           <View style={[styles.dataProfileContainer]}>
-            <TouchableOpacity onPress={() => this.handleKelolaToko()}>
+            <TouchableOpacity onPress={() => this.handleKelolaToko()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.pengaturanToko} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>
@@ -229,7 +216,7 @@ class StoreDashboard extends React.Component {
             Menu Toko
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity onPress={() => this.handleDaftarProduk()}>
+            <TouchableOpacity onPress={() => this.handleDaftarProduk()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.listProduk} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -242,7 +229,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.handleSales()}>
+            <TouchableOpacity onPress={() => this.handleSales()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.penjualan} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>
@@ -260,7 +247,7 @@ class StoreDashboard extends React.Component {
             Notifikasi
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity onPress={() => this.openMessageNotification()}>
+            <TouchableOpacity onPress={() => this.openMessageNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.chat} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -273,7 +260,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.openDiscussionNotification()}>
+            <TouchableOpacity onPress={() => this.openDiscussionNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.komentar} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -286,7 +273,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.openReviewNotification()}>
+            <TouchableOpacity onPress={() => this.openReviewNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.diReview} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -299,7 +286,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => this.openResolutionNotification()}>
+            <TouchableOpacity onPress={() => this.openResolutionNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.laporkan} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>

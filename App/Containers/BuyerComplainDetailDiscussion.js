@@ -59,6 +59,7 @@ class BuyerComplainDetailDiscussion extends React.Component {
       this.setState({
         content: ''
       })
+      ToastAndroid.show('Komentar ditambahkan', ToastAndroid.LONG)
       nextProps.dataReply.status = 0
     } else if (nextProps.dataReply.status !== 200 && nextProps.dataReply.status !== 0) {
       ToastAndroid.show(nextProps.dataReply.message, ToastAndroid.LONG)
@@ -67,7 +68,8 @@ class BuyerComplainDetailDiscussion extends React.Component {
   }
 
   renderRow (rowData) {
-    const time = moment(rowData.created_at * 1000).startOf('hour').fromNow()
+    var time = moment(rowData.created_at * 1000).format('DD MMM YYYY - h:mm').toString()
+    // const time = moment(rowData.created_at * 1000).fromNow()
     return (
       <View style={styles.rowContainer}>
         <Image source={{ uri: rowData.user.photo }} style={styles.photo} />

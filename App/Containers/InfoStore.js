@@ -55,7 +55,8 @@ class InfoStore extends React.Component {
       createStore: this.props.createStores,
       textButton: this.props.textButton,
       editAbles: this.props.editAble,
-      notif: false
+      notif: false,
+      errSlogan: false
     }
   }
 
@@ -125,7 +126,9 @@ class InfoStore extends React.Component {
   }
 
   handleChangeSlogan = (text) => {
-    this.setState({ slogan: text })
+    this.setState({
+      slogan: text
+    })
   }
 
   handleChangeDesToko = (text) => {
@@ -173,7 +176,8 @@ class InfoStore extends React.Component {
       case 'slogan':
         this.setState({
           textSlogan: 'Slogan harus diisi',
-          textSloganColor: Colors.red
+          textSloganColor: Colors.red,
+          errSlogan: true
         })
         break
       case 'desc':
@@ -212,7 +216,8 @@ class InfoStore extends React.Component {
       case 'slogan':
         this.setState({
           textSlogan: ' sisa karakter',
-          textSloganColor: Colors.labelgrey
+          textSloganColor: Colors.labelgrey,
+          errSlogan: false
         })
         break
       case 'desc':
@@ -277,12 +282,16 @@ class InfoStore extends React.Component {
   }
 
   renderStateOne () {
-    const {textButton, editAbles, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor} = this.state
+    const {textButton, editAbles, maxLine, namaToko, slogan, descToko, textPemilik, textSlogan, textDesc, textSloganColor, textPemilikColor, textDescColor, errSlogan} = this.state
 
-    if (slogan.length !== 0) {
-      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{textSlogan}</Text>)
+    if (errSlogan) {
+      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>
+        {textSlogan}
+      </Text>)
     } else {
-      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>{this.state.maxLine - slogan.length} {textSlogan}</Text>)
+      this.sloganError = (<Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textSloganColor}]}>
+        {this.state.maxLine - this.state.slogan.length} {textSlogan}
+      </Text>)
     }
 
     return (

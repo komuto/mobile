@@ -4,11 +4,14 @@ import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import moment from 'moment'
 import Spinner from '../Components/Spinner'
-import { Actions as NavigationActions } from 'react-native-router-flux'
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
+import CustomRadio from '../Components/CustomRadio'
+import CameraModal from '../Components/CameraModal'
 import * as transactionAction from '../actions/transaction'
+import * as storeAction from '../actions/stores'
 // Styles
 import styles from './Styles/BuyerComplainConfirmationStyle'
 
@@ -24,7 +27,7 @@ class BuyerComplainConfirmation extends React.Component {
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
       data: [...this.props.dataComplain.orderDetail.products],
-      id: this.props.dataComplain.orderDetail.id,
+      id: this.props.dataComplain.orderDetail.invoice.id,
       vote: 0,
       height: 50,
       heightComplain: 50,
@@ -33,7 +36,30 @@ class BuyerComplainConfirmation extends React.Component {
       storeName: this.props.dataComplain.orderDetail.store.name,
       storeLogo: this.props.dataComplain.orderDetail.store.logo,
       loading: false,
-      callback: this.props.callback
+      callback: this.props.callback,
+      complainData: [
+        {
+          'id': 1,
+          'label': 'Barang tidak sesuai deskripsi',
+          'check': false
+        },
+        {
+          'id': 2,
+          'label': 'Barang rusak',
+          'check': false
+        },
+        {
+          'id': 3,
+          'label': 'Product tidak lengkap',
+          'check': false
+        }
+      ],
+      solutionData: [{label: 'Refund', value: 0}, {label: 'Tukar Baru', value: 1}],
+      activeSolution: 1,
+      dataPhotos: [],
+      dataComplainPhotos: [],
+      showModalCamera: false,
+      complain: ''
     }
     moment.locale('id')
   }
@@ -60,6 +86,50 @@ class BuyerComplainConfirmation extends React.Component {
       })
       ToastAndroid.show(nextProps.dataExchange.message, ToastAndroid.LONG)
       nextProps.dataExchange.status = 0
+    }
+    if (nextProps.dataPhoto.status === 200) {
+      let temp = this.state.dataComplainPhotos
+      nextProps.dataPhoto.payload.images.map((data, i) => {
+        temp[i] = ({'name': data.name})
+      })
+      const { dataReview, complainData } = this.state
+      let product = []
+      let problems = []
+      for (var i = 0; i < dataReview.length; i++) {
+        if (dataReview[i].check) {
+          product.push(dataReview[i].product_id)
+        }
+      }
+      for (var j = 0; j < complainData.length; j++) {
+        if (complainData[j].check) {
+          problems.push(complainData[j].id)
+        }
+      }
+      const { id, bucketId, activeSolution, complain } = this.state
+      this.props.addComplain(
+        bucketId, id, product, problems, activeSolution, complain, temp
+      )
+      nextProps.dataPhoto.status = 0
+    } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
+      this.setState({
+        loading: false
+      })
+    }
+    if (nextProps.dataAddComplain.status === 200) {
+      this.setState({
+        loading: false
+      })
+      NavigationActions.transactionnotification({
+        type: ActionConst.REPLACE,
+        typeNotification: 'complain'
+      })
+      nextProps.dataAddComplain.status = 0
+    } else if (nextProps.dataAddComplain.status !== 200 && nextProps.dataAddComplain.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      nextProps.dataAddComplain.status = 0
+      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddComplain.message, ToastAndroid.LONG)
     }
   }
 
@@ -197,18 +267,83 @@ class BuyerComplainConfirmation extends React.Component {
   }
 
   handlingRadio (index, value) {
-    if (value.toLowerCase() === 'Refund') {
-      this.setState({
-        activeSolution: 1
-      })
-    } else {
-      this.setState({
-        activeSolution: 2
-      })
-    }
+  }
+
+  modalCamera () {
+    return (
+      <CameraModal
+        visible={this.state.showModalCamera}
+        onClose={() => {
+          this.setState({showModalCamera: false})
+        }}
+        onPress={() => {
+          this.setState({showModalCamera: false})
+        }}
+        onPhotoCaptured={(path) => {
+          this.addPhoto(path)
+        }}
+      />
+    )
+  }
+
+  addPhoto (path) {
+    const { dataPhotos } = this.state
+    let temp = dataPhotos
+    temp.push(path)
+    this.setState({
+      dataPhotos: temp,
+      showModalCamera: false
+    })
+  }
+
+  removePhoto (id) {
+    const { dataPhotos } = this.state
+    let temp2 = dataPhotos
+    temp2.splice(id, 1)
+    this.setState({
+      dataPhotos: temp2
+    })
+  }
+
+  handleComplain = (text) => {
+    this.setState({ complain: text })
   }
 
   renderVoteOne () {
+    const {dataReview, complainData} = this.state
+    const renderItems = dataReview.map((data, i) => {
+      let check
+      if (data.check) {
+        check = Images.centangBiru
+      } else {
+        check = null
+      }
+      return (
+        <View style={styles.rowContainer} key={i}>
+          <TouchableOpacity style={styles.box} onPress={() => this.checkItem(i)}>
+            <Image source={check} style={styles.imageCheck} />
+          </TouchableOpacity>
+          <Image source={{ uri: data.image }} style={[styles.image, { marginRight: 10 }]} />
+          <Text style={[styles.textTitle, { marginTop: -5 }]}>{data.name}</Text>
+        </View>
+      )
+    })
+    const renderProblems = complainData.map((data, i) => {
+      let check
+      if (data.check) {
+        check = Images.centangBiru
+      } else {
+        check = null
+      }
+      return (
+        <View style={styles.rowContainer} key={i}>
+          <TouchableOpacity style={styles.box} onPress={() => this.checkProblems(i)}>
+            <Image source={check} style={styles.imageCheck} />
+          </TouchableOpacity>
+          <Text style={[styles.textTitle, { marginTop: -5 }]}>{data.label}</Text>
+        </View>
+      )
+    })
     return (
       <View style={styles.contentContainer}>
         <View style={styles.triangleContainer}>
@@ -218,10 +353,56 @@ class BuyerComplainConfirmation extends React.Component {
           <View style={styles.triangleOuter} />
         </View>
         <View style={styles.content}>
-          <Text style={styles.textTitle}>
-            Karena Anda kembali mengalami masalah dengan barang yang Anda terima,
-            maka kami menyarankan untuk melakukan refund terhadap barang yang bermasalah.
-          </Text>
+          <Text style={[styles.textTitle, { marginBottom: 10 }]}>Pilih barang yang bermasalah</Text>
+          {renderItems}
+          <Text style={[styles.textTitle, { marginBottom: 10 }]}>Masalah yang terjadi</Text>
+          {renderProblems}
+          <Text style={styles.textTitle}>Solusi yang diinginkan</Text>
+          <CustomRadio
+            data={this.state.solutionData}
+            locked
+            onPress={() => {}}
+            handlingRadio={(index1, value1) =>
+              (this.handlingRadio(index1, value1))}
+            vertical
+          />
+          <Text style={styles.textTitle}>Upload Foto</Text>
+          <View style={{ marginBottom: 20 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.scrollView}
+            >
+              <ListView
+                enableEmptySections
+                horizontal
+                contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+                dataSource={this.dataSource.cloneWithRows(this.state.dataPhotos)}
+                renderRow={this.renderRowPhotos.bind(this)}
+              />
+
+              <TouchableOpacity style={styles.addPhoto} onPress={() => this.setState({showModalCamera: true})}>
+                <Image source={Images.plus} style={styles.imageplus} />
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+          <Text style={styles.textTitle}>Keterangan</Text>
+          <View style={styles.questionContainer}>
+            <TextInput
+              style={[styles.textInput, { height: this.state.heightComplain }]}
+              multiline
+              value={this.state.complain}
+              onContentSizeChange={(event) => {
+                this.setState({height: event.nativeEvent.contentSize.heightComplain})
+              }}
+              keyboardType='default'
+              autoCapitalize='none'
+              autoCorrect
+              onChangeText={this.handleComplain}
+              underlineColorAndroid='transparent'
+              placeholder='Tulis keluhan Anda..'
+            />
+          </View>
           {this.renderButtonComplain()}
         </View>
       </View>
@@ -276,24 +457,6 @@ class BuyerComplainConfirmation extends React.Component {
     )
   }
 
-  addPhoto (path) {
-    const { dataPhotos } = this.state
-    let temp = dataPhotos
-    temp.push(path)
-    this.setState({
-      dataPhotos: temp,
-      showModalCamera: false
-    })
-  }
-
-  removePhoto (id) {
-    const { dataPhotos } = this.state
-    let temp2 = dataPhotos
-    temp2.splice(id, 1)
-    this.setState({
-      dataPhotos: temp2
-    })
-  }
   editQualityRating (rating, index, type) {
     let temp = this.state.dataReview
     if (type === 1) {
@@ -412,7 +575,30 @@ class BuyerComplainConfirmation extends React.Component {
   }
 
   sendComplain () {
-    console.log('refund aja')
+    const { dataReview, complainData, dataPhotos } = this.state
+    let product = []
+    let problems = []
+    for (var i = 0; i < dataReview.length; i++) {
+      if (dataReview[i].check) {
+        product.push(dataReview[i].product_id)
+      }
+    }
+    for (var j = 0; j < complainData.length; j++) {
+      if (complainData[j].check) {
+        problems.push(complainData[j].id)
+      }
+    }
+    if (product.length > 0 && problems.length > 0 && dataPhotos.length) {
+      const postData = new FormData()
+      this.state.dataPhotos.map(data => {
+        postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      })
+      postData.append('type', 'product')
+      this.props.photoUpload(postData)
+      this.setState({loading: true})
+    } else {
+      ToastAndroid.show('Mohon lengkapi data', ToastAndroid.LONG)
+    }
   }
 
   renderButton () {
@@ -483,6 +669,7 @@ class BuyerComplainConfirmation extends React.Component {
           {this.renderVote()}
           {this.renderContent()}
         </ScrollView>
+        {this.modalCamera()}
       </View>
     )
   }
@@ -491,7 +678,9 @@ class BuyerComplainConfirmation extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataComplain: state.buyerComplainedOrderDetail,
-    dataExchange: state.buyerReceived
+    dataExchange: state.buyerReceived,
+    dataAddComplain: state.addComplaint,
+    dataPhoto: state.upload
   }
 }
 
@@ -499,7 +688,17 @@ const mapDispatchToProps = (dispatch) => {
   return {
     receiveExchange: (id, data) => dispatch(transactionAction.buyerDisputeReceived({
       id: id, data: data
-    }))
+    })),
+    addComplain: (id, invoiceId, products, problems, solution, note, images) => dispatch(transactionAction.addComplaint({
+      id: id,
+      invoiceId: invoiceId,
+      products: products,
+      problems: problems,
+      solution: solution,
+      note: note,
+      images: images
+    })),
+    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data}))
   }
 }
 

@@ -36,10 +36,11 @@ class Biodata extends React.Component {
       idKabTerpilih: this.props.dataProfile.user.user.place_of_birth_id || 0,
       kabupaten: [],
       colorPicker: Colors.darkgrey,
-      dof: (day + 1) + ' ' + listMonths[months] + ' ' + years,
+      dof: (day) + ' ' + listMonths[months] + ' ' + years,
       timestamp: this.props.dataProfile.user.user.date_of_birth || '',
       notif: false,
-      loading: false
+      loading: false,
+      uploadDate: ''
     }
     moment.locale('id')
   }
@@ -220,7 +221,8 @@ class Biodata extends React.Component {
 
   handleUpdateProfil () {
     // console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
-    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
+    console.log('date: ', this.state.uploadDate)
+    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.uploadDate)
   }
 
   async date () {
@@ -242,7 +244,8 @@ class Biodata extends React.Component {
 
         this.setState({
           dof: label,
-          timestamp: timestamp
+          timestamp: timestamp,
+          uploadDate: year + '-' + (month + 1) + '-' + day
         })
       }
     } catch ({code, message}) {
@@ -349,7 +352,7 @@ const mapDispatchToProps = (dispatch) => {
     getProfil: () => dispatch(userAction.getProfile()),
     getKota: (id) => dispatch(locationAction.getDistrict({id: id})),
     searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
-    updateProfile: (namaPemilik, gender, fotoProfil, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, photo: fotoProfil, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
+    updateProfile: (namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
   }
 }
 

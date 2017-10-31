@@ -4,13 +4,13 @@ import NavigationRouter from '../Navigation/NavigationRouter'
 
 // Styles
 import styles from './Styles/RootContainerStyles'
-import { Colors } from '../Themes'
+
 class RootContainer extends Component {
 
   render () {
     return (
       <View style={styles.applicationView}>
-        <StatusBar backgroundColor={Colors.red} barStyle='light-content' />
+        <StatusBar backgroundColor='#e34c4c' barStyle='light-content' />
         <NavigationRouter />
       </View>
     )

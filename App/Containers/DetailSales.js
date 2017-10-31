@@ -75,6 +75,7 @@ class DetailSales extends React.Component {
       idSales: this.props.idSales,
       statusUpdate: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

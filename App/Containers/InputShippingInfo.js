@@ -67,6 +67,7 @@ class InputShippingInfo extends React.Component {
       statusConfrim: false,
       photo: [{'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}, {'name': Images.contohproduct}]
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

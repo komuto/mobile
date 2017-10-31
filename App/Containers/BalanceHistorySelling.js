@@ -33,6 +33,7 @@ class BalanceHistorySelling extends React.Component {
       comissionText: '',
       balance: 0
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

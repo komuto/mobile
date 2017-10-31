@@ -41,6 +41,7 @@ class Biodata extends React.Component {
       notif: false,
       loading: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

@@ -43,6 +43,7 @@ class SellerMessageConversation extends React.Component {
       messageNotif: '',
       gettingData: true
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

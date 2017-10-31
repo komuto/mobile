@@ -27,6 +27,7 @@ class BalanceHistoryRefund extends React.Component {
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
       type: 1
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

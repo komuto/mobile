@@ -35,6 +35,7 @@ class BuyerDiscussion extends React.Component {
       isLoading: true,
       loadingPage: true
     }
+    moment.locale('id')
   }
 
   componentDidMount () {
@@ -100,8 +101,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   renderRowDiscussion (rowData) {
-    var timeStampToDate = moment(rowData.created_at * 1000).format('DD MMM YYYY - h:mm').toString()
-    // const timeStampToDate = moment(rowData.created_at * 1000).fromNow()
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - h:mm').toString()
     return (
       <TouchableOpacity onPress={() => this.handelDetailDiscussion(rowData.id, rowData.product.id, rowData.product.name, rowData.product.image, rowData.product.price)} activeOpacity={0.5} style={styles.containerMessage}>
         <Image source={{uri: rowData.product.image}} style={styles.photo} />

@@ -28,6 +28,7 @@ class BuyerDetailDiscussion extends React.Component {
       discussionMessages: '',
       data: []
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -110,8 +111,7 @@ class BuyerDetailDiscussion extends React.Component {
   }
 
   renderRowMessage (rowData) {
-    var timeStampToDate = moment(rowData.created_at * 1000).format('DD MMM YYYY - h:mm').toString()
-    // const timeStampToDate = moment(rowData.created_at * 1000).fromNow()
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - h:mm').toString()
     return (
       <View style={styles.containerMessage}>
         <View style={styles.maskedPhoto}>

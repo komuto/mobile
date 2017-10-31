@@ -47,6 +47,7 @@ class TransactionPaymentConfirmation extends React.Component {
       loading: false,
       payloadImage: ''
     }
+    moment.locale('id')
   }
 
   componentDidMount () {

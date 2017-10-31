@@ -41,6 +41,7 @@ class DiskusiProdukKomentar extends React.Component {
       komentar: '',
       getData: this.props.getData
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

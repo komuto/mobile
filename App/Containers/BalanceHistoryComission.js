@@ -32,6 +32,7 @@ class BalanceHistoryComission extends React.Component {
       comission: 0,
       comissionText: ''
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

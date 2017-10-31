@@ -32,6 +32,7 @@ class TransaksiDetailStatusBarang extends React.Component {
       idBucket: this.props.idBucket,
       data: ''
     }
+    moment.locale('id')
   }
 
   componentDidMount () {

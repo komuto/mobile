@@ -41,6 +41,7 @@ class BuyerMessage extends React.Component {
       page: this.props.page,
       isRefreshing: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

@@ -35,6 +35,7 @@ class BuyerComplainConfirmation extends React.Component {
       loading: false,
       callback: this.props.callback
     }
+    moment.locale('id')
   }
 
   componentDidMount () {

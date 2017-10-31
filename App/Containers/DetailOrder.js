@@ -59,6 +59,7 @@ class DetailOrder extends React.Component {
       typeInvoice: '',
       loadingProcess: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

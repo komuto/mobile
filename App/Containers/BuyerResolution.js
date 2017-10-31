@@ -63,6 +63,7 @@ class BuyerResolution extends React.Component {
       choosenTopic: '',
       buttonDisable: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

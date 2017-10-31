@@ -42,6 +42,7 @@ class SellerComplainDiscussion extends React.Component {
       idComplain: this.props.idComplain,
       modalLoading: false
     }
+    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -136,7 +137,7 @@ class SellerComplainDiscussion extends React.Component {
 
   renderRowDiscussion (rowData) {
     const image = rowData.orderDetail.discussions.map((data, i) => {
-      const timeStampToDate = moment.unix(data.created_at).format('HH:MM').toString()
+      const timeStampToDate = moment.unix(data.created_at).format('h:mm').toString()
       return (
         <View key={i} onLayout={this.onLayout} style={styles.containerMessage}>
           <View style={styles.maskedPhoto}>

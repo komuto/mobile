@@ -122,7 +122,7 @@ class BuyerDiscussion extends React.Component {
         <View />
       )
     } else {
-      if (data.length > 0 || this.state.isRefreshing) {
+      if (data.length > 0) {
         return (
           <ListView
             dataSource={this.dataSource.cloneWithRows(data)}

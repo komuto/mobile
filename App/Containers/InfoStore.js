@@ -41,9 +41,9 @@ class InfoStore extends React.Component {
       stores: [],
       storeTemp: [],
       storesTemp: [],
-      textPemilik: 'text',
-      textDesc: 'text',
-      textPemilikColor: Colors.snow,
+      textPemilik: 'Nama Toko Tidak Dapat Diubah',
+      textDesc: '',
+      textPemilikColor: Colors.labelgrey,
       textSloganColor: Colors.snow,
       textDescColor: Colors.snow,
       heightSlogan: 0,
@@ -326,7 +326,6 @@ class InfoStore extends React.Component {
                 placeholder='Nama Toko Anda'
               />
             </View>
-            <Text style={styles.information}>Nama Toko Tidak Dapat Diubah</Text>
             <Text style={[styles.textLabel, {fontSize: 12, marginBottom: 37, color: textPemilikColor}]}>{textPemilik}</Text>
             <Text style={styles.textLabel}>Slogan</Text>
             <View style={styles.inputContainer}>

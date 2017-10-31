@@ -328,8 +328,8 @@ class Profile extends React.Component {
         <View style={styles.dataProfileContainer}>
           <TouchableOpacity onPress={() => this.handleCekNoHp()}>
             <View style={[styles.profile, {borderBottomWidth: 0}]}>
-              <View style={{borderRadius: 21, backgroundColor: 'red'}}>
-                <Image source={{uri: this.state.fotoToko}} style={[styles.imageCategory]} />
+              <View style={{borderRadius: 200, backgroundColor: Colors.paleGreyFive}}>
+                <Image source={{uri: this.state.fotoToko}} style={[styles.styleFoto]} />
               </View>
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>

@@ -64,6 +64,11 @@ class Biodata extends React.Component {
     } else {
       this.setState({index: 1})
     }
+    if (this.props.dataProfile.user.user.date_of_birth === null) {
+      this.setState({
+        dof: 'Belum ada data'
+      })
+    }
     this.props.getKota()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -212,7 +217,7 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
-    console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
+    // console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
     this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
   }
 

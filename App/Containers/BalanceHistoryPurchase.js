@@ -33,7 +33,6 @@ class BalanceHistoryPurchase extends React.Component {
       kodeUnik: '',
       id: ''
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

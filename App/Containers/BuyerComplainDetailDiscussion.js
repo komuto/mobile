@@ -22,7 +22,6 @@ class BuyerComplainDetailDiscussion extends React.Component {
       id: '',
       isRefreshing: false
     }
-    moment.locale('id')
   }
 
   componentDidMount () {

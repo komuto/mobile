@@ -42,7 +42,6 @@ class SellerComplainDiscussion extends React.Component {
       idComplain: this.props.idComplain,
       modalLoading: false
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

@@ -38,7 +38,6 @@ class BuyerComplainDetailItem extends React.Component {
       responseStatus: -1,
       fineProductsTotal: 0
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

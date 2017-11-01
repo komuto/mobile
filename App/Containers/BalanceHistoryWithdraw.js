@@ -23,7 +23,6 @@ class BalanceHistoryWithdraw extends React.Component {
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember']
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

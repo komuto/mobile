@@ -28,7 +28,6 @@ class BuyerDetailDiscussion extends React.Component {
       discussionMessages: '',
       data: []
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

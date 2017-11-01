@@ -61,7 +61,6 @@ class BuyerComplainConfirmation extends React.Component {
       showModalCamera: false,
       complain: ''
     }
-    moment.locale('id')
   }
 
   componentDidMount () {

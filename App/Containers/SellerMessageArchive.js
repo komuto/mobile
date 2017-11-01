@@ -43,7 +43,6 @@ class SellerMessageArchive extends React.Component {
       notif: false,
       messageNotif: ''
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

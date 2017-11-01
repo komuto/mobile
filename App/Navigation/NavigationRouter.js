@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Scene, Router } from 'react-native-router-flux'
+import { Scene, Router, ActionConst } from 'react-native-router-flux'
 import { View, Text, Image } from 'react-native'
 
 // s identified by the router
@@ -168,7 +168,10 @@ class NavigationRouter extends Component {
       <Router>
         <Scene key='root'>
           <Scene key='splash' component={Splash} hideNavBar />
-          <Scene key='backtab'>
+          <Scene
+            key='backtab'
+            type={ActionConst.RESET}
+          >
             <Scene
               key='tabbar'
               tabs

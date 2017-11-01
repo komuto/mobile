@@ -110,5 +110,11 @@ export default StyleSheet.create({
     letterSpacing: 0.19,
     textAlign: 'center',
     color: Colors.snow
+  },
+  loadingStyle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    marginTop: 10
   }
 })

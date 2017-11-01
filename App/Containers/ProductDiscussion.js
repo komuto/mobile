@@ -38,7 +38,6 @@ class ProductDiscussion extends React.Component {
       isLoading: false,
       callback: false
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

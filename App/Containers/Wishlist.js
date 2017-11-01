@@ -8,13 +8,15 @@ import {
   Text,
   TouchableOpacity,
   ToastAndroid,
-  Modal
+  Modal,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
-import { Images, Colors } from '../Themes'
+import { Images, Colors, Metrics } from '../Themes'
 import * as produkAction from '../actions/product'
+import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -33,7 +35,7 @@ class Wishlist extends React.Component {
       search: '',
       listDataSource: [],
       rowDataSource: [],
-      loading: true,
+      loading: false,
       tipeView: 'grid',
       sortModal: false,
       terbaruColor: Colors.lightblack,
@@ -44,30 +46,36 @@ class Wishlist extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      empty: false
+      loadmore: true,
+      gettingSort: true,
+      sort: 'newest',
+      page: 1
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataWishlist.status === 200) {
-      if (nextProps.dataWishlist.wishlist.length === 0) {
+      if (nextProps.dataWishlist.wishlist.length > 0) {
+        const data = [...this.state.listDataSource, ...nextProps.dataWishlist.wishlist]
         this.setState({
-          listDataSource: nextProps.dataWishlist.wishlist,
-          rowDataSource: nextProps.dataWishlist.wishlist,
+          listDataSource: data,
+          rowDataSource: data,
           loading: false,
-          empty: true
+          loadmore: true,
+          gettingSort: false,
+          page: this.state.page + 1
         })
       } else {
         this.setState({
-          listDataSource: nextProps.dataWishlist.wishlist,
-          rowDataSource: nextProps.dataWishlist.wishlist,
           loading: false,
-          empty: false
+          loadmore: false,
+          gettingSort: false
         })
       }
     } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
       this.setState({
-        loading: false
+        loading: false,
+        gettingSort: false
       })
       ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
@@ -78,40 +86,38 @@ class Wishlist extends React.Component {
   }
 
   _onPress (field) {
-    const {listDataSource} = this.state
-    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
     this.setState({
-      listDataSource: sortedData
+      gettingSort: true
     })
+    const {bluesky, lightblack} = Colors
+    if (field === 'newest') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'cheapest') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'expensive') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'selling') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.dispatchSort(field)
+    }
   }
 
-  sortArrayAsc (array, key, field) {
-    const {bluesky, lightblack} = Colors
-    switch (field) {
-      case 'terbaru':
-        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
-        }).reverse()
-      case 'termurah':
-        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        }).reverse()
-      case 'termahal':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        })
-      case 'terlaris':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
-        return array.sort(function (a, b) {
-          return b.product.stock - a.product.stock
-        })
-      default:
-        window.alert('Internal Error')
-        break
-    }
+  dispatchSort (typesort) {
+    this.setState({
+      isRefreshing: true,
+      listDataSource: [],
+      rowDataSource: [],
+      page: 1,
+      sortModal: false,
+      sort: typesort
+    })
+    this.props.getWishlist({
+      page: 1,
+      sort: typesort
+    })
   }
 
   renderVerified (status) {
@@ -181,25 +187,25 @@ class Wishlist extends React.Component {
           <View style={stylesProduk.titleContainer}>
             <Text style={stylesProduk.title}>Urutkan Berdasarkan</Text>
           </View>
-          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
+          <TouchableOpacity onPress={() => this._onPress('newest')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: terbaruColor}]}>Terbaru</Text>
               <Image style={[stylesProduk.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termurah')}>
+          <TouchableOpacity onPress={() => this._onPress('cheapest')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: termurahColor}]}>Termurah</Text>
               <Image style={[stylesProduk.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termahal')}>
+          <TouchableOpacity onPress={() => this._onPress('expensive')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: termahalColor}]}>Termahal</Text>
               <Image style={[stylesProduk.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
+          <TouchableOpacity onPress={() => this._onPress('selling')}>
             <View style={stylesProduk.itemContainer}>
               <Text style={[stylesProduk.title, {color: terlarisColor}]}>Terlaris</Text>
               <Image style={[stylesProduk.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
@@ -354,6 +360,18 @@ class Wishlist extends React.Component {
     }
   }
 
+  loadMore () {
+    const { page, loading, loadmore, sort } = this.state
+    if (!loading) {
+      if (loadmore) {
+        this.props.getWishlist({
+          page: page,
+          sort: sort
+        })
+      }
+    }
+  }
+
   viewProduk () {
     if (this.state.tipeView === 'grid') {
       return (
@@ -361,8 +379,23 @@ class Wishlist extends React.Component {
           <ListView
             contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
             enableEmptySections
+            style={{ width: Metrics.screenWidth }}
             dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
             renderRow={this.renderRowGrid.bind(this)}
+            onEndReached={this.loadMore.bind(this)}
+            renderFooter={() => {
+              if (this.state.loadmore && this.state.rowDataSource > 10) {
+                return (
+                  <ActivityIndicator
+                    style={[styles.loadingStyle, { height: 50 }]}
+                    size='small'
+                    color='#ef5656'
+                  />
+                )
+              } else {
+                return <View />
+              }
+            }}
           />
         </View>
       )
@@ -374,6 +407,20 @@ class Wishlist extends React.Component {
           enableEmptySections
           dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
           renderRow={this.renderRowList.bind(this)}
+          onEndReached={this.loadMore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore && this.state.listDataSource > 10) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            } else {
+              return <View />
+            }
+          }}
         />
       </View>
     )
@@ -391,8 +438,8 @@ class Wishlist extends React.Component {
   }
 
   renderView () {
-    const { empty } = this.state
-    if (empty) {
+    const { listDataSource, gettingSort } = this.state
+    if (listDataSource.length === 0 && !gettingSort) {
       return (
         <View style={styles.notFoundContainer}>
           <Image
@@ -476,7 +523,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    getWishlist: (param) => dispatch(userAction.wishlist(param))
   }
 }
 

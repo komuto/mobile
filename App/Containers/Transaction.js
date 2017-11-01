@@ -38,6 +38,12 @@ class Transaction extends React.Component {
     console.log(props.datalogin.login)
   }
 
+  componentDidMount () {
+    this.setState({
+      data: []
+    })
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataListTransaction.status === 200) {
       let i
@@ -112,6 +118,7 @@ class Transaction extends React.Component {
       } catch (e) {
 
       }
+      nextProps.dataListTransaction.status = 0
     } else if (nextProps.dataListTransaction.status !== 200 && nextProps.dataListTransaction.status !== 0) {
       this.setState({
         data: [],

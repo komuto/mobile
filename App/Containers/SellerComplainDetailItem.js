@@ -47,7 +47,6 @@ class SellerComplainDetailItem extends React.Component {
       inputReceiptNumber: '',
       receiptNumber: ''
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

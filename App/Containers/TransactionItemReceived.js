@@ -60,7 +60,6 @@ class TransactionItemReceived extends React.Component {
       dataComplain: [],
       loading: false
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

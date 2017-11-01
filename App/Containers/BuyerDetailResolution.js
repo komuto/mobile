@@ -41,7 +41,6 @@ class BuyerDetailResolution extends React.Component {
       page: this.props.page || 0,
       idResolution: this.props.idResolution
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

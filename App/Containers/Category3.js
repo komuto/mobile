@@ -61,7 +61,8 @@ class Category3 extends React.Component {
   handleDetailKategori (rowId, title) {
     NavigationActions.category4({
       type: ActionConst.PUSH,
-      header: title
+      header: title,
+      id: rowId
     })
   }
 

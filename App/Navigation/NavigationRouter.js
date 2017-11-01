@@ -1054,7 +1054,7 @@ class NavigationRouter extends Component {
           <Scene
             key='balancehistory'
             component={BalanceHistory}
-            title='History Saldo'
+            title='Riwayat Saldo'
             navBar={CustomNavBar}
             hideNavBar
             hideBackImage />
@@ -1103,7 +1103,7 @@ class NavigationRouter extends Component {
           <Scene
             key='balancestatuswithdraw'
             component={BalanceStatusWithdraw}
-            title='Detail Transaksi'
+            title='Status Penarikan Saldo'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

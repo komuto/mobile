@@ -14,6 +14,8 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
+import Reactotron from 'reactotron-react-native'
+
 import * as storeAction from '../actions/stores'
 import * as loginaction from '../actions/user'
 import {isFetching, isError, isFound} from '../Services/Status'
@@ -63,9 +65,10 @@ class InfoStore extends React.Component {
   componentWillReceiveProps (nextProps) {
     const {dataUpdate} = nextProps
     if (nextProps.dataPhoto.status === 200) {
+      Reactotron.log(nextProps.dataPhoto)
       this.setState({
-        loading: false,
-        fotoToko: nextProps.dataPhoto.payload.images[0].name
+        loading: false
+        // fotoToko: nextProps.dataPhoto.payload.images[0].name
       })
     } if (nextProps.dataPhoto.status > 200) {
       this.setState({

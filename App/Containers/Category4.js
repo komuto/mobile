@@ -86,6 +86,7 @@ class Category4 extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('cat 4')
     if (!this.submitting.category) {
       this.submitting = {
         ...this.submitting,

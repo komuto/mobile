@@ -28,38 +28,38 @@ class BalanceHistory extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      number: 6,
+      number: 0,
       data: [],
       filter: [
         {
           'label': 'Komisi Reseller',
           'tag': 'commission',
-          'check': true
+          'check': false
         },
         {
           'label': 'Dana Penjualan Barang',
           'tag': 'sale',
-          'check': true
+          'check': false
         },
         {
           'label': 'Dana Refund Barang',
           'tag': 'refund',
-          'check': true
+          'check': false
         },
         {
           'label': 'Top Up Saldo',
           'tag': 'topup',
-          'check': true
+          'check': false
         },
         {
           'label': 'Pembelian Barang',
           'tag': 'buy',
-          'check': true
+          'check': false
         },
         {
           'label': 'Penarikan Saldo',
           'tag': 'withdraw',
-          'check': true
+          'check': false
         }
       ],
       modalFilter: false,
@@ -126,7 +126,7 @@ class BalanceHistory extends React.Component {
         <TouchableOpacity onPress={() => this.back()}>
           <Image source={Images.iconBack} style={styles.arrow} />
         </TouchableOpacity>
-        <Text style={styles.navbarText}>History Saldo</Text>
+        <Text style={styles.navbarText}>Riwayat Saldo</Text>
         <TouchableOpacity
           style={styles.filterButton}
           onPress={() => this.setState({modalFilter: true})}

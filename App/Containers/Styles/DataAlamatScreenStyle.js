@@ -50,6 +50,7 @@ export default StyleSheet.create({
   },
   headerInfoAlamat: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver,
     marginLeft: 20,
@@ -168,5 +169,11 @@ export default StyleSheet.create({
   image: {
     height: 25,
     width: 25
+  },
+  primaryAddress: {
+    color: Colors.snow,
+    fontSize: 13,
+    marginTop: -2,
+    fontFamily: Fonts.type.regular
   }
 })

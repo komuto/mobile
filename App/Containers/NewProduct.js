@@ -506,7 +506,7 @@ class NewProduct extends React.Component {
               titleColor={Colors.red}
               progressBackgroundColor={Colors.snow}
             />
-        }
+          }
           onEndReached={this.loadMore.bind(this)}
           renderFooter={() => {
             if (this.state.loadmore) {

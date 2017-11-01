@@ -38,7 +38,6 @@ class SellerNotificationDiscussion extends React.Component {
       isLoading: true,
       gettingData: true
     }
-    moment.locale('id')
   }
 
   componentDidMount () {

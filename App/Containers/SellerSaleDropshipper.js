@@ -38,7 +38,6 @@ class SellerSaleDropshipper extends React.Component {
       isLoading: true,
       loadingPage: true
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

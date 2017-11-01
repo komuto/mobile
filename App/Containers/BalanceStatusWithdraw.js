@@ -24,7 +24,6 @@ class BalanceStatusWithdraw extends React.Component {
       page: 1,
       loadmore: true
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

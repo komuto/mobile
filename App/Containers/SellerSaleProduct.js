@@ -37,7 +37,6 @@ class SellerSaleProduct extends React.Component {
       isRefreshing: true,
       isLoading: true
     }
-    moment.locale('id')
   }
   componentWillReceiveProps (nextProps) {
     const {dataSales} = nextProps

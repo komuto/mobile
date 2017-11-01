@@ -69,7 +69,7 @@ class AddAddress extends React.Component {
       provinsiTerpilih: 'Provinsi',
       kabTerpilih: 'Kota / Kabupaten',
       kecTerpilih: 'Kecamatan',
-      kelurahanterpilih: 'Keluraahan',
+      kelurahanterpilih: 'Kelurahan',
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
@@ -266,6 +266,7 @@ class AddAddress extends React.Component {
 
   backButton () {
     NavigationActions.pop()
+    return true
   }
 
   handleChangeNamaAlias = (text) => {

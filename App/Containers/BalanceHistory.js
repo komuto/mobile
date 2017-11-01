@@ -76,7 +76,6 @@ class BalanceHistory extends React.Component {
       isFiltering: false,
       dataFilter: []
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

@@ -39,7 +39,6 @@ class ListNewOrder extends React.Component {
       isRefreshing: true,
       isLoading: false
     }
-    moment.locale('id')
   }
   componentWillReceiveProps (nextProps) {
     const {dataOrder} = nextProps

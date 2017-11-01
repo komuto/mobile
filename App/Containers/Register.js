@@ -10,6 +10,7 @@ import {
   ToastAndroid,
   BackAndroid
 } from 'react-native'
+import { marketplace } from '../config'
 import { connect } from 'react-redux'
 import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -284,7 +285,7 @@ class Register extends React.Component {
                 <TouchableOpacity>
                   <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
                 </TouchableOpacity>
-                <Text style={styles.textBanner}>dari Komuto</Text>
+                <Text style={styles.textBanner}>dari {marketplace}</Text>
               </View>
             </View>
             <TouchableOpacity

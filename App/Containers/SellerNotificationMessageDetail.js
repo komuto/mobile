@@ -37,7 +37,6 @@ class SellerNotificationMessageDetail extends React.Component {
       callback: this.props.callback,
       iconSend: Images.sendMessageInactive
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

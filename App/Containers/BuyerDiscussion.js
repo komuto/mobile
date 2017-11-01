@@ -35,7 +35,6 @@ class BuyerDiscussion extends React.Component {
       isLoading: true,
       loadingPage: true
     }
-    moment.locale('id')
   }
 
   componentDidMount () {

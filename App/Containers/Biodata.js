@@ -43,7 +43,6 @@ class Biodata extends React.Component {
       uploadDate: '',
       updatePhoto: ''
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {
@@ -230,7 +229,7 @@ class Biodata extends React.Component {
     try {
       const {action, year, month, day} = await DatePickerAndroid.open({
         mode: 'calendar',
-        date: moment(this.timeStampToDate, 'DD/MM/YYYY')._d
+        date: moment(this.timeStampToDate, 'DD/MM/YYYY')
       })
 
       if (action !== DatePickerAndroid.dismissedAction) {

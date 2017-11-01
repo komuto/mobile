@@ -38,7 +38,6 @@ class BuyerDetailMessage extends React.Component {
       detailMessageUser: [],
       typeMessage: 'conversation'
     }
-    moment.locale('id')
   }
 
   componentWillReceiveProps (nextProps) {

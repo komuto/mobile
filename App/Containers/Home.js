@@ -7,7 +7,8 @@ import {
   ListView,
   BackAndroid,
   ActivityIndicator,
-  ToastAndroid
+  ToastAndroid,
+  RefreshControl
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
@@ -127,6 +128,7 @@ class Home extends React.Component {
       modalSearch: false,
       refreshSearch: false,
       resultSearch: [],
+      isRefreshing: true,
       modalLogin: false
     }
   }
@@ -165,21 +167,15 @@ class Home extends React.Component {
   }
 
   componentDidMount () {
-    const { product, cartItems } = this.state
-    if (!product.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        products: true
-      }
-      this.props.getProdukTerbaru(6)
+    this.submitting = {
+      ...this.submitting,
+      products: true
     }
+    this.props.getProdukTerbaru(6)
 
-    if (!cartItems.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        cart: true
-      }
-      this.props.getCart()
+    this.submitting = {
+      ...this.submitting,
+      cart: true
     }
     this.submitting = {
       ...this.submitting,
@@ -198,7 +194,7 @@ class Home extends React.Component {
         ToastAndroid.show(propsProducts.message, ToastAndroid.SHORT)
       }
       if (isFound(propsProducts)) {
-        this.setState({ product: propsProducts })
+        this.setState({ product: propsProducts, isRefreshing: false })
       }
     }
 
@@ -575,6 +571,27 @@ class Home extends React.Component {
     })
   }
 
+  refresh = () => {
+    this.setState({
+      isRefreshing: true
+    })
+    this.submitting = {
+      ...this.submitting,
+      products: true
+    }
+    this.props.getProdukTerbaru(6)
+
+    this.submitting = {
+      ...this.submitting,
+      cart: true
+    }
+    this.submitting = {
+      ...this.submitting,
+      category: true
+    }
+    this.props.getKategori()
+  }
+
   render () {
     const name = marketplace
     const { modalLogin } = this.state
@@ -585,6 +602,18 @@ class Home extends React.Component {
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
+        refreshControl={
+          <RefreshControl
+            style={{ 'opacity': 0 }}
+            refreshing={false}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
         stickyHeaderHeight={50}
         parallaxHeaderHeight={110}
         backgroundSpeed={10}
@@ -699,7 +728,7 @@ const mapDispatchToProps = (dispatch) => {
     getProdukTerbaru: (limit) => dispatch(homeAction.products({limit})),
     addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id })),
     resetAddToWishlist: () => dispatch(produkAction.resetAddToWishlistHome()),
-    getWishlist: () => dispatch(wishlistAction.wishlist()),
+    getWishlist: () => dispatch(wishlistAction.wishlist({ page: 1 })),
     getCart: () => dispatch(cartAction.getCart()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getSearch: (param) => dispatch(homeAction.search(param)),

@@ -145,6 +145,7 @@ export default StyleSheet.create({
   },
   disputeContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5,
     padding: 20

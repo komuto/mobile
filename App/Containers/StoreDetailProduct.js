@@ -143,9 +143,9 @@ class DetailTokoProduk extends React.Component {
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(true)}
+          {this.renderLikes(rowData.is_liked)}
           <Text style={stylesHome.like}>
-            {10}
+            {rowData.count_like}
           </Text>
         </View>
       </TouchableOpacity>
@@ -198,9 +198,9 @@ class DetailTokoProduk extends React.Component {
   renderLikes (status) {
     if (status) {
       return (
-        <TouchableOpacity>
+        <View>
           <Image source={Images.lovered} style={stylesHome.imageStyleLike} />
-        </TouchableOpacity>
+        </View>
       )
     }
     return (

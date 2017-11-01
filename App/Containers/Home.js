@@ -20,6 +20,8 @@ import { marketplace } from '../config'
 
 import {isFetching, isError, isFound} from '../Services/Status'
 import ModalSearchGeneral from '../Components/Search'
+import moment from 'moment'
+import 'moment/locale/id'
 
 // import YourActions from '../Redux/YourRedux'
 import { connect } from 'react-redux'
@@ -30,6 +32,8 @@ import * as wishlistAction from '../actions/user'
 
 // Styles
 import styles from './Styles/HomeStyle'
+
+moment.locale('id')
 
 import FCM, {FCMEvent} from 'react-native-fcm'
 

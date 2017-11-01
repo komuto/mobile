@@ -197,21 +197,21 @@ class SellerSaleProduct extends React.Component {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.lightblack}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>REJECTED</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Pesanan Ditolak</Text>
         </View>
       )
     } if (data === 1) {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.lightBlue}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>WAITING</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Menunggu</Text>
         </View>
       )
     } if (data === 2) {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.lightBlueGrey}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>PROCEED</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Pesanan Diproses</Text>
         </View>
       )
     } if (data === 3) {

@@ -19,6 +19,7 @@ import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as salesAction from '../actions/transaction'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/DetailOrderStyle'
@@ -92,6 +93,7 @@ class DetailOrder extends React.Component {
         modalLoading: false,
         statusAcceptOrder: false
       })
+      this.props.getUnreadDispute()
       nextProps.dataOrders.status = 0
     }
     if (nextProps.dataOrders.status === 200 && this.state.statusRejectOrder) {
@@ -100,6 +102,7 @@ class DetailOrder extends React.Component {
         modalLoading: false,
         statusRejectOrder: false
       })
+      this.props.getUnreadDispute()
       nextProps.dataOrders.status = 0
     }
   }
@@ -174,7 +177,7 @@ class DetailOrder extends React.Component {
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
           <View style={styles.maskedImageProduct}>
-            <Image source={{uri: rowData.image}} style={styles.imageProduct} />
+            <Image source={{uri: rowData.product.image}} style={styles.imageProduct} />
           </View>
           <View style={styles.product}>
             <Text style={styles.labelProduct}>{rowData.product.name}</Text>
@@ -543,7 +546,8 @@ const mapDispatchToProps = (dispatch) => ({
   rejectOrders: (id) => dispatch(salesAction.rejectOrder({id: id})),
   getListOrder: (page) => dispatch(salesAction.getNewOrders({page: page})),
   getListProcessingOrder: () => dispatch(salesAction.getProcessingOrders()),
-  getDetailOrder: (id) => dispatch(salesAction.getNewOrderDetail({id: id}))
+  getDetailOrder: (id) => dispatch(salesAction.getNewOrderDetail({id: id})),
+  getUnreadDispute: () => dispatch(storeAction.getUnreadDisputeStore())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailOrder)

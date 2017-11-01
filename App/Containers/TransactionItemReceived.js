@@ -139,7 +139,7 @@ class TransactionItemReceived extends React.Component {
   }
 
   createDataReview (data, index) {
-    let tempDataReview = [...this.state.dataReview]
+    let tempDataReview = this.state.dataReview
     const temp = {
       'product_id': data.product.id,
       'review': '',
@@ -154,6 +154,7 @@ class TransactionItemReceived extends React.Component {
     this.setState({
       dataReview: tempDataReview
     })
+    console.log('data ', tempDataReview)
   }
 
   renderItem () {

@@ -79,6 +79,9 @@ class Wishlist extends React.Component {
       })
       ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
+    if (nextProps.dataAddWishlist.status !== 200 && nextProps.dataAddWishlist.status !== 0) {
+      ToastAndroid.show(nextProps.dataAddWishlist.message, ToastAndroid.LONG)
+    }
   }
 
   handleTextSearch = (text) => {
@@ -216,7 +219,7 @@ class Wishlist extends React.Component {
     )
   }
 
-  renderRowList (rowData) {
+  renderRowList (rowData, section, row) {
     if (rowData.product.discount > 0) {
       this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
@@ -264,7 +267,7 @@ class Wishlist extends React.Component {
                 {rowData.product.stock}
               </Text>
             </View>
-            <TouchableOpacity style={styles.keranjangContainer}>
+            <TouchableOpacity style={styles.keranjangContainer} onPress={() => this.removeWishlist(rowData.product.id, row)}>
               <Image source={Images.keranjang} style={styles.searchImage} />
             </TouchableOpacity>
           </View>
@@ -273,7 +276,7 @@ class Wishlist extends React.Component {
     )
   }
 
-  renderRowGrid (rowData) {
+  renderRowGrid (rowData, section, row) {
     if (rowData.product.discount > 0) {
       this.statusDiskon = true
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
@@ -313,9 +316,9 @@ class Wishlist extends React.Component {
         <View style={stylesHome.likesContainer}>
           {this.renderLikes(rowData.like)}
           <Text style={stylesHome.like}>
-            {rowData.product.stock}
+            {rowData.product.count_like}
           </Text>
-          <TouchableOpacity style={styles.keranjangContainer}>
+          <TouchableOpacity style={styles.keranjangContainer} onPress={() => this.removeWishlist(rowData.product.id, row)}>
             <Image source={Images.keranjang} style={styles.searchImage} />
           </TouchableOpacity>
         </View>
@@ -333,6 +336,17 @@ class Wishlist extends React.Component {
         tipeView: 'grid'
       })
     }
+  }
+
+  removeWishlist (id, row) {
+    const { listDataSource } = this.state
+    let temp = listDataSource
+    temp.splice(row, 1)
+    this.setState({
+      listDataSource: temp,
+      rowDataSource: temp
+    })
+    this.props.addWishList(id)
   }
 
   setSortModal (visible) {
@@ -517,14 +531,16 @@ class Wishlist extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataWishlist: state.wishlist
+    dataWishlist: state.wishlist,
+    dataAddWishlist: state.addWishlist
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-    getWishlist: (param) => dispatch(userAction.wishlist(param))
+    getWishlist: (param) => dispatch(userAction.wishlist(param)),
+    addWishList: (id) => dispatch(produkAction.addToWishlist({ id: id }))
   }
 }
 

@@ -255,7 +255,9 @@ class ListProdukByCatalog extends React.Component {
         </View>
       )
     } if (data.is_dropship) {
-      var maskedPrice = this.maskedMoney(data.price)
+      var commission = (data.price * data.commission) / 100
+      var fee = data.price - commission
+      var feeMasked = this.maskedMoney(fee)
       return (
         <View>
           <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
@@ -268,16 +270,18 @@ class ListProdukByCatalog extends React.Component {
           </View>
           <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
           {this.discountCheck(data)}
-          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrice}</Text>
+          <Text style={styles.textDetail}>Uang yang diterima : {feeMasked}</Text>
         </View>
       )
     } else {
-      var maskedPrices = this.maskedMoney(data.price)
+      var commissions = (data.price * data.commission) / 100
+      var fees = data.price - commissions
+      var feeMaskeds = this.maskedMoney(fees)
       return (
         <View>
           <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
           {this.discountCheck(data)}
-          <Text style={styles.textDetail}>Uang yang diterima : {maskedPrices}</Text>
+          <Text style={styles.textDetail}>Uang yang diterima : {feeMaskeds}</Text>
         </View>
       )
     }

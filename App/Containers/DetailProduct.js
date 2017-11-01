@@ -18,6 +18,7 @@ import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import ModalLogin from '../Components/ModalLogin'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -40,6 +41,9 @@ class DetailProduct extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submiting = {
+      detail: this.props.detail || false
+    }
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dataImage: [],
@@ -194,7 +198,7 @@ class DetailProduct extends React.Component {
           photoProductDropship: tempPhoto,
           expeditionDropship: tempExpedition
         })
-        // nextProps.dataDetailProduk.status = 0
+        nextProps.dataDetailProduk.status = 0
         // this.props.resetProduk()
       }
     } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
@@ -239,13 +243,13 @@ class DetailProduct extends React.Component {
         this.setState({
           like: false
         })
-        this.props.resetAddToWishlist()
       } else if (!this.state.like) {
         this.setState({
           like: true
         })
-        this.props.resetAddToWishlist()
       }
+      this.props.getDetailProduk(this.state.id)
+      this.props.resetAddToWishlist()
     } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
       ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.LONG)
       this.props.resetAddToWishlist()
@@ -444,7 +448,7 @@ class DetailProduct extends React.Component {
   }
 
   renderTitle () {
-    const {grosir, discount, pickFromDropshipper, commission} = this.state
+    const {id, grosir, discount, pickFromDropshipper, commission} = this.state
     const totalHarga = MaskService.toMask('money', this.state.price, {
       unit: 'Rp ',
       separator: '.',
@@ -469,7 +473,7 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(pickFromDropshipper)}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Text style={styles.price}>
@@ -486,7 +490,7 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(pickFromDropshipper)}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -520,7 +524,7 @@ class DetailProduct extends React.Component {
                 <Text style={styles.title}>
                   {this.state.title}
                 </Text>
-                {this.renderLikes(pickFromDropshipper)}
+                {this.renderLikes(pickFromDropshipper, id)}
                 {valueCommission}
               </View>
             </View>
@@ -534,7 +538,7 @@ class DetailProduct extends React.Component {
             <Text style={styles.title}>
               {this.state.title}
             </Text>
-            {this.renderLikes(pickFromDropshipper)}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
@@ -737,39 +741,59 @@ class DetailProduct extends React.Component {
     )
   }
 
-  addWishList () {
-    if (this.state.isLogin) {
-      this.props.addWishList(this.state.id)
-    } else {
-      Alert.alert('Pesan', 'Anda belum login')
-    }
-  }
-
-  renderLikes (pickFromDropshipper) {
+  renderLikes (pickFromDropshipper, id) {
     if (!pickFromDropshipper) {
       if (this.state.like) {
         return (
-          <TouchableOpacity onPress={() => this.addWishList()}>
+          <TouchableOpacity onPress={() => this.addWishList(id)}>
             <Image source={Images.lovered} style={styles.imageStyleLike} />
           </TouchableOpacity>
         )
       }
       return (
-        <TouchableOpacity onPress={() => this.addWishList()}>
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
           <Image source={Images.love} style={styles.imageStyleNotLike} />
         </TouchableOpacity>
       )
     }
   }
 
-  renderLikesProduk (status) {
+  addWishList (ids) {
+    if (this.state.isLogin) {
+      this.props.addWishList({id: ids})
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
+  }
+
+  addWishListOther (id) {
+    const {otherProduct} = this.state
+    if (this.props.datalogin.login) {
+      otherProduct.map((myProduct) => {
+        if (myProduct.id === id) {
+          myProduct.is_liked ? myProduct.count_like -= 1 : myProduct.count_like += 1
+          myProduct.is_liked = !myProduct.is_liked
+        }
+      })
+      this.props.addWishList({id: id})
+      this.setState({ otherProduct })
+    } else {
+      Alert.alert('Pesan', 'Anda belum login')
+    }
+  }
+
+  renderLikesProduk (status, id) {
     if (status) {
       return (
-        <Image source={Images.lovered} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.addWishListOther(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
+        </TouchableOpacity>
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageStyleNotLike} />
+      <TouchableOpacity onPress={() => this.addWishListOther(id)}>
+        <Image source={Images.love} style={styles.imageStyleNotLike} />
+      </TouchableOpacity>
     )
   }
 
@@ -1369,12 +1393,32 @@ class DetailProduct extends React.Component {
     )
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount) {
+      return (
+        <View style={stylesHome.containerDiskon}>
+          <Text style={stylesHome.diskon}>
+            {discount} %
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[stylesHome.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[stylesHome.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
   renderRowProduk (rowData) {
-    if (rowData.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.price, rowData.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.price
     }
 
@@ -1392,11 +1436,7 @@ class DetailProduct extends React.Component {
         onPress={() => this.produkDetail(rowData.id)}
       >
         <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
         <View style={stylesHome.containerTitle}>
           <Text style={stylesHome.textTitleProduct}>
             {rowData.name}
@@ -1407,7 +1447,7 @@ class DetailProduct extends React.Component {
             </Text>
             {this.renderVerified(this.state.verified)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.price)}
+          {this.renderDiskon(rowData.is_discount, rowData.price)}
           <View style={styles.otherProductMoneyContainer}>
             <View style={{flex: 1}}>
               <Text style={stylesHome.harga}>
@@ -1415,7 +1455,7 @@ class DetailProduct extends React.Component {
               </Text>
             </View>
             <View style={stylesHome.likesContainer}>
-              {this.renderLikesProduk(rowData.is_liked)}
+              {this.renderLikesProduk(rowData.is_liked, rowData.id)}
               <Text style={stylesHome.like}>
                 {rowData.count_like}
               </Text>
@@ -1564,7 +1604,7 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     reviewAction: (id, page) => dispatch(reviewAction.listReviews({ id: id, page: page })),
-    addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
+    addWishList: (param) => dispatch(productAction.addToWishlist(param)),
     resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist()),
     getToko: (id) => dispatch(storeAction.getStores({ id: id })),
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),

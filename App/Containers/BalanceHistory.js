@@ -102,7 +102,8 @@ class BalanceHistory extends React.Component {
         } else {
           this.setState({
             loadmore: false,
-            isLoading: false
+            isLoading: false,
+            isRefreshing: false
           })
         }
       }

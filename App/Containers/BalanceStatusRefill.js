@@ -39,7 +39,8 @@ class BalanceStatusRefill extends React.Component {
       } else {
         this.setState({
           loadmore: false,
-          isLoading: false
+          isLoading: false,
+          isRefreshing: false
         })
       }
       nextProps.dataTopUp.status = 0

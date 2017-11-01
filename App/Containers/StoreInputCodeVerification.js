@@ -10,7 +10,9 @@ import {
 import {connect} from 'react-redux'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
+import * as loginaction from '../actions/user'
 import * as storeAction from '../actions/stores'
 
 import styles from './Styles/StoreInputCodeVerificationStyle'
@@ -51,6 +53,7 @@ class StoreInputCodeVerification extends React.Component {
       }
       if (isFound(verifyStore)) {
         this.setState({ loading: false })
+        this.props.getProfile()
         NavigationActions.pop(
           {refresh: { callback: !this.state.callback, title: 'Toko Anda', isStoreVerify: true }})
         return true
@@ -194,7 +197,8 @@ class StoreInputCodeVerification extends React.Component {
   onVerify () {
     this.setState({loading: true})
     this.submitting.verify = true
-    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5 + this.state.code5
+    let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5 + this.state.code6
+    Reactotron.log(tempOTp)
     this.props.verifyStores({code: tempOTp})
   }
 
@@ -217,7 +221,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  verifyStores: (params) => dispatch(storeAction.verifyStore(params))
+  verifyStores: (params) => dispatch(storeAction.verifyStore(params)),
+  getProfile: (login) => dispatch(loginaction.getProfile())
+
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(StoreInputCodeVerification)

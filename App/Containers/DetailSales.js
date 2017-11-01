@@ -220,7 +220,7 @@ class DetailSales extends React.Component {
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
           <View style={styles.maskedImageProduct}>
-            <Image source={{uri: rowData.image}} style={styles.imageProduct} />
+            <Image source={{uri: rowData.product.image}} style={styles.imageProduct} />
           </View>
           <View style={styles.product}>
             <Text style={styles.labelProduct}>{rowData.product.name}</Text>

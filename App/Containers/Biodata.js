@@ -40,7 +40,8 @@ class Biodata extends React.Component {
       timestamp: this.props.dataProfile.user.user.date_of_birth || '',
       notif: false,
       loading: false,
-      uploadDate: ''
+      uploadDate: '',
+      updatePhoto: ''
     }
   }
 
@@ -49,7 +50,9 @@ class Biodata extends React.Component {
       this.setState({kabupaten: nextProps.dataKota.districts})
     }
     if (nextProps.dataPhoto.status === 200) {
-      this.setState({fotoProfil: nextProps.dataPhoto.payload.images[0].name})
+      this.setState({
+        updatePhoto: nextProps.dataPhoto.payload.images[0].name
+      })
       this.props.getProfil()
       nextProps.dataPhoto.status = 0
     }
@@ -219,9 +222,7 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
-    // console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
-    console.log('date: ', this.state.uploadDate)
-    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.uploadDate)
+    this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.uploadDate)
   }
 
   async date () {
@@ -351,7 +352,7 @@ const mapDispatchToProps = (dispatch) => {
     getProfil: () => dispatch(userAction.getProfile()),
     getKota: (id) => dispatch(locationAction.getDistrict({id: id})),
     searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
-    updateProfile: (namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
+    updateProfile: (photo, namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({photo: photo, name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
   }
 }
 

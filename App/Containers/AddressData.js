@@ -162,26 +162,37 @@ class AddressData extends React.Component {
 
   mapingAlamat () {
     const { listAlamat } = this.state
-    const mapparent = listAlamat.map((alamat, i) =>
-  (<TouchableOpacity key={i} activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
-    <View style={styles.headerInfoAlamat}>
-      <Text style={styles.textHeader}>{alamat.alias_address}</Text>
-      <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i, idDelete: alamat.id})}>
-        <Image source={Images.threeDotSilver} style={styles.imageDot} />
+    const mapparent = listAlamat.map((alamat, i) => {
+      let primary
+      if (alamat.is_primary_address) {
+        primary = (
+          <View style={{ backgroundColor: Colors.bluesky, marginLeft: 10, borderRadius: 5, alignItems: 'center', justifyContent: 'center', padding: 5 }}>
+            <Text style={styles.primaryAddress}>Alamat Utama</Text>
+          </View>
+        )
+      }
+      return (<TouchableOpacity key={i} activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
+        <View style={styles.headerInfoAlamat}>
+          <Text style={[styles.textHeader, { flex: 0 }]}>{alamat.alias_address}</Text>
+          {primary}
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i, idDelete: alamat.id})}>
+            <Image source={Images.threeDotSilver} style={styles.imageDot} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dataInfoAlamat}>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
+          <Text style={styles.textHeader2}>{alamat.name}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
+          <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
+          <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
+        </View>
+        {this.containerEdit(i, alamat.id)}
+        <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
       </TouchableOpacity>
-    </View>
-    <View style={styles.dataInfoAlamat}>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
-      <Text style={styles.textHeader2}>{alamat.name}</Text>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
-      <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
-      <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
-    </View>
-    {this.containerEdit(i, alamat.id)}
-    <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
-  </TouchableOpacity>
-    ))
+      )
+    })
     return (
       <View>
         {mapparent}

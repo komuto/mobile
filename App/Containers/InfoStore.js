@@ -58,7 +58,8 @@ class InfoStore extends React.Component {
       textButton: this.props.textButton,
       editAbles: this.props.editAble,
       notif: false,
-      errSlogan: false
+      errSlogan: false,
+      uploadPhoto: ''
     }
   }
 
@@ -67,8 +68,8 @@ class InfoStore extends React.Component {
     if (nextProps.dataPhoto.status === 200) {
       Reactotron.log(nextProps.dataPhoto)
       this.setState({
-        loading: false
-        // fotoToko: nextProps.dataPhoto.payload.images[0].name
+        loading: false,
+        uploadPhoto: nextProps.dataPhoto.payload.images[0].name
       })
     } if (nextProps.dataPhoto.status > 200) {
       this.setState({
@@ -395,7 +396,7 @@ class InfoStore extends React.Component {
   }
 
   nextState () {
-    const {createStore, namaToko, slogan, descToko, store, stores, fotoToko} = this.state
+    const {createStore, namaToko, slogan, descToko, store, stores, uploadPhoto} = this.state
     if (namaToko === '') {
       this.onError('pemilik')
     }
@@ -405,7 +406,7 @@ class InfoStore extends React.Component {
     if (descToko === '') {
       this.onError('desc')
     }
-    if (fotoToko === '') {
+    if (uploadPhoto === '') {
       this.onError('foto')
     }
     if (namaToko !== '' && slogan !== '' && descToko !== '') {
@@ -413,7 +414,7 @@ class InfoStore extends React.Component {
         store[0] = namaToko
         store[1] = slogan
         store[2] = descToko
-        store[3] = fotoToko
+        store[3] = uploadPhoto
         stores[0] = store
         NavigationActions.storeexpedition({
           type: ActionConst.PUSH,
@@ -422,7 +423,7 @@ class InfoStore extends React.Component {
       } else {
         this.setState({loading: true})
         this.submitting.updateInfoStore = true
-        this.props.updateInfoTokos(namaToko, slogan, descToko, fotoToko)
+        this.props.updateInfoTokos(namaToko, slogan, descToko, uploadPhoto)
       }
     }
   }

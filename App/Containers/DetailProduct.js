@@ -212,31 +212,39 @@ class DetailProduct extends React.Component {
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
+      nextProps.dataProvinsi.status = 0
     } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
       ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
+      nextProps.dataProvinsi.status = 0
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
         kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
+      nextProps.dataKota.status = 0
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
       ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
+      nextProps.dataKota.status = 0
     }
     if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
+      nextProps.dataSubDistrict.status = 0
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
       ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
+      nextProps.dataSubDistrict.status = 0
     }
     if (nextProps.dataServis.status === 200) {
       this.setState({
         dataServices: nextProps.dataServis.charges
       })
+      nextProps.dataServis.status = 0
     } else if (nextProps.dataServis.status !== 200 && nextProps.dataServis.status !== 0) {
       this.setState({
         messageServices: nextProps.dataServis.message
       })
+      nextProps.dataServis.status = 0
     }
     if (nextProps.dataWishlist.status === 200) {
       if (this.state.like) {
@@ -519,14 +527,17 @@ class DetailProduct extends React.Component {
                 GROSIR
               </Text>
             </View>
-            <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
-              <View>
+            <View style={{ flexDirection: 'column', flex: 1 }}>
+              <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
                 <Text style={styles.title}>
                   {this.state.title}
                 </Text>
                 {this.renderLikes(pickFromDropshipper, id)}
-                {valueCommission}
               </View>
+              <Text style={[styles.price, { marginLeft: 15 }]}>
+                {this.state.price}
+              </Text>
+              {valueCommission}
             </View>
           </View>
         </View>
@@ -944,7 +955,7 @@ class DetailProduct extends React.Component {
         <View style={styles.infoContainer}>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Berat</Text>
-            <Text style={styles.infoProductVal}>{weight}</Text>
+            <Text style={styles.infoProductVal}>{weight} kg</Text>
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kondisi</Text>

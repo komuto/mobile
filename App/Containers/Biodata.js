@@ -63,12 +63,15 @@ class Biodata extends React.Component {
     }
   }
 
-  componentDidMount () {
+  componentWillMount () {
     if (this.props.dataProfile.user.user.gender === 'male') {
       this.setState({index: 0})
     } else {
       this.setState({index: 1})
     }
+  }
+
+  componentDidMount () {
     if (this.props.dataProfile.user.user.date_of_birth === null) {
       this.setState({
         dof: 'Belum ada data'
@@ -222,7 +225,17 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
-    this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, this.state.uploadDate)
+    let date
+    if (this.state.uploadDate === '') {
+      date = this.state.timestamp
+    } else {
+      date = this.state.uploadDate
+    }
+    if (this.state.updatePhoto === '') {
+      this.props.updateProfileNoPhotos(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+    } else {
+      this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+    }
   }
 
   async date () {
@@ -352,7 +365,8 @@ const mapDispatchToProps = (dispatch) => {
     getProfil: () => dispatch(userAction.getProfile()),
     getKota: (id) => dispatch(locationAction.getDistrict({id: id})),
     searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
-    updateProfile: (photo, namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({photo: photo, name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
+    updateProfile: (photo, namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({photo: photo, name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp})),
+    updateProfileNoPhotos: (namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
   }
 }
 

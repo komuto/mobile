@@ -14,7 +14,7 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { MaskService } from 'react-native-masked-text'
-import { Images, Colors, Metrics } from '../Themes'
+import { Images, Colors, Metrics, Fonts } from '../Themes'
 import * as produkAction from '../actions/product'
 import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -235,15 +235,31 @@ class Wishlist extends React.Component {
       precision: 3
     })
 
-    return (
-      <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
-        this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} />
+    let label = null
+
+    if (rowData.product.is_discount) {
+      label = (
         <View style={stylesProduk.containerDiskon}>
           <Text style={stylesProduk.diskon}>
             {rowData.product.discount} %
           </Text>
         </View>
+      )
+    } if (rowData.product.is_wholesaler) {
+      label = (
+        <View style={[stylesProduk.containerDiskon, { backgroundColor: Colors.green }]}>
+          <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    }
+
+    return (
+      <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
+        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} />
+        {label}
         <View style={stylesProduk.containerTitle}>
           <Text style={stylesProduk.textTitleProduct}>
             {rowData.product.name}
@@ -291,15 +307,31 @@ class Wishlist extends React.Component {
       delimiter: '.',
       precision: 3
     })
+
+    let label = null
+    if (rowData.product.is_discount) {
+      label = (
+        <View style={stylesProduk.containerDiskon}>
+          <Text style={stylesProduk.diskon}>
+            {rowData.product.discount} %
+          </Text>
+        </View>
+      )
+    } if (rowData.product.is_wholesaler) {
+      label = (
+        <View style={[stylesProduk.containerDiskon, { backgroundColor: Colors.green }]}>
+          <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    }
+
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+        {label}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>

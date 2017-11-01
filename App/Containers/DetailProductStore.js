@@ -134,9 +134,7 @@ class DetailProductStore extends React.Component {
   maskedMoney (value) {
     let price
     if (value < 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp '
-      })
+      price = 'Rp ' + value
     }
     if (value >= 1000) {
       price = MaskService.toMask('money', value, {

@@ -71,15 +71,18 @@ class InfoStore extends React.Component {
         loading: false,
         uploadPhoto: nextProps.dataPhoto.payload.images[0].name
       })
+      nextProps.dataPhoto.status = 0
     } if (nextProps.dataPhoto.status > 200) {
       this.setState({
         loading: false
       })
+      nextProps.dataPhoto.status = 0
     }
     if (!isFetching(dataUpdate) && this.submitting.updateInfoStore) {
       this.submitting = { ...this.submitting, updateInfoStore: false }
       if (isError(dataUpdate)) {
         ToastAndroid.show(dataUpdate.message, ToastAndroid.SHORT)
+        dataUpdate.status = 0
       }
       if (isFound(dataUpdate)) {
         this.props.getProfile()
@@ -87,6 +90,7 @@ class InfoStore extends React.Component {
           loading: false,
           notif: true
         })
+        dataUpdate.status = 0
       }
     }
   }
@@ -189,9 +193,6 @@ class InfoStore extends React.Component {
           textDesc: 'Deskripsi harus diisi',
           textDescColor: Colors.red
         })
-        break
-      case 'foto':
-        window.alert('Foto Toko Kosong')
         break
       case 'empty':
         this.setState({
@@ -406,9 +407,6 @@ class InfoStore extends React.Component {
     if (descToko === '') {
       this.onError('desc')
     }
-    if (uploadPhoto === '') {
-      this.onError('foto')
-    }
     if (namaToko !== '' && slogan !== '' && descToko !== '') {
       if (createStore) {
         store[0] = namaToko
@@ -423,7 +421,11 @@ class InfoStore extends React.Component {
       } else {
         this.setState({loading: true})
         this.submitting.updateInfoStore = true
-        this.props.updateInfoTokos(namaToko, slogan, descToko, uploadPhoto)
+        if (uploadPhoto !== '') {
+          this.props.updateInfoTokos(namaToko, slogan, descToko, uploadPhoto)
+        } else {
+          this.props.updateInfoTokosNoPhotos(namaToko, slogan, descToko)
+        }
       }
     }
   }
@@ -491,6 +493,11 @@ const mapDispatchToProps = (dispatch) => {
       slogan: slogan,
       description: desc,
       logo: photo
+    })),
+    updateInfoTokosNoPhotos: (name, slogan, desc) => dispatch(storeAction.updateInformation({
+      name: name,
+      slogan: slogan,
+      description: desc
     })),
     getProfile: (login) => dispatch(loginaction.getProfile())
   }

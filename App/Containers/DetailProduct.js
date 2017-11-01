@@ -177,7 +177,7 @@ class DetailProduct extends React.Component {
         })
         try {
           this.setState({
-            fotoToko: nextProps.dataDetailProduk.detail.images[0].file
+            fotoToko: nextProps.dataDetailProduk.detail.store.logo
           })
         } catch (e) {
           console.log(e)

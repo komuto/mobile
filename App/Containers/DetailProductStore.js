@@ -95,6 +95,7 @@ class DetailProductStore extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('detail product store')
     this.props.getDetailStoreProduct(this.state.id)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -257,10 +258,21 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changePhotos (id) {
+  changePhotos (id, images) {
+    let photo = []
+    let file = []
+
+    images.map((data, i) => {
+      photo.push(data.file)
+      file.push(data.file_name)
+    })
+
+    // Reactotron.log(photo)
     NavigationActions.editproductphoto({
       type: ActionConst.PUSH,
       id: id,
+      foto: photo,
+      fileName: file,
       callback: this.state.callback
     })
   }
@@ -270,7 +282,7 @@ class DetailProductStore extends React.Component {
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow, {borderBottomWidth: 0}]}>
           <Text style={styles.titleMenu}>Foto Produk</Text>
-          <TouchableOpacity onPress={() => this.changePhotos(this.state.product.id)}>
+          <TouchableOpacity onPress={() => this.changePhotos(this.state.product.id, this.state.imageProduct)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>
@@ -365,7 +377,6 @@ class DetailProductStore extends React.Component {
   }
 
   maskedText (value) {
-    Reactotron.log(value)
     let price
     if (value < 1000) {
       price = MaskService.toMask('money', value, {

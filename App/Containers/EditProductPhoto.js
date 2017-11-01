@@ -5,6 +5,7 @@ import { Actions as NavigationActions } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
 import * as storeAction from '../actions/stores'
 import * as productAction from '../actions/product'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -18,13 +19,14 @@ class EditProductPhoto extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      foto: [],
+      foto: this.props.foto,
       loading: false,
       showModalCamera: false,
       count: 0,
-      images: [],
       id: this.props.id,
-      callback: this.props.callback
+      callback: this.props.callback,
+      fileName: this.props.fileName,
+      upload: []
     }
   }
 
@@ -33,8 +35,15 @@ class EditProductPhoto extends React.Component {
       this.setState({
         loading: false
       })
-      console.log(nextProps.dataPhoto.payload.images)
-      this.props.updateData(this.state.id, nextProps.dataPhoto.payload.images)
+      let temp = []
+      nextProps.dataPhoto.payload.images.map((data, i) => {
+        temp.push({'name': data.name})
+      })
+      this.state.fileName.map((data, i) => {
+        temp.push({'name': data})
+      })
+      this.props.updateData(this.state.id, temp)
+      Reactotron.log(nextProps.dataPhoto.payload.images)
       nextProps.dataPhoto.status = 0
     } else if (nextProps.dataPhoto.status !== 200 && nextProps.dataPhoto.status !== 0) {
       this.setState({
@@ -45,10 +54,10 @@ class EditProductPhoto extends React.Component {
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       this.props.resetAlterProduct()
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show('Terjadi kesalahan ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
 
@@ -112,24 +121,38 @@ class EditProductPhoto extends React.Component {
 
   removePhoto (i) {
     let temp = this.state.foto
+    let uploadTemp = this.state.upload
+    let fileTemp = this.state.fileName
     temp.splice(i, 1)
-    this.setState({foto: temp})
+    uploadTemp.splice(i, 1)
+    fileTemp.splice(i, 1)
+    this.setState({foto: temp, upload: uploadTemp, fileName: fileTemp})
   }
 
   addPhoto (photo, i) {
     let temp = this.state.foto
+    let file = []
     temp.push(photo)
-    this.setState({foto: temp, showModalCamera: false})
+    file.push(...this.state.upload, photo)
+    this.setState({foto: temp, upload: file, showModalCamera: false})
   }
 
   save () {
     const postData = new FormData()
-    this.state.foto.map(data => {
-      postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
-    })
-    postData.append('type', 'product')
-    this.props.photoUpload(postData)
-    this.setState({loading: true})
+    if (this.state.upload.length === 0) {
+      let temp = []
+      this.state.fileName.map((data, i) => {
+        temp.push({'name': data})
+      })
+      this.props.updateData(this.state.id, temp)
+    } else {
+      this.state.upload.map(data => {
+        postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      })
+      postData.append('type', 'product')
+      this.props.photoUpload(postData)
+      this.setState({loading: true})
+    }
   }
 
   stateOne () {

@@ -52,7 +52,6 @@ class StoreProductHidden extends React.Component {
     }
 
     if (!isFetching(dataProduk) && this.submitting.showProduct) {
-      Reactotron.log('callback hide')
       this.submitting = { ...this.submitting, showProduct: false, doneFetching: false }
       if (isError(dataProduk)) {
         ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
@@ -76,6 +75,7 @@ class StoreProductHidden extends React.Component {
   }
 
   componentDidMount () {
+    Reactotron.log('hide product')
     const { product } = this.state
     if (!product.isFound || !this.submitting.showProduct) {
       this.submitting = {

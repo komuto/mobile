@@ -96,7 +96,7 @@ class TransactionDetailItem extends React.Component {
           <Text style={[styles.textData, { marginBottom: 2 }]}>Harga : {money} / item</Text>
           <Text style={[styles.textData, { marginBottom: 2 }]}>Jumlah : {rowData.qty}</Text>
           <Text style={[styles.textData, { marginBottom: 5, fontStyle: 'italic', color: Colors.labelgrey }]}>
-            "{rowData.note}"
+            {rowData.note}
           </Text>
         </View>
       </View>

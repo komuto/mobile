@@ -1,9 +1,8 @@
 import React from 'react'
-import {View, Text, ToastAndroid, TouchableOpacity, BackAndroid, Image} from 'react-native'
+import {View, Text, TouchableOpacity, BackAndroid, Image} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as otherAction from '../actions/other'
-import {isFetching, isError, isFound} from '../Services/Status'
 import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/SalesDashboardStyle'
@@ -26,21 +25,13 @@ class SalesDashboard extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataCount} = nextProps
-
-    if (!isFetching(dataCount) && this.submitting.countorder) {
-      this.submitting = { ...this.submitting, countorder: false }
-      if (isError(dataCount)) {
-        ToastAndroid.show(dataCount.message, ToastAndroid.SHORT)
-      }
-      if (isFound(dataCount)) {
-        this.setState({
-          countOrder: dataCount,
-          order: dataCount.count.sales.new_order,
-          delivery: dataCount.count.sales.processing_order,
-          sale: dataCount.count.sales.sale
-        })
-      }
+    const {dataDisputes} = nextProps
+    if (dataDisputes.status === 200) {
+      this.setState({
+        order: dataDisputes.disputes.sales.new_order,
+        delivery: dataDisputes.disputes.sales.processing_order,
+        sale: dataDisputes.disputes.sales.sale
+      })
     }
   }
 
@@ -54,6 +45,7 @@ class SalesDashboard extends React.Component {
       }
       this.props.getCount()
     }
+    console.log(this.props.dataDisputes.disputes.sales.new_order)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -86,39 +78,33 @@ class SalesDashboard extends React.Component {
   }
 
   checkAmountOrder (data) {
-    if (!this.submitting.countorder) {
-      return (
-        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-          <Text style={styles.statusAmount}>
-            {data}
-          </Text>
-        </View>
-      )
-    }
+    return (
+      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+        <Text style={styles.statusAmount}>
+          {data}
+        </Text>
+      </View>
+    )
   }
 
   checkAmountDeliv (data) {
-    if (!this.submitting.countorder) {
-      return (
-        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-          <Text style={styles.statusAmount}>
-            {data}
-          </Text>
-        </View>
-      )
-    }
+    return (
+      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+        <Text style={styles.statusAmount}>
+          {data}
+        </Text>
+      </View>
+    )
   }
 
   checkAmountSale (data) {
-    if (!this.submitting.countorder) {
-      return (
-        <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-          <Text style={[styles.statusAmount]}>
-            {data}
-          </Text>
-        </View>
-      )
-    }
+    return (
+      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
+        <Text style={[styles.statusAmount]}>
+          {data}
+        </Text>
+      </View>
+    )
   }
 
   render () {

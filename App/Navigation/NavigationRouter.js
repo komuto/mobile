@@ -935,14 +935,14 @@ class NavigationRouter extends Component {
             key='sellernotificationdiscussion'
             component={SellerNotificationDiscussion}
             navBar={CustomNavBar}
-            title='Diskusi Product'
+            title='Diskusi Produk'
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
             key='sellernotificationreview'
             component={SellerNotificationReview}
             navBar={CustomNavBar}
-            title='Review Product'
+            title='Review Produk'
             hideNavBar={false}
             hideBackImage={false} />
           <Scene

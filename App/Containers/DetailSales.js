@@ -215,7 +215,7 @@ class DetailSales extends React.Component {
   }
 
   renderRowProduct (rowData, x, y) {
-    var moneyMasked = this.maskedMoney(rowData.total_price)
+    var moneyMasked = this.maskedMoney(rowData.product.price)
     return (
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
@@ -325,11 +325,11 @@ class DetailSales extends React.Component {
   }
 
   renderPriceDetail (data) {
-    var subTotal = this.maskedMoney(data.total_bill)
+    var subTotal = this.maskedMoney(data.total_bill - data.insurance_fee - data.delivery_cost)
     var insuranceFee = this.maskedMoney(data.insurance_fee)
     var postalFee = this.maskedMoney(data.delivery_cost)
 
-    var total = data.total_bill + data.insurance_fee + data.delivery_cost
+    var total = data.total_bill
     var totalMasked = this.maskedMoney(total)
 
     return (
@@ -343,7 +343,7 @@ class DetailSales extends React.Component {
           <Text style={styles.valueStyle}>{insuranceFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {borderColor: Colors.silver, borderBottomWidth: 0.5}]}>
-          <Text style={styles.labelStyle}>Biaya Asuransi</Text>
+          <Text style={styles.labelStyle}>Ongkos Kirim</Text>
           <Text style={styles.valueStyle}>{postalFee}</Text>
         </View>
         <View style={[styles.continerOrderNoBorder, {padding: 15}]}>
@@ -419,28 +419,21 @@ class DetailSales extends React.Component {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>DEFAULT</Text>
+          <Text style={[styles.textRegularSlate]}>Menunggu</Text>
         </View>
       )
     } if (data === 2) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>ACCEPT</Text>
+          <Text style={[styles.textRegularSlate]}>Diterima Pelanggan</Text>
         </View>
       )
     } if (data === 3) {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>DECLINE</Text>
-        </View>
-      )
-    } if (data === 4) {
-      return (
-        <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
-          <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>SENT</Text>
+          <Text style={[styles.textRegularSlate]}>Ditolak Pelanggan</Text>
         </View>
       )
     }
@@ -547,7 +540,7 @@ class DetailSales extends React.Component {
             <Text style={[styles.textRegularSlate]}>{shipping.airway_bill}</Text>
             {this.checkReceiptNumber(shipping.sender_status)}
           </View>
-          {this.checkReceiptStatus(shipping.sender_status)}
+          {this.checkReceiptStatus(shipping.receiver_status)}
         </View>
         {this.renderReviewProduct(items, typeInvoice, invoice.transaction_status)}
         {this.renderItemproblem(invoice.transaction_status, dispute)}

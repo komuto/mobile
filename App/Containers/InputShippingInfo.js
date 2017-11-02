@@ -21,6 +21,7 @@ import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as salesAction from '../actions/transaction'
+import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/InputShippingInfoStyle'
@@ -94,9 +95,12 @@ class InputShippingInfo extends React.Component {
     }
     if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
       this.setState({modalNumberReceive: true, modalLoading: false, statusConfrim: false})
+      this.props.getUnreadDispute()
       nextProps.dataProcessDeliveryOrder.status = 0
     } else if (nextProps.dataProcessDeliveryOrder.status !== 0 && nextProps.dataProcessDeliveryOrder.status !== 200) {
-      this.setState({loading: false})
+      this.setState({modalLoading: false})
+      this.props.getUnreadDispute()
+      nextProps.dataProcessDeliveryOrder.status = 0
       ToastAndroid.show(nextProps.dataProcessDeliveryOrder.message, ToastAndroid.LONG)
     }
   }
@@ -218,7 +222,7 @@ class InputShippingInfo extends React.Component {
       <View>
         <View style={[styles.continerOrder, {alignItems: 'flex-start'}]}>
           <View style={styles.maskedImageProduct}>
-            <Image source={{uri: rowData.image}} style={styles.imageProduct} />
+            <Image source={{uri: rowData.product.image}} style={styles.imageProduct} />
           </View>
           <View style={styles.product}>
             <Text style={styles.labelProduct}>{rowData.product.name}</Text>
@@ -411,7 +415,7 @@ class InputShippingInfo extends React.Component {
       modalNumberReceive: false
     })
     NavigationActions.saleslist({
-      type: ActionConst.PUSH })
+      type: ActionConst.REPLACE })
   }
 
   handleListDelivery () {
@@ -577,8 +581,12 @@ class InputShippingInfo extends React.Component {
   }
 
   onclickProcessInfoDelivery (data) {
-    this.setState({statusConfrim: true, modalLoading: true})
-    this.props.processDeliveryConfrim(this.state.invoice.id, this.state.receipeNumber)
+    if (this.state.receipeNumber === '') {
+      ToastAndroid.show('Mohon isi nomor resi terlebih dahulu', ToastAndroid.LONG)
+    } else {
+      this.setState({statusConfrim: true, modalLoading: true})
+      this.props.processDeliveryConfrim(this.state.invoice.id, this.state.receipeNumber)
+    }
   }
 
   sendMessageToSaller (titles, invoiceId, data, type, actionType) {
@@ -633,7 +641,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  processDeliveryConfrim: (id, receipeNumber) => dispatch(salesAction.inputAirwayBill({id: id, airway_bill: receipeNumber}))
+  processDeliveryConfrim: (id, receipeNumber) => dispatch(salesAction.inputAirwayBill({id: id, airway_bill: receipeNumber})),
+  getUnreadDispute: () => dispatch(storeAction.getUnreadDisputeStore())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputShippingInfo)

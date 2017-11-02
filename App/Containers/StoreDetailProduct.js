@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ListView, TouchableOpacity, Image, ScrollView, Modal } from 'react-native'
 import { connect } from 'react-redux'
-import { Images, Metrics } from '../Themes'
+import { Images, Metrics, Colors, Fonts } from '../Themes'
 import { MaskService } from 'react-native-masked-text'
 import * as productAction from '../actions/product'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -96,6 +96,28 @@ class DetailTokoProduk extends React.Component {
     this.props.getDetailProduk(id)
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount) {
+      return (
+        <View style={stylesHome.containerDiskon}>
+          <Text style={stylesHome.diskon}>
+            {discount} %
+          </Text>
+        </View>
+      )
+    } else if (isWholesaler) {
+      return (
+        <View style={[stylesHome.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[stylesHome.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
   renderRow (rowData) {
     let image
     if (rowData.discount > 0) {
@@ -124,11 +146,7 @@ class DetailTokoProduk extends React.Component {
         onPress={() => this.produkDetail(rowData.id)}
       >
         {this.renderImage(image)}
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.discount} %
-          </Text>
-        </View>
+        {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.name}
         </Text>

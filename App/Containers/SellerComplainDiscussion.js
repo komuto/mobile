@@ -136,7 +136,7 @@ class SellerComplainDiscussion extends React.Component {
 
   renderRowDiscussion (rowData) {
     const image = rowData.orderDetail.discussions.map((data, i) => {
-      const timeStampToDate = moment.unix(data.created_at).format('h:mm').toString()
+      const timeStampToDate = moment.unix(data.created_at).format('DD MMMM YYYY h:mm').toString()
       return (
         <View key={i} onLayout={this.onLayout} style={styles.containerMessage}>
           <View style={styles.maskedPhoto}>

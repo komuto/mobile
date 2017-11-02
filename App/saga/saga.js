@@ -248,6 +248,7 @@ const review = function * () {
   yield takeEvery(typeReq(reviewActions.ADD_REVIEWS), reviewSaga.addReviews)
   yield takeEvery(typeReq(reviewActions.GET_BUYER_REVIEW), reviewSaga.getBuyerReview)
   yield takeEvery(typeReq(reviewActions.GET_SELLER_REVIEW), reviewSaga.getSellerReview)
+  yield takeEvery(typeReq(reviewActions.GET_STORE_REVIEW), reviewSaga.getStoreReview)
 }
 
 const saldo = function * () {

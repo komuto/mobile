@@ -156,7 +156,11 @@ const images = {
   infoDone: require('../Images/Icons/icon-done-green.png'),
   emptyTransaction: require('../Images/empty-transaction.png'),
   sendMessage: require('../Images/Icons/send-message.png'),
-  sendMessageInactive: require('../Images/Icons/send-message-inactive.png')
+  sendMessageInactive: require('../Images/Icons/send-message-inactive.png'),
+  emptyCatalog: require('../Images/empty-catalog.png'),
+  emptyDelivery: require('../Images/empty-delivery.png'),
+  emptyDropshipper: require('../Images/empty-dropshipper.png'),
+  emptySales: require('../Images/empty-sales.png')
 }
 
 export default images

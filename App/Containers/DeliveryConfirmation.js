@@ -22,7 +22,7 @@ import * as salesAction from '../actions/transaction'
 
 // Styles
 import styles from './Styles/DeliveryConfirmationStyle'
-import { Fonts, Colors } from '../Themes'
+import { Fonts, Colors, Images } from '../Themes'
 
 class DeliveryConfirmation extends React.Component {
 
@@ -267,9 +267,24 @@ class DeliveryConfirmation extends React.Component {
     )
   }
 
-  render () {
+  renderEmpty () {
     return (
-      <View style={styles.container}>
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptyDelivery} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Konfirmasi Pengiriman Kosong
+        </Text>
+        <Text style={styles.textNotif}>
+          Anda belum memiliki daftar barang yang siap untuk dikirim ke pembeli Anda
+        </Text>
+      </View>
+    )
+  }
+
+  render () {
+    let view
+    if (this.state.stateConfrimOrder.length > 0) {
+      view = (
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.stateConfrimOrder)}
           renderRow={this.renderRowOrder.bind(this)}
@@ -299,6 +314,15 @@ class DeliveryConfirmation extends React.Component {
           }}
           enableEmptySections
       />
+      )
+    } else {
+      view = (
+        this.renderEmpty()
+      )
+    }
+    return (
+      <View style={styles.container}>
+        {view}
       </View>
     )
   }

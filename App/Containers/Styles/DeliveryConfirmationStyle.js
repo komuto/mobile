@@ -121,5 +121,31 @@ export default StyleSheet.create({
     borderLeftColor: 'transparent',
     backgroundColor: Colors.veryLighBlue,
     width: 20
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 100,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 203,
+    height: 150,
+    marginBottom: 10,
+    resizeMode: 'contain'
+  },
+  textNotif: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  price: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
   }
 })

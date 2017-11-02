@@ -244,5 +244,31 @@ export default StyleSheet.create({
     padding: 20,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 30,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 185,
+    height: 163,
+    resizeMode: 'contain',
+    marginBottom: 10
+  },
+  textNotif: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  price: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
   }
 })

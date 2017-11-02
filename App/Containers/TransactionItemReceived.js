@@ -571,7 +571,7 @@ class TransactionItemReceived extends React.Component {
       this.state.dataPhotos.map(data => {
         postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
       })
-      postData.append('type', 'product')
+      postData.append('type', 'dispute')
       this.props.photoUpload(postData)
       this.setState({loading: true})
     } else {

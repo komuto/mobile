@@ -37,7 +37,7 @@ class StoreProductDisplayed extends React.Component {
       doneFetching: true
     }
     this.state = {
-      product: props.dataProduk || null,
+      product: props.dataProduk || [],
       activeCatalog: false,
       statusDotDisplay: false,
       statusDotHidden: false,
@@ -496,6 +496,20 @@ class StoreProductDisplayed extends React.Component {
     this.props.getListProduk({hidden: false})
   }
 
+  renderEmpty () {
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Katalog Anda Kosong
+        </Text>
+        <Text style={styles.textNotif}>
+          Anda belum memiliki katalog untuk pengelompokkan barang Anda
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     if (this.submitting.doneFetching) {
       return (
@@ -503,6 +517,22 @@ class StoreProductDisplayed extends React.Component {
           <ActivityIndicator color={Colors.red} size='large' />
         </View>
       )
+    }
+    let view, viewModal
+    if (this.state.product.storeProducts.length > 0) {
+      view = (
+        this.DaftarProdukDiTampilkan(this.state.product)
+      )
+      viewModal = (
+        this.renderKatalogtButton(),
+        this.renderTambahButton(),
+        this.renderModal()
+      )
+    } else {
+      view = (
+        this.renderEmpty()
+      )
+      viewModal = null
     }
     return (
       <View>
@@ -520,11 +550,9 @@ class StoreProductDisplayed extends React.Component {
             />
             }
           >
-          {this.DaftarProdukDiTampilkan(this.state.product)}
+          {view}
         </ScrollView>
-        {this.renderKatalogtButton()}
-        {this.renderTambahButton()}
-        {this.renderModal()}
+        {viewModal}
       </View>
     )
   }

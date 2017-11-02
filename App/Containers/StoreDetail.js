@@ -249,9 +249,9 @@ class StoreDetail extends React.Component {
           <ScrollView tabLabel='Profile' ref='Profile' style={styles.scrollView}>
             <StoreDetailProfile />
           </ScrollView>
-          <ScrollView tabLabel='Penilaian' ref='Rating' style={styles.scrollView}>
+          <View tabLabel='Penilaian' ref='Rating' style={styles.scrollView}>
             <StoreDetailRating />
-          </ScrollView>
+          </View>
         </ScrollableTabView>
       </View>
     )

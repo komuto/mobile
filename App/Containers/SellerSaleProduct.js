@@ -18,7 +18,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as salesAction from '../actions/transaction'
 
-import {Fonts, Colors} from '../Themes'
+import {Fonts, Colors, Images} from '../Themes'
 import styles from './Styles/SellerSaleProductStyle'
 
 class SellerSaleProduct extends React.Component {
@@ -297,8 +297,8 @@ class SellerSaleProduct extends React.Component {
   }
 
   render () {
-    return (
-      <View>
+    if (this.state.saleList.length > 0 || this.state.isLoading) {
+      return (
         <ListView
           dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
           renderRow={this.renderRowProduct.bind(this)}
@@ -328,8 +328,20 @@ class SellerSaleProduct extends React.Component {
           }}
           enableEmptySections
         />
-      </View>
-    )
+      )
+    } else {
+      return (
+        <View style={styles.emptyContainer}>
+          <Image source={Images.emptySales} style={styles.emptyImage} />
+          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+            Daftar Penjualan Anda Kosong
+          </Text>
+          <Text style={styles.textNotif}>
+            Anda belum memiliki histori transaksi penjualan
+          </Text>
+        </View>
+      )
+    }
   }
 }
 

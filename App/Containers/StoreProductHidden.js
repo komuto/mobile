@@ -34,7 +34,7 @@ class StoreProductHidden extends React.Component {
       doneFetching: true
     }
     this.state = {
-      product: props.dataProduk || null,
+      product: props.dataProduk || [],
       callback: this.props.callback,
       isRefreshing: false
     }
@@ -276,6 +276,20 @@ class StoreProductHidden extends React.Component {
     this.props.getListProdukHidden()
   }
 
+  renderEmpty () {
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Katalog Anda Kosong
+        </Text>
+        <Text style={styles.textNotif}>
+          Anda belum memiliki katalog untuk pengelompokkan barang Anda
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     if (this.submitting.doneFetching) {
       return (
@@ -284,8 +298,9 @@ class StoreProductHidden extends React.Component {
         </View>
       )
     }
-    return (
-      <View>
+    let view
+    if (this.state.product.products.length > 0) {
+      view = (
         <ListView
           enableEmptySections
           contentContainerStyle={{ flexWrap: 'wrap' }}
@@ -303,6 +318,13 @@ class StoreProductHidden extends React.Component {
             />
             }
         />
+      )
+    } else {
+      view = this.renderEmpty()
+    }
+    return (
+      <View>
+        {view}
         {this.renderTambahButton()}
       </View>
     )

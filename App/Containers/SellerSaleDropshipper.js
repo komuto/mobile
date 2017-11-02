@@ -18,7 +18,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as salesAction from '../actions/transaction'
 
-import {Fonts, Colors} from '../Themes'
+import {Fonts, Colors, Images} from '../Themes'
 import styles from './Styles/SellerSaleDropshipperStyle'
 
 class SellerSaleDropshipper extends React.Component {
@@ -309,37 +309,51 @@ class SellerSaleDropshipper extends React.Component {
   }
 
   render () {
-    return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
-        renderRow={this.renderRowProduct.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
-        onEndReached={this.loadmore.bind(this)}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
-              />
-            )
+    if (this.state.saleList.length > 0) {
+      return (
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
+          renderRow={this.renderRowProduct.bind(this)}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.isRefreshing}
+              onRefresh={this.refresh}
+              tintColor={Colors.red}
+              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+              title='Loading...'
+              titleColor={Colors.red}
+              progressBackgroundColor={Colors.snow}
+            />
           }
-          return <View />
-        }}
-        enableEmptySections
-      />
-    )
+          onEndReached={this.loadmore.bind(this)}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+        />
+      )
+    } else {
+      return (
+        <View style={styles.emptyContainer}>
+          <Image source={Images.emptyDropshipper} style={styles.emptyImage} />
+          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+            Daftar Penjualan Dropshipping Anda Kosong
+          </Text>
+          <Text style={styles.textNotif}>
+            Anda belum memiliki histori transaksi penjualan dropshipping (Menjual barang penjual lain)
+          </Text>
+        </View>
+      )
+    }
   }
 }
 

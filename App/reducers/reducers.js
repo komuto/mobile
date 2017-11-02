@@ -191,7 +191,8 @@ const review = {
   productReview: reviewReducers.getReviews,
   addReviews: reviewReducers.addReviews,
   buyerReview: reviewReducers.getBuyerReview,
-  sellerReview: reviewReducers.getSellerReview
+  sellerReview: reviewReducers.getSellerReview,
+  storeReview: reviewReducers.storeReview
 }
 
 const saldo = {

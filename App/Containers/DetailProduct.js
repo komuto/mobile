@@ -1274,6 +1274,7 @@ class DetailProduct extends React.Component {
 
   detailPenjual (id) {
     this.props.getToko(id)
+    this.props.getStoreReview(id)
     this.setState({
       isHere: false
     })
@@ -1606,7 +1607,8 @@ const mapDispatchToProps = (dispatch) => {
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
     resetProduk: () => dispatch(productAction.resetDetail()),
     getCatalog: () => dispatch(catalogAction.getListCatalog()),
-    putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id}))
+    putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id})),
+    getStoreReview: (id) => dispatch(reviewAction.getStoreReview({id: id, page: 1}))
   }
 }
 

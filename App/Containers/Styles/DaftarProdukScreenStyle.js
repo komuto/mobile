@@ -248,12 +248,12 @@ export default StyleSheet.create({
   emptyContainer: {
     flexDirection: 'column',
     padding: 20,
-    marginTop: 30,
+    marginTop: 80,
     alignItems: 'center'
   },
   emptyImage: {
-    width: 185,
-    height: 163,
+    width: 195,
+    height: 172,
     resizeMode: 'contain',
     marginBottom: 10
   },

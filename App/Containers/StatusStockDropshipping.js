@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TextInput, Modal, Text, Image, BackAndroid, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, TextInput, Modal, Text, ToastAndroid, Image, BackAndroid, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 import CustomRadio from '../Components/CustomRadioCatalog'
@@ -42,21 +42,28 @@ class StatusStockDropshipping extends React.Component {
         loading: false
       })
       this.props.getDetailStoreProduct(this.state.idProduct)
-      NavigationActions.pop()
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'displayAction') {
       this.setState({
         loading: false
       })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       this.setState({
         isDropship: nextProps.dataUpdateProduct.product.is_dropship,
         loading: false
       })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
       this.props.getDetailStoreProduct(this.state.idProduct)
       nextProps.dataUpdateProduct.status = 0
+    }
+    if (nextProps.dataUpdateProduct.status !== 200 && nextProps.dataUpdateProduct.status !== 0) {
+      ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.LONG)
     }
   }
 
@@ -120,7 +127,7 @@ class StatusStockDropshipping extends React.Component {
             />
           </View>
           <TouchableOpacity onPress={() => this.setState({modalDropshipping: true})}>
-            <Text style={styles.link}>Pelajari Lebih Lanjut tentang dropshipping</Text>
+            <Text style={styles.link}>Pelajari lebih lanjut tentang dropshipping</Text>
           </TouchableOpacity>
         </View>
       )

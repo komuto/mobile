@@ -196,7 +196,7 @@ class PurchaseAddToCart extends React.Component {
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       if (this.state.activeScene) {
         this.setState({ loadingCart: false })
-        ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
+        ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
         this.props.resetCreateStatus()
       }
     }
@@ -205,7 +205,7 @@ class PurchaseAddToCart extends React.Component {
       this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.LONG)
       nextProps.dataAddressList.status = 0
     }
   }

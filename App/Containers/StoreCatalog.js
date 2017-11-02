@@ -294,6 +294,27 @@ class StoreCatalog extends React.Component {
   }
 
   render () {
+    const { listKatalog } = this.state
+    let view
+    if (listKatalog.length > 0) {
+      view = (
+        <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDot: false})} >
+          {this.mapingKatalog()}
+        </TouchableOpacity>
+      )
+    } else {
+      view = (
+        <View style={styles.emptyContainer}>
+          <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+            Katalog Anda Kosong
+          </Text>
+          <Text style={styles.textNotifEmpty}>
+            Anda belum memiliki katalog untuk pengelompokkan barang Anda
+          </Text>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -309,9 +330,7 @@ class StoreCatalog extends React.Component {
             progressBackgroundColor={Colors.snow}
           />
         }>
-          <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDot: false})} >
-            {this.mapingKatalog()}
-          </TouchableOpacity>
+          {view}
         </ScrollView>
         <TouchableOpacity style={styles.create} onPress={() => this.handleCreateKatalog()}>
           <View elevation={9}>

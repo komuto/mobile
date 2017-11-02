@@ -17,9 +17,9 @@ class TransactionExpired extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       sisaPembayaran: 0,
-      total: 320000,
-      kode: 'BELANJAENAK',
-      diskon: 10000,
+      total: 0,
+      kode: '',
+      diskon: 0,
       expand: false,
       dataBarang: [],
       id: ''

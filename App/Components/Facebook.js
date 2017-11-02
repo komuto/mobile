@@ -28,7 +28,7 @@ class Facebook extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.datalogin.message, ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.SHORT)
     }
   }
 

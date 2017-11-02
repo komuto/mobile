@@ -65,7 +65,7 @@ class BalanceHistoryComission extends React.Component {
 
       }
     } else if (nextProps.dataHistory.status !== 200 && nextProps.dataHistory.status !== 0) {
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataHistory.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.LONG)
       nextProps.dataHistory.status = 0
     }
   }

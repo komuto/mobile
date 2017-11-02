@@ -116,7 +116,7 @@ class PurchaseCart extends React.Component {
         this.props.getCartReset()
       }
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
-      // ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
+      // ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
       this.setState({
         data: [],
         getData: false,
@@ -146,10 +146,10 @@ class PurchaseCart extends React.Component {
         modalPromo: false
       })
       nextProps.dataPromo.status = 0
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
-      ToastAndroid.show('Penggunaan kode promo dibatalkan..', ToastAndroid.LONG)
+      ToastAndroid.show('Penggunaan kode promo dibatalkan', ToastAndroid.LONG)
       this.setState({
         diskon: 0,
         statusDiskon: false,
@@ -159,7 +159,7 @@ class PurchaseCart extends React.Component {
     } else if (nextProps.dataCancelPromo.status !== 200 && nextProps.dataCancelPromo.status !== 0) {
       this.setState({ requestPromo: false })
       nextProps.dataCancelPromo.status = 0
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCancelPromo.message, ToastAndroid.LONG)
     }
     if (nextProps.dataCheckout.status === 200) {
       NavigationActions.payment({
@@ -174,7 +174,7 @@ class PurchaseCart extends React.Component {
       this.setState({
         loadingCheckout: false
       })
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCheckout.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.LONG)
       this.props.resetUpdateCart()
     }
     if (nextProps.dataDeleteItem.status === 200) {

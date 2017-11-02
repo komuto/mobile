@@ -331,11 +331,11 @@ class DetailSales extends React.Component {
   }
 
   renderPriceDetail (data) {
-    var subTotal = this.maskedMoney(data.total_bill - data.insurance_fee - data.delivery_cost)
+    var subTotal = this.maskedMoney(data.total_bill)
     var insuranceFee = this.maskedMoney(data.insurance_fee)
     var postalFee = this.maskedMoney(data.delivery_cost)
 
-    var total = data.total_bill
+    var total = data.total_bill + data.insurance_fee + data.delivery_cost
     var totalMasked = this.maskedMoney(total)
 
     return (

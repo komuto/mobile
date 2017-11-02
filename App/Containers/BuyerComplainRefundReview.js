@@ -46,7 +46,7 @@ class BuyerComplainRefundReview extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataExchange.message, ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataExchange.message, ToastAndroid.SHORT)
     }
   }
 

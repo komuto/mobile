@@ -499,12 +499,12 @@ class StoreProductDisplayed extends React.Component {
   renderEmpty () {
     return (
       <View style={styles.emptyContainer}>
-        <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+        <Image source={Images.emptySales} style={styles.emptyImage} />
         <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
-          Katalog Anda Kosong
+          Belum Ada Produk
         </Text>
         <Text style={styles.textNotif}>
-          Anda belum memiliki katalog untuk pengelompokkan barang Anda
+          Anda belum memiliki produk yang ditambahkan
         </Text>
       </View>
     )
@@ -524,9 +524,7 @@ class StoreProductDisplayed extends React.Component {
         this.DaftarProdukDiTampilkan(this.state.product)
       )
       viewModal = (
-        this.renderKatalogtButton(),
-        this.renderTambahButton(),
-        this.renderModal()
+        this.renderKatalogtButton()
       )
     } else {
       view = (
@@ -552,6 +550,8 @@ class StoreProductDisplayed extends React.Component {
           >
           {view}
         </ScrollView>
+        {this.renderTambahButton()}
+        {this.renderModal()}
         {viewModal}
       </View>
     )

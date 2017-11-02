@@ -57,7 +57,7 @@ class EditProductPhoto extends React.Component {
       ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       this.props.resetAlterProduct()
-      ToastAndroid.show('Terjadi kesalahan ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.LONG)
     }
   }
 

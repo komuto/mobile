@@ -178,5 +178,31 @@ export default StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     color: Colors.snow
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 30,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 195,
+    height: 172,
+    resizeMode: 'contain',
+    marginBottom: 10
+  },
+  textNotifEmpty: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  price: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
   }
 })

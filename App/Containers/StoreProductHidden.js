@@ -279,12 +279,12 @@ class StoreProductHidden extends React.Component {
   renderEmpty () {
     return (
       <View style={styles.emptyContainer}>
-        <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+        <Image source={Images.emptySales} style={styles.emptyImage} />
         <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
-          Katalog Anda Kosong
+          Tidak Ada Produk Yang Disembunyikan
         </Text>
         <Text style={styles.textNotif}>
-          Anda belum memiliki katalog untuk pengelompokkan barang Anda
+          Anda belum memiliki produk yang disembunyikan
         </Text>
       </View>
     )
@@ -325,7 +325,6 @@ class StoreProductHidden extends React.Component {
     return (
       <View>
         {view}
-        {this.renderTambahButton()}
       </View>
     )
   }

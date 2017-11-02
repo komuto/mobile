@@ -158,9 +158,9 @@ class TransactionDetailItem extends React.Component {
     } else {
       viewInsurance = null
     }
-    const subtotalPrice = this.maskedMoney(subtotal - shippingFee - insuranceFee)
+    const subtotalPrice = this.maskedMoney(subtotal)
     const shippingFeePrice = this.maskedMoney(shippingFee)
-    const totalPrice = this.maskedMoney(subtotal)
+    const totalPrice = this.maskedMoney(subtotal + shippingFee + insuranceFee)
     return (
       <View style={styles.shippingContainer}>
         <View style={[styles.addressContainer, { paddingTop: 5 }]}>

@@ -34,7 +34,8 @@ class SellerComplainDone extends React.Component {
       page: 0,
       loadmore: false,
       isRefreshing: true,
-      isLoading: false
+      isLoading: false,
+      gettingData: true
     }
   }
 
@@ -56,7 +57,8 @@ class SellerComplainDone extends React.Component {
             page: this.state.page + 1,
             isRefreshing: false,
             loadmore: true,
-            isLoading: false
+            isLoading: false,
+            gettingData: false
           })
         } else {
           let data = [...this.state.complains, ...propsResolvedCompaint.orders]
@@ -66,7 +68,8 @@ class SellerComplainDone extends React.Component {
             isLoading: false,
             isRefreshing: false,
             loadmore: false,
-            page: 0
+            page: 0,
+            gettingData: false
           })
         }
       }
@@ -105,7 +108,7 @@ class SellerComplainDone extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, complains: [], isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, complains: [], isLoading: true })
     this.submitting.complain = true
     this.props.getComplain({page: 1, is_resolved: true})
   }
@@ -206,38 +209,65 @@ class SellerComplainDone extends React.Component {
     })
   }
 
+  listViewComplain (data) {
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRow.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadMore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={[styles.containerEmpty, {marginTop: 50}]}>
+        <Image source={Images.emptyComplain} style={{width: 201, height: 177}} />
+        <Text style={styles.textTitleEmpty}>Komplain Barang Anda kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan komplain{'\n'}terkait barang yang Anda beli</Text>
+      </View>
+    )
+  }
+
   render () {
+    const { gettingData, complains } = this.state
+    let view
+    if (!gettingData) {
+      if (complains.length > 0) {
+        view = (this.listViewComplain(complains))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.listViewComplain(complains))
+    }
     return (
       <View style={styles.container}>
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.complains)}
-          renderRow={this.renderRow.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
-          }
-          onEndReached={this.loadMore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadMore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
-        />
+        {view}
       </View>
     )
   }

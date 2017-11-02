@@ -76,10 +76,10 @@ export default StyleSheet.create({
   },
   nominalDiskon: {
     textDecorationLine: 'line-through',
-    fontSize: Fonts.size.small,
+    fontSize: Fonts.size.tiny,
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
-    marginTop: 7.5
+    marginTop: 11
   },
   nominalDiskon1: {
     textDecorationLine: 'line-through',

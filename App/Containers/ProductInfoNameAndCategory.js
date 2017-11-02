@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -46,6 +46,12 @@ class ProductInfoNameAndCategory extends React.Component {
       descProduk: '',
       active: false,
       errorColorNamaProduk: Colors.snow,
+      errorColorDescription: Colors.snow,
+      errorColorBrand: Colors.snow,
+      errorColorCategory1: Colors.snow,
+      errorColorCategory2: Colors.snow,
+      errorColorCategory3: Colors.snow,
+      errorColorCategory4: Colors.snow,
       colorCategory1: Colors.labelgrey,
       colorCategory2: Colors.labelgrey,
       colorCategory3: Colors.labelgrey,
@@ -203,13 +209,31 @@ class ProductInfoNameAndCategory extends React.Component {
           errorColorNamaProduk: Colors.red
         })
         break
-      case 'empty':
+      case 'category1':
         this.setState({
-          errorColorNamaProduk: Colors.red
+          errorColorCategory1: Colors.red
         })
         break
-      default:
-        window.alert('Internal Error')
+      case 'brand':
+        this.setState({
+          errorColorBrand: Colors.red
+        })
+        break
+      case 'desc':
+        this.setState({
+          errorColorDescription: Colors.red
+        })
+        break
+      case 'empty':
+        this.setState({
+          errorColorNamaProduk: Colors.red,
+          errorColorCategory1: Colors.red,
+          errorColorCategory2: Colors.red,
+          errorColorCategory3: Colors.red,
+          errorColorCategory4: Colors.red,
+          errorColorBrand: Colors.red,
+          errorColorDescription: Colors.red
+        })
         break
     }
   }
@@ -221,13 +245,16 @@ class ProductInfoNameAndCategory extends React.Component {
           errorColorNamaProduk: Colors.snow
         })
         break
-      case 'empty':
+      case 'desc':
         this.setState({
-          errorColorNamaProduk: Colors.snow
+          errorColorBrand: Colors.snow
         })
         break
-      default:
-        window.alert('Internal Error')
+      case 'empty':
+        this.setState({
+          errorColorNamaProduk: Colors.snow,
+          errorColorDescription: Colors.snow
+        })
         break
     }
   }
@@ -239,9 +266,15 @@ class ProductInfoNameAndCategory extends React.Component {
           errorColorNamaProduk: Colors.snow
         })
         break
-      default:
+      case 'desc':
         this.setState({
-          errorColorNamaProduk: Colors.snow
+          errorColorDescription: Colors.snow
+        })
+        break
+      case 'empty':
+        this.setState({
+          errorColorNamaProduk: Colors.snow,
+          errorColorDescription: Colors.snow
         })
         break
     }
@@ -477,18 +510,18 @@ class ProductInfoNameAndCategory extends React.Component {
   }
 
   viewBrand () {
-    const {errorColorNamaProduk, colorBrand, brandCheck, iconBrand} = this.state
+    const {errorColorBrand, colorBrand, brandCheck, iconBrand} = this.state
     if (brandCheck) {
       return (
         <View>
           <Text style={[styles.textLabel]}>Brand</Text>
           <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalBrand: true, iconBrand: Images.up })}>
+            <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalBrand: true, iconBrand: Images.up, errorColorBrand: Colors.snow })}>
               <Text style={[styles.inputPicker, {color: colorBrand}]}>{this.state.fieldBrand}</Text>
               <Image source={iconBrand} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
-          <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Brand Harus dipilih</Text>
+          <Text style={[styles.textError, {color: errorColorBrand}]}>Brand Harus dipilih</Text>
         </View>
       )
     } else {
@@ -503,6 +536,11 @@ class ProductInfoNameAndCategory extends React.Component {
       colorCheckbox,
       brandCheck,
       errorColorNamaProduk,
+      errorColorCategory1,
+      errorColorCategory2,
+      errorColorCategory3,
+      errorColorCategory4,
+      errorColorDescription,
       colorCategory1,
       colorCategory2,
       colorCategory3,
@@ -542,36 +580,36 @@ class ProductInfoNameAndCategory extends React.Component {
         <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Nama Produk Harus diisi</Text>
         <Text style={[styles.textLabel]}>Kategori</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory1: true, iconCategory1: Images.up })}>
+          <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory1: true, iconCategory1: Images.up, errorColorCategory1: Colors.snow })}>
             <Text style={[styles.inputPicker, {color: colorCategory1}]}>{fieldCategory1}</Text>
             <Image source={iconCategory1} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Kategori Harus dipilih</Text>
+        <Text style={[styles.textError, {color: errorColorCategory1}]}>Kategori Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 1</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity disabled={isDisable2} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory2: true, iconCategory2: Images.up })}>
+          <TouchableOpacity disabled={isDisable2} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory2: true, iconCategory2: Images.up, errorColorCategory2: Colors.snow })}>
             <Text style={[styles.inputPicker, {color: colorCategory2}]}>{fieldCategory2}</Text>
             <Image source={iconCategory2} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 1 Harus dipilih</Text>
+        <Text style={[styles.textError, {color: errorColorCategory2}]}>Sub-Kategori 1 Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 2</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity disabled={isDisable3} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory3: true, iconCategory3: Images.up })}>
+          <TouchableOpacity disabled={isDisable3} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory3: true, iconCategory3: Images.up, errorColorCategory3: Colors.snow })}>
             <Text style={[styles.inputPicker, {color: colorCategory3}]}>{fieldCategory3}</Text>
             <Image source={iconCategory3} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 2 Harus dipilih</Text>
+        <Text style={[styles.textError, {color: errorColorCategory3}]}>Sub-Kategori 2 Harus dipilih</Text>
         <Text style={[styles.textLabel]}>Sub-Kategori 3</Text>
         <View style={styles.inputContainer}>
-          <TouchableOpacity disabled={isDisable4} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory4: true, iconCategory4: Images.up })}>
+          <TouchableOpacity disabled={isDisable4} style={styles.pilihDestinasi} onPress={() => this.setState({ modalCategory4: true, iconCategory4: Images.up, errorColorCategory4: Colors.snow })}>
             <Text style={[styles.inputPicker, {color: colorCategory4}]}>{fieldCategory4}</Text>
             <Image source={iconCategory4} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Sub-Kategori 3 Harus dipilih</Text>
+        <Text style={[styles.textError, {color: errorColorCategory4}]}>Sub-Kategori 3 Harus dipilih</Text>
         <View style={{flexDirection: 'row', alignItems: 'center', paddingTop: 5, paddingBottom: 20.8}}>
           <TouchableOpacity onPress={() => this.handdleBrand()}>
             <View style={[styles.box, {backgroundColor: colorCheckbox}]}>
@@ -593,8 +631,8 @@ class ProductInfoNameAndCategory extends React.Component {
           autoCapitalize='none'
           autoCorrect
           multiline
-          onFocus={() => this.onFocus('namaproduk')}
-          onBlur={() => this.onBlur('namaproduk')}
+          onFocus={() => this.onFocus('desc')}
+          onBlur={() => this.onBlur('desc')}
           onChange={(event) => {
             this.setState({
               descProduk: event.nativeEvent.text,
@@ -604,7 +642,7 @@ class ProductInfoNameAndCategory extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Deksripsi Produk Anda'
         />
-        <Text style={[styles.textError, {color: errorColorNamaProduk}]}>Deksripsi Produk Harus diisi</Text>
+        <Text style={[styles.textError, {color: errorColorDescription}]}>Deksripsi Produk Harus diisi</Text>
       </View>
     )
   }
@@ -612,26 +650,47 @@ class ProductInfoNameAndCategory extends React.Component {
   nextState () {
     const {
       dataProduk,
+      images,
       namaProduk,
       idCategory1,
-      idBrand,
       descProduk,
-      images
+      idBrand,
+      brandCheck
     } = this.state
 
     if (namaProduk === '') {
       this.onError('namaproduk')
-    } else {
-      dataProduk[0] = namaProduk
-      dataProduk[1] = idCategory1
-      dataProduk[2] = idBrand
-      dataProduk[3] = descProduk
-      NavigationActions.priceandspesificationproduct({
-        type: ActionConst.PUSH,
-        dataProduk: dataProduk,
-        images: images
-      })
     }
+    if (idCategory1 === 0) {
+      this.onError('category1')
+    }
+    if (brandCheck && idBrand === 0) {
+      this.onError('brand')
+    }
+    if (descProduk === '') {
+      this.onError('desc')
+    }
+    if (namaProduk !== '' && idCategory1 !== 0 && idCategory1 && descProduk !== '') {
+      if (brandCheck && idBrand === 0) {
+        this.onError('brand')
+      } else {
+        Reactotron.log('lanjut dalam')
+        this.procced(dataProduk, namaProduk, idCategory1, idBrand, descProduk, images)
+      }
+    }
+  }
+
+  procced (data, nameproduct, idCategory, idBrand, desc, photo) {
+    Reactotron.log(photo)
+    data[0] = nameproduct
+    data[1] = idCategory
+    data[2] = idBrand
+    data[3] = desc
+    NavigationActions.priceandspesificationproduct({
+      type: ActionConst.PUSH,
+      dataProduk: data,
+      images: photo
+    })
   }
 
   render () {

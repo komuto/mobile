@@ -9,6 +9,7 @@ import Dropshipping from './Dropshipping'
 import * as katalogAction from '../actions/catalog'
 import * as otherAction from '../actions/other'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -60,7 +61,12 @@ class PriceAndSpecificationProduct extends React.Component {
       maksimalGrosir: '0',
       hargaGrosir: '0',
       normalizePrice: 0,
-      commission: 0
+      commission: 0,
+      colorCatalog: Colors.labelgrey,
+      errorColorPrice: Colors.snow,
+      errorColorWight: Colors.snow,
+      errorColorStock: Colors.snow,
+      errorColorCalatog: Colors.snow
     }
   }
 
@@ -140,6 +146,8 @@ class PriceAndSpecificationProduct extends React.Component {
           this.setState({
             katalogTerpilih: rowData.name,
             idKatalogTerpilih: rowData.id,
+            colorCatalog: Colors.darkgrey,
+            errorColorCalatog: Colors.snow,
             modalListKatalog: false })
         }}
       >
@@ -257,6 +265,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   spesifikasi () {
+    const {errorColorPrice, errorColorStock, errorColorWight} = this.state
     return (
       <View>
         <Text style={styles.title}>Spesifikasi</Text>
@@ -271,6 +280,8 @@ class PriceAndSpecificationProduct extends React.Component {
                 autoCapitalize='none'
                 maxLength={18}
                 autoCorrect
+                onFocus={() => this.onFocus('price')}
+                onBlur={() => this.onBlur('price')}
                 onChangeText={this.handleTextprice}
                 underlineColorAndroid='transparent'
                 placeholder='Harga Produk'
@@ -294,6 +305,7 @@ class PriceAndSpecificationProduct extends React.Component {
               </View>
             </View>
           </View>
+          <Text style={[styles.textError, {color: errorColorPrice}]}>Harga produk harus diisi</Text>
           {this.rincianDiskon()}
           <View style={styles.rowBerat}>
             <TextInput
@@ -304,12 +316,15 @@ class PriceAndSpecificationProduct extends React.Component {
               autoCapitalize='none'
               maxLength={5}
               autoCorrect
+              onFocus={() => this.onFocus('wight')}
+              onBlur={() => this.onBlur('wight')}
               onChangeText={(text) => this.setState({beratProduk: text})}
               underlineColorAndroid='transparent'
               placeholder='Berat Produk'
             />
             <Text style={[styles.inputNoBOrder, {flex: 0}]}>Kg</Text>
           </View>
+          <Text style={[styles.textError, {color: errorColorWight}]}>Berat produk harus diisi</Text>
           <View style={styles.rowBerat}>
             <TextInput
               style={styles.inputNoBOrder}
@@ -319,11 +334,14 @@ class PriceAndSpecificationProduct extends React.Component {
               autoCapitalize='none'
               maxLength={5}
               autoCorrect
+              onFocus={() => this.onFocus('stock')}
+              onBlur={() => this.onBlur('stock')}
               onChangeText={(text) => this.setState({stokProduk: text})}
               underlineColorAndroid='transparent'
               placeholder='Stock Produk'
             />
           </View>
+          <Text style={[styles.textError, {color: errorColorStock}]}>Stok harus diisi</Text>
           <View style={styles.radio}>
             <Text style={[styles.titleContainer, {paddingBottom: -10}]}>Jenis Produk</Text>
             <CustomRadio
@@ -505,6 +523,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   katalog () {
+    const {errorColorCalatog} = this.state
     return (
       <View>
         <Text style={styles.title}>Katalog Toko</Text>
@@ -512,12 +531,13 @@ class PriceAndSpecificationProduct extends React.Component {
           <Text style={[styles.titleDarkContainer]}>Katalog</Text>
           <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.pilihDestinasi} onPress={() => this.setState({ modalListKatalog: true, kategoriIcon: Images.up })}>
-              <Text style={[styles.inputPicker, {color: Colors.darkgrey}]}>{this.state.katalogTerpilih}</Text>
+              <Text style={[styles.inputPicker, {color: this.state.colorCatalog}]}>{this.state.katalogTerpilih}</Text>
               <Image source={Images.down} style={styles.imagePicker} />
             </TouchableOpacity>
           </View>
+          <Text style={[styles.textError, {color: errorColorCalatog}]}>Katalog harus dipilih</Text>
           <TouchableOpacity onPress={() => this.setState({modalTambahKatalog: true})}>
-            <Text style={[styles.linkDesc, {paddingBottom: 0, paddingTop: 19.8}]}>+ Tambah Katalog</Text>
+            <Text style={[styles.linkDesc, {paddingBottom: 0}]}>+ Tambah Katalog</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -661,7 +681,8 @@ class PriceAndSpecificationProduct extends React.Component {
     let tempData = dataGrosir
     tempData.splice(i, 1)
     this.setState({
-      dataGrosir: tempData
+      dataGrosir: tempData,
+      dataGrosirUpload: tempData
     })
   }
 
@@ -701,8 +722,111 @@ class PriceAndSpecificationProduct extends React.Component {
     })
   }
 
+  onError = (field) => {
+    switch (field) {
+      case 'price':
+        this.setState({
+          errorColorPrice: Colors.red
+        })
+        break
+      case 'wight':
+        this.setState({
+          errorColorWight: Colors.red
+        })
+        break
+      case 'stock':
+        this.setState({
+          errorColorStock: Colors.red
+        })
+        break
+      case 'catalog':
+        this.setState({
+          errorColorCalatog: Colors.red
+        })
+        break
+    }
+  }
+
+  onFocus = (field) => {
+    switch (field) {
+      case 'price':
+        this.setState({
+          errorColorPrice: Colors.snow
+        })
+        break
+      case 'wight':
+        this.setState({
+          errorColorWight: Colors.snow
+        })
+        break
+      case 'stock':
+        this.setState({
+          errorColorStock: Colors.snow
+        })
+        break
+      case 'catalog':
+        this.setState({
+          errorColorCalatog: Colors.snow
+        })
+        break
+    }
+  }
+
+  onBlur = (field) => {
+    switch (field) {
+      case 'price':
+        this.setState({
+          errorColorPrice: Colors.snow
+        })
+        break
+      case 'wight':
+        this.setState({
+          errorColorWight: Colors.snow
+        })
+        break
+      case 'stock':
+        this.setState({
+          errorColorStock: Colors.snow
+        })
+        break
+      case 'catalog':
+        this.setState({
+          errorColorCalatog: Colors.snow
+        })
+        break
+    }
+  }
+
   nextState () {
+    const {harga, beratProduk, stokProduk, idKatalogTerpilih, grosirAktif, dataGrosirUpload} = this.state
+    if (harga === '') {
+      this.onError('price')
+    }
+    if (beratProduk === '') {
+      this.onError('wight')
+    }
+    if (stokProduk === '') {
+      this.onError('stock')
+    }
+    if (idKatalogTerpilih === '') {
+      this.onError('catalog')
+    }
+    if (grosirAktif && dataGrosirUpload.length === 0) {
+      ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
+    }
+    if (harga !== '' && beratProduk !== '' && stokProduk !== '' && idKatalogTerpilih !== '') {
+      if (grosirAktif && dataGrosirUpload.length === 0) {
+        ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
+      } else {
+        Reactotron.log('lanjut dalam')
+        this.procced()
+      }
+    }
+  }
+
+  procced () {
     const {images, sembunyikanBarang, harga, diskon, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir, grosirAktif, dataGrosirUpload} = this.state
+    Reactotron.log(images)
     let changeCondition
     if (indexKondisi === 0) {
       changeCondition = 1
@@ -729,7 +853,7 @@ class PriceAndSpecificationProduct extends React.Component {
     NavigationActions.expeditionproduct({
       type: ActionConst.PUSH,
       dataProduk: dataProduk,
-      image: images
+      images: images
     })
   }
 

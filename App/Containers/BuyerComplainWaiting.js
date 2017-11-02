@@ -16,14 +16,16 @@ class BuyerComplainWaiting extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      data: []
+      data: [],
+      gettingData: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDispute.status === 200) {
       this.setState(({
-        data: nextProps.dataDispute.orders
+        data: nextProps.dataDispute.orders,
+        gettingData: false
       }))
     } else if (nextProps.dataDispute.status !== 200 && nextProps.dataDispute.status !== 0) {
       this.setState({
@@ -43,10 +45,10 @@ class BuyerComplainWaiting extends React.Component {
     )
   }
 
-  renderListView () {
+  listViewComplain (data) {
     return (
       <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
+        dataSource={this.dataSource.cloneWithRows(data)}
         renderRow={this.renderRow.bind(this)}
         enableEmptySections
       />
@@ -123,10 +125,31 @@ class BuyerComplainWaiting extends React.Component {
     this.props.getDetailDispute(id)
   }
 
+  renderEmptyState () {
+    return (
+      <View style={[styles.containerEmpty, {marginTop: 50}]}>
+        <Image source={Images.emptyComplain} style={{width: 173, height: 178}} />
+        <Text style={styles.textTitleEmpty}>Komplain Barang Anda kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan komplain{'\n'}terkait barang yang Anda beli</Text>
+      </View>
+    )
+  }
+
   render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.listViewComplain(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.listViewComplain(data))
+    }
     return (
       <View style={styles.container}>
-        {this.renderListView()}
+        {view}
       </View>
     )
   }

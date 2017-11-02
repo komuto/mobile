@@ -211,21 +211,44 @@ class BuyerResolution extends React.Component {
     )
   }
 
-  checkStateResolution (data) {
+  checkStateResolutionUnresolve (data) {
+    if (data.length > 0) {
+      return (
+        <View>
+          {this.notif()}
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(data)}
+            renderRow={this.renderRowUnresolveResolution.bind(this)}
+            enableEmptySections
+          />
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.emptyResolution} style={{width: 201, height: 177}} />
+          <Text style={styles.textTitleEmpty}>Pusat Resolusi Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan keluhan</Text>
+        </View>
+      )
+    }
+  }
+
+  checkStateResolutionResolve (data) {
     if (data.length > 0) {
       return (
         <ListView
           dataSource={this.dataSource.cloneWithRows(data)}
-          renderRow={this.renderRow.bind(this)}
+          renderRow={this.renderRowResolveResolution.bind(this)}
           enableEmptySections
         />
       )
     } else {
       return (
         <View style={styles.containerEmpty}>
-          <Image source={Images.emptyResolution} style={{width: 173, height: 178}} />
-          <Text style={styles.textTitleEmpty}>Pusat Resolusi Kosong</Text>
-          <Text style={styles.textTitleEmpty2}>Anda belum memiliki hal untuk didiskusikan{'\n'}penyelesaian masalahnya</Text>
+          <Image source={Images.emptyResolution} style={{width: 201, height: 177}} />
+          <Text style={styles.textTitleEmpty}>Pusat Resolusi Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan keluhan</Text>
         </View>
       )
     }
@@ -584,20 +607,11 @@ class BuyerResolution extends React.Component {
           initialPage={this.state.page}
         >
           <ScrollView tabLabel='Menunggu' ref='waiting' style={styles.scrollView}>
-            {this.notif()}
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.dataUnresolve)}
-              renderRow={this.renderRowUnresolveResolution.bind(this)}
-              enableEmptySections
-            />
+            {this.checkStateResolutionUnresolve(this.state.dataUnresolve)}
             {spinner}
           </ScrollView>
           <ScrollView tabLabel='Terselesaikan' ref='complete' style={styles.scrollView}>
-            <ListView
-              dataSource={this.dataSource.cloneWithRows(this.state.dataResolve)}
-              renderRow={this.renderRowResolveResolution.bind(this)}
-              enableEmptySections
-            />
+            {this.checkStateResolutionResolve(this.state.dataResolve)}
           </ScrollView>
         </ScrollableTabView>
         <TouchableOpacity style={styles.create} onPress={() => this.setState({modalCreateComplaint: true})}>

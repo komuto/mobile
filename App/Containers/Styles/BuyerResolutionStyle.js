@@ -109,7 +109,7 @@ export default StyleSheet.create({
   containerEmpty: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 63
+    marginTop: 70
   },
   textTitleEmpty: {
     paddingTop: 27.5,

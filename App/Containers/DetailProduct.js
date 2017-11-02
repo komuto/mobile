@@ -18,7 +18,7 @@ import { MaskService } from 'react-native-masked-text'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import ModalLogin from '../Components/ModalLogin'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -450,9 +450,43 @@ class DetailProduct extends React.Component {
     }
   }
 
+  renderDiskon (status, nominal) {
+    Reactotron.log('render dis ;' + status)
+    if (status) {
+      const money = this.maskedMoney(nominal)
+      return (
+        <Text style={styles.nominalDiskon}>
+          {money}
+        </Text>
+      )
+    }
+    return (
+      <Text style={styles.nominalDiskon1}>
+        asd
+      </Text>
+    )
+  }
+
+  renderDiskon2 (status, nominal) {
+    Reactotron.log('render dis ;' + status)
+    if (status) {
+      const money = this.maskedMoney(nominal)
+      return (
+        <Text style={styles.nominalDiskon2}>
+          {money}
+        </Text>
+      )
+    }
+    return (
+      <Text style={styles.nominalDiskon1}>
+        asd
+      </Text>
+    )
+  }
+
   renderTitle () {
-    const {id, grosir, discount, pickFromDropshipper, commission} = this.state
-    const totalHarga = this.maskedMoney(this.state.price)
+    const {id, grosir, title, discount, diskon, pickFromDropshipper, commission, price} = this.state
+    const totalHarga = this.maskedMoney(price)
     let valueCommission
     if (pickFromDropshipper) {
       valueCommission = (
@@ -462,13 +496,15 @@ class DetailProduct extends React.Component {
       )
     }
 
-    const hargaDiskon = this.discountCalculate(this.state.price, this.state.diskon)
+    const hargaDiskon = this.discountCalculate(price, diskon)
+    const hargaDiskonMasked = this.maskedMoney(price)
     if (!grosir && !discount) {
+      Reactotron.log('tidak dis, tidak gros')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
             {this.renderLikes(pickFromDropshipper, id)}
           </View>
@@ -481,25 +517,26 @@ class DetailProduct extends React.Component {
         </View>
       )
     } else if (discount && !grosir) {
+      Reactotron.log('dis')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
             {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
               <Text style={styles.diskon}>
-                {this.state.diskon}%
+                {diskon}%
               </Text>
             </View>
             <View>
-              {this.renderDiskon(true, totalHarga)}
+              {this.renderDiskon(discount, price)}
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={[styles.price, {marginTop: 0}]}>
-                  {hargaDiskon}{'\b'}
+                  {hargaDiskonMasked}{'\b'}
                 </Text>
                 {valueCommission}
               </View>
@@ -508,6 +545,7 @@ class DetailProduct extends React.Component {
         </View>
       )
     } else if (!discount && grosir) {
+      Reactotron.log('gros')
       return (
         <View>
           <View style={styles.flexRow}>
@@ -519,12 +557,12 @@ class DetailProduct extends React.Component {
             <View style={{ flexDirection: 'column', flex: 1 }}>
               <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
                 <Text style={styles.title}>
-                  {this.state.title}
+                  {title}
                 </Text>
                 {this.renderLikes(pickFromDropshipper, id)}
               </View>
               <Text style={[styles.price, { marginLeft: 15 }]}>
-                {this.state.price}
+                {price}
               </Text>
               {valueCommission}
             </View>
@@ -532,18 +570,19 @@ class DetailProduct extends React.Component {
         </View>
       )
     } else {
+      Reactotron.log('normal')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
             {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
               <Text style={styles.diskon}>
-                {this.state.diskon}%
+                {diskon}%
               </Text>
             </View>
             <View>
@@ -717,22 +756,6 @@ class DetailProduct extends React.Component {
     }
     return (
       <Image source={Images.love} style={styles.image24p} />
-    )
-  }
-
-  renderDiskon (status, nominal) {
-    if (status) {
-      const money = this.maskedMoney(nominal)
-      return (
-        <Text style={styles.nominalDiskon}>
-          {money}
-        </Text>
-      )
-    }
-    return (
-      <Text style={styles.nominalDiskon1}>
-        asd
-      </Text>
     )
   }
 
@@ -1427,7 +1450,7 @@ class DetailProduct extends React.Component {
             </Text>
             {this.renderVerified(this.state.verified)}
           </View>
-          {this.renderDiskon(rowData.is_discount, rowData.price)}
+          {this.renderDiskon2(rowData.is_discount, rowData.price)}
           <View style={styles.otherProductMoneyContainer}>
             <View style={{flex: 1}}>
               <Text style={stylesHome.harga}>

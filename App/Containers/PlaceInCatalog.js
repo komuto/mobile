@@ -66,11 +66,17 @@ class PlaceInCatalog extends React.Component {
       this.submitting = { ...this.submitting, catalog: false }
       if (isError(dataCatalog)) {
         ToastAndroid.show(dataCatalog.message, ToastAndroid.SHORT)
+        this.setState({
+          loading: false
+        })
       }
       if (isFound(dataCatalog)) {
         const isFound = dataCatalog.catalogs.length
         if (isFound <= 0) {
           ToastAndroid.show('Anda tidak memiliki katalog', ToastAndroid.LONG)
+          this.setState({
+            loading: false
+          })
         } else {
           let temp = this.state.listKatalog
           dataCatalog.catalogs.map((data, i) => {

@@ -136,7 +136,7 @@ const images = {
   emptyMessage: require('../Images/empty-message.png'),
   emptyDiscussion: require('../Images/empty-discussion.png'),
   emptyReview: require('../Images/empty-review.png'),
-  emptyResolution: require('../Images/empty-resolution.png'),
+  // emptyResolution: require('../Images/empty-resolution.png'),
   getBalance: require('../Images/Icons/icon-get-balance.png'),
   status: require('../Images/Icons/icon-status.png'),
   pullBalance: require('../Images/Icons/icon-pull-balance.png'),
@@ -160,7 +160,9 @@ const images = {
   emptyCatalog: require('../Images/empty-catalog.png'),
   emptyDelivery: require('../Images/empty-delivery.png'),
   emptyDropshipper: require('../Images/empty-dropshipper.png'),
-  emptySales: require('../Images/empty-sales.png')
+  emptySales: require('../Images/empty-sales.png'),
+  emptyComplain: require('../Images/empty-state-complain.png'),
+  emptyResolution: require('../Images/empty-state-resolution.png')
 }
 
 export default images

@@ -12,8 +12,7 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
-import {isFetching, isError, isFound} from '../Services/Status'
-import * as storeAction from '../actions/stores'
+import Reactotron from 'reactotron-react-native'
 
 // Styles
 import styles from './Styles/UploadPhotoProdukScreenStyle'
@@ -23,10 +22,6 @@ class UploadProductPhoto extends React.Component {
 
   constructor (props) {
     super(props)
-    this.submitting = {
-      upload: false,
-      fetching: true
-    }
     this.state = {
       foto: [],
       loading: false,
@@ -37,26 +32,6 @@ class UploadProductPhoto extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const {dataPhoto} = nextProps
-
-    if (!isFetching(dataPhoto) && this.submitting.upload) {
-      this.submitting = { ...this.submitting, upload: false }
-      if (isError(dataPhoto)) {
-        ToastAndroid.show(dataPhoto.message, ToastAndroid.SHORT)
-        this.setState({ loading: false })
-      }
-      if (isFound(dataPhoto)) {
-        let temp = this.state.images
-        dataPhoto.payload.images.map((data, i) => {
-          temp[i] = ({'name': data.name})
-        })
-        NavigationActions.productinfonameandcategory({
-          type: ActionConst.PUSH,
-          images: temp
-        })
-        this.setState({ loading: false })
-      }
-    }
   }
 
   componentDidMount () {
@@ -130,14 +105,23 @@ class UploadProductPhoto extends React.Component {
   }
 
   nextState () {
-    const postData = new FormData()
-    this.state.foto.map(data => {
-      postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
-    })
-    postData.append('type', 'product')
-    this.props.photoUpload(postData)
-    this.submitting.upload = true
-    this.setState({loading: true})
+    if (this.state.foto.length === 0) {
+      ToastAndroid.show('Foto produk harus diunggah', ToastAndroid.SHORT)
+    } else {
+      NavigationActions.productinfonameandcategory({
+        type: ActionConst.PUSH,
+        images: this.state.foto
+      })
+      Reactotron.log(this.state.foto)
+      // const postData = new FormData()
+      // this.state.foto.map(data => {
+      //   postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      // })
+      // postData.append('type', 'product')
+      // this.props.photoUpload(postData)
+      // this.submitting.upload = true
+      // this.setState({loading: true})
+    }
   }
 
   stateOne () {
@@ -201,13 +185,11 @@ class UploadProductPhoto extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPhoto: state.upload
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data}))
   }
 }
 

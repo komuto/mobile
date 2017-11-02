@@ -105,7 +105,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    paddingTop: 30,
     borderBottomColor: Colors.silver
   },
   inputText: {
@@ -132,6 +131,12 @@ export default StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver
+  },
+  textError: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    opacity: 0.8,
+    paddingBottom: 10
   },
   radio: {
     marginTop: 20
@@ -225,11 +230,10 @@ export default StyleSheet.create({
     borderTopWidth: 0.5,
     borderTopColor: Colors.silver,
     backgroundColor: Colors.paleGrey,
-    marginBottom: -10,
     paddingTop: 20,
     marginLeft: -20,
     marginRight: -20,
-    marginTop: 20
+    marginBottom: 20
   },
   hapus: {
     paddingTop: 24.4,

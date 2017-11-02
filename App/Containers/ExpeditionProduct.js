@@ -2,10 +2,12 @@ import React from 'react'
 import { View, ScrollView, ToastAndroid, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-// import Reactotron from 'reactotron-react-native'
+import Reactotron from 'reactotron-react-native'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as expeditionAction from '../actions/expedition'
 import * as productAction from '../actions/product'
+import * as storeAction from '../actions/stores'
 
 import { Images, Colors, Fonts } from '../Themes'
 
@@ -17,49 +19,93 @@ class ExpeditionProduct extends React.Component {
   constructor (props) {
     super(props)
     this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      upload: false,
+      expedition: false,
+      create: false
+    }
     this.state = {
       dataListEkspedisi: [],
+      activeExpedition: [],
       dataStore: this.props.dataStore || null,
       loading: false,
       dataProduk: this.props.dataProduk || null,
-      image: this.props.image || null
+      image: this.props.images || null
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataStoreExpedition.status === 200) {
-      this.setState({
-        dataListEkspedisi: nextProps.dataStoreExpedition.storeExpeditions,
-        loading: false
-      })
-    } if (nextProps.dataCreateProduk.status === 200) {
-      this.setState({
-        loading: false
-      })
-      NavigationActions.notification({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'succestambahproduk',
-        hideNavBar: true,
-        hideBackImage: true
-      })
-      nextProps.dataCreateProduk.status = 0
-    } if (nextProps.dataCreateProduk.status > 200) {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
+    const {dataPhoto, dataStoreExpedition, dataCreateProduk} = nextProps
+
+    if (!isFetching(dataStoreExpedition) && this.submitting.expedition) {
+      this.submitting = { ...this.submitting, expedition: false }
+      if (isError(dataStoreExpedition)) {
+        ToastAndroid.show(dataStoreExpedition.message, ToastAndroid.SHORT)
+        this.setState({ loading: false })
+      }
+      if (isFound(dataStoreExpedition)) {
+        this.setState({
+          dataListEkspedisi: dataStoreExpedition.storeExpeditions,
+          loading: false
+        })
+      }
+    }
+
+    if (!isFetching(dataCreateProduk) && this.submitting.create) {
+      this.submitting = { ...this.submitting, create: false }
+      if (isError(dataCreateProduk)) {
+        ToastAndroid.show(dataCreateProduk.message, ToastAndroid.SHORT)
+        this.setState({ loading: false })
+      }
+      if (isFound(dataCreateProduk)) {
+        this.setState({
+          loading: false
+        })
+        NavigationActions.notification({
+          type: ActionConst.PUSH,
+          tipeNotikasi: 'succestambahproduk',
+          hideNavBar: true,
+          hideBackImage: true
+        })
+      }
+    }
+
+    if (!isFetching(dataPhoto) && this.submitting.upload) {
+      this.submitting = { ...this.submitting, upload: false }
+      if (isError(dataPhoto)) {
+        ToastAndroid.show(dataPhoto.message, ToastAndroid.SHORT)
+        this.setState({ loading: false })
+      }
+      if (isFound(dataPhoto)) {
+        let temp = []
+        dataPhoto.payload.images.map((data, i) => {
+          temp[i] = ({'name': data.name})
+        })
+        if (!this.submitting.create) {
+          this.submitting = {
+            ...this.submitting,
+            create: true
+          }
+          this.createProducts(temp)
+          this.setState({ true: false })
+        }
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getStoreExpedition()
+    if (!this.submitting.expedition) {
+      this.submitting = {
+        ...this.submitting,
+        expedition: true
+      }
+      this.props.getStoreExpedition()
+    }
   }
 
   nextState () {
-    const {dataListEkspedisi, image, dataProduk} = this.state
-    this.setState({
-      loading: true
-    })
+    const {dataListEkspedisi, image} = this.state
+    Reactotron.log(image)
     var expedition = []
     dataListEkspedisi.map((data, i) => {
       data.services.map((datas, j) => {
@@ -70,8 +116,24 @@ class ExpeditionProduct extends React.Component {
       })
     })
 
-    dataProduk[15] = expedition
-    dataProduk[16] = image
+    if (expedition.length === 0) {
+      ToastAndroid.show('Pilih ekspedisi terlebih dahulu', ToastAndroid.SHORT)
+    } else {
+      this.setState({loading: true, activeExpedition: expedition})
+      const postData = new FormData()
+      image.map(data => {
+        postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      })
+      postData.append('type', 'product')
+      this.props.photoUpload(postData)
+      this.submitting.upload = true
+    }
+  }
+
+  createProducts (imageParam) {
+    const {activeExpedition, dataProduk} = this.state
+    dataProduk[15] = activeExpedition
+    dataProduk[16] = imageParam
     this.props.createProduk(
       dataProduk[0],
       dataProduk[1],
@@ -250,12 +312,14 @@ class ExpeditionProduct extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataStoreExpedition: state.storeExpeditions,
-    dataCreateProduk: state.alterProducts
+    dataCreateProduk: state.alterProducts,
+    dataPhoto: state.upload
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data})),
     getStoreExpedition: () => dispatch(expeditionAction.getStoreExpeditions()),
     createProduk: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, catalogId, status, discount, isWholesale, wholesales, expeditions, images) =>
     dispatch(productAction.createProduct(

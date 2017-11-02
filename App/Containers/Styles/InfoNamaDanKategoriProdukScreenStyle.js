@@ -93,9 +93,8 @@ export default StyleSheet.create({
   textError: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.small,
-    textAlign: 'center',
     opacity: 0.8,
-    paddingBottom: 10.8
+    paddingBottom: 20
   },
   lokasiSeparator: {
     marginBottom: 24.8

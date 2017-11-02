@@ -11,62 +11,95 @@ import {
   ToastAndroid,
   RefreshControl
 } from 'react-native'
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-// import BuyerMessageConversation from './BuyerMessageConversation'
-// import BuyerMessageArchive from './BuyerMessageArchive'
+import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import moment from 'moment'
+import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+// Add Actions - replace 'Your' with whatever your reducer is called :) import
+// YourActions from '../Redux/YourRedux'
 import * as messageAction from '../actions/message'
 
 // Styles
 import styles from './Styles/BuyerMessageStyle'
-import { Colors, Images } from '../Themes/'
+import {Colors, Images} from '../Themes/'
 
-class BuyerMessage extends React.Component {
-
+class BuyerMessageConversation extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      conversation: false
+    }
     this.state = {
       loading: true,
-      tabViewStyle: {
-        backgroundColor: 'transparent'
-      },
       dataConversation: [],
-      dataArchive: [],
-      notif: this.props.notif,
-      messageNotif: this.props.messageNotif,
-      page: this.props.page,
-      isRefreshing: false
+      page: 1,
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: true,
+      callback: false,
+      notif: false,
+      messageNotif: '',
+      gettingData: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataMessage.status === 200 && nextProps.dataArchiveMessage.status === 200) {
-      this.setState({
-        dataConversation: nextProps.dataMessage.buyerMessages,
-        dataArchive: nextProps.dataArchiveMessage.archiveMessages,
-        isRefreshing: false,
-        loading: false
-      })
-      nextProps.dataMessage.status = 0
-      nextProps.dataArchiveMessage.status = 0
-    } else if (nextProps.dataMessage.status !== 200 && nextProps.dataMessage.status !== 0) {
-      this.setState({
-        isRefreshing: false,
-        loading: false
-      })
-      ToastAndroid.show(nextProps.dataMessage.message, ToastAndroid.LONG)
-      nextProps.dataMessage.status = 0
-      nextProps.dataArchiveMessage.status = 0
+    const {dataMessage, callbackArchive, pesanNotifArchive} = nextProps
+    if (callbackArchive !== undefined) {
+      if (callbackArchive !== this.state.callback) {
+        this.setState({
+          callback: callbackArchive,
+          messageNotif: pesanNotifArchive,
+          notif: true
+        })
+      }
+    }
+
+    if (!isFetching(dataMessage) && this.submitting.conversation) {
+      Reactotron.log('CWR')
+      this.submitting = { ...this.submitting, conversation: false }
+      if (isError(dataMessage)) {
+        ToastAndroid.show(dataMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataMessage)) {
+        const isFound = dataMessage.buyerMessages.length
+        if (isFound >= 10) {
+          const data = [...this.state.dataConversation, ...dataMessage.buyerMessages]
+          this.setState({
+            dataConversation: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          const data = [...this.state.dataConversation, ...dataMessage.buyerMessages]
+          this.setState({
+            dataConversation: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        }
+      }
     }
   }
 
   componentDidMount () {
+    if (!this.submitting.conversation) {
+      this.submitting = {
+        ...this.submitting,
+        conversation: true
+      }
+      this.props.getListMessages()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -150,36 +183,9 @@ class BuyerMessage extends React.Component {
     }
   }
 
-  checkStateArchive (data) {
-    if (this.state.loading) {
-      return (
-        <View style={styles.containerLoading} />
-      )
-    } else {
-      if (data.length > 0) {
-        return (
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(data)}
-            renderRow={this.renderRowMessage.bind(this)}
-            enableEmptySections
-          />
-        )
-      } else {
-        return (
-          <View style={styles.containerEmpty}>
-            <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
-            <Text style={styles.textTitleEmpty}>Tidak ada Arsip</Text>
-            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
-          </View>
-        )
-      }
-    }
-  }
-
   refresh = () => {
-    this.setState({ isRefreshing: true, loading: true })
+    this.setState({ gettingData: true, isRefreshing: true, loading: true })
     this.props.getListMessages()
-    this.props.getListArchiveMessages()
   }
 
   render () {
@@ -256,9 +262,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
-    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages())
+    getListMessages: () => dispatch(messageAction.getBuyerMessages())
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(BuyerMessage)
+export default connect(mapStateToProps, mapDispatchToProps)(BuyerMessageConversation)

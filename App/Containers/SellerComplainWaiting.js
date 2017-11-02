@@ -36,7 +36,8 @@ class SellerComplainWaiting extends React.Component {
       page: 0,
       loadmore: false,
       isRefreshing: true,
-      isLoading: false
+      isLoading: false,
+      gettingData: true
     }
   }
 
@@ -57,7 +58,8 @@ class SellerComplainWaiting extends React.Component {
             complains: data,
             page: this.state.page + 1,
             isRefreshing: false,
-            loadmore: true
+            loadmore: true,
+            gettingData: false
           })
         } else {
           let data = [...this.state.complains, ...propsUnresolvedCompaint.orders]
@@ -66,7 +68,8 @@ class SellerComplainWaiting extends React.Component {
             complains: data,
             isRefreshing: false,
             loadmore: false,
-            page: 0
+            page: 0,
+            gettingData: false
           })
         }
       }
@@ -104,7 +107,7 @@ class SellerComplainWaiting extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, complains: [], isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, complains: [], isLoading: true })
     this.submitting.complain = true
     this.props.getComplain({page: 0, is_resolved: false})
   }
@@ -205,9 +208,9 @@ class SellerComplainWaiting extends React.Component {
     })
   }
 
-  render () {
+  listViewComplain (data) {
     return (
-      <View style={styles.container}>
+      <View>
         <View style={styles.header}>
           <Text style={styles.regularSlate}>Berikut adalah daftar pembelian yang terdapat barang bermasalah di dalamnya</Text>
         </View>
@@ -240,6 +243,35 @@ class SellerComplainWaiting extends React.Component {
           }}
           enableEmptySections
         />
+      </View>
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={[styles.containerEmpty, {marginTop: 50}]}>
+        <Image source={Images.emptyComplain} style={{width: 201, height: 177}} />
+        <Text style={styles.textTitleEmpty}>Komplain Barang Anda kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan komplain{'\n'}terkait barang yang Anda beli</Text>
+      </View>
+    )
+  }
+
+  render () {
+    const { gettingData, complains } = this.state
+    let view
+    if (!gettingData) {
+      if (complains.length > 0) {
+        view = (this.listViewComplain(complains))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.listViewComplain(complains))
+    }
+    return (
+      <View style={styles.container}>
+        {view}
       </View>
     )
   }

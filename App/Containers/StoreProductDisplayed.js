@@ -111,13 +111,19 @@ class StoreProductDisplayed extends React.Component {
   }
 
   maskedMoney (value) {
-    const maskedPrice = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return maskedPrice
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   discountCalculate (price, discount) {

@@ -359,12 +359,7 @@ class Home extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -427,12 +422,7 @@ class Home extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const totalHarga = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
@@ -459,6 +449,22 @@ class Home extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   renderProduk () {

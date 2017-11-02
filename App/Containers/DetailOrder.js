@@ -122,13 +122,19 @@ class DetailOrder extends React.Component {
   }
 
   maskedMoney (value) {
-    const priceMasked = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return priceMasked
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   maskedDate (value) {

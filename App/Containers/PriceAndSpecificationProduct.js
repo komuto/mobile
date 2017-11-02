@@ -362,7 +362,7 @@ class PriceAndSpecificationProduct extends React.Component {
       })
     } else {
       this.setState({
-        gender: 'bekas',
+        jenisProduk: 'bekas',
         indexKondisi: index
       })
     }
@@ -389,7 +389,7 @@ class PriceAndSpecificationProduct extends React.Component {
     return value
   }
 
-  maskedText (value) {
+  maskedMoney (value) {
     let price
     if (value < 1000) {
       price = 'Rp ' + value
@@ -408,11 +408,11 @@ class PriceAndSpecificationProduct extends React.Component {
   rincianDiskon () {
     let hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
     let commissionTemp = String(this.state.commission)
-    let hargaMasked = this.maskedText(hargaTemp)
+    let hargaMasked = this.maskedMoney(hargaTemp)
     let commission = this.komisiCalculate(hargaTemp, this.state.commission)
-    let commissionMasked = this.maskedText(commission)
+    let commissionMasked = this.maskedMoney(commission)
     let totalPrice = this.discountCalculate(hargaTemp, commission)
-    let totalPriceMasked = this.maskedText(totalPrice)
+    let totalPriceMasked = this.maskedMoney(totalPrice)
 
     if (this.state.harga.length > 0) {
       return (
@@ -703,6 +703,12 @@ class PriceAndSpecificationProduct extends React.Component {
 
   nextState () {
     const {images, sembunyikanBarang, harga, diskon, dataProduk, beratProduk, stokProduk, indexKondisi, isInsurance, dropShippingActive, idKatalogTerpilih, minimalGrosir, maksimalGrosir, hargaGrosir, grosirAktif, dataGrosirUpload} = this.state
+    let changeCondition
+    if (indexKondisi === 0) {
+      changeCondition = 1
+    } else {
+      changeCondition = 0
+    }
     let detailGrosir = []
     let tempGrosir = []
     detailGrosir[0] = parseInt(minimalGrosir)
@@ -712,7 +718,7 @@ class PriceAndSpecificationProduct extends React.Component {
     dataProduk[4] = Number(harga.replace(/[^0-9,]+/g, ''))
     dataProduk[5] = parseInt(beratProduk)
     dataProduk[6] = parseInt(stokProduk)
-    dataProduk[7] = parseInt(indexKondisi)
+    dataProduk[7] = parseInt(changeCondition)
     dataProduk[8] = isInsurance
     dataProduk[9] = dropShippingActive
     dataProduk[10] = idKatalogTerpilih

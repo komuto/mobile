@@ -274,32 +274,28 @@ class CartDetailItem extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRincian (subtotal, insuranceCost, deliveryCost) {
     const total = subtotal + insuranceCost + deliveryCost
-    const totalSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiayaAsuransi = MaskService.toMask('money', insuranceCost, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalOngkir = MaskService.toMask('money', deliveryCost, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiaya = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSubtotal = this.maskedMoney(subtotal)
+    const totalBiayaAsuransi = this.maskedMoney(insuranceCost)
+    const totalOngkir = this.maskedMoney(deliveryCost)
+    const totalBiaya = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianContainer}>

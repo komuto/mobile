@@ -48,6 +48,22 @@ class TransactionDetailStatusPurchase extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderTitle (title) {
     return (
       <View style={styles.titleContainer}>
@@ -67,12 +83,7 @@ class TransactionDetailStatusPurchase extends React.Component {
   }
 
   renderRow (rowData) {
-    const money = MaskService.toMask('money', rowData.product.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.product.price)
     return (
       <View style={styles.itemContainer}>
         <Image source={{ uri: rowData.product.image }} style={styles.image} />
@@ -125,36 +136,16 @@ class TransactionDetailStatusPurchase extends React.Component {
     const { subtotal, insuranceFee, shippingFee, insurance } = this.state
     let viewInsurance
     if (insurance) {
-      const insuranceFeePrice = MaskService.toMask('money', insuranceFee, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const insuranceFeePrice = this.maskedMoney(insuranceFee)
       viewInsurance = (
         this.renderDetailPrice('Biaya Asuransi', insuranceFeePrice)
       )
     } else {
       viewInsurance = null
     }
-    const subtotalPrice = MaskService.toMask('money', subtotal - shippingFee - insuranceFee, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const shippingFeePrice = MaskService.toMask('money', shippingFee, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalPrice = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const subtotalPrice = this.maskedMoney(subtotal - shippingFee - insuranceFee)
+    const shippingFeePrice = this.maskedMoney(shippingFee)
+    const totalPrice = this.maskedMoney(subtotal)
     return (
       <View style={styles.shippingContainer}>
         <View style={[styles.addressContainer, { paddingTop: 5 }]}>

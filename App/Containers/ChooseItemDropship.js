@@ -388,12 +388,7 @@ class ChooseItemDropship extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -465,13 +460,7 @@ class ChooseItemDropship extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     const commission = (rowData.product.commission)
 
     return (
@@ -519,13 +508,7 @@ class ChooseItemDropship extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     const commission = (rowData.product.commission)
 
     return (
@@ -558,6 +541,22 @@ class ChooseItemDropship extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   changeView () {

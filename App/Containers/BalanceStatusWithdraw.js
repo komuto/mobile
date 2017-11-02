@@ -57,6 +57,22 @@ class BalanceStatusWithdraw extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRow (rowData) {
     let image, status, textStyle, imageStyle
     if (rowData.status === 1) {
@@ -70,12 +86,7 @@ class BalanceStatusWithdraw extends React.Component {
       textStyle = Colors.textYellow
       imageStyle = null
     }
-    const money = MaskService.toMask('money', rowData.amount, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.amount)
     const day = parseInt(moment.unix(rowData.created_at).format('DD'))
     const month = parseInt(moment.unix(rowData.created_at).format('MM')) - 1
     const textMonth = this.state.months[month].substring(0, 3)

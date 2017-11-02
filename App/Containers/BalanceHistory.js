@@ -161,6 +161,22 @@ class BalanceHistory extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderListView () {
     return (
       <ListView
@@ -199,22 +215,12 @@ class BalanceHistory extends React.Component {
   renderRow (rowData) {
     let money
     if (rowData.last_saldo > rowData.first_saldo) {
-      const moneyText = MaskService.toMask('money', rowData.last_saldo - rowData.first_saldo, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const moneyText = this.maskedMoney(rowData.last_saldo - rowData.first_saldo)
       money = (
         <Text style={styles.textMoneyGreen}>+{moneyText}</Text>
       )
     } else {
-      const moneyText = MaskService.toMask('money', rowData.first_saldo - rowData.last_saldo, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const moneyText = this.maskedMoney(rowData.first_saldo - rowData.last_saldo)
       money = (
         <Text style={styles.textMoneyRed}>-{moneyText}</Text>
       )
@@ -223,12 +229,7 @@ class BalanceHistory extends React.Component {
     const month = parseInt(moment.unix(rowData.date).format('MM')) - 1
     const textMonth = this.state.months[month].substring(0, 3)
     const year = moment.unix(rowData.date).format('YYYY')
-    const balanceText = MaskService.toMask('money', rowData.last_saldo, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const balanceText = this.maskedMoney(rowData.last_saldo)
     return (
       <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id)}>
         <View style={styles.dataContainer}>

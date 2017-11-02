@@ -50,14 +50,25 @@ class BalanceX extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderBalance () {
     const { balance } = this.state
-    const money = MaskService.toMask('money', balance, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(balance)
     return (
       <View style={styles.balanceContainer}>
         <Text style={styles.textBalance}>{money}</Text>

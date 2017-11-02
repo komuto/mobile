@@ -72,6 +72,22 @@ class BalanceHistorySelling extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderData (label, data) {
     return (
       <View style={styles.dataContainer}>
@@ -98,34 +114,14 @@ class BalanceHistorySelling extends React.Component {
 
   renderExpand () {
     const { expand, total, diskon, biayaOngkir } = this.state
-    const totalHarga = MaskService.toMask('money', total - biayaOngkir + diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', biayaOngkir, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSisaBayar = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total - biayaOngkir + diskon)
+    const hargaKodeUnik = this.maskedMoney(biayaOngkir)
+    const hargaSisaBayar = this.maskedMoney(total)
     let kodevoucer
     if (diskon === 0) {
       kodevoucer = null
     } else {
-      const hargaDiskon = MaskService.toMask('money', diskon, {
-        unit: 'Rp -',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const hargaDiskon = this.maskedMoney(diskon)
       kodevoucer = (
         <View style={styles.rowContainerRincian}>
           <Text style={[styles.textGreen, { flex: 1 }]}>Diskon</Text>
@@ -215,12 +211,7 @@ class BalanceHistorySelling extends React.Component {
   }
 
   renderRow (rowData) {
-    const money = MaskService.toMask('money', rowData.product.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.product.price)
     return (
       <View style={styles.itemContainer}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
@@ -238,26 +229,10 @@ class BalanceHistorySelling extends React.Component {
 
   render () {
     const { date, total, invoice, comissionText, balance, comission } = this.state
-    const moneyTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const moneyTotal = this.maskedMoney(total)
+    const moneyComission = this.maskedMoney(comission)
+    const paidMoney = this.maskedMoney(balance)
 
-    const moneyComission = MaskService.toMask('money', comission, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
-    const paidMoney = MaskService.toMask('money', balance, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
     return (
       <View style={styles.container}>
         <ScrollView>

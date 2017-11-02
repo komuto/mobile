@@ -125,13 +125,19 @@ class SellerSaleDropshipper extends React.Component {
   }
 
   maskedMoney (value) {
-    const priceMasked = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return priceMasked
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   maskedDate (value) {
@@ -236,7 +242,7 @@ class SellerSaleDropshipper extends React.Component {
       return (
         <View style={[styles.containerOrder, {borderTopColor: Colors.silver, borderTopWidth: 0.5}]}>
           <View style={[styles.round, {backgroundColor: Colors.darkMint}]} />
-          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Barrang sudah diterima</Text>
+          <Text style={[styles.labelTextWaitInput, {marginLeft: 8.5}]}>Barang sudah diterima</Text>
         </View>
       )
     } if (data === 5) {

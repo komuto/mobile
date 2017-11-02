@@ -374,32 +374,14 @@ class DetailProductStore extends React.Component {
     return value
   }
 
-  maskedText (value) {
-    let price
-    if (value < 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp '
-      })
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
-  }
-
   detailReception () {
     let hargaTemp = Number(this.state.product.price)
     let komisi = String(this.state.product.commission)
-    let hargaMasked = this.maskedText(hargaTemp)
+    let hargaMasked = this.maskedMoney(hargaTemp)
     let komisiCalculate = this.komisiCalculate(hargaTemp, this.state.product.commission)
-    let diskonMasked = this.maskedText(komisiCalculate)
+    let diskonMasked = this.maskedMoney(komisiCalculate)
     let diskonCalculate = this.fee(hargaTemp, komisiCalculate)
-    let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let hargaDiskonMasked = this.maskedMoney(diskonCalculate)
 
     return (
       <View style={styles.rincianContainrer}>

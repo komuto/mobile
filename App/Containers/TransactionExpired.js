@@ -63,6 +63,22 @@ class TransactionExpired extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderInfo () {
     return (
       <View style={styles.batasPembayaran}>
@@ -74,28 +90,13 @@ class TransactionExpired extends React.Component {
 
   renderExpand () {
     const { expand, total, diskon, kode, sisaPembayaran } = this.state
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
+    const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
     let kodevoucer
     if (kode === '' || kode === null || kode === undefined) {
       kodevoucer = null
     } else {
-      const hargaDiskon = MaskService.toMask('money', diskon, {
-        unit: 'Rp -',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const hargaDiskon = this.maskedMoney(diskon)
       kodevoucer = (
         <View style={styles.rowContainerRincian}>
           <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
@@ -125,12 +126,7 @@ class TransactionExpired extends React.Component {
 
   renderTagihan () {
     const { expand, sisaPembayaran } = this.state
-    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
     let arrow
     if (expand) {
       arrow = Images.arrowUp

@@ -84,6 +84,22 @@ class PaymentBalance extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRincian () {
     const { kode, total, diskon, saldo } = this.state
     let sisaBayar = total - saldo
@@ -93,19 +109,9 @@ class PaymentBalance extends React.Component {
       balanceUsed = saldo
     }
     let hargaDiskon, viewDiscount
-    const totalHarga = MaskService.toMask('money', total + diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total + diskon)
     if (kode !== '') {
-      hargaDiskon = MaskService.toMask('money', diskon, {
-        unit: 'Rp -',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      hargaDiskon = this.maskedMoney(diskon)
       balanceUsed = total - diskon
       return (
         <View style={styles.rincianRow}>
@@ -114,18 +120,8 @@ class PaymentBalance extends React.Component {
         </View>
       )
     }
-    const hargaSisaBayar = MaskService.toMask('money', sisaBayar, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSaldo = MaskService.toMask('money', balanceUsed, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSisaBayar = this.maskedMoney(sisaBayar)
+    const hargaSaldo = this.maskedMoney(balanceUsed)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianTitle}>

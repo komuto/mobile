@@ -1029,7 +1029,7 @@ class NavigationRouter extends Component {
           <Scene
             key='inputshippinginfo'
             component={InputShippingInfo}
-            title='Masukan Informasi Pengiriman'
+            title='MasukKan Informasi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

@@ -173,6 +173,22 @@ class Profile extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderProfile () {
     if (!this.state.isLogin) {
       return (
@@ -205,12 +221,7 @@ class Profile extends React.Component {
         </View>
       )
     }
-    const money = MaskService.toMask('money', this.state.saldo, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.state.saldo)
     return (
       <View>
         {this.renderStatus()}

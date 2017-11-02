@@ -100,13 +100,24 @@ class DiskusiProdukKomentar extends React.Component {
     this.setState({ komentar: text })
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>

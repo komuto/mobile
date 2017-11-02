@@ -209,32 +209,28 @@ class PaymentCart extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRincian (subtotal, biayaAsuransi, ongkir) {
     const total = subtotal + biayaAsuransi + ongkir
-    const totalSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiayaAsuransi = MaskService.toMask('money', biayaAsuransi, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalOngkir = MaskService.toMask('money', ongkir, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiaya = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSubtotal = this.maskedMoney(subtotal)
+    const totalBiayaAsuransi = this.maskedMoney(biayaAsuransi)
+    const totalOngkir = this.maskedMoney(ongkir)
+    const totalBiaya = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianContainer}>
@@ -271,24 +267,9 @@ class PaymentCart extends React.Component {
   renderTotal () {
     const { total, diskon, namaDiskon } = this.state
     let renderdiskon
-    const totalBiaya = MaskService.toMask('money', total + diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalSisa = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalBiaya = this.maskedMoney(total + diskon)
+    const totalDiskon = this.maskedMoney(diskon)
+    const totalSisa = this.maskedMoney(total)
 
     if (namaDiskon !== '') {
       renderdiskon = (

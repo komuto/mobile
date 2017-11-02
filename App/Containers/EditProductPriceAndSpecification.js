@@ -380,12 +380,10 @@ class EditProductPriceAndSpecification extends React.Component {
     return value
   }
 
-  maskedText (value) {
+  maskedMoney (value) {
     let price
     if (value < 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp '
-      })
+      price = 'Rp ' + value
     }
     if (value >= 1000) {
       price = MaskService.toMask('money', value, {
@@ -406,11 +404,11 @@ class EditProductPriceAndSpecification extends React.Component {
       hargaTemp = this.state.harga
     }
     let diskonTemp = this.state.commission
-    let hargaMasked = this.maskedText(hargaTemp)
+    let hargaMasked = this.maskedMoney(hargaTemp)
     let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
-    let diskonMasked = this.maskedText(komisiCalculate)
+    let diskonMasked = this.maskedMoney(komisiCalculate)
     let diskonCalculate = this.discountCalculate(hargaTemp, komisiCalculate)
-    let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let hargaDiskonMasked = this.maskedMoney(diskonCalculate)
 
     Reactotron.log(hargaDiskonMasked + ' ' + diskonCalculate + ' ' + diskonMasked + ' ' + komisiCalculate)
 

@@ -214,14 +214,25 @@ class ListFavoriteStores extends React.Component {
     return hargaDiskon
   }
 
-  renderDiskon (status, nominal) {
-    if (status) {
-      const money = MaskService.toMask('money', nominal, {
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
         unit: 'Rp ',
         separator: '.',
         delimiter: '.',
         precision: 3
       })
+    }
+    return price
+  }
+
+  renderDiskon (status, nominal) {
+    if (status) {
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -257,12 +268,7 @@ class ListFavoriteStores extends React.Component {
         this.hargaDiskon = data.price
       }
 
-      const money = MaskService.toMask('money', this.hargaDiskon, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(this.hargaDiskon)
       return (
         <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.handleDetailProduct(data.id)}>
           <View style={styles.maskedimageProduct}>

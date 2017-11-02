@@ -299,12 +299,7 @@ class Category4 extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -387,13 +382,7 @@ class Category4 extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.onClickProdukDetail(rowData.product.id)}>
@@ -435,12 +424,7 @@ class Category4 extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.onClickProdukDetail(rowData.product.id)}>
@@ -467,6 +451,22 @@ class Category4 extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   onClickProdukDetail (id) {

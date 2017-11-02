@@ -54,6 +54,22 @@ class BalanceHistoryWithdraw extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderData (label, data) {
     return (
       <View style={styles.dataContainer}>
@@ -86,12 +102,8 @@ class BalanceHistoryWithdraw extends React.Component {
 
   render () {
     const { date, topup, bank, accountNumber, accountName } = this.state
-    const moneyTotal = MaskService.toMask('money', topup, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const moneyTotal = this.maskedMoney(topup)
+
     return (
       <View style={styles.container}>
         <ScrollView>

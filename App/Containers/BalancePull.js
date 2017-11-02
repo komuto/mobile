@@ -107,14 +107,25 @@ class BalancePull extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderInformation () {
     const { dateData, balance } = this.state
-    const money = MaskService.toMask('money', balance, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(balance)
     return (
       <View style={styles.infoContainer}>
         <Text style={[styles.textDate, { flex: 1 }]}>Saldo per {dateData}</Text>

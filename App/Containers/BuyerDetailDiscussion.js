@@ -82,13 +82,24 @@ class BuyerDetailDiscussion extends React.Component {
     NavigationActions.pop()
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderHeader () {
-    const priceMasked = MaskService.toMask('money', this.state.priceProduct, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const priceMasked = this.maskedMoney(this.state.priceProduct)
     return (
       <View style={styles.headerTextContainer}>
         <TouchableOpacity onPress={() => this.backButton()}>

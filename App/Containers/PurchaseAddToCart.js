@@ -293,12 +293,7 @@ class PurchaseAddToCart extends React.Component {
   renderSubtotal () {
     const {price, countProduct} = this.state
     const temp = parseInt(price) * countProduct
-    const totalHarga = MaskService.toMask('money', temp, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(temp)
     return (
       <View style={[styles.qualityContainer, {paddingTop: 25}]}>
         <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25, flex: 1}]}>
@@ -518,6 +513,22 @@ class PurchaseAddToCart extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRincian () {
     const { subtotal, price, expeditionFee, ongkir, asuransi, countProduct } = this.state
     let temp2 = 0
@@ -527,30 +538,10 @@ class PurchaseAddToCart extends React.Component {
       temp2 = 0
     }
     const total = parseInt(subtotal) + parseInt(temp2) + parseInt(ongkir)
-    const hargaSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaBiayaAsuransi = MaskService.toMask('money', temp2, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaOngkir = MaskService.toMask('money', ongkir, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSubtotal = this.maskedMoney(subtotal)
+    const hargaBiayaAsuransi = this.maskedMoney(temp2)
+    const hargaOngkir = this.maskedMoney(ongkir)
+    const hargaTotal = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianNoBorder}>
@@ -593,12 +584,7 @@ class PurchaseAddToCart extends React.Component {
 
   renderKode () {
     const { diskon } = this.state
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaDiskon = this.maskedMoney(diskon)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianDiskon}>

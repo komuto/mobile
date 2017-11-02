@@ -169,14 +169,25 @@ class Payment extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderTotal () {
     const { total } = this.state
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
     return (
       <View style={styles.totalContainer}>
         <View style={styles.total}>
@@ -197,12 +208,7 @@ class Payment extends React.Component {
 
   renderSaldo () {
     const { saldo } = this.state
-    const totalSaldo = MaskService.toMask('money', saldo, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSaldo = this.maskedMoney(saldo)
     return (
       <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer} onPress={() => this.saldo()}>
         <View style={styles.total}>

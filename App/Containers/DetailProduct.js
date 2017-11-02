@@ -342,12 +342,7 @@ class DetailProduct extends React.Component {
   }
 
   onShare () {
-    const price = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const price = this.maskedMoney(this.state.price)
     Share.share({
       message: 'Coba Lihat Product ' + this.state.title + ' dengan harga ' + price +
         '\n' + this.state.shareUrl,
@@ -457,18 +452,12 @@ class DetailProduct extends React.Component {
 
   renderTitle () {
     const {id, grosir, discount, pickFromDropshipper, commission} = this.state
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const totalHarga = this.maskedMoney(this.state.price)
     let valueCommission
     if (pickFromDropshipper) {
       valueCommission = (
         <Text style={styles.commissionText}>
-        -{'\b'}Komisi {commission * 100} %
+        -{'\b'}Komisi {commission} %
         </Text>
       )
     }
@@ -733,12 +722,7 @@ class DetailProduct extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -815,12 +799,7 @@ class DetailProduct extends React.Component {
 
   renderRowService (rowData) {
     const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.totalWeight / 1000) * rowData.cost
-    const money = MaskService.toMask('money', temp2, {
-      unit: '',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(temp2)
     return (
       <View style={styles.serviceContainer}>
         <Text style={styles.serviceName}>{rowData.full_name}</Text>
@@ -905,12 +884,7 @@ class DetailProduct extends React.Component {
 
   renderRowGrosir (rowData, sectionID, rowID, highlightRow) {
     let warnaText
-    const money = MaskService.toMask('money', rowData.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.price)
     if (parseInt(rowID) === this.state.dataGrosir.length - 1) {
       warnaText = { color: Colors.darkMint }
     } else {
@@ -1433,13 +1407,7 @@ class DetailProduct extends React.Component {
       this.hargaDiskon = rowData.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity
         style={stylesHome.rowDataContainer}
@@ -1475,6 +1443,22 @@ class DetailProduct extends React.Component {
         </View>
       </TouchableOpacity>
     )
+  }
+
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   renderProductSeller () {

@@ -118,6 +118,22 @@ class DetailTokoProduk extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRow (rowData) {
     let image
     if (rowData.discount > 0) {
@@ -128,12 +144,7 @@ class DetailTokoProduk extends React.Component {
       this.hargaDiskon = rowData.price
     }
 
-    const money = MaskService.toMask('money', String(this.hargaDiskon), {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
     try {
       image = rowData.image
     } catch (e) {
@@ -194,12 +205,7 @@ class DetailTokoProduk extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={stylesHome.nominalDiskon}>
           {money}

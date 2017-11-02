@@ -121,13 +121,19 @@ class DetailSales extends React.Component {
   }
 
   maskedMoney (value) {
-    const priceMasked = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return priceMasked
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   maskedDate (value) {
@@ -392,7 +398,7 @@ class DetailSales extends React.Component {
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status</Text>
           <View style={[styles.round, {backgroundColor: Colors.darkMint, marginTop: 2, marginRight: 10.8}]} />
-          <Text style={[styles.textRegularSlate]}>Barrang sudah diterima</Text>
+          <Text style={[styles.textRegularSlate]}>Barang sudah diterima</Text>
         </View>
       )
     } if (data === 5) {

@@ -100,33 +100,29 @@ class PaymentDoku extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRincian () {
     const { kode, total, diskon, kodeUnik } = this.state
     const sisaBayar = total - diskon - kodeUnik
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSisaBayar = MaskService.toMask('money', sisaBayar, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
+    const hargaDiskon = this.maskedMoney(diskon)
+    const hargaKodeUnik = this.maskedMoney(kodeUnik)
+    const hargaSisaBayar = this.maskedMoney(sisaBayar)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianTitle}>

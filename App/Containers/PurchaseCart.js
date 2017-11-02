@@ -254,13 +254,24 @@ class PurchaseCart extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -295,18 +306,8 @@ class PurchaseCart extends React.Component {
   }
 
   renderRow (rowData, sectionData, row) {
-    const totalPrice = MaskService.toMask('money', rowData.product.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const subtotalPrice = MaskService.toMask('money', rowData.total_price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalPrice = this.maskedMoney(rowData.product.price)
+    const subtotalPrice = this.maskedMoney(rowData.total_price)
     return (
       <View>
         <View style={styles.border}>
@@ -455,12 +456,7 @@ class PurchaseCart extends React.Component {
 
   renderKode () {
     const { statusDiskon, diskon } = this.state
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaDiskon = this.maskedMoney(diskon)
     if (statusDiskon) {
       return (
         <View style={styles.rincianContainer}>
@@ -481,12 +477,7 @@ class PurchaseCart extends React.Component {
   renderTotal () {
     const { subtotal, diskon, loadingCheckout } = this.state
     const total = parseInt(subtotal) - parseInt(diskon)
-    const hargaTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaTotal = this.maskedMoney(total)
     const spinner = loadingCheckout
     ? (
       <View style={styles.button}>

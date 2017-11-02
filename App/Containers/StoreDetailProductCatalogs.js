@@ -118,12 +118,7 @@ class Wishlist extends React.Component {
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={stylesProduk.nominalDiskon}>
           {money}
@@ -201,6 +196,22 @@ class Wishlist extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderRowList (rowData) {
     if (rowData.product.discount > 0) {
       this.statusDiskon = true
@@ -210,13 +221,7 @@ class Wishlist extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
@@ -267,12 +272,7 @@ class Wishlist extends React.Component {
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>

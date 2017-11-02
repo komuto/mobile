@@ -264,14 +264,25 @@ class Transaction extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
+  }
+
   renderData (rowData) {
     const data = rowData.products
-    const money = MaskService.toMask('money', rowData.summary_transaction.total_price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.summary_transaction.total_price)
     let status
     if (rowData.bucket.status === 3) {
       status = null

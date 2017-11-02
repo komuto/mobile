@@ -27,7 +27,7 @@ import * as storeAction from '../actions/stores'
 import styles from './Styles/DaftarProdukScreenStyle'
 import { Colors, Images } from '../Themes/'
 
-class ListProdukByCatalog extends React.Component {
+class ProductListByCatalog extends React.Component {
 
   constructor (props) {
     super(props)
@@ -228,13 +228,19 @@ class ListProdukByCatalog extends React.Component {
   }
 
   maskedMoney (value) {
-    const maskedPrice = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return maskedPrice
+    let price
+    if (value < 1000) {
+      price = 'Rp ' + value
+    }
+    if (value >= 1000) {
+      price = MaskService.toMask('money', value, {
+        unit: 'Rp ',
+        separator: '.',
+        delimiter: '.',
+        precision: 3
+      })
+    }
+    return price
   }
 
   labeldaridropshipper (data) {
@@ -404,4 +410,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ListProdukByCatalog)
+export default connect(mapStateToProps, mapDispatchToProps)(ProductListByCatalog)

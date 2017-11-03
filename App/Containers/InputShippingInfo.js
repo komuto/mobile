@@ -338,11 +338,11 @@ class InputShippingInfo extends React.Component {
   }
 
   renderPriceDetail (data) {
-    var subTotal = this.maskedMoney(data.total_bill)
+    var subTotal = this.maskedMoney(data.total_bill - data.delivery_cost - data.insurance_fee)
     var insuranceFee = this.maskedMoney(data.insurance_fee)
     var postalFee = this.maskedMoney(data.delivery_cost)
 
-    var total = data.total_bill + data.insurance_fee + data.delivery_cost
+    var total = data.total_bill
     var totalMasked = this.maskedMoney(total)
 
     return (

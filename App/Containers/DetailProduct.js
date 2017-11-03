@@ -952,7 +952,7 @@ class DetailProduct extends React.Component {
         <View style={styles.infoContainer}>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Berat</Text>
-            <Text style={styles.infoProductVal}>{weight} kg</Text>
+            <Text style={styles.infoProductVal}>{weight} gram</Text>
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kondisi</Text>

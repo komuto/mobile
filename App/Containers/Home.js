@@ -181,6 +181,7 @@ class Home extends React.Component {
       ...this.submitting,
       cart: true
     }
+    this.props.getCart()
     this.submitting = {
       ...this.submitting,
       category: true

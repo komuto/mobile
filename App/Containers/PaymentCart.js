@@ -32,7 +32,7 @@ class PaymentCart extends React.Component {
           let temp = 0
           nextProps.dataCart.cart.items.map((obj, i) =>
             (
-              temp = temp + obj.total_price
+              temp = temp + obj.total_price + obj.shipping.delivery_cost
             )
           )
           this.setState({
@@ -150,7 +150,7 @@ class PaymentCart extends React.Component {
             <Text style={styles.textAlamat}>{dataInvoice.shipping.note}</Text>
           </View>
           {this.renderRincian(
-            rowData.total_price - dataInvoice.shipping.delivery_cost - dataInvoice.shipping.insurance_fee,
+            rowData.total_price,
             dataInvoice.shipping.insurance_fee,
             dataInvoice.shipping.delivery_cost
           )}
@@ -189,7 +189,7 @@ class PaymentCart extends React.Component {
             <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
           </View>
           {this.renderRincian(
-            rowData.total_price - rowData.shipping.delivery_cost - rowData.shipping.insurance_fee,
+            rowData.total_price,
             rowData.shipping.insurance_fee,
             rowData.shipping.delivery_cost
           )}

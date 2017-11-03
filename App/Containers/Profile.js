@@ -63,14 +63,18 @@ class Profile extends React.Component {
         status: nextProps.dataProfile.verifyStatus,
         email: nextProps.dataProfile.user.user.email,
         verifyNoHp: nextProps.dataProfile.user.user.is_phone_verified,
-        nomerHape: nextProps.dataProfile.user.user.phone_number,
-        namaToko: nextProps.dataProfile.user.store.name,
-        fotoToko: nextProps.dataProfile.user.store.logo,
-        statusToko: nextProps.dataProfile.user.store.status,
-        isStoreVerify: nextProps.dataProfile.user.store.is_verified,
-        createStoresAt: nextProps.dataProfile.user.store.created_at,
-        verificationTime: nextProps.dataProfile.user.store.verification_left
+        nomerHape: nextProps.dataProfile.user.user.phone_number
       })
+      if (nextProps.dataProfile.user.store !== null) {
+        this.setState({
+          namaToko: nextProps.dataProfile.user.store.name,
+          fotoToko: nextProps.dataProfile.user.store.logo,
+          statusToko: nextProps.dataProfile.user.store.status,
+          isStoreVerify: nextProps.dataProfile.user.store.is_verified,
+          createStoresAt: nextProps.dataProfile.user.store.created_at,
+          verificationTime: nextProps.dataProfile.user.store.verification_left
+        })
+      }
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
     }

@@ -303,9 +303,6 @@ class Transaction extends React.Component {
             <Text style={styles.textTitle}>
               {data[0].name}
             </Text>
-            <Text style={styles.textTitle}>
-              {data[0].name}
-            </Text>
           </View>
           <View style={styles.hargaContainer}>
             <Text style={styles.price}>

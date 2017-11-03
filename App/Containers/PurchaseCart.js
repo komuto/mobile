@@ -56,7 +56,7 @@ class PurchaseCart extends React.Component {
           let data = []
           nextProps.dataCart.cart.items.map((obj, i) =>
             (
-              temp = temp + obj.total_price
+              temp = temp + obj.total_price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
             )
           )
           nextProps.dataCart.cart.items.map((obj, i) =>
@@ -307,7 +307,7 @@ class PurchaseCart extends React.Component {
 
   renderRow (rowData, sectionData, row) {
     const totalPrice = this.maskedMoney(rowData.product.price)
-    const subtotalPrice = this.maskedMoney(rowData.total_price)
+    const subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
     return (
       <View>
         <View style={styles.border}>
@@ -382,27 +382,14 @@ class PurchaseCart extends React.Component {
     let tempData = data
     let tempDataUpload = dataUpload
     const rowData = data[row]
-    let insurance = rowData.shipping.insurance_fee
-    if (rowData.qty > 0) {
-      if (rowData.qty === 1) {
-        if (rowData.shipping.is_insurance) {
-          tempData[row].insurance_fee = 0
-          insurance = 0
-        } else if (!rowData.shipping.is_insurance) {
-          tempData[row].insurance_fee = 0
-          insurance = 0
-        } else {
-          tempData[row].insurance_fee = 10000
-          insurance = 10000
-        }
-      }
+    if (rowData.qty > 1) {
       const tempPrice = (rowData.qty - 1) * rowData.product.price
       const tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
-      const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
+      const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
       tempData[row].qty = rowData.qty - 1
       tempDataUpload[row].qty = tempData[row].qty
       tempData[row].shipping.delivery_cost = tempDeliveryCost
-      tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
+      tempData[row].total_price = tempPrice
       this.setState({
         data: tempData,
         subtotal: tempSubtotal,
@@ -417,25 +404,17 @@ class PurchaseCart extends React.Component {
     let tempDataUpload = dataUpload
     let tempDeliveryCost
     const rowData = data[row]
-    let insurance = rowData.shipping.insurance_fee
-    if (rowData.shipping.is_insurance) {
-      tempData[row].insurance_fee = 10000
-      insurance = 10000
-    } else {
-      tempData[row].insurance_fee = 0
-      insurance = 0
-    }
     const tempPrice = (rowData.qty + 1) * rowData.product.price
     if (rowData.qty === 0) {
       tempDeliveryCost = dataDelivery[row]
     } else {
-      tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
+      tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * dataDelivery[row] / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
     }
-    const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
+    const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
     tempData[row].qty = rowData.qty + 1
     tempDataUpload[row].qty = tempData[row].qty
     tempData[row].shipping.delivery_cost = tempDeliveryCost
-    tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
+    tempData[row].total_price = tempPrice
     this.setState({
       data: tempData,
       subtotal: tempSubtotal,

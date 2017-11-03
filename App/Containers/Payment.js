@@ -70,7 +70,7 @@ class Payment extends React.Component {
           let temp = 0
           nextProps.dataCart.cart.items.map((obj, i) =>
             (
-              temp = temp + obj.total_price
+              temp = temp + obj.total_price + obj.shipping.delivery_cost
             )
           )
           if (nextProps.dataCart.cart.promo !== null) {

@@ -196,7 +196,7 @@ class InfoStore extends React.Component {
         break
       case 'empty':
         this.setState({
-          textPemilik: 'Nama Pemilik harus diisi',
+          textPemilik: 'Nama pemilik harus diisi',
           textPemilikColor: Colors.red,
           textSlogan: 'Slogan harus diisi',
           textSloganColor: Colors.red,
@@ -214,7 +214,7 @@ class InfoStore extends React.Component {
     switch (field) {
       case 'pemilik':
         this.setState({
-          textPemilik: 'Nama Toko Tidak Dapat Diubah',
+          textPemilik: 'Nama toko tidak dapat diubah',
           textPemilikColor: Colors.labelgrey
         })
         break
@@ -239,7 +239,7 @@ class InfoStore extends React.Component {
         break
       case 'empty':
         this.setState({
-          textPemilik: 'Nama Pemilik harus diisi',
+          textPemilik: 'Nama pemilik harus diisi',
           textPemilikColor: Colors.labelgrey,
           textSlogan: 'Slogan harus diisi',
           textSloganColor: Colors.labelgrey,
@@ -257,7 +257,7 @@ class InfoStore extends React.Component {
     switch (field) {
       case 'pemilik':
         this.setState({
-          textPemilik: 'Nama Toko Tidak Dapat Diubah',
+          textPemilik: 'Nama toko tidak dapat diubah',
           textPemilikColor: Colors.labelgrey
         })
         break

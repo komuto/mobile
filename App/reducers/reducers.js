@@ -177,7 +177,8 @@ const message = {
 
 const other = {
   commission: otherReducers.getCommission,
-  saleCount: otherReducers.getSaleCount
+  saleCount: otherReducers.getSaleCount,
+  marketplace: otherReducers.getMarketPlace
 }
 
 const payment = {

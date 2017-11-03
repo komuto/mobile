@@ -12,3 +12,9 @@ export const getSaleCount = createReducer(buildInitState({ count: {} }))
     type: actions.GET_SALE_COUNT,
     resultName: 'count'
   }).run()
+
+export const getMarketPlace = createReducer(buildInitState({ data: {} }))
+.addReducer({
+  type: actions.GET_MARKETPLACE,
+  resultName: 'data'
+}).run()

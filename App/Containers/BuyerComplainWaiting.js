@@ -1,11 +1,10 @@
 import React from 'react'
-import { View, Text, ListView, Image, TouchableOpacity, ToastAndroid } from 'react-native'
+import { View, ActivityIndicator, RefreshControl, ScrollView, Text, ListView, Image, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Colors, Images } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as transactionAction from '../actions/transaction'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Styles
 import styles from './Styles/BuyerComplainWaitingStyle'
@@ -15,42 +14,116 @@ class BuyerComplainWaiting extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      waiting: false
+    }
     this.state = {
       data: [],
-      gettingData: true
+      gettingData: true,
+      page: 1,
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataDispute.status === 200) {
-      this.setState(({
-        data: nextProps.dataDispute.orders,
-        gettingData: false
-      }))
-    } else if (nextProps.dataDispute.status !== 200 && nextProps.dataDispute.status !== 0) {
-      this.setState({
-        data: []
-      })
-      ToastAndroid.show(nextProps.dataDispute.message, ToastAndroid.LONG)
+    const {dataDispute} = nextProps
+
+    if (!isFetching(dataDispute) && this.submitting.waiting) {
+      this.submitting = { ...this.submitting, waiting: false }
+      if (isError(dataDispute)) {
+        ToastAndroid.show(dataDispute.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDispute)) {
+        const isFound = dataDispute.orders.length
+        if (isFound >= 10) {
+          const data = [...this.state.data, ...dataDispute.orders]
+          this.setState({
+            data: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.resolveState + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          const data = [...this.state.data, ...dataDispute.orders]
+          this.setState({
+            data: data,
+            isLoading: true,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        }
+      }
     }
   }
 
-  renderHeader () {
-    return (
-      <View style={styles.header}>
-        <Text style={styles.textTitle}>
-          Berikut adalah daftar pembelian yang terdapat barang bermasalah di dalamnya
-        </Text>
-      </View>
-    )
+  componentDidMount () {
+    if (!this.submitting.waiting) {
+      this.submitting = {
+        ...this.submitting,
+        waiting: true
+      }
+      this.props.getDisputeList({is_resolved: false, page: 1})
+    }
+  }
+
+  loadMore = () => {
+    const { isLoading, loadmore, page } = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        if (!this.submitting.waiting) {
+          this.submitting = {
+            ...this.submitting,
+            waiting: true
+          }
+          this.props.getDisputeList({is_resolved: false, page: page})
+        }
+      }
+    }
+  }
+
+  refresh = () => {
+    this.setState({
+      data: [],
+      loadmore: false,
+      page: 1,
+      isRefreshing: true,
+      gettingData: true
+    })
+    if (!this.submitting.waiting) {
+      this.submitting = {
+        ...this.submitting,
+        waiting: true
+      }
+      this.props.getDisputeList({is_resolved: false, page: 1})
+    }
   }
 
   listViewComplain (data) {
     return (
       <ListView
         dataSource={this.dataSource.cloneWithRows(data)}
-        renderRow={this.renderRow.bind(this)}
+        renderRow={(rowData) => this.renderRow(rowData)}
+        onEndReached={() => this.loadMore()}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
         enableEmptySections
+        style={{flex: 1}}
       />
     )
   }
@@ -148,9 +221,21 @@ class BuyerComplainWaiting extends React.Component {
       view = (this.listViewComplain(data))
     }
     return (
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }>
         {view}
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -163,7 +248,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailDispute: (id) => dispatch(transactionAction.getComplainedOrderDetailBuyer({id: id}))
+    getDetailDispute: (id) => dispatch(transactionAction.getComplainedOrderDetailBuyer({id: id})),
+    getDisputeList: (params) => dispatch(transactionAction.getComplainedOrdersBuyer(params))
   }
 }
 

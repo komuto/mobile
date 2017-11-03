@@ -31,9 +31,10 @@ class BuyerDiscussion extends React.Component {
       data: [],
       page: 1,
       loadmore: true,
-      isRefreshing: false,
+      isRefreshing: true,
       isLoading: true,
-      loadingPage: true
+      loadingPage: true,
+      gettingData: true
     }
   }
 
@@ -44,7 +45,7 @@ class BuyerDiscussion extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.listDiscussion.status === 200) {
       this.setState({
-        loadingPage: false
+        isRefreshing: false
       })
       if (nextProps.listDiscussion.discussions.length > 0) {
         let data = [...this.state.data, ...nextProps.listDiscussion.discussions]
@@ -53,12 +54,15 @@ class BuyerDiscussion extends React.Component {
           page: this.state.page + 1,
           isRefreshing: false,
           isLoading: false,
-          loadmore: true
+          loadmore: true,
+          gettingData: false
         })
       } else {
         this.setState({
           loadmore: false,
-          isLoading: false
+          isLoading: false,
+          gettingData: false,
+          isRefreshing: false
         })
       }
     } else if (nextProps.listDiscussion.status !== 200 && nextProps.listDiscussion.status !== 0) {
@@ -67,7 +71,8 @@ class BuyerDiscussion extends React.Component {
         page: 1,
         isRefreshing: false,
         isLoading: false,
-        loadmore: false
+        loadmore: false,
+        gettingData: false
       })
       ToastAndroid.show(nextProps.listDiscussion.message, ToastAndroid.LONG)
     }
@@ -83,7 +88,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: false })
+    this.setState({ gettingData: true, isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: false })
     this.props.getListDiscussion(1)
   }
 
@@ -116,61 +121,66 @@ class BuyerDiscussion extends React.Component {
   }
 
   checkStateDiscussion (data) {
-    if (this.state.loadingPage) {
-      return (
-        <View />
-      )
-    } else {
-      if (data.length > 0) {
-        return (
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(data)}
-            renderRow={this.renderRowDiscussion.bind(this)}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.isRefreshing}
-                onRefresh={this.refresh}
-                tintColor={Colors.red}
-                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-                title='Loading...'
-                titleColor={Colors.red}
-                progressBackgroundColor={Colors.snow}
-              />
-            }
-            onEndReached={this.loadMore.bind(this)}
-            renderFooter={() => {
-              if (this.state.loadmore) {
-                return (
-                  <ActivityIndicator
-                    style={[styles.loadingStyle, { marginTop: 10, height: 50 }]}
-                    size='small'
-                    color='#ef5656'
-                  />
-                )
-              }
-              return <View />
-            }}
-            enableEmptySections
-            style={styles.listView}
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRowDiscussion.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
           />
-        )
-      } else {
-        return (
-          <View style={styles.containerEmpty}>
-            <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
-            <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
-            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
-          </View>
-        )
-      }
-    }
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { marginTop: 10, height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+        style={styles.listView}
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
+        <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
+      </View>
+    )
   }
 
   render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.checkStateDiscussion(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.checkStateDiscussion(data))
+    }
     return (
       <View style={styles.container}>
         <View style={{flex: 1}}>
-          {this.checkStateDiscussion(this.state.data)}
+          {view}
         </View>
       </View>
     )

@@ -133,7 +133,7 @@ export default StyleSheet.create({
     marginTop: 5
   },
   scrollView: {
-    paddingBottom: 10
+    flex: 1
   },
   tabWaiting: {
     backgroundColor: Colors.snow,

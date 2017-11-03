@@ -126,7 +126,7 @@ class SellerNotificationMessageDetail extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackConversation: !this.state.callback,
-            pesanNotifConversation: 'Berhasil menghapus Percakapan'
+            pesanNotifConversation: 'Berhasil menghapus Arsip'
           }
         })
       }

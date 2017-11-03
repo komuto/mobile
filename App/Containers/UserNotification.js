@@ -2,9 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
-import * as transactionAction from '../actions/transaction'
 import ModalLogin from '../Components/ModalLogin'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -38,31 +36,24 @@ class UserNotification extends React.Component {
   }
 
   handleMessages () {
-    this.props.getListMessages()
-    this.props.getListArchiveMessages()
     NavigationActions.buyermessage({
       type: ActionConst.PUSH
     })
   }
 
   handleDiscussion () {
-    this.props.getListDiscussion()
     NavigationActions.buyerdiscussion({
       type: ActionConst.PUSH
     })
   }
 
   handleResolution () {
-    this.props.getListResolutionResolve()
-    this.props.getListResolutionUnresolve()
     NavigationActions.buyerresolution({
       type: ActionConst.PUSH
     })
   }
 
   handleComplain () {
-    this.props.getDisputeList()
-    this.props.getDisputeListDone()
     NavigationActions.buyercomplain({
       type: ActionConst.PUSH
     })
@@ -132,13 +123,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
     getListDiscussion: () => dispatch(userAction.getDiscussion()),
-    getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
-    getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions()),
-    getDisputeList: () => dispatch(transactionAction.getComplainedOrdersBuyer({ is_resolved: false })),
-    getDisputeListDone: () => dispatch(transactionAction.getComplainedOrdersBuyer2({ is_resolved: true })),
     getUnreadDisputes: dispatch(userAction.getUnreadDispute())
   }
 }

@@ -138,7 +138,6 @@ class BuyerComplainDetailDiscussion extends React.Component {
             autoCapitalize='none'
             autoCorrect
             blurOnSubmit
-            onSubmitEditing={() => this.send()}
             onChangeText={this.handleComment}
             underlineColorAndroid='transparent'
             placeholder='Tulis Komentar'

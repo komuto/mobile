@@ -183,5 +183,34 @@ export default StyleSheet.create({
   messages: {
     backgroundColor: Colors.snow,
     flex: 1
+  },
+  sendContainer: {
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sendMessage: {
+    height: 30,
+    width: 30
+  },
+  textInputContainer: {
+    height: 56,
+    flexDirection: 'row',
+    backgroundColor: Colors.snow,
+    borderTopColor: Colors.silver,
+    borderTopWidth: 1,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 1,
+    width: Metrics.screenWidth,
+    alignItems: 'center'
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    paddingLeft: 10,
+    paddingRight: 10
   }
 })

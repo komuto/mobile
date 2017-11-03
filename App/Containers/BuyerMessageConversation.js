@@ -12,7 +12,6 @@ import {
   RefreshControl
 } from 'react-native'
 import {connect} from 'react-redux'
-import ScrollableTabView from 'react-native-scrollable-tab-view'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import moment from 'moment'
 import {isFetching, isError, isFound} from '../Services/Status'
@@ -54,13 +53,22 @@ class BuyerMessageConversation extends React.Component {
         this.setState({
           callback: callbackArchive,
           messageNotif: pesanNotifArchive,
-          notif: true
+          notif: true,
+          dataConversation: [],
+          gettingData: true,
+          page: 1
         })
+        if (!this.submitting.conversation) {
+          this.submitting = {
+            ...this.submitting,
+            conversation: true
+          }
+        }
       }
     }
 
     if (!isFetching(dataMessage) && this.submitting.conversation) {
-      Reactotron.log('CWR')
+      Reactotron.log('CWR Con')
       this.submitting = { ...this.submitting, conversation: false }
       if (isError(dataMessage)) {
         ToastAndroid.show(dataMessage.message, ToastAndroid.SHORT)
@@ -98,7 +106,7 @@ class BuyerMessageConversation extends React.Component {
         ...this.submitting,
         conversation: true
       }
-      this.props.getListMessages()
+      this.props.getListMessages({page: 1})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -112,13 +120,57 @@ class BuyerMessageConversation extends React.Component {
     return true
   }
 
+  refresh = () => {
+    this.setState({ page: 1, gettingData: true, dataConversation: [], isRefreshing: true, loading: true })
+    if (!this.submitting.conversation) {
+      this.submitting = {
+        ...this.submitting,
+        conversation: true
+      }
+      this.props.getListMessages({page: 1})
+    }
+  }
+
+  loadMore = () => {
+    const {isLoading, loadmore, page} = this.state
+    if (!isLoading) {
+      if (loadmore) {
+        if (!this.submitting.conversation) {
+          this.submitting = {
+            ...this.submitting,
+            conversation: true
+          }
+          this.props.getListMessages({page: page})
+        }
+      }
+    }
+  }
+
   handelDetailMessage (id, typeMessage) {
-    this.props.getDetailMessage(id)
+    this.setState({notif: false})
     NavigationActions.buyerdetailmessage({
       type: ActionConst.PUSH,
       idMessage: id,
-      typeMessage: typeMessage
+      typeMessage: typeMessage,
+      callback: false
     })
+  }
+
+  notif () {
+    if (this.state.notif) {
+      return (
+        <View style={styles.notif}>
+          <Text style={styles.textNotif}>Sukses {this.state.messageNotif}</Text>
+          <TouchableOpacity onPress={() => this.setState({notif: false})}>
+            <Image source={Images.closeGreen} style={styles.image} />
+          </TouchableOpacity>
+        </View>
+      )
+    } else {
+      return (
+        <View />
+      )
+    }
   }
 
   renderRowMessage (rowData) {
@@ -140,129 +192,83 @@ class BuyerMessageConversation extends React.Component {
     )
   }
 
-  notif () {
-    if (this.state.notif) {
-      return (
-        <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.messageNotif}</Text>
-          <TouchableOpacity onPress={() => this.setState({notif: false})}>
-            <Image source={Images.closeGreen} style={styles.image} />
-          </TouchableOpacity>
-        </View>
-      )
-    } else {
-      return (
-        <View />
-      )
-    }
+  renderData (data) {
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={(rowData) => this.renderRowMessage(rowData)}
+        onEndReached={() => this.loadMore()}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 60 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+      />
+    )
   }
 
-  checkStateMessage (data) {
-    if (this.state.loading) {
-      return (
-        <View style={styles.containerLoading} />
-      )
-    } else {
-      if (data.length > 0) {
-        return (
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(data)}
-            renderRow={this.renderRowMessage.bind(this)}
-            enableEmptySections
-          />
-        )
-      } else {
-        return (
-          <View style={styles.containerEmpty}>
-            <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
-            <Text style={styles.textTitleEmpty}>Belum ada Percakapan</Text>
-            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
-          </View>
-        )
-      }
-    }
-  }
-
-  refresh = () => {
-    this.setState({ gettingData: true, isRefreshing: true, loading: true })
-    this.props.getListMessages()
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
+        <Text style={styles.textTitleEmpty}>Belum ada Percakapan</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
+      </View>
+    )
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='#ef5656' size='large' />
-    </View>) : (<View />)
+    const { gettingData, dataConversation } = this.state
+    let view
+    if (!gettingData) {
+      if (dataConversation.length > 0) {
+        view = (this.renderData(dataConversation))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.renderData(dataConversation))
+    }
     return (
-      <View style={styles.container}>
-        <ScrollableTabView
-          prerenderingSiblingsNumber={2}
-          style={this.state.tabViewStyle}
-          tabBarBackgroundColor={Colors.red}
-          tabBarActiveTextColor={Colors.snow}
-          tabBarUnderlineStyle={{ backgroundColor: Colors.snow, height: 2 }}
-          tabBarInactiveTextColor={Colors.snow}
-          tabBarTextStyle={styles.textTab}
-          locked
-          initialPage={this.state.page}
-        >
-          <ScrollView
-            tabLabel='Percakapan'
-            ref='conversation'
-            style={styles.scrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.isRefreshing}
-                onRefresh={this.refresh}
-                tintColor={Colors.red}
-                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-                title='Loading...'
-                titleColor={Colors.red}
-                progressBackgroundColor={Colors.snow}
-              />
-            }
-          >
-            {this.notif()}
-            {spinner}
-            {this.checkStateMessage(this.state.dataConversation)}
-          </ScrollView>
-          <ScrollView
-            tabLabel='Arsip'
-            ref='files'
-            style={styles.scrollView}
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.isRefreshing}
-                onRefresh={this.refresh}
-                tintColor={Colors.red}
-                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-                title='Loading...'
-                titleColor={Colors.red}
-                progressBackgroundColor={Colors.snow}
-              />
-            }
-          >
-            {this.notif()}
-            {spinner}
-            {this.checkStateArchive(this.state.dataArchive)}
-          </ScrollView>
-        </ScrollableTabView>
-      </View>
+      <ScrollView
+        contentContainerStyle={{flex: 1}}
+        pagingEnabled={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+      >
+        {this.notif()}
+        {view}
+      </ScrollView>
     )
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    dataMessage: state.buyerMessages,
-    dataArchiveMessage: state.archiveBuyerMessages
+    dataMessage: state.buyerMessages
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
-    getListMessages: () => dispatch(messageAction.getBuyerMessages())
+    getListMessages: (params) => dispatch(messageAction.getBuyerMessages(params))
   }
 }
 

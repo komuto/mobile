@@ -1,20 +1,9 @@
 import React from 'react'
-import {
-  ScrollView,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  Modal,
-  BackAndroid,
-  ListView,
-  ToastAndroid,
-  TextInput
-} from 'react-native'
+import { ScrollView, ToastAndroid, Text, View, TouchableOpacity, Image, Modal, BackAndroid, ListView, TextInput } from 'react-native'
 import { connect } from 'react-redux'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import moment from 'moment'
-
+import {isFetching, isError, isFound} from '../Services/Status'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as messageAction from '../actions/message'
@@ -28,6 +17,12 @@ class BuyerDetailMessage extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      move: false,
+      detail: false,
+      delete: false,
+      reply: false
+    }
     this.state = {
       loading: false,
       messages: '',
@@ -36,85 +31,121 @@ class BuyerDetailMessage extends React.Component {
       modalPopup: false,
       data: [],
       detailMessageUser: [],
-      typeMessage: 'conversation'
+      typeMessage: 'conversation',
+      callback: this.props.callback,
+      iconSend: Images.sendMessageInactive
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.state.idMessage !== this.props.idMessage) {
-      this.props.getDetailMessage(this.props.idMessage)
-      this.setState({
-        idMessage: this.props.idMessage
-      })
+    const {detailMessage, dataReplyMessage, dataMoveMessage, dataDeleteMessage} = nextProps
+    nextProps.callbackArchive = undefined
+    nextProps.callbackConversation = undefined
+    if (!isFetching(detailMessage) && this.submitting.detail) {
+      this.submitting = { ...this.submitting, detail: false }
+      if (isError(detailMessage)) {
+        ToastAndroid.show(detailMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(detailMessage)) {
+        this.setState({
+          data: detailMessage.buyerDetailMessage,
+          typeMessage: nextProps.detailMessage.buyerDetailMessage.type,
+          detailMessageUser: nextProps.detailMessage.buyerDetailMessage.detail_messages
+        })
+      }
     }
-    if (nextProps.detailMessage.status === 200) {
-      this.setState({
-        data: nextProps.detailMessage.buyerDetailMessage,
-        typeMessage: nextProps.detailMessage.buyerDetailMessage.type,
-        detailMessageUser: nextProps.detailMessage.buyerDetailMessage.detail_messages
-      })
-      nextProps.detailMessage.status = 0
-    } else if (nextProps.detailMessage.status !== 200 && nextProps.detailMessage.status !== 0) {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show(nextProps.detailMessage.message, ToastAndroid.LONG)
-      nextProps.detailMessage.status = 0
+
+    if (!isFetching(dataReplyMessage) && this.submitting.reply) {
+      this.submitting = { ...this.submitting, reply: false }
+      if (isError(dataReplyMessage)) {
+        ToastAndroid.show(dataReplyMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataReplyMessage)) {
+        if (!this.submitting.conversation) {
+          this.submitting = {
+            ...this.submitting,
+            detail: true
+          }
+          this.props.getDetailMessage(this.state.idMessage)
+        }
+      }
     }
-    if (nextProps.dataReplyMessage.status === 200) {
-      nextProps.dataReplyMessage.status = 0
-      this.props.getDetailMessage(this.state.idMessage)
-    } else if (nextProps.dataReplyMessage.status !== 200 && nextProps.dataReplyMessage.status !== 0) {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show(nextProps.dataReplyMessage.message, ToastAndroid.LONG)
-      nextProps.dataReplyMessage.status = 0
+
+    if (!isFetching(dataMoveMessage) && this.submitting.move && this.state.typeMessage === 'conversation') {
+      this.submitting = { ...this.submitting, move: false }
+      if (isError(dataMoveMessage)) {
+        ToastAndroid.show(dataMoveMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataMoveMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackArchive: !this.state.callback,
+            pesanNotifArchive: 'Berhasil memindahkan ke Arsip'
+          }
+        })
+        this.props.getListMessages({page: 1})
+        this.props.getListMessagesArchive({page: 1})
+      }
     }
-    if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'conversation') {
-      nextProps.dataMoveMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.buyermessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Arsip',
-        page: 1
-      })
+
+    if (!isFetching(dataMoveMessage) && this.submitting.move && this.state.typeMessage === 'archive') {
+      this.submitting = { ...this.submitting, move: false }
+      if (isError(dataMoveMessage)) {
+        ToastAndroid.show(dataMoveMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataMoveMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackConversation: !this.state.callback,
+            pesanNotifConversation: 'Berhasil memindahkan ke Percakapan'
+          }
+        })
+        this.props.getListMessages({page: 1})
+        this.props.getListMessagesArchive({page: 1})
+      }
     }
-    if (nextProps.dataMoveMessage.status === 200 && this.state.typeMessage === 'archive') {
-      nextProps.dataMoveMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.buyermessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil memindahkan ke Percakapan',
-        page: 0
-      })
+
+    if (!isFetching(dataDeleteMessage) && this.submitting.delete && this.state.typeMessage === 'conversation') {
+      this.submitting = { ...this.submitting, delete: false }
+      if (isError(dataDeleteMessage)) {
+        ToastAndroid.show(dataDeleteMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackArchive: !this.state.callback,
+            pesanNotifArchive: 'Berhasil menghapus Percakapan'
+          }
+        })
+        this.props.getListMessages({page: 1})
+      }
     }
-    if (nextProps.dataMoveMessage.status !== 200 && nextProps.dataMoveMessage.status !== 0) {
-      nextProps.dataMoveMessage.status = 0
-      ToastAndroid.show(nextProps.dataMoveMessage.message, ToastAndroid.LONG)
-    }
-    if (nextProps.dataDeleteMessage.status === 200) {
-      nextProps.dataDeleteMessage.status = 0
-      this.props.getListMessages()
-      this.props.getListArchiveMessages()
-      NavigationActions.buyermessage({
-        type: ActionConst.POP_AND_REPLACE,
-        notif: true,
-        messageNotif: 'Berhasil menghapus Percakapan',
-        page: 0
-      })
-    } else if (nextProps.dataDeleteMessage.status !== 200 && nextProps.dataDeleteMessage.status !== 0) {
-      nextProps.dataDeleteMessage.status = 0
-      ToastAndroid.show(nextProps.dataDeleteMessage.message, ToastAndroid.LONG)
+
+    if (!isFetching(dataDeleteMessage) && this.submitting.delete && this.state.typeMessage === 'archive') {
+      this.submitting = { ...this.submitting, delete: false }
+      if (isError(dataDeleteMessage)) {
+        ToastAndroid.show(dataDeleteMessage.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteMessage)) {
+        NavigationActions.pop({
+          refresh: {
+            callbackConversation: !this.state.callback,
+            pesanNotifConversation: 'Berhasil menghapus Arsip'
+          }
+        })
+        this.props.getListMessagesArchive({page: 1})
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getDetailMessage(this.props.idMessage)
+    if (!this.submitting.conversation) {
+      this.submitting = {
+        ...this.submitting,
+        detail: true
+      }
+      this.props.getDetailMessage(this.state.idMessage)
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -214,21 +245,42 @@ class BuyerDetailMessage extends React.Component {
 
   handleMoveToArchive () {
     this.setState({ modalPopup: false })
-    if (this.state.typeMessage === 'conversation') {
-      this.props.movingMessage(this.state.idMessage, 'archive')
-    } else {
-      this.props.movingMessage(this.state.idMessage, 'conversation')
+    if (!this.submitting.move) {
+      this.submitting = {
+        ...this.submitting,
+        move: true
+      }
+      if (this.state.typeMessage === 'conversation') {
+        this.props.movingMessage(this.state.idMessage, 'archive')
+      } else {
+        this.props.movingMessage(this.state.idMessage, 'conversation')
+      }
     }
   }
 
   handleDeleteMessage () {
     this.setState({ modalPopup: false })
-    this.props.deleteMessage(this.state.idMessage)
+    if (!this.submitting.delete) {
+      this.submitting = {
+        ...this.submitting,
+        delete: true
+      }
+      this.props.deleteMessage(this.state.idMessage)
+    }
   }
 
   sendReply () {
-    this.setState({messages: ''})
-    this.props.replyMessage(this.state.idMessage, this.state.messages)
+    if (this.state.messages.length === 0) {
+    } else {
+      this.setState({messages: ''})
+      if (!this.submitting.reply) {
+        this.submitting = {
+          ...this.submitting,
+          reply: true
+        }
+        this.props.replyMessage(this.state.idMessage, this.state.messages)
+      }
+    }
   }
 
   render () {
@@ -295,8 +347,8 @@ const mapDispatchToProps = (dispatch) => {
     getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
     deleteMessage: (id) => dispatch(messageAction.buyerDeleteMessage({id})),
     movingMessage: (id, type) => dispatch(messageAction.updateBuyerMessage({id: id, messageType: type})),
-    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages())
+    getListMessages: (params) => dispatch(messageAction.getBuyerMessages(params)),
+    getListMessagesArchive: (params) => dispatch(messageAction.getArchiveBuyerMessages(params))
   }
 }
 

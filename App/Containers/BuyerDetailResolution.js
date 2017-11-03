@@ -7,7 +7,8 @@ import {
   TextInput,
   ListView,
   BackAndroid,
-  ToastAndroid
+  ToastAndroid,
+  TouchableOpacity
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -20,7 +21,7 @@ import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/BuyerDetailResolutionStyle'
-import { Colors } from '../Themes/'
+import { Colors, Images } from '../Themes/'
 
 class BuyerDetailResolution extends React.Component {
   constructor (props) {
@@ -31,7 +32,7 @@ class BuyerDetailResolution extends React.Component {
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
-      messages: '',
+      content: '',
       discussionSolution: [],
       detailResolution: [],
       complaintMessage: [],
@@ -59,6 +60,7 @@ class BuyerDetailResolution extends React.Component {
       nextProps.dataDetailResolution.status = 0
     }
     if (nextProps.dataReplyResolutions.status === 200) {
+      this.setState({content: ''})
       this.props.getDetailResolution(this.state.idResolution)
       nextProps.dataReplyResolutions.status = 0
     } else if (nextProps.dataReplyResolutions.status !== 200 && nextProps.dataReplyResolutions.status !== 0) {
@@ -235,12 +237,22 @@ class BuyerDetailResolution extends React.Component {
     }
   }
 
-  sendReply () {
-    this.setState({messages: ''})
-    this.props.replyDiscussion(this.state.idResolution, this.state.messages)
+  handleComment = (text) => {
+    this.setState({ content: text })
+  }
+
+  send () {
+    const { idResolution, content } = this.state
+    this.props.replyDiscussion(idResolution, content)
   }
 
   render () {
+    let image
+    if (this.state.content === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -268,22 +280,22 @@ class BuyerDetailResolution extends React.Component {
                 enableEmptySections
               />
             </ScrollView>
-            <TextInput
-              style={[styles.inputText]}
-              value={this.state.messages}
-              keyboardType='default'
-              returnKeyType='done'
-              autoCapitalize='none'
-              autoCorrect={false}
-              onChange={(event) => {
-                this.setState({
-                  messages: event.nativeEvent.text
-                })
-              }}
-              onSubmitEditing={() => this.sendReply()}
-              underlineColorAndroid='transparent'
-              placeholder='Tulis pesan Anda disini'
-            />
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                value={this.state.content}
+                keyboardType='default'
+                autoCapitalize='none'
+                autoCorrect
+                blurOnSubmit
+                onChangeText={this.handleComment}
+                underlineColorAndroid='transparent'
+                placeholder='Tulis Komentar'
+              />
+              <TouchableOpacity style={styles.sendContainer} onPress={() => this.send()}>
+                <Image source={image} style={styles.sendMessage} />
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollableTabView>
       </View>

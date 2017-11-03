@@ -36,7 +36,8 @@ class BuyerReview extends React.Component {
       page: 1,
       loadmore: false,
       isRefreshing: true,
-      isLoading: false
+      isLoading: false,
+      gettingData: true
     }
   }
 
@@ -82,7 +83,7 @@ class BuyerReview extends React.Component {
         ...this.submitting,
         review: true
       }
-      this.props.getListReview()
+      this.props.getListReview({page: 1})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -100,13 +101,19 @@ class BuyerReview extends React.Component {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListReview({page: page})
+        if (!this.submitting.review) {
+          this.submitting = {
+            ...this.submitting,
+            review: true
+          }
+          this.props.getListReview({page: page})
+        }
       }
     }
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, data: [], page: 1, isLoading: true })
     this.submitting = {
       ...this.submitting,
       review: true
@@ -194,55 +201,67 @@ class BuyerReview extends React.Component {
   }
 
   checkStateReview (data) {
-    if (data.length > 0 || this.state.isRefreshing) {
-      return (
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(data)}
-          renderRow={this.renderRow.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRow.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={() => this.loadMore()}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
           }
-          onEndReached={this.loadMore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadmore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
-          style={styles.listView}
-        />
-      )
-    } else {
-      return (
-        <View style={styles.containerEmpty}>
-          <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
-          <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
-          <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
-        </View>
-      )
-    }
+          return <View />
+        }}
+        enableEmptySections
+        style={styles.listView}
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
+        <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
+      </View>
+    )
   }
 
   render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.checkStateReview(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.checkStateReview(data))
+    }
+
     return (
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
-          {this.checkStateReview(this.state.data)}
+          {view}
         </View>
       </View>
     )

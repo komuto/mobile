@@ -190,7 +190,7 @@ class InfoStore extends React.Component {
         break
       case 'desc':
         this.setState({
-          textDesc: 'Deskripsi harus diisi',
+          textDesc: 'Deskripsi toko anda harus diisi',
           textDescColor: Colors.red
         })
         break
@@ -200,7 +200,7 @@ class InfoStore extends React.Component {
           textPemilikColor: Colors.red,
           textSlogan: 'Slogan harus diisi',
           textSloganColor: Colors.red,
-          textDesc: 'Deskripsi harus diisi',
+          textDesc: 'Deskripsi toko anda harus diisi',
           textDescColor: Colors.red
         })
         break
@@ -227,7 +227,7 @@ class InfoStore extends React.Component {
         break
       case 'desc':
         this.setState({
-          textDesc: 'Deskripsi harus diisi',
+          textDesc: 'Deskripsi toko anda harus diisi',
           textDescColor: Colors.snow
         })
         break
@@ -243,7 +243,7 @@ class InfoStore extends React.Component {
           textPemilikColor: Colors.labelgrey,
           textSlogan: 'Slogan harus diisi',
           textSloganColor: Colors.labelgrey,
-          textDesc: 'Deskripsi harus diisi',
+          textDesc: 'Deskripsi toko anda harus diisi',
           textDescColor: Colors.snow
         })
         break
@@ -384,7 +384,7 @@ class InfoStore extends React.Component {
                 placeholder='Deskripsi Toko Anda'
               />
             </View>
-            <Text style={[styles.textLabel, {fontSize: 12, color: textDescColor}]}>Deskripsi Toko {textDesc}</Text>
+            <Text style={[styles.textLabel, {fontSize: 12, color: textDescColor}]}>{textDesc}</Text>
           </View>
           <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
             <Text style={styles.textButtonNext}>

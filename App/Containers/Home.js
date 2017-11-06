@@ -29,6 +29,7 @@ import * as homeAction from '../actions/home'
 import * as produkAction from '../actions/product'
 import * as cartAction from '../actions/cart'
 import * as wishlistAction from '../actions/user'
+import * as otherAction from '../actions/other'
 
 // Styles
 import styles from './Styles/HomeStyle'
@@ -187,6 +188,7 @@ class Home extends React.Component {
       category: true
     }
     this.props.getKategori()
+    this.props.getBanners()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -743,7 +745,8 @@ const mapDispatchToProps = (dispatch) => {
     getCart: () => dispatch(cartAction.getCart()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
     getSearch: (param) => dispatch(homeAction.search(param)),
-    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id}))
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    getBanners: () => dispatch(otherAction.getBanner())
   }
 }
 

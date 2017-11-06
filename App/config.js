@@ -17,7 +17,7 @@ export function errorHandling (actionType, err) {
       return put({ type: actionType, ...data })
     case 'SERVER_ERROR':
       const errorServer = {
-        message: 'Server error!',
+        message: 'Server error',
         code: status,
         isOnline: true,
         isLoading: false
@@ -25,7 +25,7 @@ export function errorHandling (actionType, err) {
       return put({ type: actionType, ...errorServer })
     case 'TIMEOUT_ERROR':
       const errorTimeout = {
-        message: 'Timeout reached!',
+        message: 'Timeout reached',
         code: 'ETIMEOUT',
         isOnline: true,
         isLoading: false
@@ -34,7 +34,7 @@ export function errorHandling (actionType, err) {
     case 'CONNECTION_ERROR':
     case 'NETWORK_ERROR':
       const errorOffline = {
-        message: 'Device offline!',
+        message: 'Device offline',
         code: 'EOFFLINE',
         isOnline: false,
         isLoading: false

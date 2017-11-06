@@ -134,7 +134,8 @@ class Home extends React.Component {
       refreshSearch: false,
       resultSearch: [],
       isRefreshing: true,
-      modalLogin: false
+      modalLogin: false,
+      banner: []
     }
   }
 
@@ -270,6 +271,13 @@ class Home extends React.Component {
           })
         }
       }
+    }
+    if (nextProps.dataBanner.status === 200) {
+      this.setState({
+        banner: nextProps.dataBanner.data
+      })
+    } else if (nextProps.dataBanner.status !== 200 && nextProps.dataBanner.status !== 0) {
+      ToastAndroid.show(nextProps.dataBanner.message, ToastAndroid.SHORT)
     }
   }
 
@@ -607,11 +615,18 @@ class Home extends React.Component {
 
   render () {
     const name = marketplace
-    const { modalLogin } = this.state
+    const { modalLogin, banner } = this.state
     let view = null
     if (modalLogin) {
       view = <ModalLogin visible={modalLogin} onClose={() => this.onClose()} />
     }
+    const renderBanner = banner.map((data, i) => {
+      return (
+        <View style={styles.slider}>
+          <Image style={styles.imageSlider} source={{ uri: data.image }} resizeMode='stretch' />
+        </View>
+      )
+    })
     return (
       <ParallaxScrollView
         backgroundColor={Colors.snow}
@@ -675,15 +690,7 @@ class Home extends React.Component {
       >
         <View style={styles.container}>
           <Swiper height={165} autoplay autoplayTimeout={3.5}>
-            <View style={styles.slider}>
-              <Image style={styles.imageSlider} source={Images.slider1} resizeMode='stretch' />
-            </View>
-            <View style={styles.slider}>
-              <Image style={styles.imageSlider} source={Images.slider2} resizeMode='stretch' />
-            </View>
-            <View style={styles.slider}>
-              <Image style={styles.imageSlider} source={Images.slider3} resizeMode='stretch' />
-            </View>
+            {renderBanner}
           </Swiper>
           <Text style={styles.titleCategory}>
             Kategori Produk
@@ -731,7 +738,8 @@ const mapStateToProps = (state) => {
     datalogin: state.isLogin,
     propsWishlist: state.addWishlist,
     propsCart: state.cart,
-    dataSearch: state.searchProduct
+    dataSearch: state.searchProduct,
+    dataBanner: state.getBanner
   }
 }
 

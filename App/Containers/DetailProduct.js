@@ -212,28 +212,28 @@ class DetailProduct extends React.Component {
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
-      nextProps.dataProvinsi.status = 0
+      // nextProps.dataProvinsi.status = 0
     } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
       ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
-      nextProps.dataProvinsi.status = 0
+      // nextProps.dataProvinsi.status = 0
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
         kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
-      nextProps.dataKota.status = 0
+      // nextProps.dataKota.status = 0
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
       ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
-      nextProps.dataKota.status = 0
+      // nextProps.dataKota.status = 0
     }
     if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
-      nextProps.dataSubDistrict.status = 0
+      // nextProps.dataSubDistrict.status = 0
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
       ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
-      nextProps.dataSubDistrict.status = 0
+      // nextProps.dataSubDistrict.status = 0
     }
     if (nextProps.dataServis.status === 200) {
       this.setState({

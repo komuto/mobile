@@ -172,15 +172,15 @@ export default StyleSheet.create({
     color: Colors.darkgrey,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.37,
-    flex: 1
+    marginRight: 50
   },
   klikLink: {
     fontFamily: Fonts.type.regular,
     color: Colors.lightgrey,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.37,
-    marginTop: 5,
-    flex: 1
+    marginRight: 50,
+    marginTop: 5
   },
   buttonVerifikasi: {
     borderRadius: 5,

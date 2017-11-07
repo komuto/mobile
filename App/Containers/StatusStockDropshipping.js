@@ -31,7 +31,8 @@ class StatusStockDropshipping extends React.Component {
       productIds: [],
       data: [{'index': 1, 'label': 'Ditampilkan di toko'}, {'index': 0, 'label': 'Disembunyikan'}],
       loading: false,
-      modalDropshipping: false
+      modalDropshipping: false,
+      dataFaq: []
     }
   }
 
@@ -65,10 +66,21 @@ class StatusStockDropshipping extends React.Component {
     if (nextProps.dataUpdateProduct.status !== 200 && nextProps.dataUpdateProduct.status !== 0) {
       ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.LONG)
     }
+    if (nextProps.dataFaq.status === 200) {
+      let data = [...nextProps.dataFaq.faq]
+      var i
+      for (i = 0; i < nextProps.dataFaq.faq.length; i++) {
+        data[i].isChecked = false
+      }
+      this.setState({
+        dataFaq: data
+      })
+    }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    this.props.getDropshipFaq()
   }
 
   componentWillUnmount () {
@@ -98,7 +110,7 @@ class StatusStockDropshipping extends React.Component {
             <Image source={Images.close} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Dropshipping marginNavbars={0} visibleButton={false} />
+        <Dropshipping marginNavbars={0} visibleButton={false} data={this.state.dataFaq} />
       </Modal>
     )
   }
@@ -246,7 +258,8 @@ class StatusStockDropshipping extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataUpdateProduct: state.alterProducts
+    dataUpdateProduct: state.alterProducts,
+    dataFaq: state.dropshipfaq
   }
 }
 
@@ -258,7 +271,8 @@ const mapDispatchToProps = (dispatch) => {
     setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
     getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getDropshipFaq: () => dispatch(storeAction.getDropshipperFaq())
   }
 }
 

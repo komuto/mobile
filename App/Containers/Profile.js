@@ -147,10 +147,10 @@ class Profile extends React.Component {
           </View>
           <View style={styles.pesanContainer}>
             <Text multiline style={styles.verifikasi}>
-              Verifikasikan email untuk mengakses{'\n'}semua menu
+              Verifikasikan email untuk mengakses semua menu
             </Text>
             <Text multiline style={styles.klikLink}>
-              Silahkan klik link verifikasi yang telah kami {'\n'}
+              Silahkan klik link verifikasi yang telah kami
               kirimkan ke {this.state.email}
             </Text>
             {renderButton}

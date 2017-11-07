@@ -322,7 +322,7 @@ class PriceAndSpecificationProduct extends React.Component {
               underlineColorAndroid='transparent'
               placeholder='Berat Produk'
             />
-            <Text style={[styles.inputNoBOrder, {flex: 0}]}>Kg</Text>
+            <Text style={[styles.inputNoBOrder, {flex: 0}]}>gram</Text>
           </View>
           <Text style={[styles.textError, {color: errorColorWight}]}>Berat produk harus diisi</Text>
           <View style={styles.rowBerat}>

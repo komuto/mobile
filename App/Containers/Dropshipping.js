@@ -20,7 +20,7 @@ class Dropshipping extends React.Component {
       loading: false,
       showContent: '',
       buttonVisible: this.props.visibleButton,
-      infoDropshipping: []
+      infoDropshipping: this.props.data || []
     }
   }
 

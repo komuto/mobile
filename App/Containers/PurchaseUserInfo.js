@@ -37,7 +37,7 @@ class PurchaseUserInfo extends React.Component {
       kabupaten: 'Kota / Kabupaten',
       kecamatan: 'Kecamatan',
       kelurahan: 'Kelurahan',
-      dataProvinsi: [],
+      dataProvinsi: this.props.dataProvinsi.provinces,
       dataKabupaten: [],
       dataKecamatan: [],
       dataKelurahan: [],
@@ -753,7 +753,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
-    getProvinsi: dispatch(filterAction.getProvince()),
     getKota: (id) => dispatch(filterAction.getDistrict({ province_id: id })),
     getSubDistrict: (id) => dispatch(filterAction.getSubDistrict({ district_id: id })),
     getVillage: (id) => dispatch(filterAction.getVillage({ sub_district_id: id })),

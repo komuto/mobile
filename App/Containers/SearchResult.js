@@ -361,7 +361,22 @@ class SearchResult extends React.Component {
   }
 
   checkDiscount (discount, isDiscount, isWholesaler) {
-    if (isDiscount) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View stlye={{left: -10, flexDirection: 'column'}}>
+          <View style={styles.containerDiskon}>
+            <Text style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
       return (
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
@@ -393,8 +408,9 @@ class SearchResult extends React.Component {
     return (
       <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} >
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
@@ -435,8 +451,9 @@ class SearchResult extends React.Component {
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} >
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>

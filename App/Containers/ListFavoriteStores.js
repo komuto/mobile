@@ -25,7 +25,7 @@ import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/ListFavoriteStoresStyle'
-import { Images, Colors } from '../Themes/'
+import { Images, Colors, Fonts } from '../Themes/'
 
 class ListFavoriteStores extends React.Component {
 
@@ -244,23 +244,44 @@ class ListFavoriteStores extends React.Component {
     )
   }
 
-  checkDiscount (data, isDiscount) {
-    if (isDiscount) {
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View stlye={{left: -10, flexDirection: 'column'}}>
+          <View style={styles.containerDiskon}>
+            <Text style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
       return (
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>
-            {data}%
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
           </Text>
         </View>
       )
     } else {
-      return (
-        <View />
-      )
+      return (<View />)
     }
   }
 
-  renderRowProduk (rowData, id) {
+  renderRowProduk (rowData, id, logo) {
     const mapProduct = rowData.map((data, i) => {
       if (data.is_discount) {
         this.hargaDiskon = this.discountCalculate(data.price, data.discount)
@@ -271,10 +292,9 @@ class ListFavoriteStores extends React.Component {
       const money = this.maskedMoney(this.hargaDiskon)
       return (
         <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.handleDetailProduct(data.id)}>
-          <View style={styles.maskedimageProduct}>
-            <Image source={{uri: data.image}} style={styles.imageProduct} />
-          </View>
-          {this.checkDiscount(data.discount, data.is_discount)}
+          <Image source={{uri: logo}} style={styles.imageProduct} >
+            {this.checkDiscount(data.discount, data.is_discount, data.is_wholesaler)}
+          </Image>
           <Text style={styles.textTitleProduct}>
             {data.name}
           </Text>
@@ -324,7 +344,7 @@ class ListFavoriteStores extends React.Component {
             <Image source={Images.keranjang} style={styles.searchImage} />
           </TouchableOpacity>
         </View>
-        {this.renderRowProduk(rowData.products, rowData.store.id)}
+        {this.renderRowProduk(rowData.products, rowData.store.id, rowData.store.logo)}
       </View>
     )
   }

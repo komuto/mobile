@@ -405,7 +405,22 @@ class Home extends React.Component {
   }
 
   checkDiscount (discount, isDiscount, isWholesaler) {
-    if (isDiscount) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View style={{left: -20, top: -165, flexDirection: 'row'}}>
+          <View style={styles.containerDiskon}>
+            <Text style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
       return (
         <View style={styles.containerDiskon}>
           <Text style={styles.diskon}>

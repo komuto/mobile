@@ -586,11 +586,16 @@ class DetailProduct extends React.Component {
                 {diskon}%
               </Text>
             </View>
+            <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10, backgroundColor: Colors.darkMint}]}>
+              <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny, color: Colors.background}]}>
+                GROSIR
+              </Text>
+            </View>
             <View>
-              {this.renderDiskon(true, totalHarga)}
+              {this.renderDiskon(discount, price)}
               <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <Text style={[styles.price, {marginTop: 0}]}>
-                  {hargaDiskon}{'\b'}
+                  {hargaDiskonMasked}{'\b'}
                 </Text>
                 {valueCommission}
               </View>

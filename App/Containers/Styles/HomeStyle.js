@@ -178,6 +178,17 @@ export default StyleSheet.create({
     top: 11,
     left: 10
   },
+  containerDiskon2: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 11,
+    left: 60
+  },
   diskon: {
     fontSize: Fonts.size.smallMed,
     color: Colors.snow,

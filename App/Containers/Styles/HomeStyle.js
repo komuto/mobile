@@ -87,7 +87,7 @@ export default StyleSheet.create({
   },
   imageSlider: {
     flex: 1,
-    width: Metrics.screenWidth - 100,
+    width: Metrics.screenWidth,
     height: 140
   },
   titleCategory: {

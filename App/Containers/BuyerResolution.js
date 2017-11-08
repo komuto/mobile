@@ -757,10 +757,9 @@ class BuyerResolution extends React.Component {
           locked
           initialPage={this.state.page}
         >
-          <View style={styles.container}>
+          <View tabLabel='Menunggu' style={styles.container}>
             <View
               style={{flex: 1}}
-              tabLabel='Menunggu'
               refreshControl={
                 <RefreshControl
                   refreshing={unresolveState.isRefreshing}
@@ -776,7 +775,7 @@ class BuyerResolution extends React.Component {
               {unresolveView}
             </View>
           </View>
-          <View style={styles.container}>
+          <View tabLabel='Terselesaikan' style={styles.container}>
             <View
               style={{flex: 1}}
               tabLabel='Terselesaikan'

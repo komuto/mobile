@@ -622,9 +622,9 @@ class Home extends React.Component {
     }
     const renderBanner = banner.map((data, i) => {
       return (
-        <View style={styles.slider}>
+        <TouchableOpacity key={i} onPress={() => this.produkDetail(data.product_id)} style={styles.slider}>
           <Image style={styles.imageSlider} source={{ uri: data.image }} resizeMode='stretch' />
-        </View>
+        </TouchableOpacity>
       )
     })
     return (

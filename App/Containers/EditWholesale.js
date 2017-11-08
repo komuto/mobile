@@ -402,22 +402,19 @@ class EditWholesale extends React.Component {
       resolve(tempData)
     })
     coba.then((result) =>
-    this.props.updateData(this.state.id, result))
+    this.props.updateData({id: this.state.id, is_wholesaler: this.state.wholesale, wholesales: result}))
   }
 
   renderSaveButton () {
-    const { wholesale } = this.state
-    if (wholesale) {
-      return (
-        <View style={styles.saveContainer}>
-          <TouchableOpacity style={styles.save} onPress={() => this.save()}>
-            <Text style={styles.textButtonNext}>
-              Simpan Perubahan
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )
-    }
+    return (
+      <View style={styles.saveContainer}>
+        <TouchableOpacity style={styles.save} onPress={() => this.save()}>
+          <Text style={styles.textButtonNext}>
+            Simpan Perubahan
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
   }
 
   render () {
@@ -443,7 +440,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateData: (id, wholesales) => dispatch(productAction.updateProduct({id: id, wholesales: wholesales}))
+    updateData: (params) => dispatch(productAction.updateProduct(params))
   }
 }
 

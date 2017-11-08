@@ -59,7 +59,7 @@ class SearchResult extends React.Component {
       termahalCek: 0,
       terlarisCek: 0,
       filter: false,
-      page: 0,
+      page: 1,
       loadmore: false,
       isRefreshing: true,
       isLoading: false,
@@ -88,7 +88,7 @@ class SearchResult extends React.Component {
         product: true
       }
       Reactotron.log('search result')
-      this.props.getListProduct({q: this.state.valueSearch})
+      this.props.getListProduct({page: 1, q: this.state.valueSearch})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -189,7 +189,7 @@ class SearchResult extends React.Component {
   }
 
   detailResult (name) {
-    this.setState({ header: name, isRefreshing: true, listDataSource: [], rowDataSource: [], modalSearch: false, page: 1, resultSearch: [], search: '', valueSearch: name })
+    this.setState({ gettingData: true, header: name, isRefreshing: true, listDataSource: [], rowDataSource: [], modalSearch: false, page: 1, resultSearch: [], search: '', valueSearch: name })
     if (!this.submitting.product) {
       this.submitting = {
         ...this.submitting,
@@ -235,49 +235,38 @@ class SearchResult extends React.Component {
 
   loadMore () {
     const {
-      valueSearch,
-      storeId,
-      page,
       loadmore,
-      isLoading,
-      kondisi,
-      pengiriman,
-      price,
-      address,
-      brand,
-      other,
-      sort
+      isLoading
     } = this.state
     if (!isLoading) {
       if (loadmore) {
         this.submitting.product = true
         this.props.getListProduct({
-          q: valueSearch,
-          store_id: storeId,
-          condition: kondisi,
-          services: pengiriman,
-          price: price,
-          address: address,
-          brands: brand,
-          other: other,
-          page: page,
-          sort: sort
+          q: this.state.valueSearch,
+          store_id: this.state.storeId,
+          condition: this.state.kondisi,
+          services: this.state.pengiriman,
+          price: this.state.price,
+          address: this.state.address,
+          brands: this.state.brand,
+          other: this.state.other,
+          page: this.state.page,
+          sort: this.state.sort
         })
       }
     }
   }
 
   refresh = () => {
-    const { storeId } = this.state
     const { lightblack } = Colors
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
+    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
     this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
     this.submitting = {
       wishlist: false,
       product: true
     }
     this.props.getListProduct({
-      store_id: storeId,
+      store_id: this.state.toreId,
       page: 1
     })
   }
@@ -602,20 +591,6 @@ class SearchResult extends React.Component {
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    const { storeId, valueSearch, page, sort } = this.state
-    this.submitting.product = true
-    this.props.getListProduct({
-      q: valueSearch,
-      store_id: storeId,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: page,
-      sort: sort
-    })
     this.setState({
       filter: false,
       page: 1,
@@ -627,7 +602,21 @@ class SearchResult extends React.Component {
       other: other,
       isRefreshing: true,
       rowDataContainer: [],
-      listDataSource: []
+      listDataSource: [],
+      gettingData: true
+    })
+    this.submitting.product = true
+    this.props.getListProduct({
+      q: this.state.valueSearch,
+      store_id: this.state.storeId,
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      page: this.state.page,
+      sort: this.state.sort
     })
   }
 
@@ -684,27 +673,17 @@ class SearchResult extends React.Component {
       sort: typesort,
       gettingData: true
     })
-    const {
-      valueSearch,
-      kondisi,
-      pengiriman,
-      price,
-      address,
-      brand,
-      other,
-      id
-    } = this.state
     this.submitting.category = true
     this.props.getListProduct({
-      q: valueSearch,
-      category_id: id,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: 1,
+      q: this.state.valueSearch,
+      category_id: this.state.id,
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      page: this.state.page,
       sort: typesort
     })
   }

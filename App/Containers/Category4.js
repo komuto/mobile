@@ -92,7 +92,7 @@ class Category4 extends React.Component {
         ...this.submitting,
         category: true
       }
-      this.props.getProduct({category_id: this.state.id})
+      this.props.getProduct({page: 1, category_id: this.state.id})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -226,28 +226,27 @@ class Category4 extends React.Component {
 
   loadMore = () => {
     Reactotron.log('load more')
-    const {isLoading, loadmore, valueSearch, kondisi, pengiriman, price, address, brand, other, page, sort, id} = this.state
+    const {isLoading, loadmore} = this.state
     if (!isLoading) {
       if (loadmore) {
         this.submitting.category = true
         this.props.getProduct({
-          q: valueSearch,
-          category_id: id,
-          condition: kondisi,
-          services: pengiriman,
-          price: price,
-          address: address,
-          brands: brand,
-          other: other,
-          page: page,
-          sort: sort
+          q: this.state.valueSearch,
+          category_id: this.state.id,
+          condition: this.state.kondisi,
+          services: this.state.pengiriman,
+          price: this.state.price,
+          address: this.state.address,
+          brands: this.state.brand,
+          other: this.state.other,
+          page: this.state.page,
+          sort: this.state.sort
         })
       }
     }
   }
 
   refresh = () => {
-    const { id } = this.state
     const { lightblack } = Colors
     this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
     this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
@@ -259,7 +258,7 @@ class Category4 extends React.Component {
       sort: false
     }
     this.props.getProduct({
-      category_id: id,
+      category_id: this.state.id,
       page: 1
     })
   }
@@ -600,20 +599,6 @@ class Category4 extends React.Component {
   }
 
   handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    const { id, valueSearch, page, sort } = this.state
-    this.submitting.category = true
-    this.props.getProduct({
-      q: valueSearch,
-      category_id: id,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: page,
-      sort: sort
-    })
     this.setState({
       filter: false,
       page: 1,
@@ -627,6 +612,19 @@ class Category4 extends React.Component {
       rowDataContainer: [],
       listDataSource: [],
       gettingData: true
+    })
+    this.submitting.category = true
+    this.props.getProduct({
+      q: this.state.valueSearch,
+      category_id: this.state.id,
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      page: this.state.page,
+      sort: this.state.sort
     })
   }
 
@@ -683,27 +681,17 @@ class Category4 extends React.Component {
       sort: typesort,
       gettingData: true
     })
-    const {
-      valueSearch,
-      kondisi,
-      pengiriman,
-      price,
-      address,
-      brand,
-      other,
-      id
-    } = this.state
     this.submitting.category = true
     this.props.getProduct({
-      q: valueSearch,
-      category_id: id,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: 1,
+      q: this.state.valueSearch,
+      category_id: this.state.id,
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      page: this.state.page,
       sort: typesort
     })
   }

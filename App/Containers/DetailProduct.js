@@ -497,7 +497,8 @@ class DetailProduct extends React.Component {
     }
 
     const hargaDiskon = this.discountCalculate(price, diskon)
-    const hargaDiskonMasked = this.maskedMoney(price)
+    const hargaDiskonMasked = this.maskedMoney(hargaDiskon)
+    const wholesalerMasked = this.maskedMoney(price)
     if (!grosir && !discount) {
       Reactotron.log('tidak dis, tidak gros')
       return (
@@ -562,7 +563,7 @@ class DetailProduct extends React.Component {
                 {this.renderLikes(pickFromDropshipper, id)}
               </View>
               <Text style={[styles.price, { marginLeft: 15 }]}>
-                {price}
+                {wholesalerMasked}
               </Text>
               {valueCommission}
             </View>

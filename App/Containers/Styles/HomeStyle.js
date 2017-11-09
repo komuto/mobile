@@ -86,9 +86,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.background
   },
   imageSlider: {
-    flex: 1,
     width: Metrics.screenWidth,
-    height: 140
+    height: Metrics.screenWidth / 3
   },
   titleCategory: {
     fontSize: Fonts.size.smallMed,

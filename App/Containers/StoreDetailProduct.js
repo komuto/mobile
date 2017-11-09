@@ -97,18 +97,33 @@ class DetailTokoProduk extends React.Component {
   }
 
   checkDiscount (discount, isDiscount, isWholesaler) {
-    if (isDiscount) {
+    if (isDiscount && isWholesaler) {
       return (
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {discount} %
+        <View stlye={{left: -10, flexDirection: 'column'}}>
+          <View style={styles.containerDiskon}>
+            <Text style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text style={styles.diskon}>
+            {discount}%
           </Text>
         </View>
       )
-    } else if (isWholesaler) {
+    } if (isWholesaler) {
       return (
-        <View style={[stylesHome.containerDiskon, {backgroundColor: Colors.green}]}>
-          <Text style={[stylesHome.diskon, {fontSize: Fonts.size.extraTiny}]}>
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
             GROSIR
           </Text>
         </View>
@@ -156,8 +171,7 @@ class DetailTokoProduk extends React.Component {
         activeOpacity={0.5}
         onPress={() => this.produkDetail(rowData.id)}
       >
-        {this.renderImage(image)}
-        {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
+        {this.renderImage(image, rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
         <Text style={stylesHome.textTitleProduct}>
           {rowData.name}
         </Text>
@@ -181,14 +195,16 @@ class DetailTokoProduk extends React.Component {
     )
   }
 
-  renderImage (image) {
+  renderImage (image, discount, isDiscount, isWholesaler) {
     if (image === null) {
       return (
         <Image source={Images.contohproduct} style={stylesHome.imageProduct} />
       )
     }
     return (
-      <Image source={{ uri: image }} style={stylesHome.imageProduct} />
+      <Image source={{ uri: image }} style={stylesHome.imageProduct}>
+        {this.checkDiscount(discount, isDiscount, isWholesaler)}
+      </Image>
     )
   }
 

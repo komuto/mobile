@@ -111,5 +111,32 @@ export default StyleSheet.create({
     color: Colors.snow,
     marginTop: -3,
     marginLeft: 3
+  },
+  containerDiskon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.red,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    left: -15,
+    top: -15
+  },
+  containerDiskon2: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: -15,
+    left: 30
+  },
+  diskon: {
+    fontSize: Fonts.size.smallMed,
+    color: Colors.snow,
+    fontFamily: Fonts.type.extrabold
   }
 })

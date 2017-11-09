@@ -292,7 +292,7 @@ class ListFavoriteStores extends React.Component {
       const money = this.maskedMoney(this.hargaDiskon)
       return (
         <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.handleDetailProduct(data.id)}>
-          <Image source={{uri: logo}} style={styles.imageProduct} >
+          <Image source={{uri: data.image}} style={styles.imageProduct} >
             {this.checkDiscount(data.discount, data.is_discount, data.is_wholesaler)}
           </Image>
           <Text style={styles.textTitleProduct}>

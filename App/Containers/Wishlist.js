@@ -242,7 +242,22 @@ class Wishlist extends React.Component {
     const money = this.maskedMoney(this.hargaDiskon)
     let label = null
 
-    if (rowData.product.is_discount) {
+    if (rowData.product.is_discount && rowData.product.is_wholesaler) {
+      label = (
+        <View style={{flexDirection: 'row'}}>
+          <View style={stylesProduk.containerDiskon}>
+            <Text style={stylesProduk.diskon}>
+              {rowData.product.discount} %
+            </Text>
+          </View>
+          <View style={[stylesProduk.containerDiskon2, { backgroundColor: Colors.green }]}>
+            <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } else if (rowData.product.is_discount) {
       label = (
         <View style={stylesProduk.containerDiskon}>
           <Text style={stylesProduk.diskon}>
@@ -250,7 +265,7 @@ class Wishlist extends React.Component {
           </Text>
         </View>
       )
-    } if (rowData.product.is_wholesaler) {
+    } else if (rowData.product.is_wholesaler) {
       label = (
         <View style={[stylesProduk.containerDiskon, { backgroundColor: Colors.green }]}>
           <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
@@ -263,8 +278,9 @@ class Wishlist extends React.Component {
     return (
       <TouchableOpacity style={stylesProduk.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} />
-        {label}
+        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} >
+          {label}
+        </Image>
         <View style={stylesProduk.containerTitle}>
           <Text style={stylesProduk.textTitleProduct}>
             {rowData.product.name}
@@ -308,7 +324,22 @@ class Wishlist extends React.Component {
 
     const money = this.maskedMoney(this.hargaDiskon)
     let label = null
-    if (rowData.product.is_discount) {
+    if (rowData.product.is_discount && rowData.product.is_wholesaler) {
+      label = (
+        <View style={{flexDirection: 'row'}}>
+          <View style={stylesProduk.containerDiskon}>
+            <Text style={stylesProduk.diskon}>
+              {rowData.product.discount} %
+            </Text>
+          </View>
+          <View style={[stylesProduk.containerDiskon2, { backgroundColor: Colors.green }]}>
+            <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } else if (rowData.product.is_discount) {
       label = (
         <View style={stylesProduk.containerDiskon}>
           <Text style={stylesProduk.diskon}>
@@ -316,7 +347,7 @@ class Wishlist extends React.Component {
           </Text>
         </View>
       )
-    } if (rowData.product.is_wholesaler) {
+    } else if (rowData.product.is_wholesaler) {
       label = (
         <View style={[stylesProduk.containerDiskon, { backgroundColor: Colors.green }]}>
           <Text style={[stylesProduk.diskon, {fontSize: Fonts.size.extraTiny}]}>
@@ -329,8 +360,9 @@ class Wishlist extends React.Component {
     return (
       <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
         this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.images[0].file }} style={stylesHome.imageProduct} />
-        {label}
+        <Image source={{ uri: rowData.images[0].file }} style={stylesProduk.imageProduct} >
+          {label}
+        </Image>
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>

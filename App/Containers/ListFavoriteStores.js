@@ -303,9 +303,9 @@ class ListFavoriteStores extends React.Component {
             {money}
           </Text>
           <View style={styles.likesContainer}>
-            {/* {this.renderLikes(data.is_liked, data.id)} */}
+            {this.renderLikes(data.is_liked, data.id)}
             <Text style={styles.like}>
-              {data.stock}
+              {data.count_like}
             </Text>
           </View>
         </TouchableOpacity>

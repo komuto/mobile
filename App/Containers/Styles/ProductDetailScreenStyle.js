@@ -6,6 +6,11 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.paleGrey
   },
+  imageVerified: {
+    height: 24,
+    width: 24,
+    marginLeft: 3.9
+  },
   spinner: {
     position: 'absolute',
     flex: 1,

@@ -1389,13 +1389,13 @@ class DetailProduct extends React.Component {
     })
   }
 
-  renderProduk () {
+  renderProdukSeller () {
     return (
       <View style={{elevation: 1, backgroundColor: Colors.background}}>
         <ListView
           contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
           dataSource={this.dataSource.cloneWithRows(this.state.otherProduct)}
-          renderRow={this.renderRowProduk.bind(this)}
+          renderRow={this.renderRowProdukPenjual.bind(this)}
           enableEmptySections
         />
         <TouchableOpacity style={styles.allCategory} onPress={() => this.handleNewProduct(this.state.storeId)}>
@@ -1409,18 +1409,33 @@ class DetailProduct extends React.Component {
   }
 
   checkDiscount (discount, isDiscount, isWholesaler) {
-    if (isDiscount) {
+    if (isDiscount && isWholesaler) {
       return (
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {discount} %
+        <View style={{flexDirection: 'row'}}>
+          <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
+            <Text style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={[styles.containerDiskon2, {top: -15, left: -10}]}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
+      return (
+        <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
+          <Text style={styles.diskon}>
+            {discount}%
           </Text>
         </View>
       )
     } if (isWholesaler) {
       return (
-        <View style={[stylesHome.containerDiskon, {backgroundColor: Colors.green}]}>
-          <Text style={[stylesHome.diskon, {fontSize: Fonts.size.extraTiny}]}>
+        <View style={[styles.containerDiskon, {top: -15, left: -15, backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
             GROSIR
           </Text>
         </View>
@@ -1430,7 +1445,7 @@ class DetailProduct extends React.Component {
     }
   }
 
-  renderRowProduk (rowData) {
+  renderRowProdukPenjual (rowData) {
     if (rowData.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.price, rowData.discount)
     } else {
@@ -1444,8 +1459,9 @@ class DetailProduct extends React.Component {
         activeOpacity={0.5}
         onPress={() => this.produkDetail(rowData.id)}
       >
-        <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct} />
-        {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
+        <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct}>
+          {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
+        </Image>
         <View style={stylesHome.containerTitle}>
           <Text style={stylesHome.textTitleProduct}>
             {rowData.name}
@@ -1496,7 +1512,7 @@ class DetailProduct extends React.Component {
       return (
         <View style={{ marginBottom: 80 }}>
           <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
-          {this.renderProduk()}
+          {this.renderProdukSeller()}
         </View>
       )
     } else {

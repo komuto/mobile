@@ -16,6 +16,7 @@ import { connect } from 'react-redux'
 import {MaskService} from 'react-native-masked-text'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -35,7 +36,8 @@ class ListFavoriteStores extends React.Component {
     this.submitting = {
       list: false,
       search: false,
-      updateFavorite: false
+      updateFavorite: false,
+      wishlist: false
     }
     this.state = {
       search: '',
@@ -50,7 +52,7 @@ class ListFavoriteStores extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const {propsListStore, propsFavStore} = nextProps
+    const {propsListStore, propsFavStore, propsWishlist} = nextProps
 
     if (!isFetching(propsListStore) && this.submitting.list) {
       this.submitting = { ...this.submitting, list: false }
@@ -84,22 +86,14 @@ class ListFavoriteStores extends React.Component {
       }
     }
 
-    // if (!isFetching(propsListStore) && this.submitting.search) {
-    //   this.submitting = { ...this.submitting, search: false }
-    //   if (isError(propsListStore)) {
-    //     ToastAndroid.show(propsListStore.message, ToastAndroid.SHORT)
-    //   }
-    //   if (isFound(propsListStore)) {
-    //     this.setState({
-    //       listStore: propsListStore.stores,
-    //       page: this.state.page + 1,
-    //       isRefreshing: false,
-    //       isLoading: false,
-    //       loadmore: true,
-    //       loadingPage: false
-    //     })
-    //   }
-    // }
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+      }
+    }
 
     if (!isFetching(propsFavStore) && this.submitting.updateFavorite) {
       this.submitting = { ...this.submitting, updateFavorite: false, list: true }
@@ -121,7 +115,7 @@ class ListFavoriteStores extends React.Component {
         ...this.submitting,
         list: true
       }
-      this.props.getListFavStore()
+      this.props.getListFavStore({page: 1})
     }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
@@ -152,7 +146,7 @@ class ListFavoriteStores extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, gettingData: true, listStore: [], page: 1 })
-    this.submitting.search = true
+    this.submitting.list = true
     this.props.getListFavStore({page: 1})
   }
 
@@ -165,11 +159,11 @@ class ListFavoriteStores extends React.Component {
     if (text !== '') {
       this.submitting.list = true
       setTimeout(() => {
-        this.props.getListFavStore({q: text})
+        this.props.getListFavStore({page: 1, q: text})
       }, 3000)
     } else {
       this.submitting.list = true
-      this.props.getListFavStore()
+      this.props.getListFavStore({page: 1})
     }
   }
 
@@ -194,16 +188,34 @@ class ListFavoriteStores extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  addWishList (id) {
+    const {listStore} = this.state
+    this.submitting = {
+      ...this.submitting,
+      wishlist: true
+    }
+    listStore.map((myProduct, i) => {
+      myProduct.products.map((data, i) => {
+        if (data.id === id) {
+          data.is_liked ? data.count_like -= 1 : data.count_like += 1
+          data.is_liked = !data.is_liked
+        }
+      })
+    })
+    this.props.addWishList(id)
+    this.setState({ listStore })
+  }
+
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -475,14 +487,16 @@ class ListFavoriteStores extends React.Component {
 
 const mapStateToProps = (state) => ({
   propsListStore: state.listFavoriteStore,
-  propsFavStore: state.favorite
+  propsFavStore: state.favorite,
+  propsWishlist: state.addWishlist
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getListFavStore: (param) => dispatch(userAction.listFavorite(param)),
   putFavoriteStore: (param) => dispatch(userAction.favoriteStore(param)),
   getStore: (param) => dispatch(storeAction.getStores(param)),
-  getDetailProduct: (param) => dispatch(productAction.getProduct(param))
+  getDetailProduct: (param) => dispatch(productAction.getProduct(param)),
+  addWishList: (id) => dispatch(productAction.addToWishlist({ id: id }))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListFavoriteStores)

@@ -245,7 +245,7 @@ class SellerComplainDetailItem extends React.Component {
                 maxLength={30}
                 style={[styles.inputText]}
                 value={this.state.receiptNumber}
-                keyboardType='numeric'
+                keyboardType='default'
                 returnKeyType='done'
                 autoCapitalize='none'
                 autoCorrect

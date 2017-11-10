@@ -87,7 +87,7 @@ export default StyleSheet.create({
   },
   imageSlider: {
     width: Metrics.screenWidth,
-    height: Metrics.screenWidth / 3
+    height: Metrics.screenHeight / 3
   },
   titleCategory: {
     fontSize: Fonts.size.smallMed,

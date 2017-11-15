@@ -39,13 +39,16 @@ class PurchaseAddToCart extends React.Component {
       dataSourceKurir: ds.cloneWithRows(dataKurir),
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
-      idProduct: this.props.dataDetailProduk.detail.product.id,
-      price: this.props.dataDetailProduk.detail.product.price -
-        ((this.props.dataDetailProduk.detail.product.discount / 100) * this.props.dataDetailProduk.detail.product.price),
-      foto: this.props.dataDetailProduk.detail.images[0].file,
-      namaProduk: this.props.dataDetailProduk.detail.product.name,
-      namaToko: this.props.dataDetailProduk.detail.store.name,
+      idProduct: this.props.idProduct,
+      price: this.props.price,
+      tempPrice: this.props.price,
+      foto: this.props.foto,
+      namaProduk: this.props.namaProduk,
+      namaToko: this.props.namaToko,
       countProduct: 1,
+      stock: parseInt(this.props.stock),
+      grosir: this.props.grosir,
+      dataGrosir: this.props.dataGrosir,
       alamat: '',
       jalan: '',
       nama: '',
@@ -201,7 +204,6 @@ class PurchaseAddToCart extends React.Component {
       }
     }
     if (nextProps.dataAddressList.status === 200) {
-      console.log(nextProps.dataAddressList.address)
       this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
@@ -267,27 +269,75 @@ class PurchaseAddToCart extends React.Component {
   }
 
   substract () {
-    const {countProduct, price, ongkirSatuan} = this.state
+    const {countProduct, price, ongkirSatuan, grosir, dataGrosir, tempPrice} = this.state
     if (countProduct > 1) {
-      const temp = (countProduct - 1) * price
-      const temp2 = Math.ceil((this.state.countProduct - 1) * this.state.weight / 1000) * ongkirSatuan
-      this.setState({
-        countProduct: countProduct - 1,
-        subtotal: temp,
-        ongkir: temp2
-      })
+      const tempCount = countProduct - 1
+      const temp = tempCount * price
+      const temp2 = Math.ceil(tempCount * this.state.weight / 1000) * ongkirSatuan
+      if (grosir) {
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: tempCount * dataGrosir[i].price,
+              ongkir: temp2,
+              price: dataGrosir[i].price
+            })
+            break
+          } else {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: temp,
+              ongkir: temp2,
+              price: tempPrice
+            })
+          }
+        }
+      } else {
+        this.setState({
+          countProduct: tempCount,
+          subtotal: temp,
+          ongkir: temp2,
+          price: tempPrice
+        })
+      }
     }
   }
 
   add () {
-    const {countProduct, price, ongkirSatuan} = this.state
-    const temp = (countProduct + 1) * price
-    const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.weight / 1000) * ongkirSatuan
-    this.setState({
-      countProduct: countProduct + 1,
-      subtotal: temp,
-      ongkir: temp2
-    })
+    const {countProduct, tempPrice, price, ongkirSatuan, stock, grosir, dataGrosir} = this.state
+    const tempCount = countProduct + 1
+    const temp = tempCount * price
+    const temp2 = Math.ceil(tempCount * this.state.weight / 1000) * ongkirSatuan
+    if (tempCount <= stock) {
+      if (grosir) {
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: tempCount * dataGrosir[i].price,
+              ongkir: temp2,
+              price: dataGrosir[i].price
+            })
+            break
+          } else {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: temp,
+              ongkir: temp2,
+              price: tempPrice
+            })
+          }
+        }
+      } else {
+        this.setState({
+          countProduct: tempCount,
+          subtotal: temp,
+          ongkir: temp2,
+          price: tempPrice
+        })
+      }
+    }
   }
 
   renderSubtotal () {

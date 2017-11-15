@@ -78,6 +78,7 @@ class DetailProduct extends React.Component {
       sold: 0,
       weight: 0,
       totalWeight: 0,
+      originId: 0,
       otherProduct: [],
       provinsiTerpilih: 'Semua Wilayah',
       kabTerpilih: 'Semua Wilayah',
@@ -171,6 +172,7 @@ class DetailProduct extends React.Component {
           jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
           storeId: nextProps.dataDetailProduk.detail.store.id,
           isStoreFavorite: nextProps.dataDetailProduk.detail.store.is_favorite,
+          originId: nextProps.dataDetailProduk.detail.location.district.ro_id,
           dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
           asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
           jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
@@ -1535,10 +1537,35 @@ class DetailProduct extends React.Component {
   }
 
   beliSekarang () {
+    const { id,
+      grosir,
+      price,
+      dataImage,
+      title,
+      diskon,
+      stock,
+      weight,
+      namaToko,
+      service,
+      dataGrosir,
+      originId } = this.state
     if (this.state.isLogin) {
       if (!this.state.pickFromDropshipper) {
         NavigationActions.purchaseaddtocart({
-          type: ActionConst.PUSH
+          type: ActionConst.PUSH,
+          idProduct: id,
+          price: price - (diskon / 100 * price),
+          foto: dataImage[0].file,
+          namaProduk: title,
+          namaToko: namaToko,
+          weight: weight,
+          subtotal: price - (diskon / 100 * price),
+          diskon: String(diskon / 100 * price),
+          originId: originId,
+          dataKurir: service,
+          stock: stock,
+          grosir: grosir,
+          dataGrosir: dataGrosir
         })
         this.props.getDetailProduk(this.state.id)
       } else {

@@ -54,7 +54,7 @@ class BalancePull extends React.Component {
 
   componentDidMount () {
     this.setState({
-      dateData: moment().format('DD MM YYYY')
+      dateData: moment().format('DD MMMM YYYY')
     })
   }
 

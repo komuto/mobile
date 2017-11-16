@@ -284,7 +284,7 @@ class PurchaseAddToCart extends React.Component {
               price: dataGrosir[i].price
             })
             break
-          } else {
+          } else if (tempCount < dataGrosir[0].min) {
             this.setState({
               countProduct: tempCount,
               subtotal: temp,
@@ -320,7 +320,7 @@ class PurchaseAddToCart extends React.Component {
               price: dataGrosir[i].price
             })
             break
-          } else {
+          } else if (tempCount < dataGrosir[0].min) {
             this.setState({
               countProduct: tempCount,
               subtotal: temp,

@@ -54,11 +54,18 @@ class PurchaseCart extends React.Component {
           let temp = 0
           let tempDataDelivery = []
           let data = []
-          nextProps.dataCart.cart.items.map((obj, i) =>
-            (
+          nextProps.dataCart.cart.items.map((obj, i) => {
+            const dataGrosir = obj.product.wholesale
+            if (obj.product.is_wholesaler) {
+              for (var p = 0; p < dataGrosir.length; p++) {
+                if (obj.qty >= dataGrosir[p].min && obj.qty <= dataGrosir[p].max) {
+                  temp = temp + obj.qty * dataGrosir[p].price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
+                }
+              }
+            } else {
               temp = temp + obj.total_price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
-            )
-          )
+            }
+          })
           nextProps.dataCart.cart.items.map((obj, i) =>
             (
               tempDataDelivery.push(obj.shipping.delivery_cost)
@@ -306,8 +313,25 @@ class PurchaseCart extends React.Component {
   }
 
   renderRow (rowData, sectionData, row) {
-    const totalPrice = this.maskedMoney(rowData.product.price)
-    const subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+    let totalPrice, subtotalPrice
+    if (rowData.product.is_wholesaler) {
+      const dataGrosir = rowData.product.wholesale
+      const tempCount = rowData.qty
+      for (var i = 0; i < dataGrosir.length; i++) {
+        if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+          totalPrice = this.maskedMoney(dataGrosir[i].price)
+          subtotalPrice = this.maskedMoney(dataGrosir[i].price * rowData.qty + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+          break
+        } else if (tempCount < dataGrosir[0].min) {
+          totalPrice = this.maskedMoney(rowData.product.price)
+          subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+          break
+        }
+      }
+    } else {
+      totalPrice = this.maskedMoney(rowData.product.price)
+      subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+    }
     return (
       <View>
         <View style={styles.border}>
@@ -378,23 +402,64 @@ class PurchaseCart extends React.Component {
   }
 
   substract (row) {
-    const { data, subtotal, dataUpload } = this.state
+    const { data, subtotal, dataUpload, dataDelivery } = this.state
     let tempData = data
     let tempDataUpload = dataUpload
+    let tempDeliveryCost
     const rowData = data[row]
+    const tempPrice = (rowData.qty - 1) * rowData.product.price
     if (rowData.qty > 1) {
-      const tempPrice = (rowData.qty - 1) * rowData.product.price
-      const tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
-      const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
-      tempData[row].qty = rowData.qty - 1
-      tempDataUpload[row].qty = tempData[row].qty
-      tempData[row].shipping.delivery_cost = tempDeliveryCost
-      tempData[row].total_price = tempPrice
-      this.setState({
-        data: tempData,
-        subtotal: tempSubtotal,
-        dataUpload: tempDataUpload
-      })
+      if (rowData.qty === 0) {
+        tempDeliveryCost = dataDelivery[row]
+      } else {
+        tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * (rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000)))
+      }
+      if (rowData.product.is_wholesaler) {
+        const dataGrosir = rowData.product.wholesale
+        const tempCount = rowData.qty - 1
+        for (var i = 0; i < dataGrosir.length; i++) {
+          console.log('loop enak')
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            console.log('enak')
+            const tempSubtotal = subtotal + tempCount * dataGrosir[i].price + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty - 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempCount * dataGrosir[i].price
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            console.log('enak dua')
+            const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty - 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempPrice
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          }
+        }
+      } else {
+        console.log('enak tiga')
+        const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+        tempData[row].qty = rowData.qty - 1
+        tempDataUpload[row].qty = tempData[row].qty
+        tempData[row].shipping.delivery_cost = tempDeliveryCost
+        tempData[row].total_price = tempPrice
+        this.setState({
+          data: tempData,
+          subtotal: tempSubtotal,
+          dataUpload: tempDataUpload
+        })
+      }
     }
   }
 
@@ -405,21 +470,55 @@ class PurchaseCart extends React.Component {
     let tempDeliveryCost
     const rowData = data[row]
     const tempPrice = (rowData.qty + 1) * rowData.product.price
-    if (rowData.qty === 0) {
-      tempDeliveryCost = dataDelivery[row]
-    } else {
-      tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * dataDelivery[row] / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
+    if (rowData.qty + 1 <= rowData.product.stock) {
+      if (rowData.qty === 0) {
+        tempDeliveryCost = dataDelivery[row]
+      } else {
+        tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * (rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000)))
+      }
+      if (rowData.product.is_wholesaler) {
+        const dataGrosir = rowData.product.wholesale
+        const tempCount = rowData.qty + 1
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            const tempSubtotal = subtotal + tempCount * dataGrosir[i].price + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty + 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempCount * dataGrosir[i].price
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty + 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempPrice
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          }
+        }
+      } else {
+        const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+        tempData[row].qty = rowData.qty + 1
+        tempDataUpload[row].qty = tempData[row].qty
+        tempData[row].shipping.delivery_cost = tempDeliveryCost
+        tempData[row].total_price = tempPrice
+        this.setState({
+          data: tempData,
+          subtotal: tempSubtotal,
+          dataUpload: tempDataUpload
+        })
+      }
     }
-    const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
-    tempData[row].qty = rowData.qty + 1
-    tempDataUpload[row].qty = tempData[row].qty
-    tempData[row].shipping.delivery_cost = tempDeliveryCost
-    tempData[row].total_price = tempPrice
-    this.setState({
-      data: tempData,
-      subtotal: tempSubtotal,
-      dataUpload: tempDataUpload
-    })
   }
 
   renderButtonKode () {
@@ -454,8 +553,14 @@ class PurchaseCart extends React.Component {
   }
 
   renderTotal () {
-    const { subtotal, diskon, loadingCheckout } = this.state
-    const total = parseInt(subtotal) - parseInt(diskon)
+    const { data, diskon, loadingCheckout } = this.state
+    let tempTotal = 0
+    data.map((obj, i) =>
+    (
+      tempTotal = tempTotal + obj.total_price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
+    )
+  )
+    const total = parseInt(tempTotal) - parseInt(diskon)
     const hargaTotal = this.maskedMoney(total)
     const spinner = loadingCheckout
     ? (

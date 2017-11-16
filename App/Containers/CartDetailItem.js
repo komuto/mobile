@@ -136,13 +136,32 @@ class CartDetailItem extends React.Component {
           service: shipping.expedition_service.name,
           insurance: shipping.is_insurance,
           note: nextProps.dataCartItem.item.note,
-          subtotal: item.price * nextProps.dataCartItem.item.qty,
           insuranceCost: shipping.insurance_fee || 0,
           deliveryCost: shipping.delivery_cost,
           total: nextProps.dataCartItem.item.total_price,
           dataKurir: item.expeditions,
           getData: false
         })
+        if (item.is_wholesaler) {
+          const dataGrosir = item.wholesale
+          const tempCount = nextProps.dataCartItem.item.qty
+          for (var i = 0; i < dataGrosir.length; i++) {
+            if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+              this.setState({
+                subtotal: dataGrosir[i].price * tempCount
+              })
+              break
+            } else {
+              this.setState({
+                subtotal: item.price * nextProps.dataCartItem.item.qty
+              })
+            }
+          }
+        } else {
+          this.setState({
+            subtotal: item.price * nextProps.dataCartItem.item.qty
+          })
+        }
       }
       if (nextProps.dataServices.status === 200) {
         if (nextProps.dataServices.charges.length > 0) {

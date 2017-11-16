@@ -5,6 +5,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import { MaskService } from 'react-native-masked-text'
 import * as bankAction from '../actions/bank'
 import * as userAction from '../actions/user'
+import moment from 'moment'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
@@ -18,7 +19,7 @@ class BalancePull extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      dateData: '29 Maret 2017',
+      dateData: '',
       balance: String(this.props.dataProfile.user.user.saldo_wallet),
       nominal: null,
       branch: '',
@@ -49,6 +50,12 @@ class BalancePull extends React.Component {
       active: false
     }
     this.props.getBankAccount()
+  }
+
+  componentDidMount () {
+    this.setState({
+      dateData: moment().format('DD MM YYYY')
+    })
   }
 
   componentWillReceiveProps (nextProps) {

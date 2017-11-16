@@ -94,7 +94,12 @@ class Category1 extends React.Component {
     } else {
       const subCategoryView = subCategory.map((obj, i) =>
         (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
-          {this.SVGImageComponent(obj.icon)}
+          <View>
+            <SVGImage
+              style={{ width: 24, height: 24 }}
+              source={{uri: obj.icon}}
+            />
+          </View>
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               {obj.name}
@@ -109,17 +114,6 @@ class Category1 extends React.Component {
     }
   }
 
-  SVGImageComponent (data) {
-    return (
-      <View>
-        <SVGImage
-          style={{ width: 24, height: 24 }}
-          source={{uri: data}}
-        />
-      </View>
-    )
-  }
-
   renderRow (rowData, rowId) {
     const subCategory = rowData.sub_categories
     return (
@@ -130,7 +124,12 @@ class Category1 extends React.Component {
           </Text>
         </View>
         <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(rowData.id, rowData.name)}>
-          {this.SVGImageComponent(rowData.icon)}
+          <View>
+            <SVGImage
+              style={{ width: 24, height: 24 }}
+              source={{uri: rowData.icon}}
+            />
+          </View>
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               Lihat semua di {rowData.name}

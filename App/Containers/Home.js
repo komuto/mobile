@@ -694,7 +694,7 @@ class Home extends React.Component {
                 <Image source={Images.searchGrey} style={styles.searchImage} />
                 <View style={styles.textInputContainer}>
                   <Text style={styles.inputText}>
-                    Cari Barang
+                    Cari barang
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -708,7 +708,7 @@ class Home extends React.Component {
               <Image source={Images.searchGrey} style={styles.searchImage} />
               <View style={styles.textInputContainer}>
                 <Text style={styles.inputText}>
-                  Cari Barang
+                  Cari barang
                 </Text>
               </View>
             </TouchableOpacity>

@@ -85,7 +85,7 @@ export default class Search extends React.Component {
                 autoCorrect
                 onChangeText={onChangeText}
                 underlineColorAndroid='transparent'
-                placeholder='Cari Barang'
+                placeholder='Cari barang'
               />
             </View>
           </View>

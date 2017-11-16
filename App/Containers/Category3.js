@@ -3,6 +3,7 @@ import { ScrollView, Text, ListView, View, TouchableOpacity, Image, Alert, Activ
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as homeAction from '../actions/home'
+import SVGImage from 'react-native-svg-image'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -66,10 +67,21 @@ class Category3 extends React.Component {
     })
   }
 
+  SVGImageComponent (data) {
+    return (
+      <View>
+        <SVGImage
+          style={{ width: 24, height: 24 }}
+          source={{uri: data}}
+        />
+      </View>
+    )
+  }
+
   renderRow (rowData, rowId) {
     return (
       <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
+        {this.SVGImageComponent(rowData.icon)}
         <View style={[styles.namaContainer, {marginLeft: 15}]}>
           <Text style={styles.textNama}>
             {rowData.name}
@@ -92,7 +104,7 @@ class Category3 extends React.Component {
         view = (
           <View>
             <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(this.state.id)}>
-              <Image source={{uri: iconParent}} style={styles.imageCategory} />
+              {this.SVGImageComponent(iconParent)}
               <View style={[styles.namaContainer, {marginLeft: 15}]}>
                 <Text style={styles.textNama}>
                   Lihat semua di {title}

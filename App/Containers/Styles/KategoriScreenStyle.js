@@ -60,7 +60,7 @@ export default StyleSheet.create({
   },
   spinnerProduk: {
     backgroundColor: Colors.background,
-    height: 177.25,
+    height: Metrics.screenHeight - Metrics.navBarHeight - 100,
     alignItems: 'center',
     justifyContent: 'center',
     width: Metrics.screenWidth,

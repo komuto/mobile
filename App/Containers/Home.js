@@ -17,6 +17,7 @@ import { MaskService } from 'react-native-masked-text'
 import { Images, Colors, Fonts } from '../Themes'
 import ModalLogin from '../Components/ModalLogin'
 import { marketplace } from '../config'
+import SVGImage from 'react-native-svg-image'
 
 import {isFetching, isError, isFound} from '../Services/Status'
 import ModalSearchGeneral from '../Components/Search'
@@ -511,10 +512,21 @@ class Home extends React.Component {
     )
   }
 
+  SVGImageComponent (data) {
+    return (
+      <View style={{ flex: 1 }}>
+        <SVGImage
+          style={{ width: 32, height: 32 }}
+          source={{uri: data}}
+        />
+      </View>
+    )
+  }
+
   renderRowKategori (rowData) {
     return (
       <TouchableOpacity style={styles.category} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
+        {this.SVGImageComponent(rowData.icon)}
         <Text style={styles.textCategory}>{rowData.name}</Text>
       </TouchableOpacity>
     )

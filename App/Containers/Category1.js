@@ -13,6 +13,7 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as homeAction from '../actions/home'
+import SVGImage from 'react-native-svg-image'
 
 import styles from './Styles/KategoriScreenStyle'
 import { Images } from '../Themes'
@@ -30,7 +31,8 @@ class Category1 extends React.Component {
       loadingKategori: true,
       id: '',
       categoryTitle: '',
-      gettingData: true
+      gettingData: true,
+      isRefreshing: true
     }
   }
 
@@ -50,7 +52,7 @@ class Category1 extends React.Component {
         ToastAndroid.show(dataAllCategory.message, ToastAndroid.SHORT)
       }
       if (isFound(dataAllCategory)) {
-        this.setState({ data: dataAllCategory, gettingData: false })
+        this.setState({ data: dataAllCategory, loadingKategori: false, gettingData: false })
       }
     }
   }
@@ -92,7 +94,7 @@ class Category1 extends React.Component {
     } else {
       const subCategoryView = subCategory.map((obj, i) =>
         (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
-          <Image source={Images.dapur} style={styles.imageCategory} />
+          {this.SVGImageComponent(obj.icon)}
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               {obj.name}
@@ -107,6 +109,17 @@ class Category1 extends React.Component {
     }
   }
 
+  SVGImageComponent (data) {
+    return (
+      <View>
+        <SVGImage
+          style={{ width: 24, height: 24 }}
+          source={{uri: data}}
+        />
+      </View>
+    )
+  }
+
   renderRow (rowData, rowId) {
     const subCategory = rowData.sub_categories
     return (
@@ -117,7 +130,7 @@ class Category1 extends React.Component {
           </Text>
         </View>
         <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(rowData.id, rowData.name)}>
-          <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
+          {this.SVGImageComponent(rowData.icon)}
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               Lihat semua di {rowData.name}
@@ -130,25 +143,25 @@ class Category1 extends React.Component {
     )
   }
 
-  renderSubRow (rowData, rowId) {
-    return (
-      <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        <Image source={Images.dapur} style={styles.imageCategory} />
-        <View style={[styles.namaContainer, {marginLeft: 15}]}>
-          <Text style={styles.textNama}>
-            {rowData.name}
-          </Text>
-        </View>
-        <Image source={Images.rightArrow} style={styles.rightArrow} />
-      </TouchableOpacity>
-    )
-  }
+  // renderSubRow (rowData, rowId) {
+  //   return (
+  //     <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
+  //       {this.SVGImageComponent(rowData.icon)}
+  //       <View style={[styles.namaContainer, {marginLeft: 15}]}>
+  //         <Text style={styles.textNama}>
+  //           {rowData.name}
+  //         </Text>
+  //       </View>
+  //       <Image source={Images.rightArrow} style={styles.rightArrow} />
+  //     </TouchableOpacity>
+  //   )
+  // }
 
   render () {
     const { data, gettingData } = this.state
-    const spinner = this.state.data.isLoading
+    const spinner = this.state.loadingKategori
     ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='#ef5656' size='small' />
+      <ActivityIndicator color='#ef5656' size='large' />
     </View>) : (<View />)
     let view
     if (!gettingData) {

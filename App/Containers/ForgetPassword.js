@@ -5,7 +5,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Alert,
+  ToastAndroid,
   ActivityIndicator,
   BackAndroid
 } from 'react-native'
@@ -58,12 +58,12 @@ class ForgetPassword extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataPassword.message)
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     } else if (nextProps.dataPassword.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataPassword.message)
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     }
   }
 
@@ -90,13 +90,13 @@ class ForgetPassword extends React.Component {
   onError = (field) => {
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
-        window.alert('Email harus diisi')
+        ToastAndroid.show('Email harus diisi', ToastAndroid.SHORT)
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

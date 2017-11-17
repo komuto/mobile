@@ -31,7 +31,7 @@ class AddEditStoreCatalog extends React.Component {
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,
-        pesanNotif: 'menambahkan katalog baru'
+        pesanNotif: nextProps.dataCatalog.message
       })
       Keyboard.dismiss()
       this.props.getCatalog()
@@ -40,7 +40,7 @@ class AddEditStoreCatalog extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.SHORT)
       nextProps.dataCatalog.status = 0
     }
     if (nextProps.updateCatalogs.status === 200) {
@@ -48,12 +48,12 @@ class AddEditStoreCatalog extends React.Component {
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,
-        pesanNotif: 'mengedit katalog'
+        pesanNotif: nextProps.dataCatalog.message
       })
       this.props.getCatalog()
       nextProps.updateCatalogs.status = 0
     } else if (nextProps.updateCatalogs.status !== 200 && nextProps.updateCatalogs.status !== 0) {
-      ToastAndroid.show(nextProps.updateCatalogs.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.updateCatalogs.message, ToastAndroid.SHORT)
       nextProps.updateCatalogs.status = 0
     }
   }

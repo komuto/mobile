@@ -85,7 +85,7 @@ class DetailOrder extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataDetailOrder.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetailOrder.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataOrders.status === 200 && this.state.statusAcceptOrder) {
       this.setState({

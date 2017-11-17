@@ -80,7 +80,7 @@ class BuyerComplainDetailItem extends React.Component {
         })
       }
     } else if (nextProps.dataComplain.status !== 200 && nextProps.dataComplain.status !== 0) {
-      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.SHORT)
     }
   }
 

@@ -559,7 +559,7 @@ class Home extends React.Component {
       this.props.getWishlist()
       NavigationActions.wishlist({ type: ActionConst.PUSH })
     } else {
-      // Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum Login', ToastAndroid.SHORT)
       this.setState({
         modalLogin: true
       })

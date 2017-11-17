@@ -58,7 +58,7 @@ class BalanceNewAccount extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.SHORT)
       nextProps.codeOtp.status = 0
     }
   }

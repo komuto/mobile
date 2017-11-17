@@ -59,7 +59,7 @@ class TransactionDetailItem extends React.Component {
         shippingFee: nextProps.dataInvoice.invoice.shipping.delivery_cost
       })
     } else if (nextProps.dataInvoice.status !== 200 && nextProps.dataInvoice.status !== 0) {
-      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.SHORT)
     }
   }
 

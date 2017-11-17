@@ -73,7 +73,7 @@ class Register extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataRegister.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataRegister.message, ToastAndroid.SHORT)
     }
   }
 
@@ -134,7 +134,7 @@ class Register extends React.Component {
               })
               this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
             } else {
-              ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.LONG)
+              ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.SHORT)
             }
           }
         })

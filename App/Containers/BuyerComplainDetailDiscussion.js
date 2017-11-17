@@ -52,17 +52,17 @@ class BuyerComplainDetailDiscussion extends React.Component {
         id: '',
         isRefreshing: false
       })
-      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataComplain.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataReply.status === 200) {
       this.props.getDetailDispute(this.state.id)
       this.setState({
         content: ''
       })
-      ToastAndroid.show('Komentar ditambahkan', ToastAndroid.LONG)
+      ToastAndroid.show('Komentar ditambahkan', ToastAndroid.SHORT)
       nextProps.dataReply.status = 0
     } else if (nextProps.dataReply.status !== 200 && nextProps.dataReply.status !== 0) {
-      ToastAndroid.show(nextProps.dataReply.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataReply.message, ToastAndroid.SHORT)
       nextProps.dataReply.status = 0
     }
   }

@@ -52,7 +52,7 @@ class BalanceStatusRefill extends React.Component {
         loadmore: false,
         isLoading: false
       })
-      ToastAndroid.show(nextProps.dataTopUp.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataTopUp.message, ToastAndroid.SHORT)
       nextProps.dataTopUp.status = 0
     }
   }

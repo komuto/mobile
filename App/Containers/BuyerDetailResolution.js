@@ -56,7 +56,7 @@ class BuyerDetailResolution extends React.Component {
       })
       nextProps.dataDetailResolution.status = 0
     } else if (nextProps.dataDetailResolution.status !== 200 && nextProps.dataDetailResolution.status !== 0) {
-      ToastAndroid.show(nextProps.dataDetailResolution.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetailResolution.message, ToastAndroid.SHORT)
       nextProps.dataDetailResolution.status = 0
     }
     if (nextProps.dataReplyResolutions.status === 200) {
@@ -64,7 +64,7 @@ class BuyerDetailResolution extends React.Component {
       this.props.getDetailResolution(this.state.idResolution)
       nextProps.dataReplyResolutions.status = 0
     } else if (nextProps.dataReplyResolutions.status !== 200 && nextProps.dataReplyResolutions.status !== 0) {
-      ToastAndroid.show(nextProps.dataReplyResolutions.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataReplyResolutions.message, ToastAndroid.SHORT)
       nextProps.dataReplyResolutions.status = 0
     }
   }

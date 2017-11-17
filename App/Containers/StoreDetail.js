@@ -62,7 +62,7 @@ class StoreDetail extends React.Component {
         })
       }
     } else if (nextProps.dataToko.status !== 200 && nextProps.dataToko.status !== 0) {
-      ToastAndroid.show(nextProps.dataToko.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataToko.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataFavorit.status === 200) {
       this.setState({

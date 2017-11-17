@@ -60,7 +60,7 @@ class Wishlist extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataFilter.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataFilter.message, ToastAndroid.SHORT)
     }
   }
 
@@ -100,7 +100,7 @@ class Wishlist extends React.Component {
           return b.product.stock - a.product.stock
         })
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

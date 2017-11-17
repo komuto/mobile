@@ -73,7 +73,7 @@ class PlaceInCatalog extends React.Component {
       if (isFound(dataCatalog)) {
         const isFound = dataCatalog.catalogs.length
         if (isFound <= 0) {
-          ToastAndroid.show('Anda tidak memiliki katalog', ToastAndroid.LONG)
+          ToastAndroid.show('Anda tidak memiliki katalog', ToastAndroid.SHORT)
           this.setState({
             loading: false
           })

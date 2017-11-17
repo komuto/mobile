@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, ActivityIndicator, BackAndroid, ListView, TouchableOpacity, Image, Modal } from 'react-native'
+import { ScrollView, Text, View, ToastAndroid, TextInput, ActivityIndicator, BackAndroid, ListView, TouchableOpacity, Image, Modal } from 'react-native'
 import { connect } from 'react-redux'
 import * as addressAction from '../actions/address'
 import { Actions as NavigationActions } from 'react-native-router-flux'
@@ -102,8 +102,6 @@ class EditAddress extends React.Component {
         kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
       })
     } else if (nextProps.detailalamat.status === 200) {
-      console.log(nextProps)
-      console.log('masuk')
       this.setState({
         namaAlias: nextProps.detailalamat.addresses.alias_address,
         namaPenerima: nextProps.detailalamat.addresses.name,
@@ -194,7 +192,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error OnError')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -226,7 +224,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error Focus')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -258,7 +256,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error Blur')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

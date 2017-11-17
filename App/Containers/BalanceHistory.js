@@ -116,7 +116,7 @@ class BalanceHistory extends React.Component {
         loadmore: false,
         isFiltering: false
       })
-      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.SHORT)
     }
   }
 

@@ -2,9 +2,11 @@ import React from 'react'
 import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import styles from './Styles/CameraModalStyle'
 import ImagePicker from 'react-native-image-crop-picker'
+import Reactotron from 'reactotron-react-native'
 
 export default class CameraModal extends React.Component {
   pickSingleWithCamera () {
+    Reactotron.log('camera')
     ImagePicker.openCamera({
       cropping: true,
       width: 500,
@@ -37,12 +39,12 @@ export default class CameraModal extends React.Component {
           <View style={styles.modalContainer}>
             <TouchableOpacity onPress={() => this.pickSingleBase64()}>
               <View style={styles.menuModal}>
-                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Pilih dari Koleksi Foto...</Text>
+                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Pilih dari Koleksi Foto</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => this.pickSingleWithCamera()}>
               <View style={styles.menuModal}>
-                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Ambil Foto...</Text>
+                <Text style={styles.icon}>+</Text><Text style={styles.textMenu}>Ambil Foto</Text>
               </View>
             </TouchableOpacity>
           </View>

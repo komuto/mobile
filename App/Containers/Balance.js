@@ -32,7 +32,7 @@ class BalanceX extends React.Component {
       this.setState({
         isRefreshing: false
       })
-      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
     }
   }
 

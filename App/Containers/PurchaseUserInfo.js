@@ -100,7 +100,7 @@ class PurchaseUserInfo extends React.Component {
         dataProvinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
     } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
-      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataKota.status === 200) {
       if (this.state.gettingKab) {
@@ -111,7 +111,7 @@ class PurchaseUserInfo extends React.Component {
         })
       }
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
-      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataSubDistrict.status === 200) {
       if (this.state.gettingKec) {
@@ -122,7 +122,7 @@ class PurchaseUserInfo extends React.Component {
         })
       }
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
-      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataVillage.status === 200) {
       if (this.state.gettingKel) {
@@ -133,20 +133,20 @@ class PurchaseUserInfo extends React.Component {
         })
       }
     } else if (nextProps.dataVillage.status !== 200 && nextProps.dataVillage.status !== 0) {
-      ToastAndroid.show(nextProps.dataVillage.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataVillage.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCreateAlamat.status === 200) {
       this.setState({
         loadingCart: false
       })
-      ToastAndroid.show('Alamat berhasil dibuat', ToastAndroid.LONG)
+      ToastAndroid.show('Alamat berhasil dibuat', ToastAndroid.SHORT)
       NavigationActions.purchaseaddtocart({
         type: ActionConst.PUSH,
         statusAlamat: true
       })
       this.props.addAddressReset()
     } else if (nextProps.dataCreateAlamat.status !== 200 && nextProps.dataCreateAlamat.status !== 0) {
-      ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCreateAlamat.message, ToastAndroid.SHORT)
       this.setState({
         loadingCart: false
       })
@@ -235,7 +235,7 @@ class PurchaseUserInfo extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -281,7 +281,7 @@ class PurchaseUserInfo extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -327,7 +327,7 @@ class PurchaseUserInfo extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

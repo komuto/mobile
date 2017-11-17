@@ -72,7 +72,7 @@ class TransactionPaymentConfirmation extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataBank.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataBank.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataPhoto.status === 200) {
       console.log(nextProps.dataPhoto.payload.images[0].name)
@@ -84,7 +84,7 @@ class TransactionPaymentConfirmation extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.SHORT)
     }
   }
 

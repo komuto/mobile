@@ -164,7 +164,7 @@ class BuyerMessageArchive extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.messageNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>

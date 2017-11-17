@@ -77,10 +77,10 @@ class Wishlist extends React.Component {
         loading: false,
         gettingSort: false
       })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataAddWishlist.status !== 200 && nextProps.dataAddWishlist.status !== 0) {
-      ToastAndroid.show(nextProps.dataAddWishlist.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddWishlist.message, ToastAndroid.SHORT)
     }
   }
 

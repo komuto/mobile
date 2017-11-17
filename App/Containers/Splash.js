@@ -52,7 +52,7 @@ class Splash extends React.Component {
       NavigationActions.backtab({
         type: ActionConst.REPLACE
       })
-      ToastAndroid.show(nextProps.dataVerify.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataVerify.message, ToastAndroid.SHORT)
       nextProps.dataVerify.status = 0
     }
   }

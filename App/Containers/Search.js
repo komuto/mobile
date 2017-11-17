@@ -7,7 +7,7 @@ import {
   TextInput,
   ListView,
   TouchableOpacity,
-  Alert
+  ToastAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -55,7 +55,7 @@ class Search extends React.Component {
         })
       }
     } else if (nextProps.dataSearch.status !== 200 && nextProps.dataSearch.status !== 0) {
-      Alert.alert('Terjadi kesalahan', nextProps.dataSearch.message)
+      ToastAndroid.show(nextProps.dataSearch.message, ToastAndroid.SHORT)
     }
   }
 

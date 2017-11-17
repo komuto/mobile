@@ -166,7 +166,7 @@ class AddAddress extends React.Component {
         NavigationActions.addressdata({
           type: ActionConst.PUSH,
           notif: true,
-          pesanNotif: 'menambahkan alamat baru'
+          pesanNotif: dataAddress.message
         })
       }
     }
@@ -228,7 +228,7 @@ class AddAddress extends React.Component {
         NavigationActions.addressdata({
           type: ActionConst.PUSH,
           notif: true,
-          pesanNotif: 'mengubah alamat'
+          pesanNotif: updateAddress.message
         })
       }
     }

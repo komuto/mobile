@@ -77,16 +77,16 @@ class DiskusiProdukKomentar extends React.Component {
         isLoading: false,
         loadmore: false
       })
-      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
     if (nextProps.tambahKomentar.status === 200) {
-      ToastAndroid.show('Komentar berhasil ditambahkan', ToastAndroid.LONG)
+      ToastAndroid.show('Komentar berhasil ditambahkan', ToastAndroid.SHORT)
       this.setState({ data: [], komentar: '', page: 1 })
       this.props.getComment(this.state.discussionId, 1)
       this.props.resetNewComment()
     } else if (nextProps.tambahKomentar.status !== 200 && nextProps.tambahKomentar.status !== 0) {
       this.setState({ data: [], komentar: '', page: 1 })
-      ToastAndroid.show(nextProps.tambahKomentar.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.tambahKomentar.message, ToastAndroid.SHORT)
       this.props.resetNewComment()
     }
   }

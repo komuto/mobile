@@ -53,7 +53,7 @@ class BalanceStatusWithdraw extends React.Component {
         loadmore: false,
         isLoading: false
       })
-      ToastAndroid.show(nextProps.dataWithdraw.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataWithdraw.message, ToastAndroid.SHORT)
     }
   }
 

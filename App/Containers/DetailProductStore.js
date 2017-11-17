@@ -72,7 +72,7 @@ class DetailProductStore extends React.Component {
       nextProps.dataDetailProduct.status = 0
       this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
     } else if (nextProps.dataDetailProduct.status > 200) {
-      ToastAndroid.show(nextProps.dataDetailProduct.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetailProduct.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataKategoriParent.status === 200) {
       this.setState({

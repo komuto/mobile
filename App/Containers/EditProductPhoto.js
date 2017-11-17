@@ -49,15 +49,15 @@ class EditProductPhoto extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPhoto.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       this.props.resetAlterProduct()
-      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 

@@ -53,7 +53,7 @@ class Review extends React.Component {
         isLoading: false,
         loadmore: false
       })
-      ToastAndroid.show(nextProps.dataReview.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataReview.message, ToastAndroid.SHORT)
     }
   }
 

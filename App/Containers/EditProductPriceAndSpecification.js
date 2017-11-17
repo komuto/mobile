@@ -69,13 +69,13 @@ class EditProductPriceAndSpecification extends React.Component {
         listKatalog: nextProps.dataCatalog.catalogs
       })
     } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
-      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCreateCatalog.status === 200) {
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
     } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
-      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCommission.status === 200) {
       nextProps.dataCommission.status = 0
@@ -85,14 +85,14 @@ class EditProductPriceAndSpecification extends React.Component {
       })
     } else if (nextProps.dataCommission.status !== 200 && nextProps.dataCommission.status !== 0) {
       nextProps.dataCommission.status = 0
-      ToastAndroid.show(nextProps.dataCommission.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCommission.message, ToastAndroid.SHORT)
     } if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataCreateProdukDropshipper.status = 0
-      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 

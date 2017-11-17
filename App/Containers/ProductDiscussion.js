@@ -73,7 +73,7 @@ class ProductDiscussion extends React.Component {
         isLoading: false,
         loadmore: false
       })
-      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
   }
 

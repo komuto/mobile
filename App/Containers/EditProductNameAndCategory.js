@@ -133,7 +133,7 @@ class EditProductNameAndCategory extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataKategori.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataKategori.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataSubKategori1.status === 200) {
       this.setState({
@@ -144,7 +144,7 @@ class EditProductNameAndCategory extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataSubKategori1.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSubKategori1.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataSubKategori2.status === 200) {
       this.setState({
@@ -155,7 +155,7 @@ class EditProductNameAndCategory extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataSubKategori2.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSubKategori2.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataSubKategori3.status === 200) {
       this.setState({
@@ -172,15 +172,15 @@ class EditProductNameAndCategory extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataBrand.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataBrand.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       this.props.resetAlterProduct()
-      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 
@@ -214,7 +214,7 @@ class EditProductNameAndCategory extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -232,7 +232,7 @@ class EditProductNameAndCategory extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

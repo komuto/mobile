@@ -123,7 +123,7 @@ class PurchaseCart extends React.Component {
         this.props.getCartReset()
       }
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
-      // ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+      // ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
       this.setState({
         data: [],
         getData: false,
@@ -153,10 +153,10 @@ class PurchaseCart extends React.Component {
         modalPromo: false
       })
       nextProps.dataPromo.status = 0
-      ToastAndroid.show(nextProps.dataPromo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPromo.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
-      ToastAndroid.show('Penggunaan kode promo dibatalkan', ToastAndroid.LONG)
+      ToastAndroid.show('Penggunaan kode promo dibatalkan', ToastAndroid.SHORT)
       this.setState({
         diskon: 0,
         statusDiskon: false,
@@ -166,7 +166,7 @@ class PurchaseCart extends React.Component {
     } else if (nextProps.dataCancelPromo.status !== 200 && nextProps.dataCancelPromo.status !== 0) {
       this.setState({ requestPromo: false })
       nextProps.dataCancelPromo.status = 0
-      ToastAndroid.show(nextProps.dataCancelPromo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCancelPromo.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCheckout.status === 200) {
       NavigationActions.payment({
@@ -181,7 +181,7 @@ class PurchaseCart extends React.Component {
       this.setState({
         loadingCheckout: false
       })
-      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
       this.props.resetUpdateCart()
     }
     if (nextProps.dataDeleteItem.status === 200) {
@@ -192,7 +192,7 @@ class PurchaseCart extends React.Component {
         this.refresh()
       }
     } else if (nextProps.dataDeleteItem.status !== 200 && nextProps.dataDeleteItem.status !== 0) {
-      ToastAndroid.show(nextProps.dataDeleteItem.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDeleteItem.message, ToastAndroid.SHORT)
     }
   }
 

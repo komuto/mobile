@@ -77,7 +77,7 @@ class StoreCatalog extends React.Component {
             ...this.submitting,
             catalog: true
           }
-          this.setState({isRefreshing: true})
+          this.setState({isRefreshing: true, notif: true, pesanNotif: catalogDelete.message})
           this.props.getCatalog()
         }
       }
@@ -219,7 +219,7 @@ class StoreCatalog extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>

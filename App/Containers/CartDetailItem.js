@@ -183,14 +183,14 @@ class CartDetailItem extends React.Component {
       }
     }
     if (nextProps.dataCart.status === 200) {
-      ToastAndroid.show('Keranjang berhasil di update silahkan refresh di halaman keranjang..', ToastAndroid.LONG)
+      ToastAndroid.show('Keranjang berhasil di update silahkan refresh di halaman keranjang..', ToastAndroid.SHORT)
       if (this.state.activeCartDetailItem) {
         this.setState({ loadingCart: false })
       }
       this.props.resetCreateStatus()
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       this.setState({ loadingCart: false })
-      ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
       this.props.resetCreateStatus()
     }
     if (nextProps.dataAddressList.status === 200) {
@@ -198,7 +198,7 @@ class CartDetailItem extends React.Component {
       this.setState({ dataAddress: nextProps.dataAddressList.address, loadingAddress: false })
     } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAddress: false })
-      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.SHORT)
     }
   }
 

@@ -9,7 +9,6 @@ import {
   Modal,
   ActivityIndicator,
   RefreshControl,
-  Alert,
   ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
@@ -317,7 +316,7 @@ class NewProduct extends React.Component {
       this.props.addWishList({id: id})
       this.setState({ listDataSource })
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
     }
   }
 

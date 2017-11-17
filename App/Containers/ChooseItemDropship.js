@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   Text,
-  Alert,
   ScrollView,
   ToastAndroid,
   ListView,
@@ -448,7 +447,7 @@ class ChooseItemDropship extends React.Component {
       this.props.addWishList({id})
       this.setState({ listDataSource })
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
     }
   }
 

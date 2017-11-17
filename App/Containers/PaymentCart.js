@@ -64,7 +64,7 @@ class PaymentCart extends React.Component {
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       if (!this.state.transaction) {
         if (this.state.getCartPaymentDetail) {
-          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
           this.props.getCartReset()
         }
       }
@@ -101,7 +101,7 @@ class PaymentCart extends React.Component {
       }
     } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
       if (this.state.transaction) {
-        ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
+        ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.SHORT)
       }
     }
   }

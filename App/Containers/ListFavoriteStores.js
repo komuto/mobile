@@ -103,7 +103,7 @@ class ListFavoriteStores extends React.Component {
       if (isFound(propsFavStore)) {
         this.submitting.list = true
         this.props.getListFavStore({page: 1})
-        ToastAndroid.show('Berhasil Menghapus Toko Favorit', ToastAndroid.SHORT)
+        ToastAndroid.show(propsFavStore.message, ToastAndroid.SHORT)
       }
     }
   }

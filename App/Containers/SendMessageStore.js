@@ -26,6 +26,7 @@ class SendMessageStore extends React.Component {
       heightJudul: 50,
       loading: false,
       notification: false,
+      messageNotif: '',
       titles: this.props.title || 'Kirim Pesan',
       typeMessage: this.props.typeMessage || 'sendMessageStore'
     }
@@ -36,17 +37,18 @@ class SendMessageStore extends React.Component {
       this.setState({
         loading: false,
         notification: true,
+        messageNotif: nextProps.dataPesan.message,
         judul: '',
         pertanyaan: ''
       })
-      ToastAndroid.show('Pesan Berhasil Dikirim', ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.SHORT)
       Actions.pop()
       this.props.resetSendMessage()
     } else if (nextProps.dataPesan.status !== 200 && nextProps.dataPesan.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.SHORT)
       this.props.resetSendMessage()
     }
     if (nextProps.dataMessageTransaction.status === 200) {
@@ -54,6 +56,7 @@ class SendMessageStore extends React.Component {
         loading: false,
         notification: true,
         judul: '',
+        messageNotif: nextProps.dataMessageTransaction.message,
         pertanyaan: ''
       })
       nextProps.dataMessageTransaction.status = 0
@@ -62,7 +65,7 @@ class SendMessageStore extends React.Component {
         loading: false
       })
       nextProps.dataMessageTransaction.status = 0
-      ToastAndroid.show(nextProps.dataPedataMessageTransactionsan.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPedataMessageTransactionsan.message, ToastAndroid.SHORT)
     }
   }
 
@@ -111,9 +114,9 @@ class SendMessageStore extends React.Component {
   kirimpesan () {
     const { id, judul, pertanyaan } = this.state
     if (judul === '') {
-      ToastAndroid.show('Judul Pesan tidak boleh kosong', ToastAndroid.LONG)
+      ToastAndroid.show('Judul Pesan tidak boleh kosong', ToastAndroid.SHORT)
     } else if (pertanyaan === '') {
-      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.LONG)
+      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.SHORT)
     } else if (judul !== '' && pertanyaan !== '') {
       this.setState({
         loading: true
@@ -154,7 +157,7 @@ class SendMessageStore extends React.Component {
     if (notification) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Berhasil Mengirim Pesan</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notification: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>

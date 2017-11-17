@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, ListView, View, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native'
+import { ScrollView, ToastAndroid, Text, ListView, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as homeAction from '../actions/home'
@@ -50,12 +50,12 @@ class Category3 extends React.Component {
       this.setState({
         loadingKategori: false
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataSubCategory.message)
+      ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
     } else if (nextProps.dataSubCategory.status === 'ENOENT') {
       this.setState({
         loadingKategori: false
       })
-      Alert.alert('Terjadi kesalahan', nextProps.dataSubCategory.message)
+      ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
     }
   }
 

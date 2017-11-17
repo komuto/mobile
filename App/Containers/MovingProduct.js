@@ -82,25 +82,25 @@ class MovingProduct extends React.Component {
         if (actionType === 'hideProduct' && this.submitting.notif) {
           this.setState({
             notification: true,
-            messageNotification: 'Berhasil menyembunyikan barang'
+            messageNotification: dataProduk.message
           })
         }
         if (actionType === 'deleteProduct' && this.submitting.notif) {
           this.setState({
             notification: true,
-            messageNotification: 'Berhasil menghapus barang'
+            messageNotification: dataProduk.message
           })
         }
         if (actionType === 'moveCatalog' && this.submitting.notif) {
           this.setState({
             notification: true,
-            messageNotification: 'Berhasil memindahkan ke katalog lain'
+            messageNotification: dataProduk.message
           })
         }
         if (actionType === 'moveDropship' && this.submitting.notif) {
           this.setState({
             notification: true,
-            messageNotification: 'Berhasil menjadikan Dropshipping'
+            messageNotification: dataProduk.message
           })
         }
         this.submitting = {...this.submitting, notif: false}

@@ -66,7 +66,7 @@ class BalancePull extends React.Component {
         dataBanks: data
       })
     } else if (nextProps.dataBanks.status !== 200 && nextProps.dataBanks.status !== 0) {
-      ToastAndroid.show(nextProps.dataBanks.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataBanks.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataAccountBank.status === 200) {
       if (nextProps.dataAccountBank.listBankAccounts.length > 0) {
@@ -81,7 +81,7 @@ class BalancePull extends React.Component {
       }
       nextProps.dataAccountBank.status = 0
     } else if (nextProps.dataAccountBank.status !== 200 && nextProps.dataAccountBank.status !== 0) {
-      ToastAndroid.show(nextProps.dataAccountBank.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAccountBank.message, ToastAndroid.SHORT)
       nextProps.dataAccountBank.status = 0
     }
     if (nextProps.codeOtp.status === 200) {
@@ -102,7 +102,7 @@ class BalancePull extends React.Component {
         nextProps.codeOtp.status = 0
       }
     } else if (nextProps.codeOtp.status !== 200 && nextProps.codeOtp.status !== 0) {
-      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.SHORT)
       nextProps.codeOtp.status = 0
     }
     if (nextProps.dataProfile.status === 200) {
@@ -110,7 +110,7 @@ class BalancePull extends React.Component {
         balance: String(nextProps.dataProfile.user.user.saldo_wallet)
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
-      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.SHORT)
     }
   }
 
@@ -420,7 +420,7 @@ class BalancePull extends React.Component {
   withdraw () {
     const { id, nominal } = this.state
     if (id === null || id === '' || nominal === null || nominal === '') {
-      ToastAndroid.show('Bank dan nomimal penarikan tidak boleh kosong..', ToastAndroid.LONG)
+      ToastAndroid.show('Bank dan nomimal penarikan tidak boleh kosong..', ToastAndroid.SHORT)
     } else {
       this.setState({
         active: true

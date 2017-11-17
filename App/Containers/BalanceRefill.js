@@ -28,7 +28,7 @@ class BalanceRefill extends React.Component {
         data: nextProps.dataSaldo.nominals
       })
     } else if (nextProps.dataSaldo.status !== 200 && nextProps.dataSaldo.status !== 0) {
-      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataSaldoToken.status === 200) {
       NavigationActions.paymentmidtrans({
@@ -38,7 +38,7 @@ class BalanceRefill extends React.Component {
       })
       nextProps.dataSaldoToken.status = 0
     } else if (nextProps.dataSaldoToken.status !== 200 && nextProps.dataSaldoToken.status !== 0) {
-      ToastAndroid.show(nextProps.dataSaldoToken.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSaldoToken.message, ToastAndroid.SHORT)
       nextProps.dataSaldoToken.status = 0
     }
   }

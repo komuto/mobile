@@ -73,7 +73,7 @@ class TransactionItemReceived extends React.Component {
       })
       nextProps.dataInvoice.status = 0
     } else if (nextProps.dataInvoice.status !== 200 && nextProps.dataInvoice.status !== 0) {
-      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataInvoice.message, ToastAndroid.SHORT)
       nextProps.dataInvoice.status = 0
     }
     if (nextProps.dataAddReview.status === 200) {
@@ -90,7 +90,7 @@ class TransactionItemReceived extends React.Component {
         loading: false
       })
       nextProps.dataAddReview.status = 0
-      ToastAndroid.show(nextProps.dataAddReview.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddReview.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataPhoto.status === 200) {
       let temp = this.state.dataComplainPhotos
@@ -134,7 +134,7 @@ class TransactionItemReceived extends React.Component {
         loading: false
       })
       nextProps.dataAddComplain.status = 0
-      ToastAndroid.show(nextProps.dataAddComplain.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddComplain.message, ToastAndroid.SHORT)
     }
   }
 
@@ -575,7 +575,7 @@ class TransactionItemReceived extends React.Component {
       this.props.photoUpload(postData)
       this.setState({loading: true})
     } else {
-      ToastAndroid.show('Mohon lengkapi data', ToastAndroid.LONG)
+      ToastAndroid.show('Mohon lengkapi data', ToastAndroid.SHORT)
     }
   }
 

@@ -34,10 +34,10 @@ class InfoStore extends React.Component {
       updateInfoStore: false
     }
     this.state = {
-      namaToko: this.props.dataProfile.user.store.name || '',
-      slogan: this.props.dataProfile.user.store.slogan || '',
-      descToko: this.props.dataProfile.user.store.description || '',
-      fotoToko: this.props.dataProfile.user.store.logo || '',
+      namaToko: '',
+      slogan: '',
+      descToko: '',
+      fotoToko: '',
       showModalCamera: false,
       store: [],
       stores: [],
@@ -58,9 +58,33 @@ class InfoStore extends React.Component {
       textButton: this.props.textButton,
       editAbles: this.props.editAble,
       notif: false,
+      messageNotif: '',
       errSlogan: false,
       uploadPhoto: ''
     }
+  }
+
+  checkStore (value) {
+    Reactotron.log(value)
+    if (value.store) {
+      this.setState({
+        namaToko: value.store.name,
+        slogan: value.store.slogan,
+        descToko: value.store.description,
+        fotoToko: value.store.logo
+      })
+    } else {
+      this.setState({
+        namaToko: '',
+        slogan: '',
+        descToko: '',
+        fotoToko: ''
+      })
+    }
+  }
+
+  componentWillMount () {
+    this.checkStore(this.props.dataProfile.user)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -88,7 +112,8 @@ class InfoStore extends React.Component {
         this.props.getProfile()
         this.setState({
           loading: false,
-          notif: true
+          notif: true,
+          messageNotif: dataUpdate.message
         })
         dataUpdate.status = 0
       }
@@ -116,7 +141,7 @@ class InfoStore extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Berhasil memperbarui informasi toko</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -205,7 +230,7 @@ class InfoStore extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -248,7 +273,7 @@ class InfoStore extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

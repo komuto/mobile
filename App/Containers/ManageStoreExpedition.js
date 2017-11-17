@@ -44,10 +44,10 @@ class ManageStoreExpedition extends React.Component {
     } if (nextProps.dataUpdate.status === 200 && this.submitting.update) {
       this.submitting = { ...this.submitting, update: false }
       this.setState({ loading: false })
-      ToastAndroid.show('Sukses Mengubah Ekspedisi', ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)
     } if (nextProps.dataUpdate.status > 200 && this.submitting.update) {
       this.setState({ loading: false })
-      ToastAndroid.show('Gagal Mengubah Ekspedisi', ToastAndroid.SHORT)
+      ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)
     } if (nextProps.dataManageExpedition.status > 200) {
       this.setState({ loading: true })
     }

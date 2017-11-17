@@ -61,7 +61,7 @@ class BalanceHistoryRefund extends React.Component {
 
       }
     } else if (nextProps.dataHistory.status !== 200 && nextProps.dataHistory.status !== 0) {
-      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataHistory.message, ToastAndroid.SHORT)
       nextProps.dataHistory.status = 0
     }
   }

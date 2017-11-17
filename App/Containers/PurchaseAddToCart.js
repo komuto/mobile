@@ -168,7 +168,7 @@ class PurchaseAddToCart extends React.Component {
       this.setState({
         statusAlamat: false
       })
-      ToastAndroid.show(nextProps.dataAddress.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddress.message, ToastAndroid.SHORT)
       this.props.resetStatusAddress()
     }
     if (nextProps.dataServices.status === 200) {
@@ -188,7 +188,7 @@ class PurchaseAddToCart extends React.Component {
         dataCost: [],
         statusSubKurir: false
       })
-      ToastAndroid.show(nextProps.dataServices.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataServices.message, ToastAndroid.SHORT)
       nextProps.dataServices.status = 0
     }
     if (nextProps.dataCart.status === 200) {
@@ -199,7 +199,7 @@ class PurchaseAddToCart extends React.Component {
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       if (this.state.activeScene) {
         this.setState({ loadingCart: false })
-        ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+        ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
         this.props.resetCreateStatus()
       }
     }
@@ -207,7 +207,7 @@ class PurchaseAddToCart extends React.Component {
       this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
     } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
-      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.SHORT)
       nextProps.dataAddressList.status = 0
     }
   }

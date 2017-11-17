@@ -65,7 +65,7 @@ class StoreDashboard extends React.Component {
         complainItems: nextProps.dataDisputes.disputes.disputes
       })
     } else if (nextProps.dataDisputes.status !== 0 && nextProps.dataDisputes.status !== 200) {
-      ToastAndroid.show(nextProps.dataDisputes.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDisputes.message, ToastAndroid.SHORT)
     }
   }
 

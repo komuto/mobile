@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, BackAndroid, Text, DatePickerAndroid, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
+import { ScrollView, ToastAndroid, View, BackAndroid, Text, DatePickerAndroid, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions } from 'react-native-router-flux'
@@ -11,6 +11,7 @@ import * as userAction from '../actions/user'
 
 import { Images, Colors } from '../Themes'
 import CustomRadio from '../Components/CustomRadio'
+import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/BiodataScreenStyle'
 import stylesLokasi from './Styles/ProductDetailScreenStyle'
@@ -41,7 +42,8 @@ class Biodata extends React.Component {
       notif: false,
       loading: false,
       uploadDate: '',
-      updatePhoto: ''
+      updatePhoto: '',
+      messageNotif: ''
     }
   }
 
@@ -58,8 +60,11 @@ class Biodata extends React.Component {
     }
     if (nextProps.dataUpdate.status === 200) {
       this.props.getProfil()
-      this.setState({notif: true})
+      Reactotron.log(nextProps.dataUpdate.message)
+      this.setState({notif: true, messageNotif: nextProps.dataUpdate.message})
       nextProps.dataUpdate.status = 0
+    } else if (nextProps.dataUpdate.status !== 200 && nextProps.dataUpdate.status !== 0) {
+      ToastAndroid.show(String(nextProps.dataUpdate.message), ToastAndroid.SHORT)
     }
   }
 
@@ -98,7 +103,7 @@ class Biodata extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Berhasil memperbarui biodata Anda</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>

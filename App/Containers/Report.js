@@ -48,7 +48,7 @@ class Report extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataReport.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataReport.message, ToastAndroid.SHORT)
     }
   }
 

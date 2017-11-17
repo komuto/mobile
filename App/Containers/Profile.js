@@ -76,7 +76,7 @@ class Profile extends React.Component {
         })
       }
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
-      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataResendVerification.status === 200) {
       this.setState({
@@ -85,14 +85,14 @@ class Profile extends React.Component {
       ToastAndroid.show(
         'Link verifikasi berhasil dikirimkan.. Silakan cek email ' +
         this.state.email + ' untuk melakukan verifikasi',
-        ToastAndroid.LONG
+        ToastAndroid.SHORT
       )
       nextProps.dataResendVerification.status = 0
     } else if (nextProps.dataResendVerification.status !== 200 && nextProps.dataResendVerification.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Terjadi kesalahan ' + nextProps.dataResendVerification.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataResendVerification.message, ToastAndroid.SHORT)
       nextProps.dataResendVerification.status = 0
     }
   }

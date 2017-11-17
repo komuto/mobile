@@ -59,8 +59,8 @@ class BuyerResolution extends React.Component {
         {'label': 'Transaksi', 'value': 2, 'isChecked': false},
         {'label': 'Lainnya', 'value': 1, 'isChecked': false}
       ],
-      titleComplaint: 'SADSADSA',
-      messageComplaint: 'SADSADSAD',
+      titleComplaint: '',
+      messageComplaint: '',
       foto: [],
       showModalCamera: false,
       count: 0,
@@ -182,18 +182,17 @@ class BuyerResolution extends React.Component {
     }
 
     if (!isFetching(dataCreateResolution) && this.submitting.create) {
-      Reactotron.log('suc12312')
       this.submitting = { ...this.submitting, create: false }
       if (isError(dataCreateResolution)) {
         ToastAndroid.show(dataCreateResolution.message, ToastAndroid.SHORT)
       } else {
-        Reactotron.log('suc')
+        Reactotron.log('success')
         this.refreshUnresolve()
         this.setState({
           modalCreateComplaint: false,
           buttonDisable: false,
           notif: true,
-          messageNotif: 'Berhasil mengirim keluhan',
+          messageNotif: dataCreateResolution.message,
           messageComplaint: '',
           titleComplaint: '',
           dataPriority: this.state.dataPriorityStore,

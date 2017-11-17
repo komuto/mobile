@@ -35,17 +35,12 @@ class ChangePassword extends React.Component {
     console.log(nextProps.dataPassword)
     if (nextProps.dataPassword.status === 200) {
       this.setState({loading: false})
-      // NavigationActions.manageaccount({
-      //   type: ActionConst.PUSH,
-      //   notif: true,
-      //   pesanNotif: 'Sukses mengganti password Anda'
-      // })
-      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'Sukses mengganti password Anda' } })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.dataPassword.message } })
     } else if (nextProps.dataPassword.status !== 200 && nextProps.dataPassword.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     }
   }
 
@@ -68,7 +63,7 @@ class ChangePassword extends React.Component {
   onError = (field) => {
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
         this.setState({
@@ -91,7 +86,7 @@ class ChangePassword extends React.Component {
         })
         break
       case 'tidakcocok':
-        window.alert('Password ulang tidak sama')
+        ToastAndroid.show('Password ulang tidak sama', ToastAndroid.SHORT)
         break
       case 'empty':
         this.setState({
@@ -102,7 +97,7 @@ class ChangePassword extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -138,7 +133,7 @@ class ChangePassword extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -218,7 +213,7 @@ class ChangePassword extends React.Component {
               returnKeyType='next'
               onFocus={() => this.onFocus('email')}
               onBlur={() => this.onBlur('email')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.oldpassword.focus()}
               autoCapitalize='none'
               autoCorrect
               onChangeText={this.handleChangeEmail}
@@ -227,14 +222,14 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorEmail}]}>Alamat Email harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='oldpassword'
               style={styles.inputText}
               value={this.state.passwordLama}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('passlama')}
               onBlur={() => this.onBlur('passlama')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.newpassword.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry
@@ -244,14 +239,14 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorPassLama}]}>Password Lama harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='newpassword'
               style={styles.inputText}
               value={this.state.passwordBaru}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('passbaru')}
               onBlur={() => this.onBlur('passbaru')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.retype.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry
@@ -261,14 +256,13 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorPassBaru}]}>Password Baru harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='retype'
               style={styles.inputText}
               value={this.state.ulangPasswordBaru}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('ulangpass')}
               onBlur={() => this.onBlur('ulangpass')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry

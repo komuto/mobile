@@ -74,7 +74,7 @@ class BuyerDiscussion extends React.Component {
         loadmore: false,
         gettingData: false
       })
-      ToastAndroid.show(nextProps.listDiscussion.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.listDiscussion.message, ToastAndroid.SHORT)
     }
   }
 

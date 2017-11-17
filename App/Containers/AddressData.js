@@ -3,6 +3,7 @@ import { ScrollView, Text, View, TouchableOpacity, BackAndroid, Image, Modal } f
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Spinner from '../Components/Spinner'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -38,12 +39,13 @@ class AddressData extends React.Component {
       })
     }
     if (nextProps.dataDeletAlamat.status === 200) {
-      this.props.getAlamat()
+      Reactotron.log('hapus')
       this.setState({
         notif: true,
-        pesanNotif: 'menghapus Alamat',
+        pesanNotif: nextProps.dataDeletAlamat.message,
         loading: false
       })
+      this.props.getAlamat()
       nextProps.dataDeletAlamat.status = 0
     }
   }
@@ -65,7 +67,7 @@ class AddressData extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -98,7 +100,7 @@ class AddressData extends React.Component {
   }
 
   handleDeleteAlamat () {
-    this.setState({deletAlamat: false})
+    this.setState({deletAlamat: false, loading: true})
     this.props.deleteAddress(this.state.idDelete)
   }
 

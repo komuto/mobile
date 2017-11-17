@@ -249,7 +249,7 @@ class SellerComplainWaiting extends React.Component {
 
   renderEmptyState () {
     return (
-      <View style={[styles.containerEmpty, {marginTop: 50}]}>
+      <View style={[styles.containerEmpty, {marginTop: 100}]}>
         <Image source={Images.emptyComplain} style={{width: 201, height: 177}} />
         <Text style={styles.textTitleEmpty}>Komplain Barang Anda kosong</Text>
         <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan komplain{'\n'}terkait barang yang Anda beli</Text>

@@ -45,7 +45,7 @@ class BuyerDetailDiscussion extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataDetailDiscussion.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetailDiscussion.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataNewComent.status === 200) {
       this.setState({loading: false})
@@ -55,11 +55,11 @@ class BuyerDetailDiscussion extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataNewComent.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataNewComent.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataDetailProduk.status === 406) {
       this.setState({loading: false})
-      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
+      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.SHORT)
       nextProps.dataDetailProduk.status = 0
     }
   }

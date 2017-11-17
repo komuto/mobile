@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator, ToastAndroid } from 'react-native'
+import { View, Text, Image, TouchableOpacity, TextInput, ActivityIndicator, ToastAndroid } from 'react-native'
 import { MaskService } from 'react-native-masked-text'
 import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -31,11 +31,11 @@ class NewDiscussion extends React.Component {
         pertanyaan: '',
         loading: false
       })
-      ToastAndroid.show('Diskusi berhasil ditambahkan', ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })
-      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
   }
 
@@ -87,7 +87,7 @@ class NewDiscussion extends React.Component {
       this.setState({ loading: true })
       this.props.newDiscussion(id, pertanyaan)
     } else {
-      Alert.alert('Pesan', 'Pertanyaan tidak boleh kosong..')
+      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.SHORT)
     }
   }
 

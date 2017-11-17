@@ -64,28 +64,28 @@ class OTPCode extends React.Component {
     } if (nextProps.deleteAccount.status === 200 && nextProps.typeVerifikasi === 'verificationdeleteaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'menghapus rekening' } })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.deleteAccount.message } })
       nextProps.deleteAccount.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'menambah rekening' } })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.createRek.message } })
       nextProps.createRek.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'verificationeditaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: 'mengubah rekening' } })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.createRek.message } })
       nextProps.createRek.status = 0
     }
     if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'newaccountbalance') {
-      ToastAndroid.show('Rekening berhasil ditambah', ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.createRek.message, ToastAndroid.SHORT)
       this.setState({loading: false})
       NavigationActions.popTo('balancepull')
       this.props.getListRekening()
       nextProps.dataOTP.status = 0
     }
     if (nextProps.createRek.status > 200) {
-      ToastAndroid.show(nextProps.createRek.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.createRek.message, ToastAndroid.SHORT)
       this.setState({ loading: false })
     }
     if (nextProps.dataSaldo.status === 200) {
@@ -96,10 +96,10 @@ class OTPCode extends React.Component {
       this.props.getProfile()
     } else if (nextProps.dataSaldo.status === 400) {
       this.setState({loading: false})
-      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.SHORT)
     } else if (nextProps.dataOTP.status !== 200 && nextProps.dataOTP.status !== 0) {
       this.setState({loading: false})
-      ToastAndroid.show(nextProps.dataOTP.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataOTP.message, ToastAndroid.SHORT)
     }
   }
 

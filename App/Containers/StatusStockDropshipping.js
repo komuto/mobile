@@ -44,13 +44,13 @@ class StatusStockDropshipping extends React.Component {
       })
       this.props.getDetailStoreProduct(this.state.idProduct)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'displayAction') {
       this.setState({
         loading: false
       })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {
@@ -59,12 +59,12 @@ class StatusStockDropshipping extends React.Component {
         isDropship: nextProps.dataUpdateProduct.product.is_dropship,
         loading: false
       })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
       this.props.getDetailStoreProduct(this.state.idProduct)
       nextProps.dataUpdateProduct.status = 0
     }
     if (nextProps.dataUpdateProduct.status !== 200 && nextProps.dataUpdateProduct.status !== 0) {
-      ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataFaq.status === 200) {
       let data = [...nextProps.dataFaq.faq]

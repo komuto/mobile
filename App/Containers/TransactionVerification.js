@@ -56,7 +56,7 @@ class TransactionVerification extends React.Component {
         })
       }
     } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
-      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.SHORT)
     }
   }
 

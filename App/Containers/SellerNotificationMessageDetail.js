@@ -81,7 +81,7 @@ class SellerNotificationMessageDetail extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackArchive: !this.state.callback,
-            pesanNotifArchive: 'Berhasil memindahkan ke Arsip'
+            pesanNotifArchive: dataMoveMessage.message
           }
         })
       }
@@ -96,7 +96,7 @@ class SellerNotificationMessageDetail extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackConversation: !this.state.callback,
-            pesanNotifConversation: 'Berhasil memindahkan ke Percakapan'
+            pesanNotifConversation: dataMoveMessage.message
           }
         })
       }
@@ -111,7 +111,7 @@ class SellerNotificationMessageDetail extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackArchive: !this.state.callback,
-            pesanNotifArchive: 'Berhasil menghapus Percakapan'
+            pesanNotifArchive: dataDeleteMessage.message
           }
         })
       }
@@ -126,7 +126,7 @@ class SellerNotificationMessageDetail extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackConversation: !this.state.callback,
-            pesanNotifConversation: 'Berhasil menghapus Arsip'
+            pesanNotifConversation: dataDeleteMessage.message
           }
         })
       }

@@ -129,7 +129,7 @@ class Transaction extends React.Component {
         isLoading: false
       })
       if (nextProps.dataListTransaction.status !== 401) {
-        ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.LONG)
+        ToastAndroid.show(nextProps.dataListTransaction.message, ToastAndroid.SHORT)
       }
     }
   }

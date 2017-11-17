@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator, ToastAndroid } from 'react-native'
+import { Text, TouchableOpacity, Image, View, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -68,8 +68,7 @@ class Facebook extends React.Component {
         }
       },
       function (error) {
-        console.log('Login fail with error: ' + error)
-        Alert.alert('Error', 'Login fail with error: ' + error)
+        ToastAndroid.show('Login fail with error: ' + error, ToastAndroid.SHORT)
       }
     )
     .catch((err) => console.log(err))

@@ -91,7 +91,7 @@ class InputShippingInfo extends React.Component {
       })
     } else if (nextProps.dataDetail.status !== 0 && nextProps.dataDetail.status !== 200) {
       this.setState({loading: false})
-      ToastAndroid.show(nextProps.dataDetail.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetail.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataProcessDeliveryOrder.status === 200 && this.state.statusConfrim) {
       this.setState({modalNumberReceive: true, modalLoading: false, statusConfrim: false})
@@ -101,7 +101,7 @@ class InputShippingInfo extends React.Component {
       this.setState({modalLoading: false})
       this.props.getUnreadDispute()
       nextProps.dataProcessDeliveryOrder.status = 0
-      ToastAndroid.show(nextProps.dataProcessDeliveryOrder.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProcessDeliveryOrder.message, ToastAndroid.SHORT)
     }
   }
 
@@ -588,7 +588,7 @@ class InputShippingInfo extends React.Component {
 
   onclickProcessInfoDelivery (data) {
     if (this.state.receipeNumber === '') {
-      ToastAndroid.show('Mohon isi nomor resi terlebih dahulu', ToastAndroid.LONG)
+      ToastAndroid.show('Mohon isi nomor resi terlebih dahulu', ToastAndroid.SHORT)
     } else {
       this.setState({statusConfrim: true, modalLoading: true})
       this.props.processDeliveryConfrim(this.state.invoice.id, this.state.receipeNumber)

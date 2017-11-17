@@ -62,7 +62,7 @@ class Payment extends React.Component {
         data: nextProps.dataPaymentMethod.paymentMethods
       })
     } else if (nextProps.dataPaymentMethod.status !== 200 && nextProps.dataPaymentMethod.status !== 0) {
-      ToastAndroid.show(nextProps.dataPaymentMethod.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataPaymentMethod.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCart.status === 200) {
       if (!this.state.transaction) {
@@ -91,7 +91,7 @@ class Payment extends React.Component {
     } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       if (!this.state.transaction) {
         if (this.state.getCartPayment) {
-          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.LONG)
+          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
           this.props.getCartReset()
         }
       }
@@ -108,7 +108,7 @@ class Payment extends React.Component {
       }
       nextProps.dataCheckout.status = 0
     } else if (nextProps.dataCheckout.status !== 200 && nextProps.dataCheckout.status !== 0) {
-      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
       nextProps.dataCheckout.status = 0
     }
     if (nextProps.dataToken.status === 200) {
@@ -126,7 +126,7 @@ class Payment extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataToken.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataToken.message, ToastAndroid.SHORT)
       nextProps.dataToken.status = 0
     }
 
@@ -158,14 +158,14 @@ class Payment extends React.Component {
         })
       }
     } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
-      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataProfile.status === 200) {
       this.setState({
         saldo: String(nextProps.dataProfile.user.user.saldo_wallet)
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
-      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
     }
   }
 

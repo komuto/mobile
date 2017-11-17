@@ -83,7 +83,7 @@ class BuyerComplainConfirmation extends React.Component {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.dataExchange.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataExchange.message, ToastAndroid.SHORT)
       nextProps.dataExchange.status = 0
     }
     if (nextProps.dataPhoto.status === 200) {
@@ -128,7 +128,7 @@ class BuyerComplainConfirmation extends React.Component {
         loading: false
       })
       nextProps.dataAddComplain.status = 0
-      ToastAndroid.show(nextProps.dataAddComplain.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddComplain.message, ToastAndroid.SHORT)
     }
   }
 
@@ -596,7 +596,7 @@ class BuyerComplainConfirmation extends React.Component {
       this.props.photoUpload(postData)
       this.setState({loading: true})
     } else {
-      ToastAndroid.show('Mohon lengkapi data', ToastAndroid.LONG)
+      ToastAndroid.show('Mohon lengkapi data', ToastAndroid.SHORT)
     }
   }
 

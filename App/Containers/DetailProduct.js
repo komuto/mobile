@@ -8,7 +8,6 @@ import {
   ListView,
   ActivityIndicator,
   BackAndroid,
-  Alert,
   Modal,
   ToastAndroid,
   Share
@@ -204,7 +203,7 @@ class DetailProduct extends React.Component {
         // this.props.resetProduk()
       }
     } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
-      ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.SHORT)
       this.setState({
         loadingProduk: false
       })
@@ -216,7 +215,7 @@ class DetailProduct extends React.Component {
       })
       // nextProps.dataProvinsi.status = 0
     } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
-      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.SHORT)
       // nextProps.dataProvinsi.status = 0
     }
     if (nextProps.dataKota.status === 200) {
@@ -225,7 +224,7 @@ class DetailProduct extends React.Component {
       })
       // nextProps.dataKota.status = 0
     } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
-      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.SHORT)
       // nextProps.dataKota.status = 0
     }
     if (nextProps.dataSubDistrict.status === 200) {
@@ -234,7 +233,7 @@ class DetailProduct extends React.Component {
       })
       // nextProps.dataSubDistrict.status = 0
     } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
-      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.SHORT)
       // nextProps.dataSubDistrict.status = 0
     }
     if (nextProps.dataServis.status === 200) {
@@ -261,7 +260,7 @@ class DetailProduct extends React.Component {
       this.props.getDetailProduk(this.state.id)
       this.props.resetAddToWishlist()
     } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
-      ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.SHORT)
       this.props.resetAddToWishlist()
     }
     if (nextProps.dataFavorit.status === 200) {
@@ -270,7 +269,7 @@ class DetailProduct extends React.Component {
         ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
       } else if (!this.state.isStoreFavorite) {
         this.setState({isStoreFavorite: true})
-        ToastAndroid.show('Toko Berhasil Difavoritkan', ToastAndroid.SHORT)
+        ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
       }
       nextProps.dataFavorit.status = 0
     } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
@@ -788,7 +787,7 @@ class DetailProduct extends React.Component {
     if (this.state.isLogin) {
       this.props.addWishList({id: ids})
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
     }
   }
 
@@ -804,7 +803,7 @@ class DetailProduct extends React.Component {
       this.props.addWishList({id: id})
       this.setState({ otherProduct })
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, Text, ListView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
+import { View, ScrollView, ToastAndroid, Text, ListView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
@@ -63,7 +63,7 @@ class InfoStoreOwner extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }

@@ -80,7 +80,7 @@ class BuyerDetailMessage extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackArchive: !this.state.callback,
-            pesanNotifArchive: 'Berhasil memindahkan ke Arsip'
+            pesanNotifArchive: dataMoveMessage.message
           }
         })
         this.props.getListMessages({page: 1})
@@ -97,7 +97,7 @@ class BuyerDetailMessage extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackConversation: !this.state.callback,
-            pesanNotifConversation: 'Berhasil memindahkan ke Percakapan'
+            pesanNotifConversation: dataMoveMessage.message
           }
         })
         this.props.getListMessages({page: 1})
@@ -114,7 +114,7 @@ class BuyerDetailMessage extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackArchive: !this.state.callback,
-            pesanNotifArchive: 'Berhasil menghapus Percakapan'
+            pesanNotifArchive: dataDeleteMessage.message
           }
         })
         this.props.getListMessages({page: 1})
@@ -130,7 +130,7 @@ class BuyerDetailMessage extends React.Component {
         NavigationActions.pop({
           refresh: {
             callbackConversation: !this.state.callback,
-            pesanNotifConversation: 'Berhasil menghapus Arsip'
+            pesanNotifConversation: dataDeleteMessage.message
           }
         })
         this.props.getListMessagesArchive({page: 1})

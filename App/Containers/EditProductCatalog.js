@@ -60,7 +60,7 @@ class EditProductCatalog extends React.Component {
       })
       nextProps.dataCatalog.status = 0
     } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
-      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCreateCatalog.status === 200) {
       this.setState({
@@ -69,7 +69,7 @@ class EditProductCatalog extends React.Component {
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
     } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
-      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCreateProdukDropshipper.status === 200) {
       this.setState({
@@ -79,15 +79,15 @@ class EditProductCatalog extends React.Component {
       this.setState({
         loading: true
       })
-      ToastAndroid.show(nextProps.dataCreateProdukDropshipper.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCreateProdukDropshipper.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataUpdateData.status = 0
-      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 

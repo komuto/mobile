@@ -48,7 +48,7 @@ class AddEditStoreCatalog extends React.Component {
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,
-        pesanNotif: nextProps.dataCatalog.message
+        pesanNotif: nextProps.updateCatalogs.message
       })
       this.props.getCatalog()
       nextProps.updateCatalogs.status = 0

@@ -13,7 +13,6 @@ import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as homeAction from '../actions/home'
-import SVGImage from 'react-native-svg-image'
 
 import styles from './Styles/KategoriScreenStyle'
 import { Images } from '../Themes'
@@ -68,12 +67,13 @@ class Category1 extends React.Component {
     }
   }
 
-  handleDetailKategori (rowId, title) {
+  handleDetailKategori (rowId, title, icon) {
     NavigationActions.category2({
       type: ActionConst.PUSH,
       id: rowId,
       title: title,
-      name: title
+      name: title,
+      iconProps: icon
     })
   }
 
@@ -88,18 +88,13 @@ class Category1 extends React.Component {
     })
   }
 
-  renderSubListView (subCategory) {
+  renderSubListView (subCategory, iconParent) {
     if (subCategory.length <= 0) {
       return null
     } else {
       const subCategoryView = subCategory.map((obj, i) =>
-        (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
-          <View>
-            <SVGImage
-              style={{ width: 24, height: 24 }}
-              source={{uri: obj.icon}}
-            />
-          </View>
+        (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name, iconParent)}>
+          <Image source={{uri: iconParent}} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               {obj.name}
@@ -120,15 +115,12 @@ class Category1 extends React.Component {
       <View>
         <View style={styles.containerBanner}>
           <Text style={styles.textBanner}>
-            Lihat semua di {rowData.name}
+            {rowData.name}
           </Text>
         </View>
         <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(rowData.id, rowData.name)}>
           <View>
-            <SVGImage
-              style={{ width: 24, height: 24 }}
-              source={{uri: rowData.icon}}
-            />
+            <Image source={{uri: rowData.icon_mobile}} style={styles.imageCategory} />
           </View>
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
@@ -137,24 +129,10 @@ class Category1 extends React.Component {
           </View>
           <Image source={Images.rightArrow} style={styles.rightArrow} />
         </TouchableOpacity>
-        {this.renderSubListView(subCategory)}
+        {this.renderSubListView(subCategory, rowData.icon_mobile)}
       </View>
     )
   }
-
-  // renderSubRow (rowData, rowId) {
-  //   return (
-  //     <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-  //       {this.SVGImageComponent(rowData.icon)}
-  //       <View style={[styles.namaContainer, {marginLeft: 15}]}>
-  //         <Text style={styles.textNama}>
-  //           {rowData.name}
-  //         </Text>
-  //       </View>
-  //       <Image source={Images.rightArrow} style={styles.rightArrow} />
-  //     </TouchableOpacity>
-  //   )
-  // }
 
   render () {
     const { data, gettingData } = this.state

@@ -5,7 +5,7 @@ export const serviceUrl = 'https://private-f0902d-komuto.apiary-mock.com'
 // export const apiKomuto = 'https://api.komuto.skyshi.com/'
 export const apiKomuto = 'https://api.mobiledev.komuto.com/'
 export const baseUrl = 'https://mobiledev.komuto.com/'
-export const marketplace = 'Pasar Grobogan'
+export const marketplace = 'KAU Coops'
 export const storage = localStorage
 
 export function errorHandling (actionType, err) {

@@ -17,7 +17,6 @@ import { MaskService } from 'react-native-masked-text'
 import { Images, Colors, Fonts } from '../Themes'
 import ModalLogin from '../Components/ModalLogin'
 import { marketplace } from '../config'
-import SVGImage from 'react-native-svg-image'
 
 import {isFetching, isError, isFound} from '../Services/Status'
 import ModalSearchGeneral from '../Components/Search'
@@ -40,7 +39,6 @@ moment.locale('id')
 import FCM, {FCMEvent} from 'react-native-fcm'
 
 const handleFCM = (data) => {
-  console.log(data) // data.id, data.click_action
   switch (data.click_action) {
     case 'SELLER_MESSAGE' :
       return NavigationActions.sellernotificationmessagedetail({ type: ActionConst.PUSH, idMessage: data.body.message_id })
@@ -72,7 +70,6 @@ const handleFCM = (data) => {
 }
 
 FCM.on(FCMEvent.Notification, async (notif) => {
-  console.log(notif)
   const data = {
     click_action: notif.type,
     body: notif
@@ -103,7 +100,6 @@ FCM.on(FCMEvent.Notification, async (notif) => {
 })
 
 FCM.on(FCMEvent.RefreshToken, (token) => {
-  console.log(token)
 })
 
 class Home extends React.Component {
@@ -142,7 +138,6 @@ class Home extends React.Component {
 
   componentWillMount () {
     FCM.getInitialNotification().then(notif => {
-      console.log(notif)
       const data = {
         click_action: notif.type,
         body: notif
@@ -512,21 +507,10 @@ class Home extends React.Component {
     )
   }
 
-  SVGImageComponent (data) {
-    return (
-      <View style={{ flex: 1 }}>
-        <SVGImage
-          style={{ width: 32, height: 32 }}
-          source={{uri: data}}
-        />
-      </View>
-    )
-  }
-
   renderRowKategori (rowData) {
     return (
       <TouchableOpacity style={styles.category} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        {this.SVGImageComponent(rowData.icon)}
+        <Image source={{uri: rowData.icon_mobile}} style={styles.imageCategory} />
         <Text style={styles.textCategory}>{rowData.name}</Text>
       </TouchableOpacity>
     )

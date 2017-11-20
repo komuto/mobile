@@ -3,7 +3,6 @@ import { ScrollView, ToastAndroid, Text, ListView, View, TouchableOpacity, Image
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as homeAction from '../actions/home'
-import SVGImage from 'react-native-svg-image'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -26,7 +25,8 @@ class Category3 extends React.Component {
       title: this.props.title,
       name: this.props.title,
       iconParent: '',
-      gettingData: true
+      gettingData: true,
+      iconProps: this.props.iconProps
     }
     this.props.getKategori(this.props.id)
   }
@@ -42,7 +42,7 @@ class Category3 extends React.Component {
     if (nextProps.dataSubCategory.status === 200) {
       this.setState({
         data: nextProps.dataSubCategory.categories.sub_categories,
-        iconParent: nextProps.dataSubCategory.categories.icon,
+        iconParent: nextProps.dataSubCategory.categories.icon_mobile,
         loadingKategori: false,
         gettingData: false
       })
@@ -67,21 +67,10 @@ class Category3 extends React.Component {
     })
   }
 
-  SVGImageComponent (data) {
-    return (
-      <View>
-        <SVGImage
-          style={{ width: 24, height: 24 }}
-          source={{uri: data}}
-        />
-      </View>
-    )
-  }
-
   renderRow (rowData, rowId) {
     return (
       <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        {this.SVGImageComponent(rowData.icon)}
+        <Image source={{uri: this.state.iconProps}} style={styles.imageCategory} />
         <View style={[styles.namaContainer, {marginLeft: 15}]}>
           <Text style={styles.textNama}>
             {rowData.name}
@@ -93,7 +82,7 @@ class Category3 extends React.Component {
   }
 
   render () {
-    const {title, iconParent, data, gettingData} = this.state
+    const {title, iconProps, data, gettingData} = this.state
     const spinner = this.state.loadingKategori
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='#ef5656' size='small' />
@@ -104,7 +93,7 @@ class Category3 extends React.Component {
         view = (
           <View>
             <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(this.state.id)}>
-              {this.SVGImageComponent(iconParent)}
+              <Image source={{uri: iconProps}} style={styles.imageCategory} />
               <View style={[styles.namaContainer, {marginLeft: 15}]}>
                 <Text style={styles.textNama}>
                   Lihat semua di {title}

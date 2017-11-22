@@ -105,7 +105,7 @@ export default StyleSheet.create({
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.regular
+    fontSize: Fonts.size.medium
   },
   titleEkspedisi: {
     backgroundColor: Colors.paleGrey,

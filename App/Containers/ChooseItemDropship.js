@@ -390,7 +390,7 @@ class ChooseItemDropship extends React.Component {
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
@@ -486,11 +486,11 @@ class ChooseItemDropship extends React.Component {
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
           </Text>
-          <View style={styles.tokoContainer}>
+          <View style={[styles.tokoContainer, {marginRight: 30}]}>
             <Text style={styles.namaToko}>
               {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(rowData.store.is_verified)}
           </View>
           {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
           <View style={{flex: 1, marginBottom: 20}}>
@@ -538,7 +538,7 @@ class ChooseItemDropship extends React.Component {
           <Text style={stylesHome.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
         {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>

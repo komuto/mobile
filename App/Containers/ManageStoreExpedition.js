@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 // import Reactotron from 'reactotron-react-native'
+import {Actions as NavigationActions} from 'react-native-router-flux'
 
 import * as expeditionAction from '../actions/expedition'
 
@@ -45,6 +46,7 @@ class ManageStoreExpedition extends React.Component {
       this.submitting = { ...this.submitting, update: false }
       this.setState({ loading: false })
       ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)
+      NavigationActions.pop()
     } if (nextProps.dataUpdate.status > 200 && this.submitting.update) {
       this.setState({ loading: false })
       ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)

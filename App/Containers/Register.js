@@ -18,6 +18,7 @@ import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import * as registerAction from '../actions/user'
 import * as EmailValidator from 'email-validator'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -25,7 +26,7 @@ import * as EmailValidator from 'email-validator'
 // Styles
 import styles from './Styles/RegisterStyle'
 
-import CustomRadio from '../Components/CustomRadio'
+import CustomRadio from '../Components/CustomRadioCatalog'
 
 class Register extends React.Component {
 
@@ -37,10 +38,9 @@ class Register extends React.Component {
       email: '',
       password: '',
       konfirmasiPassword: '',
-      gender: 'male',
-      index: 0,
-      label: 'Pria',
-      data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
+      gender: '',
+      index: -1,
+      data: [{'index': 0, 'label': 'Pria'}, {'index': 1, 'label': 'Wanita'}],
       loading: false
     }
   }
@@ -100,11 +100,13 @@ class Register extends React.Component {
   handlingRadio (index, value) {
     if (value.toLowerCase() === 'pria') {
       this.setState({
-        gender: 'male'
+        gender: 'male',
+        index: index
       })
     } else {
       this.setState({
-        gender: 'female'
+        gender: 'female',
+        index: index
       })
     }
   }
@@ -124,6 +126,8 @@ class Register extends React.Component {
         this.onError('konfirmasiPassword')
       } else if (konfirmasiPassword !== password) {
         this.onError('passwordBeda')
+      } else if (gender === '') {
+        this.onError('genderNull')
       } else {
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
@@ -167,6 +171,9 @@ class Register extends React.Component {
       case 'passwordBeda':
         ToastAndroid.show('Password tidak cocok', ToastAndroid.SHORT)
         break
+      case 'genderNull':
+        ToastAndroid.show('Pilih salah satu gender', ToastAndroid.SHORT)
+        break
     }
   }
 
@@ -177,6 +184,7 @@ class Register extends React.Component {
   }
 
   render () {
+    Reactotron.log(this.state.gender)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -274,8 +282,9 @@ class Register extends React.Component {
               <Text style={styles.radioLabel}>Gender</Text>
               <CustomRadio
                 data={this.state.data}
-                handlingRadio={(index1, value1) =>
-                  this.handlingRadio(index1, value1)}
+                index={this.state.index}
+                handlingRadio={(index, value) =>
+                  this.handlingRadio(index, value)}
                 horizontal
               />
             </View>

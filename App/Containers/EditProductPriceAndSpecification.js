@@ -272,7 +272,7 @@ class EditProductPriceAndSpecification extends React.Component {
                 keyboardType='numeric'
                 returnKeyType='done'
                 autoCapitalize='none'
-                maxLength={18}
+                maxLength={10}
                 autoCorrect
                 onChangeText={this.changeHarga}
                 underlineColorAndroid='transparent'
@@ -340,8 +340,8 @@ class EditProductPriceAndSpecification extends React.Component {
     )
   }
 
-  discountCalculate (price, commission) {
-    let hargaDiskon = price - commission
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
     return hargaDiskon
   }
 
@@ -403,14 +403,17 @@ class EditProductPriceAndSpecification extends React.Component {
     } catch (e) {
       hargaTemp = this.state.harga
     }
-    let diskonTemp = this.state.commission
-    let hargaMasked = this.maskedMoney(hargaTemp)
-    let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
-    let diskonMasked = this.maskedMoney(komisiCalculate)
-    let diskonCalculate = this.discountCalculate(hargaTemp, komisiCalculate)
-    let hargaDiskonMasked = this.maskedMoney(diskonCalculate)
 
-    Reactotron.log(hargaDiskonMasked + ' ' + diskonCalculate + ' ' + diskonMasked + ' ' + komisiCalculate)
+    let diskonCalculate = this.discountCalculate(hargaTemp, this.state.diskon)
+    let discountMasked = this.maskedMoney(diskonCalculate)
+
+    let commission = this.komisiCalculate(diskonCalculate, this.state.commission)
+    let commissionMasked = this.maskedMoney(commission)
+
+    let komisiCalculate = diskonCalculate - commission
+    let totalMasked = this.maskedMoney(komisiCalculate)
+
+    Reactotron.log(commission)
 
     return (
       <View style={styles.rincianContainrer}>
@@ -418,15 +421,15 @@ class EditProductPriceAndSpecification extends React.Component {
         <View style={styles.borderBottom}>
           <View style={styles.containerRincian}>
             <Text style={styles.textRincian}>Harga Jual</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{discountMasked}</Text>
           </View>
           <View style={styles.containerRincian}>
-            <Text style={styles.textRincian}>Komisi  ({diskonTemp}%  dari {hargaMasked})</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
+            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {diskonCalculate})</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
           </View>
           <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>
             <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{totalMasked}</Text>
           </View>
         </View>
       </View>

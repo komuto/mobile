@@ -209,7 +209,7 @@ class DetailTokoProduk extends React.Component {
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={stylesHome.imageVerified} />
       )

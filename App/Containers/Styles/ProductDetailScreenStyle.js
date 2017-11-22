@@ -287,7 +287,8 @@ export default StyleSheet.create({
   namaContainer: {
     flexDirection: 'column',
     flex: 1,
-    marginLeft: 16
+    marginLeft: 16,
+    marginRight: 30
   },
   textNama: {
     fontFamily: Fonts.type.semiBolds,

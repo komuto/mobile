@@ -140,7 +140,7 @@ class Wishlist extends React.Component {
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={stylesProduk.imageVerified} />
       )
@@ -285,11 +285,11 @@ class Wishlist extends React.Component {
           <Text style={stylesProduk.textTitleProduct}>
             {rowData.product.name}
           </Text>
-          <View style={stylesProduk.tokoContainer}>
+          <View style={[stylesProduk.tokoContainer, {marginRight: 30}]}>
             <Text style={stylesProduk.namaToko}>
               {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(rowData.store.is_verified)}
           </View>
           {this.renderDiskon(this.statusDiskon, rowData.product.price)}
           <View style={stylesProduk.moneyLikesContainer}>
@@ -370,7 +370,7 @@ class Wishlist extends React.Component {
           <Text style={stylesHome.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
         {this.renderDiskon(this.statusDiskon, rowData.product.price)}
         <Text style={stylesHome.harga}>

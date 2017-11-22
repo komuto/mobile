@@ -32,6 +32,7 @@ class NewDiscussion extends React.Component {
         loading: false
       })
       ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
+      this.props.getDetailProduk(this.state.id)
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })
@@ -149,7 +150,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    newDiscussion: (id, question) => dispatch(productAction.newDiscussion({ id: id, question: question }))
+    newDiscussion: (id, question) => dispatch(productAction.newDiscussion({ id: id, question: question })),
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id}))
   }
 }
 

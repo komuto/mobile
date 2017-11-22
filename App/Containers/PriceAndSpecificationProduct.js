@@ -278,8 +278,8 @@ class PriceAndSpecificationProduct extends React.Component {
                 keyboardType='numeric'
                 returnKeyType='done'
                 autoCapitalize='none'
-                maxLength={18}
-                autoCorrect
+                maxLength={10}
+                autoCorrect={false}
                 onFocus={() => this.onFocus('price')}
                 onBlur={() => this.onBlur('price')}
                 onChangeText={this.handleTextprice}
@@ -367,8 +367,8 @@ class PriceAndSpecificationProduct extends React.Component {
     )
   }
 
-  discountCalculate (price, commission) {
-    let hargaDiskon = price - commission
+  discountCalculate (price, discount) {
+    let hargaDiskon = price - ((discount / 100) * price)
     return hargaDiskon
   }
 
@@ -426,11 +426,15 @@ class PriceAndSpecificationProduct extends React.Component {
   rincianDiskon () {
     let hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
     let commissionTemp = String(this.state.commission)
-    let hargaMasked = this.maskedMoney(hargaTemp)
-    let commission = this.komisiCalculate(hargaTemp, this.state.commission)
+
+    let salePrice = this.discountCalculate(hargaTemp, Number(this.state.diskon))
+    let hargaMasked = this.maskedMoney(salePrice)
+
+    let commission = this.komisiCalculate(salePrice, this.state.commission)
     let commissionMasked = this.maskedMoney(commission)
-    let totalPrice = this.discountCalculate(hargaTemp, commission)
-    let totalPriceMasked = this.maskedMoney(totalPrice)
+
+    let total = salePrice - commission
+    let totalPriceMasked = this.maskedMoney(total)
 
     if (this.state.harga.length > 0) {
       return (

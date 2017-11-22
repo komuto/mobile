@@ -163,9 +163,10 @@ class StoreProductHidden extends React.Component {
         </View>
       )
     } if (data.is_dropship) {
-      var commissions = (data.price * data.commission) / 100
-      var fees = data.price - commissions
-      var feeMaskeds = this.maskedMoney(fees)
+      var discount = this.discountCalculate(data.price, data.discount)
+      var commission = (discount * data.commission) / 100
+      var fee = discount - commission
+      var feeMasked = this.maskedMoney(fee)
       return (
         <View>
           <View style={[styles.flexRow, {marginTop: 10, marginBottom: 10}]}>
@@ -178,18 +179,19 @@ class StoreProductHidden extends React.Component {
           </View>
           <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
           {this.discountCheck(data)}
-          <Text style={styles.textDetail}>Uang yang diterima : {feeMaskeds}</Text>
+          <Text style={styles.textDetail}>Uang yang diterima : {feeMasked}</Text>
         </View>
       )
     } else {
-      var commission = (data.price * data.commission) / 100
-      var fee = data.price - commission
-      var feeMasked = this.maskedMoney(fee)
+      var discounts = this.discountCalculate(data.price, data.discount)
+      var commissions = (discounts * data.commission) / 100
+      var fees = discounts - commissions
+      var feeMaskeds = this.maskedMoney(fees)
       return (
         <View>
           <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
           {this.discountCheck(data)}
-          <Text style={styles.textDetail}>Uang yang diterima : {feeMasked}</Text>
+          <Text style={styles.textDetail}>Uang yang diterima : {feeMaskeds}</Text>
         </View>
       )
     }

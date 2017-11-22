@@ -1350,12 +1350,12 @@ class DetailProduct extends React.Component {
             <View style={styles.containerNamaToko}>
               <View style={styles.namaContainer}>
                 <View style={styles.flexRow}>
-                  <Text style={styles.textNama}>
+                  <Text style={styles.textNama} numberOfLines={2} ellipsizeMode={'tail'}>
                     {this.state.namaToko}
                   </Text>
                   {this.renderVerifiedPenjual(this.state.verified)}
                 </View>
-                <Text style={[styles.textKelola, {color: Colors.lightgrey}]}>
+                <Text numberOfLines={2} ellipsizeMode={'tail'} style={[styles.textKelola, {color: Colors.lightgrey}]}>
                   {this.state.lokasiPenjual}
                 </Text>
               </View>
@@ -1468,7 +1468,7 @@ class DetailProduct extends React.Component {
           {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
         </Image>
         <View style={stylesHome.containerTitle}>
-          <Text style={stylesHome.textTitleProduct}>
+          <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.textTitleProduct}>
             {rowData.name}
           </Text>
           <View style={stylesHome.tokoContainer}>

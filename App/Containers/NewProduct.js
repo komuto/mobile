@@ -274,7 +274,7 @@ class NewProduct extends React.Component {
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
@@ -411,11 +411,11 @@ class NewProduct extends React.Component {
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
           </Text>
-          <View style={styles.tokoContainer}>
+          <View style={[styles.tokoContainer, {marginRight: 20}]}>
             <Text style={styles.namaToko}>
               {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(rowData.store.is_verified)}
           </View>
           {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
@@ -450,14 +450,14 @@ class NewProduct extends React.Component {
         <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct}>
           {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
         </Image>
-        <Text style={stylesHome.textTitleProduct}>
+        <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>
         <View style={stylesHome.tokoContainer}>
-          <Text style={stylesHome.namaToko}>
+          <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
         {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>

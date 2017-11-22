@@ -375,12 +375,13 @@ class DetailProductStore extends React.Component {
   }
 
   detailReception () {
-    let hargaTemp = Number(this.state.product.price)
-    let komisi = String(this.state.product.commission)
-    let hargaMasked = this.maskedMoney(hargaTemp)
-    let komisiCalculate = this.komisiCalculate(hargaTemp, this.state.product.commission)
+    let discount = this.discountCalculate(Number(this.state.product.price), this.state.product.discount)
+    let hargaMasked = this.maskedMoney(discount)
+
+    let komisiCalculate = this.komisiCalculate(discount, this.state.product.commission)
     let diskonMasked = this.maskedMoney(komisiCalculate)
-    let diskonCalculate = this.fee(hargaTemp, komisiCalculate)
+
+    let diskonCalculate = this.fee(discount, komisiCalculate)
     let hargaDiskonMasked = this.maskedMoney(diskonCalculate)
 
     return (
@@ -392,7 +393,7 @@ class DetailProductStore extends React.Component {
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
           </View>
           <View style={styles.containerRincian}>
-            <Text style={styles.textRincian}>Komisi  ({komisi}%  dari {hargaMasked})</Text>
+            <Text style={styles.textRincian}>Komisi  ({String(this.state.product.commission)}%  dari {hargaMasked})</Text>
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
           </View>
           <View style={[styles.containerRincian, {borderBottomWidth: 0, paddingBottom: 0}]}>

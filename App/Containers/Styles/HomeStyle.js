@@ -203,7 +203,9 @@ export default StyleSheet.create({
     marginTop: 20
   },
   tokoContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 1,
+    marginRight: 30
   },
   namaToko: {
     fontSize: Fonts.size.small,

@@ -450,11 +450,11 @@ class Home extends React.Component {
         this.produkDetail(rowData.product.id)}>
         <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
         {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
-        <Text style={styles.textTitleProduct}>
+        <Text style={styles.textTitleProduct} numberOfLines={2} ellipsizeMode={'tail'}>
           {rowData.product.name}
         </Text>
         <View style={styles.tokoContainer}>
-          <Text style={[styles.namaToko, {flex: 1}]}>
+          <Text style={styles.namaToko} numberOfLines={2} ellipsizeMode={'tail'}>
             {rowData.store.name}
           </Text>
           {this.renderVerified(rowData.store.is_verified)}

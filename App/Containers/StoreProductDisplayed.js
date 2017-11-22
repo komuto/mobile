@@ -187,8 +187,9 @@ class StoreProductDisplayed extends React.Component {
         </View>
       )
     } if (data.is_dropship) {
-      var commission = (data.price * data.commission) / 100
-      var fee = data.price - commission
+      var discount = this.discountCalculate(data.price, data.discount)
+      var commission = (discount * data.commission) / 100
+      var fee = discount - commission
       var feeMasked = this.maskedMoney(fee)
       return (
         <View>
@@ -206,8 +207,9 @@ class StoreProductDisplayed extends React.Component {
         </View>
       )
     } else {
-      var commissions = (data.price * data.commission) / 100
-      var fees = data.price - commissions
+      var discounts = this.discountCalculate(data.price, data.discount)
+      var commissions = (discounts * data.commission) / 100
+      var fees = discounts - commissions
       var feeMaskeds = this.maskedMoney(fees)
       return (
         <View>

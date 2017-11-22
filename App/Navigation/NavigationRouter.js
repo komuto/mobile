@@ -179,14 +179,14 @@ class NavigationRouter extends Component {
               <Scene
                 key='home'
                 initial
-                title='Home'
+                title='Beranda'
                 icon={TabIcon}
                 iconDefault={Images.home}
                 iconActive={Images.homeActive}>
                 <Scene
                   key='homescreen'
                   component={Home}
-                  title='Home'
+                  title='Beranda'
                   navBar={CustomNavBar}
                   hideNavBar
                   hideBackImage />
@@ -221,14 +221,14 @@ class NavigationRouter extends Component {
               </Scene>
               <Scene
                 key='acccount'
-                title='Profile'
+                title='Profil'
                 icon={TabIcon}
                 iconDefault={Images.profile}
                 iconActive={Images.profileActive}>
                 <Scene
                   key='acccountscreen'
                   component={Profile}
-                  title='Profile'
+                  title='Profil'
                   navBar={CustomNavBar}
                   hideNavBar={false}
                   hideBackImage />

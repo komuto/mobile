@@ -546,10 +546,20 @@ class TransactionItemReceived extends React.Component {
 
   sendReview () {
     const { bucketId, id, dataReview } = this.state
+    let err = false
     this.setState({
       loading: true
     })
-    this.props.addReview(bucketId, id, dataReview)
+    dataReview.map(data => {
+      if (data.review === '') {
+        err = true
+      }
+    })
+    if (!err) {
+      this.props.addReview(bucketId, id, dataReview)
+    } else {
+      ToastAndroid.show('Mohon lengkapi data review', ToastAndroid.SHORT)
+    }
   }
 
   sendComplain () {

@@ -17,7 +17,7 @@ export function errorHandling (actionType, err) {
       return put({ type: actionType, ...data })
     case 'SERVER_ERROR':
       const errorServer = {
-        message: 'Server error',
+        message: 'Server offline',
         code: status,
         isOnline: true,
         isLoading: false

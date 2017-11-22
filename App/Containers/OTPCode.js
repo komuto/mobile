@@ -94,12 +94,15 @@ class OTPCode extends React.Component {
         type: ActionConst.REPLACE
       })
       this.props.getProfile()
+      nextProps.dataSaldo.status = 0
     } else if (nextProps.dataSaldo.status === 400) {
       this.setState({loading: false})
       ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.SHORT)
+      nextProps.dataSaldo.status = 0
     } else if (nextProps.dataOTP.status !== 200 && nextProps.dataOTP.status !== 0) {
       this.setState({loading: false})
       ToastAndroid.show(nextProps.dataOTP.message, ToastAndroid.SHORT)
+      nextProps.dataSaldo.status = 0
     }
   }
 

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Metrics } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
+import { baseUrl } from '../config'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -17,6 +18,7 @@ class PaymentMidtrans extends React.Component {
       token: this.props.token,
       from: this.props.from
     }
+    console.log('uri: ', baseUrl + 'payment-mobile?token=' + this.props.token)
   }
 
   onNavigationStateChange (webViewState) {
@@ -49,7 +51,7 @@ class PaymentMidtrans extends React.Component {
   render () {
     return (
       <WebView
-        source={{ uri: 'https://komuto.skyshi.com/payment-mobile?token=' + this.state.token }}
+        source={{ uri: baseUrl + 'payment-mobile?token=' + this.props.token }}
         style={{ width: Metrics.screenWidth, height: Metrics.screenHeight }}
         onNavigationStateChange={this.onNavigationStateChange.bind(this)}
       />

@@ -132,75 +132,79 @@ class DetailProduct extends React.Component {
       shareUrl: '',
       isHere: true,
       modalLogin: false,
-      commission: this.props.commission || 0
+      commission: this.props.commission || 0,
+      fetchData: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
       if (this.state.id === nextProps.dataDetailProduk.detail.product.id) {
-        this.setState({
-          id: nextProps.dataDetailProduk.detail.product.id,
-          loadingProduk: false,
-          grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
-          discount: nextProps.dataDetailProduk.detail.product.is_discount,
-          price: nextProps.dataDetailProduk.detail.product.price,
-          ulasan: nextProps.dataDetailProduk.detail.reviews.slice(0, 3),
-          sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
-          dataImage: nextProps.dataDetailProduk.detail.images,
-          title: nextProps.dataDetailProduk.detail.product.name,
-          like: nextProps.dataDetailProduk.detail.product.is_liked,
-          diskon: nextProps.dataDetailProduk.detail.product.discount,
-          verified: nextProps.dataDetailProduk.detail.store.is_verified,
-          otherProduct: nextProps.dataDetailProduk.detail.other_products,
-          avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
-          avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
-          stock: nextProps.dataDetailProduk.detail.product.stock,
-          sold: nextProps.dataDetailProduk.detail.product.count_sold,
-          diskusi: nextProps.dataDetailProduk.detail.product.count_discussion,
-          weight: nextProps.dataDetailProduk.detail.product.weight,
-          totalWeight: nextProps.dataDetailProduk.detail.product.weight,
-          kondisi: nextProps.dataDetailProduk.detail.product.condition,
-          kategori: nextProps.dataDetailProduk.detail.category.name,
-          deskripsi: nextProps.dataDetailProduk.detail.product.description,
-          termcondition: nextProps.dataDetailProduk.detail.store.term_condition,
-          idLokasiPenjual: nextProps.dataDetailProduk.detail.location.province.id,
-          lokasiPenjual: nextProps.dataDetailProduk.detail.location.province.name,
-          namaToko: nextProps.dataDetailProduk.detail.store.name,
-          service: nextProps.dataDetailProduk.detail.expeditions,
-          jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
-          storeId: nextProps.dataDetailProduk.detail.store.id,
-          isStoreFavorite: nextProps.dataDetailProduk.detail.store.is_favorite,
-          originId: nextProps.dataDetailProduk.detail.location.district.ro_id,
-          dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
-          asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
-          jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
-          idCategory: nextProps.dataDetailProduk.detail.product.category_id,
-          idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
-          isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper,
-          shareUrl: nextProps.dataDetailProduk.detail.share_link
-        })
-        try {
+        if (this.state.fetchData) {
           this.setState({
-            fotoToko: nextProps.dataDetailProduk.detail.store.logo
+            id: nextProps.dataDetailProduk.detail.product.id,
+            loadingProduk: false,
+            grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
+            discount: nextProps.dataDetailProduk.detail.product.is_discount,
+            price: nextProps.dataDetailProduk.detail.product.price,
+            ulasan: nextProps.dataDetailProduk.detail.reviews.slice(0, 3),
+            sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
+            dataImage: nextProps.dataDetailProduk.detail.images,
+            title: nextProps.dataDetailProduk.detail.product.name,
+            like: nextProps.dataDetailProduk.detail.product.is_liked,
+            diskon: nextProps.dataDetailProduk.detail.product.discount,
+            verified: nextProps.dataDetailProduk.detail.store.is_verified,
+            otherProduct: nextProps.dataDetailProduk.detail.other_products,
+            avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
+            avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
+            stock: nextProps.dataDetailProduk.detail.product.stock,
+            sold: nextProps.dataDetailProduk.detail.product.count_sold,
+            diskusi: nextProps.dataDetailProduk.detail.product.count_discussion,
+            weight: nextProps.dataDetailProduk.detail.product.weight,
+            totalWeight: nextProps.dataDetailProduk.detail.product.weight,
+            kondisi: nextProps.dataDetailProduk.detail.product.condition,
+            kategori: nextProps.dataDetailProduk.detail.category.name,
+            deskripsi: nextProps.dataDetailProduk.detail.product.description,
+            termcondition: nextProps.dataDetailProduk.detail.store.term_condition,
+            idLokasiPenjual: nextProps.dataDetailProduk.detail.location.province.id,
+            lokasiPenjual: nextProps.dataDetailProduk.detail.location.province.name,
+            namaToko: nextProps.dataDetailProduk.detail.store.name,
+            service: nextProps.dataDetailProduk.detail.expeditions,
+            jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
+            storeId: nextProps.dataDetailProduk.detail.store.id,
+            isStoreFavorite: nextProps.dataDetailProduk.detail.store.is_favorite,
+            originId: nextProps.dataDetailProduk.detail.location.district.ro_id,
+            dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
+            asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
+            jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
+            idCategory: nextProps.dataDetailProduk.detail.product.category_id,
+            idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
+            isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper,
+            shareUrl: nextProps.dataDetailProduk.detail.share_link,
+            fetchData: false
           })
-        } catch (e) {
-          console.log(e)
+          try {
+            this.setState({
+              fotoToko: nextProps.dataDetailProduk.detail.store.logo
+            })
+          } catch (e) {
+            console.log(e)
+          }
+          let tempPhoto = []
+          let tempExpedition = []
+          nextProps.dataDetailProduk.detail.images.map((data, i) => {
+            tempPhoto.push({'name': data.file})
+          })
+          nextProps.dataDetailProduk.detail.expeditions.map((data, i) => {
+            tempExpedition.push({'expedition_service_id': data.id})
+          })
+          this.setState({
+            photoProductDropship: tempPhoto,
+            expeditionDropship: tempExpedition
+          })
+          nextProps.dataDetailProduk.status = 0
+          // this.props.resetProduk()
         }
-        let tempPhoto = []
-        let tempExpedition = []
-        nextProps.dataDetailProduk.detail.images.map((data, i) => {
-          tempPhoto.push({'name': data.file})
-        })
-        nextProps.dataDetailProduk.detail.expeditions.map((data, i) => {
-          tempExpedition.push({'expedition_service_id': data.id})
-        })
-        this.setState({
-          photoProductDropship: tempPhoto,
-          expeditionDropship: tempExpedition
-        })
-        nextProps.dataDetailProduk.status = 0
-        // this.props.resetProduk()
       }
     } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
       ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.SHORT)
@@ -266,7 +270,7 @@ class DetailProduct extends React.Component {
     if (nextProps.dataFavorit.status === 200) {
       if (this.state.isStoreFavorite) {
         this.setState({isStoreFavorite: false})
-        ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
+        ToastAndroid.show('Berhasil menghapus dari toko favorit', ToastAndroid.SHORT)
       } else if (!this.state.isStoreFavorite) {
         this.setState({isStoreFavorite: true})
         ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)

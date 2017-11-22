@@ -454,7 +454,7 @@ class Home extends React.Component {
           {rowData.product.name}
         </Text>
         <View style={styles.tokoContainer}>
-          <Text style={styles.namaToko}>
+          <Text style={[styles.namaToko, {flex: 1}]}>
             {rowData.store.name}
           </Text>
           {this.renderVerified(rowData.store.is_verified)}

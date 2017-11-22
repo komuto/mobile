@@ -301,7 +301,7 @@ class Wishlist extends React.Component {
             <View style={stylesProduk.likesContainer}>
               {this.renderLikes(rowData.like)}
               <Text style={stylesProduk.like}>
-                {rowData.product.stock}
+                {rowData.product.count_like}
               </Text>
             </View>
             <TouchableOpacity style={styles.keranjangContainer} onPress={() => this.removeWishlist(rowData.product.id, row)}>

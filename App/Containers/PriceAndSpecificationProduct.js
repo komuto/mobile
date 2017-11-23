@@ -253,6 +253,14 @@ class PriceAndSpecificationProduct extends React.Component {
     this.trySearch(text)
   }
 
+  handleTextDiscount = (text) => {
+    Reactotron.log(text)
+    if (text > 100) {
+      text = ''
+    }
+    this.setState({ diskon: text })
+  }
+
   trySearch (text) {
     if (text !== '') {
       this.submitting.commission = true
@@ -297,7 +305,7 @@ class PriceAndSpecificationProduct extends React.Component {
                   autoCapitalize='none'
                   maxLength={3}
                   autoCorrect
-                  onChangeText={(text) => this.setState({diskon: text})}
+                  onChangeText={this.handleTextDiscount}
                   underlineColorAndroid='transparent'
                   placeholder='Diskon'
                 />
@@ -369,7 +377,7 @@ class PriceAndSpecificationProduct extends React.Component {
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
-    return hargaDiskon
+    return Math.ceil(hargaDiskon, -1)
   }
 
   handlingRadioJenisProduk (index, value) {
@@ -404,7 +412,7 @@ class PriceAndSpecificationProduct extends React.Component {
 
   komisiCalculate (price, commission) {
     let value = (price * commission) / 100
-    return value
+    return Math.ceil(value, -1)
   }
 
   maskedMoney (value) {
@@ -423,18 +431,32 @@ class PriceAndSpecificationProduct extends React.Component {
     return price
   }
 
+  maskedMoneyManual (value) {
+    var number = value.toString()
+    var sisa = number.length % 3
+    var rupiah = number.substr(0, sisa)
+    var ribuan = number.substr(sisa).match(/\d{3}/g)
+
+    if (ribuan) {
+      var separator = sisa ? '.' : ''
+      rupiah += separator + ribuan.join('.')
+    }
+
+    return 'Rp ' + rupiah
+  }
+
   rincianDiskon () {
     let hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
     let commissionTemp = String(this.state.commission)
 
     let salePrice = this.discountCalculate(hargaTemp, Number(this.state.diskon))
-    let hargaMasked = this.maskedMoney(salePrice)
+    let hargaMasked = this.maskedMoneyManual(salePrice)
 
     let commission = this.komisiCalculate(salePrice, this.state.commission)
-    let commissionMasked = this.maskedMoney(commission)
+    let commissionMasked = this.maskedMoneyManual(commission)
 
     let total = salePrice - commission
-    let totalPriceMasked = this.maskedMoney(total)
+    let totalPriceMasked = this.maskedMoneyManual(Math.ceil(total, -1))
 
     if (this.state.harga.length > 0) {
       return (

@@ -511,6 +511,7 @@ class EditProductNameAndCategory extends React.Component {
           keyboardType='default'
           returnKeyType='done'
           autoCapitalize='none'
+          maxLength={30}
           autoCorrect
           onFocus={() => this.onFocus('namaproduk')}
           onBlur={() => this.onBlur('namaproduk')}

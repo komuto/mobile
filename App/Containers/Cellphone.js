@@ -188,7 +188,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     updateNomerHape: (nomerHape) => dispatch(userAction.updatePhone({phone_number: nomerHape})),
-    sentOTP: () => dispatch(userAction.sendOTPPhone())
+    sentOTP: () => dispatch(userAction.sendOTPPhone()),
+    getProfile: (login) => dispatch(userAction.getProfile())
   }
 }
 

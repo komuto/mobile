@@ -567,6 +567,7 @@ class ProductInfoNameAndCategory extends React.Component {
         <TextInput
           style={styles.inputText}
           value={this.state.namaProduk}
+          maxLength={30}
           keyboardType='default'
           returnKeyType='done'
           autoCapitalize='none'

@@ -118,7 +118,7 @@ class StoreProductHidden extends React.Component {
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
-    return hargaDiskon
+    return Math.ceil(hargaDiskon, 1)
   }
 
   discountCheck (data) {
@@ -165,7 +165,7 @@ class StoreProductHidden extends React.Component {
     } if (data.is_dropship) {
       var discount = this.discountCalculate(data.price, data.discount)
       var commission = (discount * data.commission) / 100
-      var fee = discount - commission
+      var fee = Math.ceil((discount - commission), 1)
       var feeMasked = this.maskedMoney(fee)
       return (
         <View>
@@ -185,7 +185,7 @@ class StoreProductHidden extends React.Component {
     } else {
       var discounts = this.discountCalculate(data.price, data.discount)
       var commissions = (discounts * data.commission) / 100
-      var fees = discounts - commissions
+      var fees = Math.ceil((discounts - commissions), -1)
       var feeMaskeds = this.maskedMoney(fees)
       return (
         <View>

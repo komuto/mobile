@@ -114,6 +114,9 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   changeDiscount = (text) => {
+    if (text > 100) {
+      text = ''
+    }
     this.setState({diskon: text})
   }
 
@@ -342,7 +345,8 @@ class EditProductPriceAndSpecification extends React.Component {
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
-    return hargaDiskon
+    Reactotron.log(hargaDiskon)
+    return Math.ceil(hargaDiskon, -1)
   }
 
   handlingRadioJenisProduk (index, value) {
@@ -377,7 +381,7 @@ class EditProductPriceAndSpecification extends React.Component {
 
   komisiCalculate (value1, value2) {
     let value = (value1 * value2) / 100
-    return value
+    return Math.ceil(value, -1)
   }
 
   maskedMoney (value) {
@@ -396,24 +400,30 @@ class EditProductPriceAndSpecification extends React.Component {
     return price
   }
 
-  rincianDiskon () {
-    let hargaTemp = 0
-    try {
-      hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
-    } catch (e) {
-      hargaTemp = this.state.harga
+  maskedMoneyManual (value) {
+    var number = value.toString()
+    var sisa = number.length % 3
+    var rupiah = number.substr(0, sisa)
+    var ribuan = number.substr(sisa).match(/\d{3}/g)
+
+    if (ribuan) {
+      var separator = sisa ? '.' : ''
+      rupiah += separator + ribuan.join('.')
     }
 
+    return 'Rp ' + rupiah
+  }
+
+  rincianDiskon () {
+    let hargaTemp = Number(this.state.harga)
     let diskonCalculate = this.discountCalculate(hargaTemp, this.state.diskon)
-    let discountMasked = this.maskedMoney(diskonCalculate)
+    let discountMasked = this.maskedMoneyManual(diskonCalculate)
 
     let commission = this.komisiCalculate(diskonCalculate, this.state.commission)
-    let commissionMasked = this.maskedMoney(commission)
+    let commissionMasked = this.maskedMoneyManual(commission)
 
-    let komisiCalculate = diskonCalculate - commission
-    let totalMasked = this.maskedMoney(komisiCalculate)
-
-    Reactotron.log(commission)
+    let total = Math.ceil((diskonCalculate - commission), -1)
+    let totalMasked = this.maskedMoneyManual(total)
 
     return (
       <View style={styles.rincianContainrer}>
@@ -424,7 +434,7 @@ class EditProductPriceAndSpecification extends React.Component {
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{discountMasked}</Text>
           </View>
           <View style={styles.containerRincian}>
-            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {diskonCalculate})</Text>
+            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {discountMasked})</Text>
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
           </View>
           <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>

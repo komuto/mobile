@@ -42,9 +42,13 @@ What you need to install first:
 * react-native-cli
 
 **Step 1:** git clone this repo, checkout branch `komuto`
+
 **Step 2:** on terminal cd to the cloned repo
+
 **Step 3:** Install the Application with `npm install`
+
 **Step 4:** Unzip module.zip
+
 **Step 5:** Copy and replace the node modules from the zip to folder node_modules
 
 ## :arrow_forward: How to Run App on OSX and Linux

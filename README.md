@@ -18,9 +18,13 @@ What you need to install first:
 * react-native-cli
 
 **Step 1:** git clone this repo, checkout branch `komuto`
+
 **Step 2:** on terminal cd to the cloned repo
+
 **Step 3:** Install the Application with `npm install`
+
 **Step 4:** Unzip module.zip
+
 **Step 5:** Copy and replace the node modules from the zip to folder node_modules
 
 ## :arrow_up: How to Setup on Linux
@@ -38,9 +42,13 @@ What you need to install first:
 * react-native-cli
 
 **Step 1:** git clone this repo, checkout branch `komuto`
+
 **Step 2:** on terminal cd to the cloned repo
+
 **Step 3:** Install the Application with `npm install`
+
 **Step 4:** Unzip module.zip
+
 **Step 5:** Copy and replace the node modules from the zip to folder node_modules
 
 ## :arrow_forward: How to Run App on OSX and Linux
@@ -110,6 +118,7 @@ This encountered when `java jdk` binaries that installed or used on the machine 
 
 
 **Failed to login using facebook in app, error hash key.**
+
 This encountered when `hash key` is not submited in faceook developer. This problem will be resolved by regenerating new `hash key` and submit it to facebook developer.
 
 **install_failed_version_downgrade**

@@ -118,6 +118,7 @@ This encountered when `java jdk` binaries that installed or used on the machine 
 
 
 **Failed to login using facebook in app, error hash key.**
+
 This encountered when `hash key` is not submited in faceook developer. This problem will be resolved by regenerating new `hash key` and submit it to facebook developer.
 
 **install_failed_version_downgrade**

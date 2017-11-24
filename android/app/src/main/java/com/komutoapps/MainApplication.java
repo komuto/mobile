@@ -15,7 +15,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 
 import java.util.Arrays;
@@ -45,7 +44,6 @@ public class MainApplication extends Application implements ReactApplication {
             new PickerPackage(),
             new FBSDKPackage(mCallbackManager),
             new SplashScreenReactPackage(),
-            new VectorIconsPackage(),
             new RNDeviceInfo(),
             new RNIMEIPackage()
       );

@@ -202,6 +202,19 @@ class AddressData extends React.Component {
     )
   }
 
+  renderEmpty (data) {
+    if (data.length === 0) {
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.emptyDiscussion} style={{ width: 173, height: 178 }} />
+          <Text style={styles.textTitleEmpty}>Alamat Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>----</Text>
+        </View>
+      )
+    }
+    return null
+  }
+
   render () {
     const { loading } = this.state
     if (!loading) {
@@ -209,6 +222,7 @@ class AddressData extends React.Component {
         <View style={styles.container}>
           {this.renderHeader()}
           {this.notif()}
+          {this.renderEmpty(this.state.listAlamat)}
           <ScrollView>
             <View style={styles.infoAlamat}>
               {this.mapingAlamat()}

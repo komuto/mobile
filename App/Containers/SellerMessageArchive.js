@@ -8,7 +8,8 @@ import {
   BackAndroid,
   ToastAndroid,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -181,17 +182,6 @@ class SellerMessageArchive extends React.Component {
       <ListView
         dataSource={this.dataSource.cloneWithRows(data)}
         renderRow={this.renderRowMessage.bind(this)}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            onRefresh={this.refresh}
-            tintColor={Colors.red}
-            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-            title='Loading...'
-            titleColor={Colors.red}
-            progressBackgroundColor={Colors.snow}
-          />
-        }
         onEndReached={this.loadMore.bind(this)}
         renderFooter={() => {
           if (this.state.loadmore) {
@@ -233,10 +223,21 @@ class SellerMessageArchive extends React.Component {
       view = (this.renderData(dataArchive))
     }
     return (
-      <View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }>
         {this.notif()}
         {view}
-      </View>
+      </ScrollView>
     )
   }
 }

@@ -12,7 +12,8 @@ import {
   ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadioCatalog'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import {isFetching, isError, isFound} from '../Services/Status'
@@ -171,19 +172,7 @@ class PlaceInCatalog extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderProduct () {

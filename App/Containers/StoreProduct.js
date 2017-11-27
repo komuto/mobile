@@ -50,12 +50,8 @@ class StoreProduct extends React.Component {
           tabBarTextStyle={styles.textTab}
           locked
         >
-          <View tabLabel='Ditampilkan di Toko'>
-            <StoreProductDisplayed callback={this.props.callback} />
-          </View>
-          <View tabLabel='Disembunyikan'>
-            <StoreProductHidden callback={this.props.callback} />
-          </View>
+          <StoreProductDisplayed tabLabel='Ditampilkan di Toko' callback={this.props.callback} />
+          <StoreProductHidden tabLabel='Disembunyikan'callback={this.props.callback} />
         </ScrollableTabView>
       </View>
     )

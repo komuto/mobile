@@ -95,5 +95,20 @@ export default StyleSheet.create({
     fontSize: Fonts.size.tiny,
     color: Colors.snow,
     fontFamily: Fonts.type.bold
+  },
+  loadingBg: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.transparent,
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight - Metrics.navBarHeight
   }
 })

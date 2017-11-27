@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, ListView, View, Image, RefreshControl, ActivityIndicator, ToastAndroid } from 'react-native'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 import * as saldoAction from '../actions/saldo'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -58,19 +59,7 @@ class BalanceStatusRefill extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderRow (rowData) {

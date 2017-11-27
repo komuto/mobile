@@ -1,7 +1,8 @@
 import React from 'react'
 import { ScrollView, View, Text, Image, TouchableOpacity, BackAndroid, RefreshControl, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as saldoAction from '../actions/saldo'
 import * as userAction from '../actions/user'
@@ -17,7 +18,7 @@ class BalanceX extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      balance: String(this.props.dataProfile.user.user.saldo_wallet),
+      balance: this.props.dataProfile.user.user.saldo_wallet,
       isRefreshing: false
     }
   }
@@ -25,7 +26,7 @@ class BalanceX extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataProfile.status === 200) {
       this.setState({
-        balance: String(nextProps.dataProfile.user.user.saldo_wallet),
+        balance: nextProps.dataProfile.user.user.saldo_wallet,
         isRefreshing: false
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
@@ -51,19 +52,7 @@ class BalanceX extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderBalance () {

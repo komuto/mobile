@@ -8,12 +8,14 @@ import {
   BackAndroid,
   ActivityIndicator,
   RefreshControl,
-  ToastAndroid
+  ToastAndroid,
+  ScrollView
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import moment from 'moment'
-import {MaskService} from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as salesAction from '../actions/transaction'
@@ -36,7 +38,8 @@ class SellerSaleDropshipper extends React.Component {
       loadmore: false,
       isRefreshing: true,
       isLoading: true,
-      loadingPage: true
+      loadingPage: true,
+      gettingData: true
     }
   }
 
@@ -65,7 +68,8 @@ class SellerSaleDropshipper extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            gettingData: false
           })
         } else {
           const data = [
@@ -78,7 +82,8 @@ class SellerSaleDropshipper extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: false,
-            page: 1
+            page: 1,
+            gettingData: false
           })
         }
       }
@@ -119,25 +124,13 @@ class SellerSaleDropshipper extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, saleList: [], page: 1, isLoading: true })
     this.submitting.product = true
     this.props.getListSales({page: 1, is_dropship: true})
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   maskedDate (value) {
@@ -308,52 +301,80 @@ class SellerSaleDropshipper extends React.Component {
     })
   }
 
-  render () {
-    if (this.state.saleList.length > 0) {
-      return (
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
-          renderRow={this.renderRowProduct.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
+  renderHeader () {
+    return (
+      <View style={styles.header}>
+        <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
+      </View>
+    )
+  }
+
+  renderData (data) {
+    return (
+      <ListView
+        renderHeader={this.renderHeader}
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRowProduct.bind(this)}
+        onEndReached={this.loadmore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
           }
-          onEndReached={this.loadmore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadmore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
-        />
-      )
+          return <View />
+        }}
+        enableEmptySections
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptyDropshipper} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Daftar Penjualan Dropshipping Anda Kosong
+          </Text>
+        <Text style={styles.textNotif}>
+          Anda belum memiliki histori transaksi penjualan dropshipping (Menjual barang penjual lain)
+          </Text>
+      </View>
+    )
+  }
+
+  render () {
+    const { gettingData, saleList } = this.state
+    let view
+    if (!gettingData) {
+      if (saleList.length > 0) {
+        view = (this.renderData(saleList))
+      } else {
+        view = (this.renderEmptyState())
+      }
     } else {
-      return (
-        <View style={styles.emptyContainer}>
-          <Image source={Images.emptyDropshipper} style={styles.emptyImage} />
-          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
-            Daftar Penjualan Dropshipping Anda Kosong
-          </Text>
-          <Text style={styles.textNotif}>
-            Anda belum memiliki histori transaksi penjualan dropshipping (Menjual barang penjual lain)
-          </Text>
-        </View>
-      )
+      view = (this.renderData(saleList))
     }
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }>
+        {view}
+      </ScrollView>
+    )
   }
 }
 

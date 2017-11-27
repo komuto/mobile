@@ -148,5 +148,26 @@ export default StyleSheet.create({
   image: {
     height: 25,
     width: 25
+  },
+  containerEmpty: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Metrics.screenHeight / 4
+  },
+  textTitleEmpty: {
+    paddingTop: 27.5,
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    textAlign: 'center',
+    color: Colors.darkgrey
+  },
+  textTitleEmpty2: {
+    paddingTop: 5,
+    lineHeight: 22,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    textAlign: 'center',
+    color: Colors.lightgrey
   }
 })

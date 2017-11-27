@@ -113,11 +113,20 @@ class Register extends React.Component {
 
   handlePressRegister = () => {
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
+    let errorEmail = false
+    var format = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+    if (format.test(email)) {
+      errorEmail = false
+    } else {
+      errorEmail = true
+    }
     if (EmailValidator.validate(email)) {
       if (name === '') {
         this.onError('name')
       } else if (email === '') {
         this.onError('email')
+      } else if (errorEmail) {
+        this.onError('emailNotValid')
       } else if (phoneNumber === '') {
         this.onError('phoneNumber')
       } else if (password === '') {
@@ -136,7 +145,8 @@ class Register extends React.Component {
               this.setState({
                 loading: true
               })
-              this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+              ToastAndroid.show('Tidak error', ToastAndroid.SHORT)
+              // this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
             } else {
               ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.SHORT)
             }
@@ -226,6 +236,7 @@ class Register extends React.Component {
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.email.focus()}
                 autoCapitalize='none'
+                maxLength={12}
                 autoCorrect
                 onChangeText={this.handleChangeHape}
                 underlineColorAndroid='transparent'

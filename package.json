@@ -13,6 +13,7 @@
     "test": "ava",
     "test:watch": "ava --watch",
     "coverage": "nyc ava && nyc report --reporter=html && open coverage/index.html || xdg-open coverage/index.html",
+    // "android-dev": "cd android && ./gradlew installDebug && adb shell am start -n com.komuto.dev/com.komuto.MainActivity && cd ..",
     "android:build": "cd android && ./gradlew assembleRelease",
     "android:install": "cd android && ./gradlew assembleRelease && ./gradlew installRelease",
     "android:hockeyapp": "cd android && ./gradlew assembleRelease && puck -submit=auto app/build/outputs/apk/app-release.apk",

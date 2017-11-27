@@ -43,7 +43,7 @@ export function uploadApi () {
 export function authApiKomuto (custToken, timeout = 10000) {
   const api = apisauce.create({
     baseURL: apiKomuto + '/',
-    headers: { 'Content-Type': 'application/json', 'Test': 'Skyshi Mobile' },
+    headers: { 'Content-Type': 'application/json' },
     timeout
   })
   api.addAsyncRequestTransform(config => async () => {

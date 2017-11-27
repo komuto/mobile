@@ -55,9 +55,9 @@ class DetailProductStore extends React.Component {
       }
     }
     if (nextProps.dataDetailProduct.status === 200) {
+      console.log()
       this.setState({
         brand: nextProps.dataDetailProduct.storeProductDetail.brand,
-        catalog: nextProps.dataDetailProduct.storeProductDetail.catalog,
         expeditionServices: nextProps.dataDetailProduct.storeProductDetail.expedition_services,
         wholesaler: nextProps.dataDetailProduct.storeProductDetail.wholesaler,
         product: nextProps.dataDetailProduct.storeProductDetail.product,
@@ -69,6 +69,12 @@ class DetailProductStore extends React.Component {
         loading: false,
         isRefreshing: false
       })
+      try {
+        this.setState({
+          catalog: nextProps.dataDetailProduct.storeProductDetail.catalog
+        })
+      } catch (e) {
+      }
       nextProps.dataDetailProduct.status = 0
       this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
     } else if (nextProps.dataDetailProduct.status > 200) {
@@ -475,18 +481,26 @@ class DetailProductStore extends React.Component {
   }
 
   renderCatalog () {
+    let name, id
+    if (this.state.catalog === undefined || this.state.catalog === null) {
+      name = 'Tanpa Katalog'
+      id = ''
+    } else {
+      name = this.state.catalog.name
+      id = this.state.catalog.id
+    }
     return (
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
           <Text style={styles.titleMenu}>Katalog</Text>
-          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id, this.state.catalog.id)}>
+          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id, id)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.containerNameProduct}>
-          <Text style={[styles.textMenuNoFlex, {color: Colors.darkgrey}]}>{this.state.catalog.name}</Text>
+          <Text style={[styles.textMenuNoFlex, {color: Colors.darkgrey}]}>{name}</Text>
         </View>
       </View>
     )

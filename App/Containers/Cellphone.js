@@ -35,10 +35,12 @@ class Cellphone extends React.Component {
         fieldPass: this.state.nomerHape,
         typeVerifikasi: 'verifikasiKelolatelepon'
       })
+      nextProps.dataUser.status = 0
     } else if (nextProps.dataUser.status > 200) {
       this.setState({
         loading: true
       })
+      nextProps.dataUser.status = 0
     }
   }
 

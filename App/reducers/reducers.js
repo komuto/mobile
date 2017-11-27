@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import * as storage from 'redux-storage'
+import * as purchaseReducers from './purchase'
 import * as userReducers from './user'
 import * as homeReducers from './home'
 import * as brandReducers from './brand'
@@ -17,6 +18,16 @@ import * as transactionReducers from './transaction'
 import * as messageReducers from './message'
 import * as otherReducers from './other'
 import * as saldoReducers from './saldo'
+
+const purchase = {
+  addressSelected: purchaseReducers.addressSelected,
+  shippingInformation: purchaseReducers.shippingInformation,
+  courierExpedition: purchaseReducers.courierExpedition,
+  amountProduct: purchaseReducers.amountProduct,
+  packageExpedition: purchaseReducers.packageExpedition,
+  noted: purchaseReducers.noted,
+  insurance: purchaseReducers.insurance
+}
 
 const user = {
   user: userReducers.auth,

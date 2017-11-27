@@ -122,6 +122,9 @@ android {
     }
 
     buildTypes {
+        // debug {
+        //     applicationIdSuffix ".dev"
+        // }
         release {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds

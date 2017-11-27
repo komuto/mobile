@@ -824,7 +824,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   nextState () {
-    const {harga, beratProduk, stokProduk, idKatalogTerpilih, grosirAktif, dataGrosirUpload} = this.state
+    const {harga, beratProduk, stokProduk, grosirAktif, dataGrosirUpload} = this.state
     if (harga === '') {
       this.onError('price')
     }
@@ -834,13 +834,10 @@ class PriceAndSpecificationProduct extends React.Component {
     if (stokProduk === '') {
       this.onError('stock')
     }
-    if (idKatalogTerpilih === '') {
-      this.onError('catalog')
-    }
     if (grosirAktif && dataGrosirUpload.length === 0) {
       ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
     }
-    if (harga !== '' && beratProduk !== '' && stokProduk !== '' && idKatalogTerpilih !== '') {
+    if (harga !== '' && beratProduk !== '' && stokProduk !== '') {
       if (grosirAktif && dataGrosirUpload.length === 0) {
         ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
       } else {

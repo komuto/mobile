@@ -232,6 +232,14 @@ export default StyleSheet.create({
     borderBottomColor: Colors.silver,
     elevation: 1
   },
+  infoContainerTerm: {
+    flexDirection: 'column',
+    backgroundColor: Colors.background,
+    paddingLeft: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    elevation: 1
+  },
   infoList: {
     flexDirection: 'column',
     width: Metrics.screenWidth / 2 - 10
@@ -256,7 +264,11 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
   readMoreTextContainer1: {
-    paddingTop: 10,
+    paddingTop: -10,
+    marginLeft: -20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  readMoreTextContainerTerm: {
     marginLeft: -20,
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
@@ -578,5 +590,11 @@ export default StyleSheet.create({
     paddingRight: 5,
     flex: 0.5,
     justifyContent: 'flex-end'
+  },
+  termButton: {
+    alignItems: 'center',
+    marginLeft: -20,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 1)'
   }
 })

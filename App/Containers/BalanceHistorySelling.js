@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Images, Colors } from '../Themes'
 import moment from 'moment'
 import { MaskService } from 'react-native-masked-text'
+import { marketplace } from '../config'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -241,7 +242,7 @@ class BalanceHistorySelling extends React.Component {
           {this.renderTotal('Total Tagihan', moneyTotal)}
           {this.renderExpand()}
           {this.renderSeparator()}
-          {this.renderData('Komisi Komuto (' + comissionText + '%)', moneyComission)}
+          {this.renderData('Komisi (' + {marketplace} + comissionText + '%)', moneyComission)}
           {this.renderMoney('Uang yang Anda terima', paidMoney)}
           {this.renderSeparator()}
           {this.renderTitle('Info Penjualan')}

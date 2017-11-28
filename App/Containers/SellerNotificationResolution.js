@@ -8,6 +8,7 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 
 // Styles
 import styles from './Styles/BuyerResolutionStyle'
+import { marketplace } from '../Config';
 
 class SellerNotificationResolution extends React.Component {
 
@@ -103,7 +104,7 @@ class SellerNotificationResolution extends React.Component {
           <View style={styles.status}>
             <View style={styles.iconStatus} />
             <Text style={styles.textNama}>
-              Dalam Tahap Review Pihak Komuto
+              Dalam Tahap Review Pihak {marketplace}
             </Text>
           </View>
         </View>

@@ -13,7 +13,8 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -37,7 +38,8 @@ class DeliveryConfirmation extends React.Component {
       page: 1,
       loadmore: false,
       isRefreshing: true,
-      isLoading: false
+      isLoading: false,
+      gettingData: true
     }
   }
 
@@ -60,7 +62,8 @@ class DeliveryConfirmation extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            gettingData: false
           })
         } else {
           const data = [...this.state.stateConfrimOrder, ...nextProps.dataListConfrimOrder.orders]
@@ -70,7 +73,8 @@ class DeliveryConfirmation extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: false,
-            page: 1
+            page: 1,
+            gettingData: false
           })
         }
       }
@@ -110,25 +114,13 @@ class DeliveryConfirmation extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, stateConfrimOrder: [], page: 1, isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, stateConfrimOrder: [], page: 1, isLoading: true })
     this.submitting.delivery = true
     this.props.getListProcessingOrder()
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   maskedDate (value) {
@@ -281,44 +273,51 @@ class DeliveryConfirmation extends React.Component {
     )
   }
 
-  render () {
-    let view
-    if (this.state.stateConfrimOrder.length > 0) {
-      view = (
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.stateConfrimOrder)}
-          renderRow={this.renderRowOrder.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
+  renderData (data) {
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(this.state.stateConfrimOrder)}
+        renderRow={this.renderRowOrder.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
           }
-          onEndReached={this.loadMore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadmore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 50 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
+          return <View />
+        }}
+        enableEmptySections
       />
-      )
+    )
+  }
+
+  render () {
+    const { gettingData, stateConfrimOrder } = this.state
+    let view
+    if (!gettingData) {
+      if (stateConfrimOrder.length > 0) {
+        view = (this.renderData(stateConfrimOrder))
+      } else {
+        view = (this.renderEmpty())
+      }
     } else {
-      view = (
-        this.renderEmpty()
-      )
+      view = (this.renderData(stateConfrimOrder))
     }
     return (
       <View style={styles.container}>

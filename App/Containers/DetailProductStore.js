@@ -2,7 +2,8 @@ import React from 'react'
 import { ScrollView, ActivityIndicator, ToastAndroid, ListView, Text, View, RefreshControl, BackAndroid, TouchableOpacity, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import Reactotron from 'reactotron-react-native'
 import {isFetching, isError, isFound} from '../Services/Status'
 
@@ -77,8 +78,9 @@ class DetailProductStore extends React.Component {
       }
       nextProps.dataDetailProduct.status = 0
       this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
-    } else if (nextProps.dataDetailProduct.status > 200) {
+    } else if (!nextProps.dataDetailProduct.status > 200 && !nextProps.dataDetailProduct.status === 0) {
       ToastAndroid.show(nextProps.dataDetailProduct.message, ToastAndroid.SHORT)
+      nextProps.dataDetailProduct.status = 0
     }
     if (nextProps.dataKategoriParent.status === 200) {
       this.setState({
@@ -138,19 +140,7 @@ class DetailProductStore extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderHeader () {

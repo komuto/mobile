@@ -179,7 +179,7 @@ class EditProductNameAndCategory extends React.Component {
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
-      this.props.resetAlterProduct()
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }

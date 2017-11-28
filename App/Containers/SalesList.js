@@ -2,8 +2,7 @@ import React from 'react'
 import {
   View,
   ListView,
-  BackAndroid,
-  Text
+  BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
@@ -52,15 +51,8 @@ class SalesList extends React.Component {
           tabBarTextStyle={styles.textTab}
           locked
         >
-          <View tabLabel='Barang Saya' ref='myStuff'>
-            <SellerSaleProduct />
-          </View>
-          <View tabLabel='Dropshipper' ref='dropshipper'>
-            <View style={styles.header}>
-              <Text style={styles.regularSlate}>Menampilkan penjualan dari barang yang Anda ambil dari Seller lain</Text>
-            </View>
-            <SellerSaleDropshipper />
-          </View>
+          <SellerSaleProduct tabLabel='Barang Saya' />
+          <SellerSaleDropshipper tabLabel='Dropshipper' />
         </ScrollableTabView>
       </View>
     )

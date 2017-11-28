@@ -188,6 +188,7 @@ class BuyerResolution extends React.Component {
       } else {
         Reactotron.log('success')
         this.refreshUnresolve()
+        this.refreshResolve()
         this.setState({
           modalCreateComplaint: false,
           buttonDisable: false,
@@ -258,14 +259,13 @@ class BuyerResolution extends React.Component {
 
   refreshResolve = () => {
     this.setState({
-      unresolveState: {
+      resolveState: {
         data: [],
         isLoading: true,
         loadmore: false,
         page: 1,
         isRefreshing: true,
-        gettingData: true,
-        notif: false
+        gettingData: true
       }
     })
     if (!this.submitting.done) {
@@ -285,8 +285,7 @@ class BuyerResolution extends React.Component {
         loadmore: false,
         page: 1,
         isRefreshing: true,
-        gettingData: true,
-        notif: false
+        gettingData: true
       }
     })
     if (!this.submitting.waiting) {
@@ -756,9 +755,9 @@ class BuyerResolution extends React.Component {
           locked
           initialPage={this.state.page}
         >
-          <View tabLabel='Menunggu' style={styles.container}>
-            <View
-              style={{flex: 1}}
+          <View tabLabel='Menunggu' style={styles.containers}>
+            {this.notif()}
+            <ScrollView
               refreshControl={
                 <RefreshControl
                   refreshing={unresolveState.isRefreshing}
@@ -770,13 +769,11 @@ class BuyerResolution extends React.Component {
                   progressBackgroundColor={Colors.snow}
                 />
               }>
-              {this.notif()}
               {unresolveView}
-            </View>
+            </ScrollView>
           </View>
-          <View tabLabel='Terselesaikan' style={styles.container}>
-            <View
-              style={{flex: 1}}
+          <View tabLabel='Terselesaikan' style={styles.containers}>
+            <ScrollView
               tabLabel='Terselesaikan'
               refreshControl={
                 <RefreshControl
@@ -790,7 +787,7 @@ class BuyerResolution extends React.Component {
                 />
               }>
               {resolveView}
-            </View>
+            </ScrollView>
           </View>
         </ScrollableTabView>
         <TouchableOpacity style={styles.create} onPress={() => this.setState({modalCreateComplaint: true})}>

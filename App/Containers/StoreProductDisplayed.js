@@ -14,7 +14,8 @@ import {
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
-import {MaskService} from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import {isFetching, isError, isFound} from '../Services/Status'
 import Reactotron from 'reactotron-react-native'
 
@@ -111,24 +112,12 @@ class StoreProductDisplayed extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
-    return Math.ceil(hargaDiskon, 1)
+    return hargaDiskon
   }
 
   discountCheck (data) {
@@ -171,7 +160,7 @@ class StoreProductDisplayed extends React.Component {
 
   labeldaridropshipper (data) {
     if (data.is_dropship === true && data.dropship_origin) {
-      var commisson = Math.ceil((data.dropship_origin.commission.nominal * 100), 1)
+      var commisson = data.dropship_origin.commission.nominal * 100
       var maskedCommision = this.maskedMoney(commisson)
       return (
         <View>
@@ -189,7 +178,7 @@ class StoreProductDisplayed extends React.Component {
     } if (data.is_dropship) {
       var discount = this.discountCalculate(data.price, data.discount)
       var commission = (discount * data.commission) / 100
-      var fee = Math.ceil((discount - commission), 1)
+      var fee = discount - commission
       var feeMasked = this.maskedMoney(fee)
       return (
         <View>
@@ -209,7 +198,7 @@ class StoreProductDisplayed extends React.Component {
     } else {
       var discounts = this.discountCalculate(data.price, data.discount)
       var commissions = (discounts * data.commission) / 100
-      var fees = Math.ceil((discounts - commissions), -1)
+      var fees = discounts - commissions
       var feeMaskeds = this.maskedMoney(fees)
       return (
         <View>

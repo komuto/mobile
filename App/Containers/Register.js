@@ -123,6 +123,8 @@ class Register extends React.Component {
     if (EmailValidator.validate(email)) {
       if (name === '') {
         this.onError('name')
+      } else if (name.length < 3) {
+        this.onError('nameNotValid')
       } else if (email === '') {
         this.onError('email')
       } else if (errorEmail) {
@@ -173,7 +175,10 @@ class Register extends React.Component {
         ToastAndroid.show('Password harus diisi', ToastAndroid.SHORT)
         break
       case 'name':
-        ToastAndroid.show('name harus diisi', ToastAndroid.SHORT)
+        ToastAndroid.show('Nama harus diisi', ToastAndroid.SHORT)
+        break
+      case 'nameNotValid':
+        ToastAndroid.show('Nama tidak boleh kurang dari 3 karakter', ToastAndroid.SHORT)
         break
       case 'konfirmasiPassword':
         ToastAndroid.show('Konfirmasi Password harus diisi', ToastAndroid.SHORT)
@@ -217,6 +222,7 @@ class Register extends React.Component {
                 ref='name'
                 style={styles.inputText}
                 value={name}
+                maxLength={40}
                 keyboardType='default'
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.phoneNumber.focus()}

@@ -1,7 +1,8 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, ToastAndroid } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
 import { Colors } from '../Themes'
@@ -61,7 +62,7 @@ class PaymentBalance extends React.Component {
     }
     if (nextProps.dataBalance.status === 200) {
       this.setState({
-        saldo: nextProps.dataBalance.balance
+        saldo: nextProps.dataBalance.balance.user_balance
       })
     } else if (nextProps.dataBalance.status !== 200 && nextProps.dataBalance.status !== 0) {
       ToastAndroid.show(nextProps.dataBalance.message, ToastAndroid.SHORT)
@@ -85,28 +86,18 @@ class PaymentBalance extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderRincian () {
     const { kode, total, diskon, saldo } = this.state
-    let sisaBayar = total - saldo
-    let balanceUsed = total
+    console.log('total: ', total)
+    console.log('saldo: ', saldo)
+    let sisaBayar = parseInt(total) - parseInt(saldo)
+    let balanceUsed = parseInt(total)
     if (sisaBayar < 0) {
       sisaBayar = 0
-      balanceUsed = saldo
+      balanceUsed = parseInt(saldo)
     }
     let hargaDiskon, viewDiscount
     const totalHarga = this.maskedMoney(total + diskon)

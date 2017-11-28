@@ -2,7 +2,8 @@ import React from 'react'
 import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
@@ -91,7 +92,7 @@ class EditProductPriceAndSpecification extends React.Component {
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
-      nextProps.dataCreateProdukDropshipper.status = 0
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
@@ -346,7 +347,7 @@ class EditProductPriceAndSpecification extends React.Component {
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
     Reactotron.log(hargaDiskon)
-    return Math.ceil(hargaDiskon, -1)
+    return hargaDiskon
   }
 
   handlingRadioJenisProduk (index, value) {
@@ -381,37 +382,15 @@ class EditProductPriceAndSpecification extends React.Component {
 
   komisiCalculate (value1, value2) {
     let value = (value1 * value2) / 100
-    return Math.ceil(value, -1)
+    return value
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   maskedMoneyManual (value) {
-    var number = value.toString()
-    var sisa = number.length % 3
-    var rupiah = number.substr(0, sisa)
-    var ribuan = number.substr(sisa).match(/\d{3}/g)
-
-    if (ribuan) {
-      var separator = sisa ? '.' : ''
-      rupiah += separator + ribuan.join('.')
-    }
-
-    return 'Rp ' + rupiah
+    return 'Rp ' + RupiahFormat(value)
   }
 
   rincianDiskon () {
@@ -422,7 +401,7 @@ class EditProductPriceAndSpecification extends React.Component {
     let commission = this.komisiCalculate(diskonCalculate, this.state.commission)
     let commissionMasked = this.maskedMoneyManual(commission)
 
-    let total = Math.ceil((diskonCalculate - commission), -1)
+    let total = diskonCalculate - commission
     let totalMasked = this.maskedMoneyManual(total)
 
     return (

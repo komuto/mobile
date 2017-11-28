@@ -261,7 +261,8 @@ const komutoApps = storage.reducer(combineReducers({
   ...transaction,
   ...message,
   ...other,
-  ...saldo
+  ...saldo,
+  ...purchase
 }))
 
 export default komutoApps

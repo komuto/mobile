@@ -265,5 +265,14 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  spinnerScreen: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.transparent,
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight - Metrics.navBarHeight
   }
 })

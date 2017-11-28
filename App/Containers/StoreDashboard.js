@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
+import { View, Text, ActivityIndicator, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 // import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -32,7 +32,8 @@ class StoreDashboard extends React.Component {
       complainItems: 0,
       callback: false,
       verificationTime: this.props.verificationTime,
-      disableButton: false
+      disableButton: false,
+      loading: true
     }
   }
 
@@ -62,7 +63,8 @@ class StoreDashboard extends React.Component {
     }
     if (nextProps.dataDisputes.status === 200) {
       this.setState({
-        complainItems: nextProps.dataDisputes.disputes.disputes
+        complainItems: nextProps.dataDisputes.disputes.disputes,
+        loading: false
       })
     } else if (nextProps.dataDisputes.status !== 0 && nextProps.dataDisputes.status !== 200) {
       ToastAndroid.show(nextProps.dataDisputes.message, ToastAndroid.SHORT)
@@ -191,6 +193,10 @@ class StoreDashboard extends React.Component {
         </View>
       )
     }
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color={Colors.red} size='large' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <ScrollView>
@@ -301,6 +307,7 @@ class StoreDashboard extends React.Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        {spinner}
       </View>
     )
   }

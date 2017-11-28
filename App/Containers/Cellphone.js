@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -65,11 +65,16 @@ class Cellphone extends React.Component {
   }
 
   verifikasiKelola () {
-    this.props.updateNomerHape(this.state.nomerHape)
-    this.props.sentOTP()
-    this.setState({
-      loading: true
-    })
+    const { nomerHape } = this.state
+    if (nomerHape.length > 8) {
+      this.props.updateNomerHape(this.state.nomerHape)
+      this.props.sentOTP()
+      this.setState({
+        loading: true
+      })
+    } else {
+      ToastAndroid.show('Nomor ponsel belum benar', ToastAndroid.SHORT)
+    }
   }
 
   renderTanpaNoHape () {

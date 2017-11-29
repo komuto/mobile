@@ -13,7 +13,8 @@ import {
   Share
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import ModalLogin from '../Components/ModalLogin'
@@ -61,7 +62,7 @@ class DetailProduct extends React.Component {
       namaToko: '',
       like: false,
       idLokasiPenjual: 0,
-      numOfLineTerm: 3,
+      numOfLineTerm: null,
       readmore: styles.readMoreTextContainer,
       readmoreTerm: styles.readMoreTextContainer,
       verified: false,
@@ -133,7 +134,8 @@ class DetailProduct extends React.Component {
       isHere: true,
       modalLogin: false,
       commission: this.props.commission || 0,
-      fetchData: true
+      fetchData: true,
+      maxHeight: 112
     }
   }
 
@@ -1027,12 +1029,12 @@ class DetailProduct extends React.Component {
     if (numOfLine !== null) {
       this.setState({
         numOfLine: null,
-        readmore: styles.readMoreTextContainer1
+        readmore: styles.readMoreTextContainerTerm
       })
     } else if (numOfLine === null) {
       this.setState({
         numOfLine: 3,
-        readmore: styles.readMoreTextContainer
+        readmore: styles.readMoreTextContainerTerm
       })
     }
   }
@@ -1042,12 +1044,14 @@ class DetailProduct extends React.Component {
     if (numOfLineTerm !== null) {
       this.setState({
         numOfLineTerm: null,
-        readmoreTerm: styles.readMoreTextContainer1
+        maxHeight: 112,
+        readmoreTerm: styles.readMoreTextContainerTerm
       })
     } else if (numOfLineTerm === null) {
       this.setState({
         numOfLineTerm: 3,
-        readmoreTerm: styles.readMoreTextContainer
+        maxHeight: 1000,
+        readmoreTerm: styles.readMoreTextContainerTerm
       })
     }
   }
@@ -1338,7 +1342,7 @@ class DetailProduct extends React.Component {
   }
 
   renderInfoPenjual () {
-    const {numOfLine, storeId} = this.state
+    const {storeId} = this.state
     return (
       <View style={[styles.ulasanContainer]}>
         <View style={styles.border}>
@@ -1363,20 +1367,20 @@ class DetailProduct extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
-        <View style={[styles.infoContainer, {flexDirection: 'column', marginTop: 1.8}]}>
-          <Text style={styles.infoProduct}>Terms and Conditions</Text>
-          <Text
-            numberOfLines={numOfLine}
-            style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
-          >
-            {this.state.termcondition}
-          </Text>
-          <TouchableOpacity style={this.state.readmoreTerm} onPress={() => this.readMoreTerm()}>
-            <View style={{alignItems: 'center'}}>
+        <View style={styles.infoContainerTerm}>
+          <View style={{ maxHeight: this.state.maxHeight }}>
+            <Text style={styles.infoProduct}>Terms and Conditions</Text>
+            <Text
+              style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
+            >
+              {this.state.termcondition}
+            </Text>
+          </View>
+          <View style={{ marginTop: 10 }}>
+            <TouchableOpacity style={styles.termButton} onPress={() => this.readMoreTerm()}>
               <Image source={Images.down} style={styles.imageDown} />
-            </View>
-          </TouchableOpacity>
-          <View style={{marginBottom: 22.1}} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -1497,19 +1501,7 @@ class DetailProduct extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderProductSeller () {
@@ -1633,7 +1625,7 @@ class DetailProduct extends React.Component {
           <TouchableOpacity style={styles.buttonReset} onPress={() => this.diskusi()}>
             <Image source={Images.diskusi} style={{marginTop: 2, height: 14, width: 15}} />
             <Text style={styles.labelButtonReset}>
-                Diskusi ({this.state.diskusi})
+              Diskusi ({this.state.diskusi})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonOke} onPress={() => this.beliSekarang()}>

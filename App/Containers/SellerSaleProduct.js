@@ -8,12 +8,14 @@ import {
   BackAndroid,
   ActivityIndicator,
   RefreshControl,
-  ToastAndroid
+  ToastAndroid,
+  ScrollView
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
 import moment from 'moment'
-import {MaskService} from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import {isFetching, isError, isFound} from '../Services/Status'
 
 import * as salesAction from '../actions/transaction'
@@ -35,7 +37,8 @@ class SellerSaleProduct extends React.Component {
       page: 1,
       loadmore: false,
       isRefreshing: true,
-      isLoading: true
+      isLoading: true,
+      gettingData: true
     }
   }
   componentWillReceiveProps (nextProps) {
@@ -57,7 +60,8 @@ class SellerSaleProduct extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            gettingData: false
           })
         } else {
           const data = [...this.state.saleList, ...dataSales.sales]
@@ -67,7 +71,8 @@ class SellerSaleProduct extends React.Component {
             saleList: data,
             isLoading: false,
             loadmore: false,
-            page: 1
+            page: 1,
+            gettingData: false
           })
         }
       }
@@ -108,25 +113,13 @@ class SellerSaleProduct extends React.Component {
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, saleList: [], page: 1, isLoading: true })
+    this.setState({ gettingData: true, isRefreshing: true, saleList: [], page: 1, isLoading: true })
     this.submitting.product = true
     this.props.getListSales()
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
   maskedDate (value) {
     const timeStampToDate = moment.unix(value).format('ddd, DD MMMM YYYY').toString()
@@ -296,52 +289,71 @@ class SellerSaleProduct extends React.Component {
     })
   }
 
-  render () {
-    if (this.state.saleList.length > 0 || this.state.isLoading) {
-      return (
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.saleList)}
-          renderRow={this.renderRowProduct.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
+  renderData (data) {
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRowProduct.bind(this)}
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 70 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
           }
-          onEndReached={this.loadMore.bind(this)}
-          renderFooter={() => {
-            if (this.state.loadmore) {
-              return (
-                <ActivityIndicator
-                  style={[styles.loadingStyle, { height: 70 }]}
-                  size='small'
-                  color='#ef5656'
-                />
-              )
-            }
-            return <View />
-          }}
-          enableEmptySections
-        />
-      )
+          return <View />
+        }}
+        enableEmptySections
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={styles.emptyContainer}>
+        <Image source={Images.emptySales} style={styles.emptyImage} />
+        <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+          Daftar Penjualan Anda Kosong
+          </Text>
+        <Text style={styles.textNotif}>
+          Anda belum memiliki histori transaksi penjualan
+          </Text>
+      </View>
+    )
+  }
+
+  render () {
+    const { gettingData, saleList } = this.state
+    let view
+    if (!gettingData) {
+      if (saleList.length > 0) {
+        view = (this.renderData(saleList))
+      } else {
+        view = (this.renderEmptyState())
+      }
     } else {
-      return (
-        <View style={styles.emptyContainer}>
-          <Image source={Images.emptySales} style={styles.emptyImage} />
-          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
-            Daftar Penjualan Anda Kosong
-          </Text>
-          <Text style={styles.textNotif}>
-            Anda belum memiliki histori transaksi penjualan
-          </Text>
-        </View>
-      )
+      view = (this.renderData(saleList))
     }
+    return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+      }>
+        {view}
+      </ScrollView>
+    )
   }
 }
 

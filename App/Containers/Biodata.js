@@ -230,16 +230,21 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
+    const { namaPemilik } = this.state
     let date
     if (this.state.uploadDate === '') {
       date = this.state.timestamp
     } else {
       date = this.state.uploadDate
     }
-    if (this.state.updatePhoto === '') {
-      this.props.updateProfileNoPhotos(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+    if (namaPemilik.length < 3) {
+      ToastAndroid.show('Nama tidak boleh kurang dari 3 karakter', ToastAndroid.SHORT)
     } else {
-      this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+      if (this.state.updatePhoto === '') {
+        this.props.updateProfileNoPhotos(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+      } else {
+        this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+      }
     }
   }
 
@@ -299,6 +304,7 @@ class Biodata extends React.Component {
             style={styles.inputText}
             value={this.state.namaPemilik}
             keyboardType='default'
+            maxLength={40}
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect

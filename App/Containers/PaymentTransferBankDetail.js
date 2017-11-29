@@ -2,7 +2,8 @@ import React from 'react'
 import { ScrollView, Text, View, Image, TouchableOpacity, ListView, Modal, BackAndroid } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import { Images } from '../Themes'
@@ -94,19 +95,7 @@ class PaymentTransferBankDetail extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderExpand () {
@@ -212,12 +201,7 @@ class PaymentTransferBankDetail extends React.Component {
 
   renderPembayaran () {
     const { sisaPembayaran } = this.state
-    const hargaSisaBayar = this.maskedMoney(sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
 
     const leng = hargaSisaBayar.length
 

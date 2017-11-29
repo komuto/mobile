@@ -65,6 +65,7 @@ class StatusStockDropshipping extends React.Component {
     }
     if (nextProps.dataUpdateProduct.status !== 200 && nextProps.dataUpdateProduct.status !== 0) {
       ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.SHORT)
+      nextProps.dataUpdateProduct.status = 0
     }
     if (nextProps.dataFaq.status === 200) {
       let data = [...nextProps.dataFaq.faq]

@@ -186,10 +186,24 @@ class AccountData extends React.Component {
     }
   }
 
+  renderEmpty (data) {
+    if (data.length === 0) {
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.emptyDiscussion} style={{ width: 173, height: 178 }} />
+          <Text style={styles.textTitleEmpty}>Rekening Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>----</Text>
+        </View>
+      )
+    }
+    return null
+  }
+
   render () {
     return (
       <View style={styles.container}>
         {this.notif()}
+        {this.renderEmpty(this.state.listBank)}
         <ScrollView>
           <View style={styles.infoAlamat}>
             <ListView
@@ -197,7 +211,6 @@ class AccountData extends React.Component {
               renderRow={this.renderRowBank.bind(this)}
               enableEmptySections
             />
-            {this.modalConfrimdeletRekening()}
           </View>
         </ScrollView>
         <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAccount()}>
@@ -205,6 +218,7 @@ class AccountData extends React.Component {
             <Image source={Images.tambahWhite} style={styles.imageTambah} />
           </View>
         </TouchableOpacity>
+        {this.modalConfrimdeletRekening()}
       </View>
     )
   }

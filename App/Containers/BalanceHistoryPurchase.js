@@ -4,7 +4,8 @@ import { connect } from 'react-redux'
 import { Images } from '../Themes'
 import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 import * as transactionAction from '../actions/transaction'
 // import YourActions from '../Redux/YourRedux'
@@ -88,19 +89,7 @@ class BalanceHistoryPurchase extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderData (label, data) {
@@ -304,6 +293,7 @@ class BalanceHistoryPurchase extends React.Component {
 
   render () {
     const { date, balance } = this.state
+    console.log(balance)
     const moneyTotal = this.maskedMoney(balance)
     return (
       <View style={styles.container}>

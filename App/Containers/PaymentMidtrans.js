@@ -25,11 +25,11 @@ class PaymentMidtrans extends React.Component {
     const address = String(webViewState.url)
     console.log(webViewState)
     if (address.includes('unfinish')) {
-      ToastAndroid.show('Terjadi Kesalahan. Pembayaran Bermasalah', ToastAndroid.SHORT)
+      ToastAndroid.show('Terjadi Kesalahan Pembayaran Bermasalah', ToastAndroid.SHORT)
       NavigationActions.pop()
       return true
     } else if (address.includes('error') || address.includes('close')) {
-      ToastAndroid.show('Terjadi Kesalahan. Pembayaran Dibatalkan', ToastAndroid.SHORT)
+      ToastAndroid.show('Terjadi Kesalahan Pembayaran Dibatalkan', ToastAndroid.SHORT)
       NavigationActions.pop()
       return true
     } else if (address.includes('finish') || address.includes('success') || address.includes('pending')) {

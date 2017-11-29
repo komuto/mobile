@@ -179,7 +179,7 @@ class EditProductNameAndCategory extends React.Component {
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
-      this.props.resetAlterProduct()
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
@@ -511,6 +511,7 @@ class EditProductNameAndCategory extends React.Component {
           keyboardType='default'
           returnKeyType='done'
           autoCapitalize='none'
+          maxLength={30}
           autoCorrect
           onFocus={() => this.onFocus('namaproduk')}
           onBlur={() => this.onBlur('namaproduk')}

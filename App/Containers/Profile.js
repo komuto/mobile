@@ -6,10 +6,12 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
-  Modal
+  Modal,
+  ActivityIndicator
 } from 'react-native'
 import Spinner from '../Components/Spinner'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // const LoginManager = require('react-native').NativeModules.FBLoginManager
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -31,7 +33,7 @@ class Profile extends React.Component {
     this.state = {
       token: '',
       nama: '',
-      saldo: '0',
+      saldo: 0,
       status: '',
       email: '',
       foto: 'default',
@@ -45,7 +47,8 @@ class Profile extends React.Component {
       loading: false,
       isStoreVerify: true,
       createStoresAt: '',
-      verificationTime: 0
+      verificationTime: 0,
+      loadingScreen: true
     }
   }
 
@@ -57,8 +60,9 @@ class Profile extends React.Component {
     } else if (nextProps.dataProfile.status === 200) {
       this.setState({
         isLogin: true,
+        loadingScreen: false,
         nama: nextProps.dataProfile.user.user.name,
-        saldo: String(nextProps.dataProfile.user.user.saldo_wallet),
+        saldo: nextProps.dataProfile.user.user.saldo_wallet,
         foto: nextProps.dataProfile.user.user.photo || 'default',
         status: nextProps.dataProfile.verifyStatus,
         email: nextProps.dataProfile.user.user.email,
@@ -80,7 +84,8 @@ class Profile extends React.Component {
     }
     if (nextProps.dataResendVerification.status === 200) {
       this.setState({
-        loading: false
+        loading: false,
+        loadingScreen: false
       })
       ToastAndroid.show(
         'Link verifikasi berhasil dikirimkan.. Silakan cek email ' +
@@ -90,7 +95,8 @@ class Profile extends React.Component {
       nextProps.dataResendVerification.status = 0
     } else if (nextProps.dataResendVerification.status !== 200 && nextProps.dataResendVerification.status !== 0) {
       this.setState({
-        loading: false
+        loading: false,
+        loadingScreen: false
       })
       ToastAndroid.show(nextProps.dataResendVerification.message, ToastAndroid.SHORT)
       nextProps.dataResendVerification.status = 0
@@ -178,19 +184,10 @@ class Profile extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
+    if (value <= 0) {
+      return value
     }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderProfile () {
@@ -416,10 +413,17 @@ class Profile extends React.Component {
   }
 
   render () {
+    const spinnerLoading = this.state.loadingScreen
+      ? (<View style={styles.spinnerScreen}>
+        <ActivityIndicator color={Colors.red} size='large' />
+      </View>) : (<View />)
     return (
-      <ScrollView style={styles.container}>
-        {this.renderProfile()}
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView>
+          {this.renderProfile()}
+        </ScrollView>
+        {spinnerLoading}
+      </View>
     )
   }
 }

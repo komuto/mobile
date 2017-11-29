@@ -113,11 +113,22 @@ class Register extends React.Component {
 
   handlePressRegister = () => {
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
+    let errorEmail = false
+    var format = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+    if (format.test(email)) {
+      errorEmail = false
+    } else {
+      errorEmail = true
+    }
     if (EmailValidator.validate(email)) {
       if (name === '') {
         this.onError('name')
+      } else if (name.length < 3) {
+        this.onError('nameNotValid')
       } else if (email === '') {
         this.onError('email')
+      } else if (errorEmail) {
+        this.onError('emailNotValid')
       } else if (phoneNumber === '') {
         this.onError('phoneNumber')
       } else if (password === '') {
@@ -136,7 +147,8 @@ class Register extends React.Component {
               this.setState({
                 loading: true
               })
-              this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+              ToastAndroid.show('Tidak error', ToastAndroid.SHORT)
+              // this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
             } else {
               ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.SHORT)
             }
@@ -163,7 +175,10 @@ class Register extends React.Component {
         ToastAndroid.show('Password harus diisi', ToastAndroid.SHORT)
         break
       case 'name':
-        ToastAndroid.show('name harus diisi', ToastAndroid.SHORT)
+        ToastAndroid.show('Nama harus diisi', ToastAndroid.SHORT)
+        break
+      case 'nameNotValid':
+        ToastAndroid.show('Nama tidak boleh kurang dari 3 karakter', ToastAndroid.SHORT)
         break
       case 'konfirmasiPassword':
         ToastAndroid.show('Konfirmasi Password harus diisi', ToastAndroid.SHORT)
@@ -207,6 +222,7 @@ class Register extends React.Component {
                 ref='name'
                 style={styles.inputText}
                 value={name}
+                maxLength={40}
                 keyboardType='default'
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.phoneNumber.focus()}
@@ -226,6 +242,7 @@ class Register extends React.Component {
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.email.focus()}
                 autoCapitalize='none'
+                maxLength={12}
                 autoCorrect
                 onChangeText={this.handleChangeHape}
                 underlineColorAndroid='transparent'

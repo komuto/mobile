@@ -7,6 +7,7 @@ import * as storeAction from '../actions/stores'
 
 // Styles
 import styles from './Styles/NotifikasiStyle'
+import { marketplace } from '../Config'
 
 class Notification extends React.Component {
 
@@ -128,12 +129,12 @@ class Notification extends React.Component {
           <Image source={Images.welcome} style={styles.imagestyle} />
           <View style={styles.welcomeContainer}>
             <Text style={styles.welcomeText}>
-              Selamat Datang di Komuto
+              Selamat Datang di {marketplace}
             </Text>
           </View>
           <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
-              Selamat bergabung dengan komuto. Disini { '\n' }
+              Selamat bergabung dengan {marketplace}. Disini { '\n' }
               Anda bisa melakukan lorem ipsum dolor { '\n' }
               sit amet consequence dolor
             </Text>

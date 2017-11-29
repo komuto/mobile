@@ -3,7 +3,8 @@ import { AsyncStorage, Text, View, TouchableOpacity, Image, BackAndroid, ListVie
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import * as paymentAction from '../actions/payment'
 import * as transactionAction from '../actions/transaction'
 import * as cartAction from '../actions/cart'
@@ -162,7 +163,7 @@ class Payment extends React.Component {
     }
     if (nextProps.dataProfile.status === 200) {
       this.setState({
-        saldo: String(nextProps.dataProfile.user.user.saldo_wallet)
+        saldo: nextProps.dataProfile.user.user.saldo_wallet
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
@@ -170,19 +171,7 @@ class Payment extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderTotal () {

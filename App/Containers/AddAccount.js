@@ -304,6 +304,7 @@ class AddAccount extends React.Component {
                 value={this.state.nomerRekening}
                 keyboardType='numeric'
                 returnKeyType='done'
+                maxLength={13}
                 onFocus={() => this.onFocus('norek')}
                 onBlur={() => this.onBlur('norek')}
                 autoCapitalize='none'

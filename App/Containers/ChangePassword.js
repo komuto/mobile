@@ -34,12 +34,14 @@ class ChangePassword extends React.Component {
   componentWillReceiveProps (nextProps) {
     console.log(nextProps.dataPassword)
     if (nextProps.dataPassword.status === 200) {
+      nextProps.dataPassword.status = 0
       this.setState({loading: false})
       NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.dataPassword.message } })
     } else if (nextProps.dataPassword.status !== 200 && nextProps.dataPassword.status !== 0) {
       this.setState({
         loading: false
       })
+      nextProps.dataPassword.status = 0
       ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     }
   }

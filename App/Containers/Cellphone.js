@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -35,10 +35,12 @@ class Cellphone extends React.Component {
         fieldPass: this.state.nomerHape,
         typeVerifikasi: 'verifikasiKelolatelepon'
       })
+      nextProps.dataUser.status = 0
     } else if (nextProps.dataUser.status > 200) {
       this.setState({
         loading: true
       })
+      nextProps.dataUser.status = 0
     }
   }
 
@@ -63,11 +65,16 @@ class Cellphone extends React.Component {
   }
 
   verifikasiKelola () {
-    this.props.updateNomerHape(this.state.nomerHape)
-    this.props.sentOTP()
-    this.setState({
-      loading: true
-    })
+    const { nomerHape } = this.state
+    if (nomerHape.length > 8) {
+      this.props.updateNomerHape(this.state.nomerHape)
+      this.props.sentOTP()
+      this.setState({
+        loading: true
+      })
+    } else {
+      ToastAndroid.show('Nomor ponsel belum benar', ToastAndroid.SHORT)
+    }
   }
 
   renderTanpaNoHape () {
@@ -188,7 +195,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     updateNomerHape: (nomerHape) => dispatch(userAction.updatePhone({phone_number: nomerHape})),
-    sentOTP: () => dispatch(userAction.sendOTPPhone())
+    sentOTP: () => dispatch(userAction.sendOTPPhone()),
+    getProfile: (login) => dispatch(userAction.getProfile())
   }
 }
 

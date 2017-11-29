@@ -13,7 +13,8 @@ import {
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Swiper from 'react-native-swiper'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { Images, Colors, Fonts } from '../Themes'
 import ModalLogin from '../Components/ModalLogin'
 import { marketplace } from '../config'
@@ -474,19 +475,7 @@ class Home extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderProduk () {

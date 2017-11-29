@@ -2,7 +2,8 @@ import React from 'react'
 import { View, Text, ActivityIndicator, ToastAndroid, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
@@ -253,6 +254,14 @@ class PriceAndSpecificationProduct extends React.Component {
     this.trySearch(text)
   }
 
+  handleTextDiscount = (text) => {
+    Reactotron.log(text)
+    if (text > 100) {
+      text = ''
+    }
+    this.setState({ diskon: text })
+  }
+
   trySearch (text) {
     if (text !== '') {
       this.submitting.commission = true
@@ -297,7 +306,7 @@ class PriceAndSpecificationProduct extends React.Component {
                   autoCapitalize='none'
                   maxLength={3}
                   autoCorrect
-                  onChangeText={(text) => this.setState({diskon: text})}
+                  onChangeText={this.handleTextDiscount}
                   underlineColorAndroid='transparent'
                   placeholder='Diskon'
                 />
@@ -408,19 +417,11 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
+  }
+
+  maskedMoneyManual (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   rincianDiskon () {
@@ -428,13 +429,13 @@ class PriceAndSpecificationProduct extends React.Component {
     let commissionTemp = String(this.state.commission)
 
     let salePrice = this.discountCalculate(hargaTemp, Number(this.state.diskon))
-    let hargaMasked = this.maskedMoney(salePrice)
+    let hargaMasked = this.maskedMoneyManual(salePrice)
 
     let commission = this.komisiCalculate(salePrice, this.state.commission)
-    let commissionMasked = this.maskedMoney(commission)
+    let commissionMasked = this.maskedMoneyManual(commission)
 
     let total = salePrice - commission
-    let totalPriceMasked = this.maskedMoney(total)
+    let totalPriceMasked = this.maskedMoneyManual(total)
 
     if (this.state.harga.length > 0) {
       return (
@@ -802,7 +803,7 @@ class PriceAndSpecificationProduct extends React.Component {
   }
 
   nextState () {
-    const {harga, beratProduk, stokProduk, idKatalogTerpilih, grosirAktif, dataGrosirUpload} = this.state
+    const {harga, beratProduk, stokProduk, grosirAktif, dataGrosirUpload} = this.state
     if (harga === '') {
       this.onError('price')
     }
@@ -812,13 +813,10 @@ class PriceAndSpecificationProduct extends React.Component {
     if (stokProduk === '') {
       this.onError('stock')
     }
-    if (idKatalogTerpilih === '') {
-      this.onError('catalog')
-    }
     if (grosirAktif && dataGrosirUpload.length === 0) {
       ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
     }
-    if (harga !== '' && beratProduk !== '' && stokProduk !== '' && idKatalogTerpilih !== '') {
+    if (harga !== '' && beratProduk !== '' && stokProduk !== '') {
       if (grosirAktif && dataGrosirUpload.length === 0) {
         ToastAndroid.show('Harga grosir harus diisi', ToastAndroid.SHORT)
       } else {

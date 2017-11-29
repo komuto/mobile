@@ -350,6 +350,7 @@ class InfoStore extends React.Component {
             <View style={styles.inputContainer}>
               <TextInput
                 ref='name'
+                maxLength={20}
                 style={styles.inputText}
                 editable={editAbles}
                 value={namaToko}

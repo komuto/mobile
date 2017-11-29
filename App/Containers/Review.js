@@ -1,7 +1,8 @@
 import React from 'react'
 import { Text, View, Image, ListView, ActivityIndicator, RefreshControl, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
 
@@ -58,19 +59,7 @@ class Review extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderProduct () {

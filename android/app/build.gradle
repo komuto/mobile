@@ -122,6 +122,9 @@ android {
     }
 
     buildTypes {
+        // debug {
+        //     applicationIdSuffix ".dev"
+        // }
         release {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
@@ -154,7 +157,6 @@ dependencies {
     compile project(':react-native-image-crop-picker')
     compile project(':react-native-fbsdk')
     compile project(':react-native-splash-screen')
-    compile project(':react-native-vector-icons')
     compile project(':react-native-device-info')
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:25.0.1'

@@ -15,7 +15,8 @@ import {
 import {connect} from 'react-redux'
 import {Actions as NavigationActions} from 'react-native-router-flux'
 import moment from 'moment'
-import {MaskService} from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import {isFetching, isError, isFound} from '../Services/Status'
 import * as complaintAction from '../actions/transaction'
 import Reactotron from 'reactotron-react-native'
@@ -147,19 +148,7 @@ class SellerComplainDetailItem extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   handleChangeReceiptNumber = (text) => {

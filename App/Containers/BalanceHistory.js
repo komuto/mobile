@@ -14,11 +14,12 @@ import {
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import moment from 'moment'
-import { MaskService } from 'react-native-masked-text'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 import * as saldoAction from '../actions/saldo'
 // import YourActions from '../Redux/YourRedux'
 import { Images, Colors } from '../Themes'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // Styles
 import styles from './Styles/BalanceHistoryStyle'
 
@@ -162,19 +163,7 @@ class BalanceHistory extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderListView () {

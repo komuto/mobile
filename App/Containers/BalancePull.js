@@ -2,7 +2,7 @@ import React from 'react'
 import { ScrollView, View, Text, TextInput, TouchableOpacity, ToastAndroid, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
 import * as bankAction from '../actions/bank'
 import * as userAction from '../actions/user'
 import moment from 'moment'
@@ -20,7 +20,7 @@ class BalancePull extends React.Component {
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dateData: '',
-      balance: String(this.props.dataProfile.user.user.saldo_wallet),
+      balance: this.props.dataProfile.user.user.saldo_wallet,
       nominal: null,
       branch: '',
       account: '',
@@ -107,7 +107,7 @@ class BalancePull extends React.Component {
     }
     if (nextProps.dataProfile.status === 200) {
       this.setState({
-        balance: String(nextProps.dataProfile.user.user.saldo_wallet)
+        balance: nextProps.dataProfile.user.user.saldo_wallet
       })
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
       ToastAndroid.show(nextProps.codeOtp.message, ToastAndroid.SHORT)
@@ -115,19 +115,7 @@ class BalancePull extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderInformation () {

@@ -73,18 +73,19 @@ What you need to install first:
 2. refactor package name (open folder `<project folder>/android` from Android Studio)
 3. change package name in `<project folder>/android/app/google-service.json` (via android studio)
 4. change package name in Android Manifest
-5. change `android:scheme`, `android:host`, and `label` in Android Manifest
-6. change `app name` in res/values/strings.xml
-7. change `facebook app id` in res/values/strings.xml
-8. make sure to input `hash key` from `key.js` to facebook developer
-9. on terminal cd to the `<project folder>/android` and run `./gradlew assembleRelease`
-10. wait to compile
-11. apk is generated on `<project folder>/android/app/build/output/apk`
+5. to change the icon, replace the `ic_launcher.png` in all folder mipmap in `<project folder>/android/app/src/main/res`
+6. change `android:scheme`, `android:host`, and `label` in Android Manifest
+7. change `app name` in `res/values/strings.xml`
+8. change `facebook app id` in `res/values/strings.xml`
+9. make sure to input `hash key` from `my-release-key.keystore` to facebook developer
+10. on terminal cd to the `<project folder>/android` and run `./gradlew assembleRelease`
+11. wait to compile
+12. apk is generated on `<project folder>/android/app/build/output/apk`
 
 ## :arrow_forward: How to create hash key app for facebook developer
 
-* on terminal cd to `<project folder>/key`
-* run `keytool -exportcert -alias komuto -keystore key.jks | openssl sha1 -binary | openssl base64` on terminal
+* on terminal cd to `<project folder>/android/app`
+* run `keytool -exportcert -alias komuto -keystore my-release-key.keystore | openssl sha1 -binary | openssl base64` on terminal
 * password is komuto123 if it needed
 * hash key will be shown in the terminal
 * input this hash key to facebook developer

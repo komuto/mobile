@@ -7,6 +7,10 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
+  containers: {
+    flex: 1,
+    backgroundColor: Colors.paleGrey
+  },
   border: {
     marginLeft: 19.5
   },

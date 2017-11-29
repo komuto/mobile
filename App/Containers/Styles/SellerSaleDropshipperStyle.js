@@ -157,7 +157,7 @@ export default StyleSheet.create({
   emptyContainer: {
     flexDirection: 'column',
     padding: 20,
-    marginTop: 30,
+    marginTop: Metrics.screenHeight / 6,
     alignItems: 'center'
   },
   emptyImage: {

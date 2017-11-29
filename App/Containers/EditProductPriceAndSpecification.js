@@ -2,7 +2,8 @@ import React from 'react'
 import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
@@ -91,7 +92,7 @@ class EditProductPriceAndSpecification extends React.Component {
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
     } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
-      nextProps.dataCreateProdukDropshipper.status = 0
+      nextProps.dataUpdateData.status = 0
       ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
@@ -114,6 +115,9 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   changeDiscount = (text) => {
+    if (text > 100) {
+      text = ''
+    }
     this.setState({diskon: text})
   }
 
@@ -342,6 +346,7 @@ class EditProductPriceAndSpecification extends React.Component {
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
+    Reactotron.log(hargaDiskon)
     return hargaDiskon
   }
 
@@ -381,39 +386,23 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   maskedMoney (value) {
-    let price
-    if (value < 1000) {
-      price = 'Rp ' + value
-    }
-    if (value >= 1000) {
-      price = MaskService.toMask('money', value, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
-    }
-    return price
+    return 'Rp ' + RupiahFormat(value)
+  }
+
+  maskedMoneyManual (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   rincianDiskon () {
-    let hargaTemp = 0
-    try {
-      hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
-    } catch (e) {
-      hargaTemp = this.state.harga
-    }
-
+    let hargaTemp = Number(this.state.harga)
     let diskonCalculate = this.discountCalculate(hargaTemp, this.state.diskon)
-    let discountMasked = this.maskedMoney(diskonCalculate)
+    let discountMasked = this.maskedMoneyManual(diskonCalculate)
 
     let commission = this.komisiCalculate(diskonCalculate, this.state.commission)
-    let commissionMasked = this.maskedMoney(commission)
+    let commissionMasked = this.maskedMoneyManual(commission)
 
-    let komisiCalculate = diskonCalculate - commission
-    let totalMasked = this.maskedMoney(komisiCalculate)
-
-    Reactotron.log(commission)
+    let total = diskonCalculate - commission
+    let totalMasked = this.maskedMoneyManual(total)
 
     return (
       <View style={styles.rincianContainrer}>
@@ -424,7 +413,7 @@ class EditProductPriceAndSpecification extends React.Component {
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{discountMasked}</Text>
           </View>
           <View style={styles.containerRincian}>
-            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {diskonCalculate})</Text>
+            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {discountMasked})</Text>
             <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
           </View>
           <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>

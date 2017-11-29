@@ -979,6 +979,12 @@ class PurchaseAddToCart extends React.Component {
 
   renderListSubKurir (rowData, section, row) {
     const centang = row === this.state.activeSubKurir ? Images.centangBiru : Images.closewhite
+    let day
+    if (rowData.etd.toLowerCase().includes('hari') || rowData.etd.toLowerCase().includes('jam')) {
+      day = ''
+    } else {
+      day = 'hari'
+    }
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -986,7 +992,7 @@ class PurchaseAddToCart extends React.Component {
         onPress={() => this.onPressSubKurir(row)}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.full_name}</Text>
-        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd} hari</Text>
+        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd} {day}</Text>
         <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.cost}</Text>
         <Image source={centang} style={styles.gambarCentang} />
       </TouchableOpacity>

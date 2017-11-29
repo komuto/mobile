@@ -55,7 +55,8 @@ class Profile extends React.Component {
   componentWillReceiveProps (nextProps) {
     if (!nextProps.datalogin.login) {
       this.setState({
-        isLogin: false
+        isLogin: false,
+        loadingScreen: false
       })
     } else if (nextProps.dataProfile.status === 200) {
       this.setState({
@@ -80,6 +81,7 @@ class Profile extends React.Component {
         })
       }
     } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      this.setState({ loadingScreen: false })
       ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataResendVerification.status === 200) {
@@ -106,6 +108,10 @@ class Profile extends React.Component {
   componentDidMount () {
     if (this.state.isLogin) {
       this.props.getProfile()
+    } else {
+      this.setState({
+        loadingScreen: false
+      })
     }
   }
 

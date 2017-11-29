@@ -102,7 +102,13 @@ class StoreDashboard extends React.Component {
   }
 
   renderNotifAktivasi () {
-    var daysLeft = this.state.verificationTime
+    const { verificationTime } = this.state
+    let daysLeft
+    if (verificationTime === null || verificationTime === undefined || verificationTime === '') {
+      daysLeft = 0
+    } else {
+      daysLeft = verificationTime
+    }
 
     if (!this.state.statusVerifikasi) {
       return (

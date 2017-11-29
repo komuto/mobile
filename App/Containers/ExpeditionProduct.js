@@ -134,25 +134,46 @@ class ExpeditionProduct extends React.Component {
     const {activeExpedition, dataProduk} = this.state
     dataProduk[15] = activeExpedition
     dataProduk[16] = imageParam
-    this.props.createProduk(
-      dataProduk[0],
-      dataProduk[1],
-      dataProduk[2],
-      dataProduk[3],
-      dataProduk[4],
-      dataProduk[5],
-      dataProduk[6],
-      dataProduk[7],
-      dataProduk[8],
-      dataProduk[9],
-      dataProduk[10],
-      dataProduk[11],
-      dataProduk[12],
-      dataProduk[13],
-      dataProduk[14],
-      dataProduk[15],
-      dataProduk[16]
-    )
+    if (dataProduk[10] !== '') {
+      this.props.createProduk(
+        dataProduk[0],
+        dataProduk[1],
+        dataProduk[2],
+        dataProduk[3],
+        dataProduk[4],
+        dataProduk[5],
+        dataProduk[6],
+        dataProduk[7],
+        dataProduk[8],
+        dataProduk[9],
+        dataProduk[10],
+        dataProduk[11],
+        dataProduk[12],
+        dataProduk[13],
+        dataProduk[14],
+        dataProduk[15],
+        dataProduk[16]
+      )
+    } else {
+      this.props.createProductNoCatalog(
+        dataProduk[0],
+        dataProduk[1],
+        dataProduk[2],
+        dataProduk[3],
+        dataProduk[4],
+        dataProduk[5],
+        dataProduk[6],
+        dataProduk[7],
+        dataProduk[8],
+        dataProduk[9],
+        dataProduk[11],
+        dataProduk[12],
+        dataProduk[13],
+        dataProduk[14],
+        dataProduk[15],
+        dataProduk[16]
+      )
+    }
   }
 
   mapParent (expedition) {
@@ -335,6 +356,27 @@ const mapDispatchToProps = (dispatch) => {
         is_insurance: insurance,
         is_dropship: isDropship,
         catalog_id: catalogId,
+        status: status,
+        discount: discount,
+        is_wholesaler: isWholesale,
+        wholesales: wholesales,
+        expeditions: expeditions,
+        images: images
+      }
+    )),
+    createProductNoCatalog: (name, categoriId, brandId, desc, price, weight, stock, condition, insurance, isDropship, status, discount, isWholesale, wholesales, expeditions, images) =>
+    dispatch(productAction.createProduct(
+      {
+        name: name,
+        category_id: categoriId,
+        brand_id: brandId,
+        description: desc,
+        price: price,
+        weight: weight,
+        stock: stock,
+        condition: condition,
+        is_insurance: insurance,
+        is_dropship: isDropship,
         status: status,
         discount: discount,
         is_wholesaler: isWholesale,

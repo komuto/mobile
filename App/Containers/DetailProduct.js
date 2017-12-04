@@ -272,11 +272,12 @@ class DetailProduct extends React.Component {
     if (nextProps.dataFavorit.status === 200) {
       if (this.state.isStoreFavorite) {
         this.setState({isStoreFavorite: false})
-        ToastAndroid.show('Berhasil menghapus dari toko favorit', ToastAndroid.SHORT)
+        // ToastAndroid.show('Berhasil menghapus dari toko favorit', ToastAndroid.SHORT)
       } else if (!this.state.isStoreFavorite) {
         this.setState({isStoreFavorite: true})
-        ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
+        // ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
       }
+      ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
       nextProps.dataFavorit.status = 0
     } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
       ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)

@@ -86,6 +86,7 @@ class Cellphone extends React.Component {
             style={styles.inputText}
             value={this.state.nomerHape}
             keyboardType='numeric'
+            maxLength={12}
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect

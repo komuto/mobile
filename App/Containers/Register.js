@@ -114,7 +114,7 @@ class Register extends React.Component {
   handlePressRegister = () => {
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
     let errorEmail = false
-    var format = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+    var format = /^([a-zA-Z0-9_\.])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
     if (format.test(email)) {
       errorEmail = false
     } else {
@@ -147,8 +147,7 @@ class Register extends React.Component {
               this.setState({
                 loading: true
               })
-              ToastAndroid.show('Tidak error', ToastAndroid.SHORT)
-              // this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+              this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
             } else {
               ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.SHORT)
             }

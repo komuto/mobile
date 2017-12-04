@@ -109,7 +109,14 @@ class Payment extends React.Component {
       }
       nextProps.dataCheckout.status = 0
     } else if (nextProps.dataCheckout.status !== 200 && nextProps.dataCheckout.status !== 0) {
-      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
+      if (nextProps.dataCheckout.message.toLowerCase().includes('keranjang tidak ditemukan')) {
+        ToastAndroid.show('Silakan buka menu transaksi untuk melanjutkan transaksi ini', ToastAndroid.LONG)
+      } else {
+        ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
+      }
+      this.setState({
+        loading: false
+      })
       nextProps.dataCheckout.status = 0
     }
     if (nextProps.dataToken.status === 200) {

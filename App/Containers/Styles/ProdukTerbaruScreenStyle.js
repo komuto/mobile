@@ -58,7 +58,7 @@ export default StyleSheet.create({
     left: 30
   },
   diskon: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     color: Colors.snow,
     fontFamily: Fonts.type.extrabold
   },

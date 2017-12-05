@@ -357,7 +357,7 @@ class Category4 extends React.Component {
       return (
         <View stlye={{left: -10, flexDirection: 'column'}}>
           <View style={styles.containerDiskon}>
-            <Text style={styles.diskon}>
+            <Text allowFontScaling style={styles.diskon}>
               {discount}%
             </Text>
           </View>
@@ -371,7 +371,7 @@ class Category4 extends React.Component {
     } if (isDiscount) {
       return (
         <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
+          <Text allowFontScaling style={styles.diskon}>
             {discount}%
           </Text>
         </View>

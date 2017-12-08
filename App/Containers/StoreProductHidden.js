@@ -136,7 +136,7 @@ class StoreProductHidden extends React.Component {
 
   labeldaridropshipper (data) {
     if (data.is_dropship === true && data.dropship_origin) {
-      var commisson = (data.dropship_origin.commission.nominal * 100)
+      var commisson = data.dropship_origin.commission.nominal
       var maskedCommision = this.maskedMoney(commisson)
       return (
         <View>

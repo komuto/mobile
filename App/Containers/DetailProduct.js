@@ -537,7 +537,7 @@ class DetailProduct extends React.Component {
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
-              <Text style={styles.diskon}>
+              <Text allowFontScaling style={styles.diskon}>
                 {diskon}%
               </Text>
             </View>
@@ -590,7 +590,7 @@ class DetailProduct extends React.Component {
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
-              <Text style={styles.diskon}>
+              <Text allowFontScaling style={styles.diskon}>
                 {diskon}%
               </Text>
             </View>
@@ -1423,7 +1423,7 @@ class DetailProduct extends React.Component {
       return (
         <View style={{flexDirection: 'row'}}>
           <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
-            <Text style={styles.diskon}>
+            <Text allowFontScaling style={styles.diskon}>
               {discount}%
             </Text>
           </View>
@@ -1437,7 +1437,7 @@ class DetailProduct extends React.Component {
     } if (isDiscount) {
       return (
         <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
-          <Text style={styles.diskon}>
+          <Text allowFontScaling style={styles.diskon}>
             {discount}%
           </Text>
         </View>

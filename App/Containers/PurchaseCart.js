@@ -593,7 +593,7 @@ class PurchaseCart extends React.Component {
               <Text style={styles.textHapus}>Batal</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.diskon}>- {hargaDiskon}</Text>
+          <Text allowFontScaling style={styles.diskon}>- {hargaDiskon}</Text>
         </View>
       )
     } else {

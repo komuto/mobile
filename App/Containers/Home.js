@@ -406,7 +406,7 @@ class Home extends React.Component {
       return (
         <View style={{left: -20, top: -165, flexDirection: 'row'}}>
           <View style={styles.containerDiskon}>
-            <Text style={styles.diskon}>
+            <Text allowFontScaling style={styles.diskon}>
               {discount}%
             </Text>
           </View>
@@ -420,7 +420,7 @@ class Home extends React.Component {
     } if (isDiscount) {
       return (
         <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
+          <Text allowFontScaling style={styles.diskon}>
             {discount}%
           </Text>
         </View>

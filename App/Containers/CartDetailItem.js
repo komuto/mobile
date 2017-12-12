@@ -159,9 +159,16 @@ class CartDetailItem extends React.Component {
             }
           }
         } else {
-          this.setState({
-            subtotal: item.price * nextProps.dataCartItem.item.qty
-          })
+          if (item.is_discount) {
+            const discountPrice = item.price - item.price * item.discount / 100
+            this.setState({
+              subtotal: discountPrice * nextProps.dataCartItem.item.qty
+            })
+          } else {
+            this.setState({
+              subtotal: item.price * nextProps.dataCartItem.item.qty
+            })
+          }
         }
       }
       if (nextProps.dataServices.status === 200) {

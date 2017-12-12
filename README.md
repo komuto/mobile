@@ -145,6 +145,14 @@ What you need to install first:
 * hash key will be shown in the terminal
 * input this hash key to facebook developer
 
+## :arrow_up: How to change color theme
+* to change the color theme of the app, edit file Colors.js in `<project folder>/App/Themes/Colors.js`
+* make sure to change the value of the variabel, not the variable name itself
+* the value of variable color usually start with `#` and `rgba`
+* the default color of the background is in variable `red`
+* the default color of the text is `darkgrey`
+* the default background color of button is `bluesky`
+
 ## :warning: Common Encountered Error
 
 **SDK location not found. Define location with sdk.dir in the local.properties file or with an ANDROID_HOME environment variable.**

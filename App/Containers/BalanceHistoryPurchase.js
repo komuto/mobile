@@ -287,7 +287,8 @@ class BalanceHistoryPurchase extends React.Component {
     NavigationActions.transactiondetailstatus({
       type: ActionConst.PUSH,
       statusBarang: status,
-      idBucket: this.state.id
+      idBucket: this.state.id,
+      from: 'history'
     })
   }
 

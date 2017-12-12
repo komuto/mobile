@@ -167,12 +167,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getPhone: dispatch(userAction.getPhone()),
     getBalance: () => dispatch(userAction.getProfile()),
-    getSaldoHistory: () => dispatch(saldoAction.getSaldoHistory({
-      page: 1,
-      filter: ['commission', 'sale', 'topup', 'refund', 'buy', 'withdraw'],
-      start_at: 1448841600,
-      end_at: 1512000000}
-    )),
+    getSaldoHistory: () => dispatch(saldoAction.getSaldoHistory()),
     getStatusTopUp: () => dispatch(saldoAction.getTopupStatus()),
     getStatusWitdhdraw: () => dispatch(saldoAction.getWithdrawStatus())
   }

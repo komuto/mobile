@@ -18,7 +18,7 @@ class BalanceHistoryTopup extends React.Component {
       date: '',
       topup: 0,
       total: 0,
-      method: 'Manual Transfer',
+      method: '',
       uniqueCode: 0,
       days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
@@ -40,7 +40,8 @@ class BalanceHistoryTopup extends React.Component {
         this.setState({
           date: textDay + ', ' + day + ' ' + textMonth + ' ' + year,
           topup: data.amount,
-          total: data.amount
+          total: data.amount,
+          method: data.payment_method
         })
         nextProps.dataHistory.status = 0
       } catch (e) {

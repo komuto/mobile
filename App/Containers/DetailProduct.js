@@ -1584,7 +1584,7 @@ class DetailProduct extends React.Component {
   }
 
   onClose () {
-    this.setState({ isLogin: false })
+    this.setState({ modalLogin: false })
   }
 
   render () {

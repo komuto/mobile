@@ -22,7 +22,10 @@ class TransactionDetailStatus extends React.Component {
   }
 
   componentDidMount () {
-    this.props.getDetailInvoice(this.state.idBucket, this.state.invoiceId)
+    if (this.props.from === 'history') {
+    } else {
+      this.props.getDetailInvoice(this.state.idBucket, this.state.invoiceId)
+    }
   }
 
   render () {

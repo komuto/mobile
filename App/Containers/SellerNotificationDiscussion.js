@@ -72,7 +72,7 @@ class SellerNotificationDiscussion extends React.Component {
         } else {
           let data = [...this.state.data, ...listDiscussion.storeDiscussions]
           this.setState({
-            listMessages: data,
+            data: data,
             isLoading: true,
             loadmore: false,
             page: 1,

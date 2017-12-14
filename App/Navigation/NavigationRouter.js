@@ -495,7 +495,7 @@ class NavigationRouter extends Component {
           <Scene
             key='biodata'
             component={Biodata}
-            title='Biodata'
+            title='Kelola Akun'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

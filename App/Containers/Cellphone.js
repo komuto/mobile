@@ -106,13 +106,16 @@ class Cellphone extends React.Component {
 
   renderVerifikasi () {
     if (this.state.statusVerifikasi) {
-      this.textStatus = 'sudah'
+      this.textStatus = 'telah'
+      this.image = Images.hpVerify
     } else {
       this.textStatus = 'belum'
+      this.image = Images.noHpNotVerify
     }
     return (
-      <View>
-        <View style={[styles.infoContainer, {paddingTop: 321}]}>
+      <View style={{alignItems: 'center'}}>
+        <Image source={this.image} style={{height: 172, width: 172}} />
+        <View style={[styles.infoContainer]}>
           <Text style={styles.textLabelDark}>Nomor Handphone Anda {this.textStatus} terverifikasi</Text>
           <Text style={styles.textNomerHape}>{this.state.nomerHape}</Text>
         </View>
@@ -132,7 +135,7 @@ class Cellphone extends React.Component {
     }
     return (
       <TouchableOpacity style={[styles.buttonnext, {marginLeft: 40, marginRight: 40}]} onPress={() => this.verifikasiKelola()}>
-        <Text style={styles.textButtonNext}>
+        <Text style={[styles.textButtonNext, {paddingHorizontal: 75}]}>
           Verifikasi Sekarang
         </Text>
       </TouchableOpacity>
@@ -148,7 +151,7 @@ class Cellphone extends React.Component {
       )
     } else {
       return (
-        <View>
+        <View style={{flex: 1, justifyContent: 'center'}}>
           {this.renderVerifikasi()}
         </View>
       )

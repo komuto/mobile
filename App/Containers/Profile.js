@@ -284,7 +284,7 @@ class Profile extends React.Component {
       return (
         <View style={styles.notifContainer}>
           <Text style={styles.notif}>
-            !
+            1
           </Text>
         </View>
       )

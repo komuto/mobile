@@ -70,6 +70,7 @@ class Login extends React.Component {
         this.setState({loading: true})
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
+            console.log('token: ', tokenFCM)
             this.props.attemptLogin(email, password, tokenFCM)
           }
         })

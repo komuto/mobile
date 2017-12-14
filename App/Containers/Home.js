@@ -71,6 +71,7 @@ const handleFCM = (data) => {
 }
 
 FCM.on(FCMEvent.Notification, async (notif) => {
+  console.log(notif)
   const data = {
     click_action: notif.type,
     body: notif
@@ -139,6 +140,7 @@ class Home extends React.Component {
 
   componentWillMount () {
     FCM.getInitialNotification().then(notif => {
+      console.log(notif)
       const data = {
         click_action: notif.type,
         body: notif

@@ -248,8 +248,8 @@ class Category4 extends React.Component {
 
   refresh = () => {
     const { lightblack } = Colors
-    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
-    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
+    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true })
     this.submitting = {
       wishlist: false,
       category: true,
@@ -258,8 +258,16 @@ class Category4 extends React.Component {
       sort: false
     }
     this.props.getProduct({
+      q: this.state.valueSearch,
       category_id: this.state.id,
-      page: 1
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      page: 1,
+      sort: this.state.sort
     })
   }
 

@@ -724,7 +724,7 @@ class NavigationRouter extends Component {
           <Scene
             key='transactiondetailstatus'
             component={TransactionDetailStatus}
-            title='Detail Status Barang'
+            title='Detail Pesanan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

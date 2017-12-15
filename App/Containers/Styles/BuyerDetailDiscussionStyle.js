@@ -30,7 +30,6 @@ export default StyleSheet.create({
     flex: 1,
     fontSize: Fonts.size.regular,
     fontFamily: Fonts.type.bold,
-    top: -1,
     marginLeft: 10,
     marginRight: 10,
     color: 'transparent'

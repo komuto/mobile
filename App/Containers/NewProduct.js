@@ -240,15 +240,22 @@ class NewProduct extends React.Component {
 
   refresh = () => {
     const { lightblack } = Colors
-    this.setState({ gettingData: true, header: 'Produk Terbaru', isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
-    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
+    this.setState({ gettingData: true, header: 'Produk Terbaru', isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true })
     this.submitting = {
       wishlist: false,
       product: true
     }
     this.props.getListProduct({
       store_id: this.state.storeId,
-      page: 1
+      page: 1,
+      condition: this.state.kondisi,
+      services: this.state.pengiriman,
+      price: this.state.price,
+      address: this.state.address,
+      brands: this.state.brand,
+      other: this.state.other,
+      sort: this.state.sort
     })
   }
 

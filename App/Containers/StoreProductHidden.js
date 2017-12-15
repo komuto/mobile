@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   ListView,
   ToastAndroid,
-  RefreshControl
+  RefreshControl,
+  TextInput
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
@@ -37,7 +38,10 @@ class StoreProductHidden extends React.Component {
     this.state = {
       product: props.dataProduk || [],
       callback: this.props.callback,
-      isRefreshing: false
+      isRefreshing: false,
+      search: '',
+      dataSearch: [],
+      searchBool: false
     }
   }
 
@@ -72,6 +76,14 @@ class StoreProductHidden extends React.Component {
       if (isFound(dataProduk)) {
         this.setState({ product: dataProduk })
       }
+    }
+
+    if (nextProps.dataSearch.status === 200) {
+      this.setState({
+        dataSearch: nextProps.dataSearch.products
+      })
+    } else if (nextProps.dataSearch.status !== 200 && nextProps.dataSearch.status !== 0) {
+      ToastAndroid.show(nextProps.dataSearch.message, ToastAndroid.SHORT)
     }
   }
 
@@ -281,6 +293,61 @@ class StoreProductHidden extends React.Component {
     )
   }
 
+  renderSearch () {
+    const { search, product } = this.state
+    if (product.products.length > 0) {
+      return (
+        <View style={styles.searchContainer}>
+          <Image source={Images.searchGrey} style={styles.searchImage} />
+          <TextInput
+            ref='search'
+            style={styles.inputText}
+            value={search}
+            keyboardType='default'
+            autoCapitalize='none'
+            autoCorrect
+            onChangeText={this.handleSearch}
+            underlineColorAndroid='transparent'
+            placeholder='Cari Produk'
+          />
+        </View>
+      )
+    }
+    return null
+  }
+
+  handleSearch = (text) => {
+    if (text !== '') {
+      this.setState({ search: text, searchBool: true })
+      this.props.searchProduct(text)
+    } else {
+      this.setState({ search: text, searchBool: false })
+    }
+  }
+
+  renderDataSearch () {
+    const { dataSearch } = this.state
+    const mapProduk = dataSearch.map((data, i) => {
+      return (
+        <TouchableOpacity key={i} style={styles.dataListProduk}
+          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data, '')}>
+          <View style={styles.flexRow}>
+            <Image source={{uri: data.image}} style={styles.imageProduk} />
+            <View style={styles.column}>
+              {this.checkLabelProduct(data.name, data.is_discount, data.is_wholesaler)}
+              {this.labeldaridropshipper(data)}
+            </View>
+          </View>
+        </TouchableOpacity>
+      )
+    })
+    return (
+      <View>
+        {mapProduk}
+      </View>
+    )
+  }
+
   render () {
     if (this.submitting.doneFetching) {
       return (
@@ -291,30 +358,35 @@ class StoreProductHidden extends React.Component {
     }
     let view
     if (this.state.product.products.length > 0) {
-      view = (
-        <ListView
-          enableEmptySections
-          contentContainerStyle={{ flexWrap: 'wrap' }}
-          dataSource={this.dataSource.cloneWithRows(this.state.product.products)}
-          renderRow={this.renderRow.bind(this)}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
-            }
-        />
-      )
+      if (this.state.searchBool) {
+        view = this.renderDataSearch()
+      } else {
+        view = (
+          <ListView
+            enableEmptySections
+            contentContainerStyle={{ flexWrap: 'wrap' }}
+            dataSource={this.dataSource.cloneWithRows(this.state.product.products)}
+            renderRow={this.renderRow.bind(this)}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+              }
+          />
+        )
+      }
     } else {
       view = this.renderEmpty()
     }
     return (
       <View>
+        {this.renderSearch()}
         {view}
       </View>
     )
@@ -322,10 +394,12 @@ class StoreProductHidden extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataProduk: state.hiddenStoreProducts
+  dataProduk: state.hiddenStoreProducts,
+  dataSearch: state.storeCatalogProductsSearch
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getListProdukHidden: () => dispatch(storeAction.getHiddenStoreProducts())
+  getListProdukHidden: () => dispatch(storeAction.getHiddenStoreProducts()),
+  searchProduct: (query) => dispatch(storeAction.getStoreProductsByCatalogSearch({q: query}))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductHidden)

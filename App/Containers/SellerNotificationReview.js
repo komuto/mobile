@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl
 } from 'react-native'
+import moment from 'moment'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
@@ -155,9 +156,26 @@ class SellerNotificationReview extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).fromNow()
     return (
-      <View style={{marginBottom: 20, elevation: 0.1}}>
-        <TouchableOpacity style={styles.border} onPress={() => this.handleDetailProduct(rowData.product.id)}>
+      <TouchableOpacity style={{marginBottom: 20, elevation: 0.1}} onPress={() => this.handleDetailProduct(rowData.product.id)}>
+        <View style={styles.border}>
+          <View style={styles.profile}>
+            <Image
+              source={{ uri: rowData.user.photo }}
+              style={styles.styleFotoToko}
+            />
+            <View style={styles.namaContainer}>
+              <Text style={styles.textNama}>
+                {rowData.user.name}
+              </Text>
+              <Text style={styles.textKelola}>
+                {time}
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.border}>
           <View style={styles.profile}>
             <Image
               source={{ uri: rowData.product.image }}
@@ -176,11 +194,11 @@ class SellerNotificationReview extends React.Component {
               style={styles.styleFoto}
             />
           </View>
-        </TouchableOpacity>
+        </View>
         <View>
           {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 

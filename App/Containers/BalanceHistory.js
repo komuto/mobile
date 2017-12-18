@@ -66,6 +66,7 @@ class BalanceHistory extends React.Component {
       modalFilter: false,
       startDate: 'Pilih Tanggal',
       endDate: 'Pilih Tanggal',
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
       page: 1,
@@ -232,7 +233,7 @@ class BalanceHistory extends React.Component {
           </View>
         </View>
         <View style={styles.balanceContainer}>
-          <Text style={styles.textBalance}>{balanceText}</Text>
+          <Text style={styles.textBalance}>Sisa Saldo: {balanceText}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -307,8 +308,9 @@ class BalanceHistory extends React.Component {
         const d = new Date(tempLabel)
 
         const tempTimestamp = day + '/' + (parseInt(month) + 1) + '/' + year
+        const textDay = this.state.days[d.getDay()]
         const bulan = months[d.getMonth()]
-        const label = day + ' ' + bulan + ' ' + year
+        const label = textDay + ', ' + day + ' ' + bulan + ' ' + year
 
         const timestamp = moment(tempTimestamp, 'DD-MM-YYYY').unix()
 
@@ -335,8 +337,9 @@ class BalanceHistory extends React.Component {
         const d = new Date(tempLabel)
 
         const tempTimestamp = day + '/' + (parseInt(month) + 1) + '/' + year
+        const textDay = this.state.days[d.getDay()]
         const bulan = months[d.getMonth()]
-        const label = day + ' ' + bulan + ' ' + year
+        const label = textDay + ', ' + day + ' ' + bulan + ' ' + year
 
         const timestamp = moment(tempTimestamp, 'DD-MM-YYYY').unix()
 

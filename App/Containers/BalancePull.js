@@ -43,7 +43,7 @@ class BalancePull extends React.Component {
       statusBank: false,
       haveAccount: true,
       modalAccount: false,
-      accountBank: 'Pilih Rekening',
+      accountBank: 'Pilih Rekening Bank',
       loadingAccount: false,
       phone: this.props.dataPhone.phone,
       id: null,

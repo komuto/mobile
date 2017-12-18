@@ -17,7 +17,7 @@ class AddEditStoreCatalog extends React.Component {
     this.state = {
       loading: false,
       namaKatalog: this.props.namaKatalog || '',
-      textButton: this.props.titleButton || 'Buat Katalog Baru',
+      textButton: this.props.titleButton || 'Simpan Perubahan',
       edit: false,
       idkatalog: this.props.idKatalogs || ''
     }
@@ -98,9 +98,9 @@ class AddEditStoreCatalog extends React.Component {
     return (
       <View>
         <View style={styles.infoContainer}>
-          <View style={{opacity: 0.50}}>
+          {/* <View style={{opacity: 0.50}}>
             <Text style={styles.textHeader}>Nama Katalog</Text>
-          </View>
+          </View> */}
           <TextInput
             ref='name'
             style={styles.inputText}
@@ -109,6 +109,7 @@ class AddEditStoreCatalog extends React.Component {
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect
+            placeholder='Masukkan Nama Katalog'
             onChangeText={this.handleNamaKatalog}
             underlineColorAndroid='transparent'
           />

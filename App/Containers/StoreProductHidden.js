@@ -185,11 +185,16 @@ class StoreProductHidden extends React.Component {
       )
     } else {
       var discounts = this.discountCalculate(data.price, data.discount)
-      var commissions = (discounts * data.commission) / 100
+      let commissions
+      if (data.commission === undefined) {
+        commissions = 0
+      } else {
+        commissions = (discounts * data.commission) / 100
+      }
       var fees = discounts - commissions
       var feeMaskeds = this.maskedMoney(fees)
       return (
-        <View>
+        <View style={{ minHeight: 85 }}>
           <Text style={styles.textDetail}>Jumlah Stok : {data.stock}</Text>
           {this.discountCheck(data)}
           <Text style={styles.textDetail}>Uang yang diterima : {feeMaskeds}</Text>
@@ -329,8 +334,8 @@ class StoreProductHidden extends React.Component {
     const { dataSearch } = this.state
     const mapProduk = dataSearch.map((data, i) => {
       return (
-        <TouchableOpacity key={i} style={styles.dataListProduk}
-          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data, '')}>
+        <TouchableOpacity activeOpacity={0.5}key={i} style={styles.dataListProduk}
+          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data)}>
           <View style={styles.flexRow}>
             <Image source={{uri: data.image}} style={styles.imageProduk} />
             <View style={styles.column}>
@@ -395,11 +400,11 @@ class StoreProductHidden extends React.Component {
 
 const mapStateToProps = (state) => ({
   dataProduk: state.hiddenStoreProducts,
-  dataSearch: state.storeCatalogProductsSearch
+  dataSearch: state.storeCatalogProductsHiddenSearch
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getListProdukHidden: () => dispatch(storeAction.getHiddenStoreProducts()),
-  searchProduct: (query) => dispatch(storeAction.getStoreProductsByCatalogSearch({q: query}))
+  searchProduct: (query) => dispatch(storeAction.getStoreProductsHiddenByCatalogSearch({q: query}))
 })
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductHidden)

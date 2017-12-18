@@ -70,8 +70,7 @@ class TransactionPaid extends React.Component {
       <View style={styles.batasPembayaran}>
         <Image source={Images.waktuHijau} style={styles.image} />
         <Text style={[styles.textPembayaran, { marginLeft: 10 }]}>
-          Pembayaran Telah Diterima. Pesanan sudah
-          dilanjutkan ke Seller.
+          Sudah dibayar
         </Text>
       </View>
     )
@@ -104,7 +103,7 @@ class TransactionPaid extends React.Component {
             {kodevoucer}
           </View>
           <View style={[styles.rowContainerRincian, { paddingLeft: 20, paddingRight: 20 }]}>
-            <Text style={[styles.bold, { flex: 1 }]}>Total Pembayaran</Text>
+            <Text style={[styles.bold, { flex: 1 }]}>Sisa Pembayaran</Text>
             <Text style={styles.bold}>{hargaSisaBayar}</Text>
           </View>
         </View>
@@ -142,7 +141,7 @@ class TransactionPaid extends React.Component {
     return (
       <View style={[styles.tagihanContainer, { backgroundColor: Colors.paleGrey, marginTop: 20 }]}>
         <View style={styles.rowContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>Daftar Barang yang dibeli</Text>
+          <Text style={[styles.bold, { flex: 1 }]}>Daftar Barang Yang Dibeli</Text>
         </View>
         <ListView
           dataSource={this.dataSource.cloneWithRows(dataBarang)}

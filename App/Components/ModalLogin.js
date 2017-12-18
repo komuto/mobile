@@ -48,17 +48,17 @@ export default class ModalLogin extends React.Component {
             <View style={styles.body}>
               <Image source={Images.phone} style={styles.imagePhone} />
               <Text style={styles.textInfo}>
-                Anda harus login terlebih dahulu
+                Anda harus masuk terlebih dahulu
               </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.buttonLogin} onPress={() => this.login()}>
                   <Text style={styles.textWhite}>
-                    Login
+                    Masuk
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.buttonRegister} onPress={() => this.register()}>
                   <Text style={styles.textBlue}>
-                    Register
+                    Daftar
                   </Text>
                 </TouchableOpacity>
               </View>

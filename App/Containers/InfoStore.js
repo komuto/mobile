@@ -43,10 +43,10 @@ class InfoStore extends React.Component {
       stores: [],
       storeTemp: [],
       storesTemp: [],
-      textPemilik: 'Nama Toko Tidak Dapat Diubah',
+      textPemilik: 'Nama toko tidak dapat diubah',
       textDesc: '',
       textPemilikColor: Colors.labelgrey,
-      textSloganColor: Colors.snow,
+      textSloganColor: Colors.labelgrey,
       textDescColor: Colors.snow,
       heightSlogan: 0,
       heightDesc: 0,
@@ -342,7 +342,7 @@ class InfoStore extends React.Component {
           <View style={styles.containerFoto}>
             {this.renderCameraButton()}
             <TouchableOpacity onPress={() => this.setState({showModalCamera: true})}>
-              <Text style={styles.uploadText}>Upload Foto Profil Toko</Text>
+              <Text style={styles.uploadText}>Ganti Foto Profil Toko</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.infoContainer}>

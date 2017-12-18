@@ -257,14 +257,14 @@ class NavigationRouter extends Component {
           <Scene
             key='register'
             component={Register}
-            title='Register'
+            title='Daftar'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
             key='login'
             component={Login}
-            title='Login'
+            title='Masuk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -363,7 +363,7 @@ class NavigationRouter extends Component {
           <Scene
             key='infostore'
             component={InfoStore}
-            title='Isi Informasi Toko'
+            title='Informasi Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -405,7 +405,7 @@ class NavigationRouter extends Component {
           <Scene
             key='newdiscussion'
             component={NewDiscussion}
-            title='Buat Diskusi Baru'
+            title='Diskusi Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -440,7 +440,7 @@ class NavigationRouter extends Component {
           <Scene
             key='commentproductdiscussion'
             component={CommentProductDiscussion}
-            title='Detail Diskusi'
+            title='Diskusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

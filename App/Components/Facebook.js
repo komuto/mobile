@@ -107,7 +107,7 @@ class Facebook extends React.Component {
     return (
       <View style={Styles.containerText}>
         <Image source={Images.facebook} style={Styles.loginIconThirdParty} />
-        <Text style={Styles.loginTextThirdParty}>Login dengan Facebook</Text>
+        <Text style={Styles.loginTextThirdParty}>Masuk dengan Facebook</Text>
       </View>
     )
   }

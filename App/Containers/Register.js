@@ -212,7 +212,7 @@ class Register extends React.Component {
               Sudah punya akun?
             </Text>
             <TouchableOpacity onPress={() => this.login()}>
-              <Text style={styles.textLogin}> Login Disini</Text>
+              <Text style={styles.textLogin}> Masuk Disini</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.form}>
@@ -318,7 +318,7 @@ class Register extends React.Component {
               onPress={this.handlePressRegister}
             >
               <Text style={styles.textButtonLogin}>
-                Register
+                Daftar
               </Text>
             </TouchableOpacity>
             <View style={styles.line}>

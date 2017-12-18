@@ -202,7 +202,7 @@ class Login extends React.Component {
                 onPress={this.handlePressLogin}
               >
                 <View style={styles.loginButton}>
-                  <Text style={styles.loginText}>Login</Text>
+                  <Text style={styles.loginText}>Masuk</Text>
                 </View>
               </TouchableOpacity>
             </View>

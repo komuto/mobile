@@ -8,9 +8,17 @@ export default StyleSheet.create({
   },
   header: {
     backgroundColor: Colors.paleGreyThree,
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver,
-    padding: 20
+    paddingLeft: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingRight: 70,
+    marginBottom: 10.3
+  },
+  regularSlate: {
+    fontSize: Fonts.size.smallMed,
+    fontFamily: Fonts.type.regular,
+    color: Colors.lightblack,
+    lineHeight: 22
   },
   textTitle: {
     fontFamily: Fonts.type.regular,
@@ -45,7 +53,6 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   imageContainer: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center'
   },

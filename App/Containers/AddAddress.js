@@ -489,7 +489,7 @@ class AddAddress extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Nomor Handphone'
         />
-        <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomer Handphone harus diisi</Text>
+        <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomor Handphone harus diisi</Text>
       </View>
     )
   }

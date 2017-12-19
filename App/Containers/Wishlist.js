@@ -135,7 +135,7 @@ class Wishlist extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={stylesProduk.imageVerified} />
+      <Image source={Images.notVerified} style={stylesProduk.imageVerified} />
     )
   }
 

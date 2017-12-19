@@ -136,6 +136,8 @@ export default StyleSheet.create({
     letterSpacing: 0.23
   },
   inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 40,
     borderBottomWidth: 1,
     borderBottomColor: Colors.silver,

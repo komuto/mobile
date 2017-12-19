@@ -222,7 +222,7 @@ class BuyerComplainDetailItem extends React.Component {
       <View style={styles.dataContainer}>
         <Text style={[styles.textLabel, {flex: 1}]}>Penjual</Text>
         <Image source={{ uri: image }} style={styles.image} />
-        <Text style={[styles.textData, { flex: 1 }]}>{shopName}</Text>
+        <Text maxLength={15} ellipsizeMode={'tail'} style={[styles.textData]}>{shopName}</Text>
       </View>
     )
   }
@@ -233,7 +233,7 @@ class BuyerComplainDetailItem extends React.Component {
     if (statusSolution === 1) {
       data = 'REFUND'
     } else {
-      data = 'EXCHANGE'
+      data = 'Tukar Baru'
     }
     return (
       <View style={styles.dataContainer}>

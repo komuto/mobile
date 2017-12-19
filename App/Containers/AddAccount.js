@@ -311,7 +311,7 @@ class AddAccount extends React.Component {
                 autoCorrect
                 onChangeText={this.handleChangeNoRek}
                 underlineColorAndroid='transparent'
-                placeholder='Nomer Rekening'
+                placeholder='Nomor Rekening'
               />
               <Text style={[styles.textLabel, {color: colorNomerRek}]}>Nomor Rekening harus diisi</Text>
             </View>

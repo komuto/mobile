@@ -162,7 +162,8 @@ const images = {
   emptyDropshipper: require('../Images/empty-dropshipper.png'),
   emptySales: require('../Images/empty-sales.png'),
   emptyComplain: require('../Images/empty-state-complain.png'),
-  emptyResolution: require('../Images/empty-state-resolution.png')
+  emptyResolution: require('../Images/empty-state-resolution.png'),
+  notVerified: require('../Images/Icons/unverified.png')
 }
 
 export default images

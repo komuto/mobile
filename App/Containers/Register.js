@@ -168,7 +168,7 @@ class Register extends React.Component {
         ToastAndroid.show('Email harus diisi', ToastAndroid.SHORT)
         break
       case 'phoneNumber':
-        ToastAndroid.show('Nomer hp harus diisi', ToastAndroid.SHORT)
+        ToastAndroid.show('Nomor hp harus diisi', ToastAndroid.SHORT)
         break
       case 'password':
         ToastAndroid.show('Password harus diisi', ToastAndroid.SHORT)

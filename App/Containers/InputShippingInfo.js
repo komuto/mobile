@@ -238,7 +238,7 @@ class InputShippingInfo extends React.Component {
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}
+                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}{'\n'}Telp: {buyer.phone_number.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')}
               </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
@@ -253,7 +253,7 @@ class InputShippingInfo extends React.Component {
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-                {seller.name} ({reseller.store.name}){'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+                {seller.name} ({reseller.store.name}){'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}{'\n'}Telp: {seller.phone_number.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')}
               </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
@@ -270,7 +270,7 @@ class InputShippingInfo extends React.Component {
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Alamat Pengiriman</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}
+                {buyer.name}{'\n'}{addressBuyer.address}, {addressBuyer.village.name}, {addressBuyer.subdistrict.name}, {addressBuyer.district.name}, {addressBuyer.province.name}, {addressBuyer.postal_code}{'\n'}Telp: {buyer.phone_number.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')}
               </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
@@ -281,7 +281,7 @@ class InputShippingInfo extends React.Component {
             <View style={styles.continerAddress}>
               <Text style={styles.labelProduct2}>Info Alamat Penjual</Text>
               <Text style={[styles.labelMessage, {lineHeight: 22, paddingRight: 58, fontFamily: Fonts.type.regular}]}>
-                {seller.name}{'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}
+                {seller.name}{'\n'}{addressSeller.address}, {addressSeller.village.name}, {addressSeller.subdistrict.name}, {addressSeller.district.name}, {addressSeller.province.name}, {addressSeller.postal_code}{'\n'}Telp: {seller.phone_number.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')}
               </Text>
             </View>
             <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleSendMessageStore()}>
@@ -615,7 +615,7 @@ class InputShippingInfo extends React.Component {
           tabBarTextStyle={styles.textTab}
           locked
         >
-          <View tabLabel='Nomer Resi' ref='receiptNumber'>
+          <View tabLabel='Nomor Resi' ref='receiptNumber'>
             {this.renderInputReceiptNumber()}
           </View>
           <View tabLabel='Detail' ref='detail'>

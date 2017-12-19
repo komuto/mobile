@@ -181,7 +181,7 @@ class SellerComplainDetailItem extends React.Component {
           <Text style={[styles.semiboldOcher, {color: Colors.blueText}]}>Terima kasih telah bersifat kooperatif. Kini Admin akan mengirimkan kembali uang ke pembeli. Dan segera setelah itu Admin akan menandai komplain ini sudah terselesaikan</Text>
         </View>
       )
-    } if (solutionType === 1 && disputeStatus === 8) {
+    } if (solutionType === 1 && disputeStatus === 8 || disputeStatus === 9) {
       return (
         <View style={[styles.header, {backgroundColor: Colors.duckEggBlue, alignItems: 'center'}]}>
           <Image source={Images.infoDone} style={[styles.iconOcher, {marginTop: 0}]} />
@@ -294,6 +294,7 @@ class SellerComplainDetailItem extends React.Component {
   }
 
   checkStatusComplaint (data) {
+    Reactotron.log(data)
     if (data === 1) {
       return (
         <View style={styles.flexRowChild}>
@@ -347,6 +348,13 @@ class SellerComplainDetailItem extends React.Component {
       return (
         <View style={styles.flexRowChild}>
           <View style={[styles.iconStatus, {backgroundColor: Colors.greenish}]} />
+          <Text style={styles.regularcharcoalGrey}>Terselesaikan</Text>
+        </View>
+      )
+    } if (data === 9) {
+      return (
+        <View style={styles.flexRowChild}>
+          <View style={[styles.iconStatus, { backgroundColor: Colors.greenish }]} />
           <Text style={styles.regularcharcoalGrey}>Terselesaikan</Text>
         </View>
       )
@@ -421,7 +429,7 @@ class SellerComplainDetailItem extends React.Component {
     if (disputeStatus === 8) {
       return (
         <View style={styles.flexRowNoBorder}>
-          <Text style={styles.semiboldSlateFlexOne}>Nomer Refund</Text>
+          <Text style={styles.semiboldSlateFlexOne}>Nomor Refund</Text>
           <Text style={styles.regularBrowGreyFlextwo}>{data.refund.no_refund}</Text>
         </View>
       )
@@ -573,7 +581,7 @@ class SellerComplainDetailItem extends React.Component {
                 autoCorrect
                 onChangeText={this.changeReceiptNumber}
                 underlineColorAndroid='transparent'
-                placeholder='Nomer Resi'
+                placeholder='Nomor Resi'
               />
               <TouchableOpacity style={styles.buttonnext} onPress={() => this.handleUpdateReceiptNumber()}>
                 <Text style={styles.textButtonNext}>

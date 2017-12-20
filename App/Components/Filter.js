@@ -52,6 +52,7 @@ class Filter extends React.Component {
       dataLainnya,
       active: 1,
       activeKondisi: 0,
+      provinsiId: this.props.provinsiId,
       hargaMinimal: '',
       hargaMaksimal: '',
       provinsi: [],
@@ -66,25 +67,57 @@ class Filter extends React.Component {
         {
           'id': 0,
           'ro_id': 0,
-          'name': 'Pilih Kota'
+          'name': this.props.kota || 'Pilih Kota'
         }
       ],
-      provinsiTerpilih: 'Semua Wilayah',
-      kotaTerpilih: 'Semua Wilayah',
-      filterPengiriman: [],
-      filterKondisi: '',
-      filterAddress: '',
-      filterPrice: [0, 0],
-      filterBrand: [],
-      filterOthers: []
+      provinsiTerpilih: this.props.provinsi || 'Semua Wilayah',
+      kotaTerpilih: this.props.kota || 'Semua Wilayah',
+      filterPengiriman: this.props.filterPengiriman, // default []
+      filterKondisi: this.props.filterKondisi, // default ''
+      filterAddress: this.props.filterAddress, // default ''
+      filterPrice: this.props.filterPrice, // default [0, 0]
+      filterBrand: this.props.filterBrand, // default []
+      filterOthers: this.props.filterOthers // default []
     }
   }
 
   componentDidMount () {
     this.props.getProvinsi()
-    this.props.getKota(11)
+    if (this.props.provinsiId === '') {
+      this.props.getKota(11)
+    } else {
+      this.props.getKota(this.props.provinsiId)
+    }
     this.props.getExpedition()
     this.props.getBrand()
+    const {dataKondisi, dataSourceKondisi} = this.state
+    if (this.props.filterKondisi === 'new') {
+      const newDataSource = dataKondisi.map(data => {
+        return {...data, active: data.id === 2}
+      })
+      this.setState({
+        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+        activeKondisi: 2
+      })
+    } else if (this.props.filterKondisi === 'used') {
+      const newDataSource = dataKondisi.map(data => {
+        return {...data, active: data.id === 3}
+      })
+      this.setState({
+        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+        activeKondisi: 3
+      })
+    }
+    if (this.props.filterPrice[0] !== 0) {
+      this.setState({
+        hargaMinimal: this.props.filterPrice[0]
+      })
+    }
+    if (this.props.filterPrice[1] !== 0) {
+      this.setState({
+        hargaMaksimal: this.props.filterPrice[1]
+      })
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -99,7 +132,6 @@ class Filter extends React.Component {
       })
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
-      console.log(nextProps.dataPengirimanReducer.expeditionServices)
       this.setState({
         dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
       })
@@ -130,12 +162,20 @@ class Filter extends React.Component {
   }
 
   handlingFilter (valueMin, valueMax) {
-    if (valueMax < valueMin) {
+    if (valueMax === 0 || valueMax === '') {
+      this.props.handlingFilter(
+        this.state.filterKondisi,
+        this.state.filterPengiriman,
+        this.state.filterPrice,
+        this.state.filterAddress,
+        this.state.filterBrand,
+        this.state.filterOthers,
+        this.state.provinsiId,
+        this.state.provinsiTerpilih,
+        this.state.kotaTerpilih
+      )
+    } else if (valueMax < valueMin) {
       Alert.alert('Pesan', 'Harga Maksimal harus lebih besar dari harga minimal')
-    } else if (valueMax === 0) {
-      Alert.alert('Pesan', 'Mohon isi harga maksimal terlebih dahulu')
-    } else if (valueMin === 0) {
-      Alert.alert('Pesan', 'Mohon isi harga minimal terlebih dahulu')
     } else if (valueMin <= valueMax) {
       this.props.handlingFilter(
         this.state.filterKondisi,
@@ -143,7 +183,10 @@ class Filter extends React.Component {
         this.state.filterPrice,
         this.state.filterAddress,
         this.state.filterBrand,
-        this.state.filterOthers
+        this.state.filterOthers,
+        this.state.provinsiId,
+        this.state.provinsiTerpilih,
+        this.state.kotaTerpilih
       )
     }
   }
@@ -167,8 +210,9 @@ class Filter extends React.Component {
       hargaMaksimal: '',
       provinsi: [],
       kota: [],
-      provinsiTerpilih: 'DKI Jakarta',
-      kotaTerpilih: 'Jakarta',
+      provinsiId: '',
+      provinsiTerpilih: 'Semua Wilayah',
+      kotaTerpilih: 'Semua Wilayah',
       filterPengiriman: [],
       filterKondisi: '',
       filterAddress: 1116,
@@ -341,7 +385,13 @@ class Filter extends React.Component {
   }
 
   renderRowDataPengiriman = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centangBiru : null
+    let centang = rowData.is_checked ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterPengiriman.length; i++) {
+      if (rowData.id === this.state.filterPengiriman[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
         <View style={styles.labelContainerSecond}>
@@ -400,7 +450,9 @@ class Filter extends React.Component {
       })
     } else {
       this.setState({
-        provinsiTerpilih: key
+        provinsiTerpilih: key,
+        kotaTerpilih: 'Pilih Kota',
+        provinsiId: this.state.provinsi[value].id
       })
       this.props.getKota(this.state.provinsi[value].id)
     }
@@ -450,9 +502,8 @@ class Filter extends React.Component {
               </Text>
               <TextInput
                 style={styles.inputText}
-                value={hargaMinimal}
+                value={String(hargaMinimal)}
                 keyboardType='numeric'
-                autoCorrect
                 onChangeText={this.handleChangeMinimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='100.000'
@@ -467,9 +518,8 @@ class Filter extends React.Component {
               </Text>
               <TextInput
                 style={styles.inputText}
-                value={hargaMaksimal}
+                value={String(hargaMaksimal)}
                 keyboardType='numeric'
-                autoCorrect
                 onChangeText={this.handleChangeMaksimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='250.000'

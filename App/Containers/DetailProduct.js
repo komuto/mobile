@@ -334,7 +334,7 @@ class DetailProduct extends React.Component {
     this.setState({ modalLaporkan: false })
     NavigationActions.report({
       type: ActionConst.PUSH,
-      images: this.state.fotoToko,
+      images: this.state.dataImage[0].file,
       namaBarang: this.state.title,
       harga: this.state.price,
       id: this.state.id
@@ -758,7 +758,7 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={{height: 25, width: 25}} />
+      <Image source={Images.notVerified} style={{height: 25, width: 25}} />
     )
   }
 
@@ -769,7 +769,7 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.image24p} />
+      <Image source={Images.notVerified} style={styles.image24p} />
     )
   }
 
@@ -1080,7 +1080,7 @@ class DetailProduct extends React.Component {
       id: id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaToko: this.state.namaToko
     })
     this.props.reviewAction(id, 1)
@@ -1522,11 +1522,12 @@ class DetailProduct extends React.Component {
 
   diskusi () {
     this.props.getDiscussion(this.state.id, 1)
+    Reactotron.log(this.state.dataImage[0].file)
     NavigationActions.productdiscussion({
       id: this.state.id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaProduk: this.state.title,
       data: []
     })
@@ -1567,7 +1568,7 @@ class DetailProduct extends React.Component {
       } else {
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
-          fotoToko: this.state.fotoToko,
+          fotoToko: this.state.dataImage[0].file,
           productName: this.state.title,
           namaToko: this.state.namaToko,
           price: this.state.price,

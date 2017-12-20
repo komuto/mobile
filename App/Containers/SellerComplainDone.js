@@ -18,6 +18,7 @@ import * as salesAction from '../actions/transaction'
 // Styles
 import styles from './Styles/SellerComplainWaitingStyle'
 import {Colors, Images} from '../Themes'
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
 
 class SellerComplainDone extends React.Component {
 
@@ -163,6 +164,7 @@ class SellerComplainDone extends React.Component {
             <View key={i} style={styles.maskedImage}>
               <Image source={{uri: data.image}} style={styles.image} />
             </View>
+            <Text style={{ paddingLeft: 10, fontFamily: Fonts.type.regular, fontSize: Fonts.size.smallMed, flex: 1 }}>{data.name}</Text>
           </View>
         )
       })

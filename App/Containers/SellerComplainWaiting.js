@@ -19,6 +19,7 @@ import Reactotron from 'reactotron-react-native'
 // Styles
 import styles from './Styles/SellerComplainWaitingStyle'
 import {Colors, Images} from '../Themes'
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
 
 class SellerComplainWaiting extends React.Component {
 
@@ -127,9 +128,11 @@ class SellerComplainWaiting extends React.Component {
   }
 
   renderImageProduct (products) {
+    // <Text>{data.name}</Tebt>
     if (products.length > 4) {
       const mapFoto = products.slice(0, 4).map((data, i) => {
         if (i === 3) {
+          Reactotron.log('a')
           return (
             <View style={styles.containerOrder}>
               <View key={i} style={styles.maskedImage}>
@@ -141,6 +144,7 @@ class SellerComplainWaiting extends React.Component {
             </View>
           )
         } else {
+          Reactotron.log('b')
           return (
             <View style={styles.containerOrder}>
               <View key={i} style={styles.maskedImage}>
@@ -156,12 +160,14 @@ class SellerComplainWaiting extends React.Component {
         </View>
       )
     } else {
+      Reactotron.log('c')
       const mapFoto = products.slice(0, 4).map((data, i) => {
         return (
           <View key={i} style={styles.containerOrder}>
             <View key={i} style={styles.maskedImage}>
               <Image source={{uri: data.image}} style={styles.image} />
             </View>
+            <Text style={{ paddingLeft: 10, fontFamily: Fonts.type.regular, fontSize: Fonts.size.smallMed, flex: 1 }}>{data.name}</Text>
           </View>
         )
       })

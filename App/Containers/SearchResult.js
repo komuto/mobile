@@ -288,7 +288,7 @@ class SearchResult extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 

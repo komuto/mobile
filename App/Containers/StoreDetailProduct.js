@@ -204,7 +204,7 @@ class DetailTokoProduk extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={stylesHome.imageVerified} />
+      <Image source={Images.notVerified} style={stylesHome.imageVerified} />
     )
   }
 

@@ -8,6 +8,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 
 // Styles
 import styles from './Styles/BuyerComplainDoneStyle'
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
 
 class BuyerComplainDone extends React.Component {
 
@@ -106,25 +107,30 @@ class BuyerComplainDone extends React.Component {
 
   listViewComplain (data) {
     return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
-        renderRow={(rowData) => this.renderRow(rowData)}
-        onEndReached={() => this.loadMore()}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
-              />
-            )
-          }
-          return <View />
-        }}
-        enableEmptySections
-        style={{flex: 1}}
-      />
+      <View>
+        <View style={styles.header}>
+          <Text style={styles.regularSlate}>Berikut adalah daftar pembelian yang terdapat barang bermasalah di dalamnya</Text>
+        </View>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.data)}
+          renderRow={(rowData) => this.renderRow(rowData)}
+          onEndReached={() => this.loadMore()}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+          style={{flex: 1}}
+        />
+      </View>
     )
   }
 
@@ -142,6 +148,7 @@ class BuyerComplainDone extends React.Component {
           <View style={styles.imageContainer}>
             {image}
           </View>
+          <Text style={{ paddingLeft: 10, fontFamily: Fonts.type.regular, fontSize: Fonts.size.smallMed, flex: 1 }}>{data[0].name}</Text>
           <Image source={Images.rightArrow} style={styles.arrow} />
         </View>
       )
@@ -149,7 +156,7 @@ class BuyerComplainDone extends React.Component {
       const gambar = data.length - 5
       renderData = (
         <View style={styles.dataSingle}>
-          <View style={styles.imageContainer}>
+          <View style={[styles.imageContainer, {flex: 1}]}>
             <Image source={{ uri: data[0].image }} style={styles.imageRowStyle} />
             <Image source={{ uri: data[1].image }} style={styles.imageRowStyle} />
             <Image source={{ uri: data[2].image }} style={styles.imageRowStyle} />

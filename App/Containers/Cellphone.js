@@ -31,7 +31,7 @@ class Cellphone extends React.Component {
       })
       NavigationActions.otpcode({
         type: ActionConst.PUSH,
-        title: 'Verifikasi Nomer Telepon',
+        title: 'Verifikasi Nomor Telepon',
         fieldPass: this.state.nomerHape,
         typeVerifikasi: 'verifikasiKelolatelepon'
       })

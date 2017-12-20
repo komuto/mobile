@@ -132,6 +132,10 @@ class Filter extends React.Component {
   handlingFilter (valueMin, valueMax) {
     if (valueMax < valueMin) {
       Alert.alert('Pesan', 'Harga Maksimal harus lebih besar dari harga minimal')
+    } else if (valueMax === 0) {
+      Alert.alert('Pesan', 'Mohon isi harga maksimal terlebih dahulu')
+    } else if (valueMin === 0) {
+      Alert.alert('Pesan', 'Mohon isi harga minimal terlebih dahulu')
     } else if (valueMin <= valueMax) {
       this.props.handlingFilter(
         this.state.filterKondisi,
@@ -441,6 +445,9 @@ class Filter extends React.Component {
               Harga Minimal
             </Text>
             <View style={styles.inputContainer}>
+              <Text style={styles.textHarga}>
+                Rp{' '}
+              </Text>
               <TextInput
                 style={styles.inputText}
                 value={hargaMinimal}
@@ -455,6 +462,9 @@ class Filter extends React.Component {
               Harga Maksimal
             </Text>
             <View style={styles.inputContainer}>
+              <Text style={styles.textHarga}>
+                Rp{' '}
+              </Text>
               <TextInput
                 style={styles.inputText}
                 value={hargaMaksimal}

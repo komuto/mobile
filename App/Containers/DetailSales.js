@@ -414,7 +414,7 @@ class DetailSales extends React.Component {
       return (
         <View style={[styles.borderRow, {borderBottomWidth: 0, alignItems: 'center'}]}>
           <Text style={[styles.textSemiBoldslate]}>Status Resi</Text>
-          <Text style={[styles.textRegularSlate]}>Menunggu</Text>
+          <Text style={[styles.textRegularSlate]}>On Progress</Text>
         </View>
       )
     } if (data === 2) {
@@ -465,7 +465,7 @@ class DetailSales extends React.Component {
                 autoCorrect
                 onChangeText={this.changeReceiptNumber}
                 underlineColorAndroid='transparent'
-                placeholder='Nomer Resi'
+                placeholder='Nomor Resi'
               />
               <TouchableOpacity style={[styles.buttonnext, {margin: 20}]} onPress={() => this.handleChangeReceipeNumber()}>
                 <Text style={styles.textButtonNext}>

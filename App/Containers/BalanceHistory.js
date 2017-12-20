@@ -220,11 +220,36 @@ class BalanceHistory extends React.Component {
     const textMonth = this.state.months[month].substring(0, 3)
     const year = moment.unix(rowData.date).format('YYYY')
     const balanceText = this.maskedMoney(rowData.last_saldo)
+    const type = rowData.trans_type.toLowerCase()
+    let textType
+    switch (type) {
+      case 'tpup':
+        textType = 'Top Up Saldo'
+        break
+      case 'paid':
+        textType = 'Pembelian Barang'
+        break
+      case 'rfnd':
+        textType = 'Dana Refund Barang'
+        break
+      case 'sell':
+        textType = 'Dana Penjualan Barang'
+        break
+      case 'wthd':
+        textType = 'Penarikan Saldo'
+        break
+      case 'sfee':
+        textType = 'Komisi Reseller'
+        break
+      default:
+        textType = type
+        break
+    }
     return (
       <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id)}>
         <View style={styles.dataContainer}>
           <View style={styles.data}>
-            <Text style={[styles.textTitle, {marginBottom: 5}]}>{rowData.remark}</Text>
+            <Text style={[styles.textTitle, {marginBottom: 5}]}>{textType}</Text>
             <Text style={styles.textDate}>{day} {textMonth} {year}</Text>
           </View>
           <View style={styles.money}>

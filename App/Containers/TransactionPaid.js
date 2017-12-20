@@ -82,13 +82,18 @@ class TransactionPaid extends React.Component {
     const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
     let kodevoucer
     if (kode === '' || kode === null || kode === undefined) {
-      kodevoucer = null
+      kodevoucer = (
+        <View style={styles.rowContainerRincian}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher -</Text>
+          <Text style={styles.textGreen}>- Rp 0</Text>
+        </View>
+      )
     } else {
       const hargaDiskon = this.maskedMoney(diskon)
       kodevoucer = (
         <View style={styles.rowContainerRincian}>
           <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
-          <Text style={styles.textGreen}>{hargaDiskon}</Text>
+          <Text style={styles.textGreen}>- {hargaDiskon}</Text>
         </View>
       )
     }

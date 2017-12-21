@@ -60,12 +60,12 @@ class Category4 extends React.Component {
       loadmore: false,
       isRefreshing: true,
       isLoading: false,
-      kondisi: '',
-      pengiriman: '',
-      price: '',
-      address: '',
-      brand: '',
-      other: '',
+      filterKondisi: '',
+      filterPengiriman: [],
+      filterPrice: [0, 0],
+      filterAddress: '',
+      filterBrand: [],
+      filterOthers: [],
       sort: 'newest',
       wishlist: props.propsWishlist || null,
       id: this.props.id,
@@ -74,7 +74,10 @@ class Category4 extends React.Component {
       modalSearch: false,
       refreshSearch: false,
       valueSearch: '',
-      gettingData: true
+      gettingData: true,
+      provinsi: '',
+      kota: '',
+      provinsiId: ''
     }
   }
 
@@ -233,12 +236,12 @@ class Category4 extends React.Component {
         this.props.getProduct({
           q: this.state.valueSearch,
           category_id: this.state.id,
-          condition: this.state.kondisi,
-          services: this.state.pengiriman,
-          price: this.state.price,
-          address: this.state.address,
-          brands: this.state.brand,
-          other: this.state.other,
+          condition: this.state.filterKondisi,
+          services: this.state.filterPengiriman,
+          price: this.state.filterPrice,
+          address: this.state.filterAddress,
+          brands: this.state.filterBrand,
+          other: this.state.filterOthers,
           page: this.state.page,
           sort: this.state.sort
         })
@@ -260,12 +263,12 @@ class Category4 extends React.Component {
     this.props.getProduct({
       q: this.state.valueSearch,
       category_id: this.state.id,
-      condition: this.state.kondisi,
-      services: this.state.pengiriman,
-      price: this.state.price,
-      address: this.state.address,
-      brands: this.state.brand,
-      other: this.state.other,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
       page: 1,
       sort: this.state.sort
     })
@@ -604,39 +607,51 @@ class Category4 extends React.Component {
             </TouchableOpacity>
           </View>
           <Filter
-            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+            filterPengiriman={this.state.filterPengiriman}
+            filterKondisi={this.state.filterKondisi}
+            filterAddress={this.state.filterAddress}
+            filterPrice={this.state.filterPrice}
+            filterBrand={this.state.filterBrand}
+            filterOthers={this.state.filterOthers}
+            provinsiId={this.state.provinsiId}
+            provinsi={this.state.provinsi}
+            kota={this.state.kota}
+            handlingFilter={(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) =>
+            this.handlingFilter(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota)} />
         </View>
       </Modal>
     )
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
+  handlingFilter (filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) {
+    this.submitting.product = true
     this.setState({
       filter: false,
       page: 1,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
       isRefreshing: true,
       rowDataContainer: [],
       listDataSource: [],
-      gettingData: true
+      gettingData: true,
+      provinsi: provinsi,
+      provinsiId: provinsiId,
+      kota: kota
     })
-    this.submitting.category = true
     this.props.getProduct({
       q: this.state.valueSearch,
       category_id: this.state.id,
-      condition: this.state.kondisi,
-      services: this.state.pengiriman,
-      price: this.state.price,
-      address: this.state.address,
-      brands: this.state.brand,
-      other: this.state.other,
-      page: this.state.page,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
       sort: this.state.sort
     })
   }
@@ -694,17 +709,27 @@ class Category4 extends React.Component {
       sort: typesort,
       gettingData: true
     })
+    const {
+      valueSearch,
+      filterKondisi,
+      filterPengiriman,
+      filterPrice,
+      filterAddress,
+      filterBrand,
+      filterOthers,
+      id
+    } = this.state
     this.submitting.category = true
     this.props.getProduct({
-      q: this.state.valueSearch,
-      category_id: this.state.id,
-      condition: this.state.kondisi,
-      services: this.state.pengiriman,
-      price: this.state.price,
-      address: this.state.address,
-      brands: this.state.brand,
-      other: this.state.other,
-      page: this.state.page,
+      q: valueSearch,
+      category_id: id,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
       sort: typesort
     })
   }

@@ -215,7 +215,7 @@ class Filter extends React.Component {
       kotaTerpilih: 'Semua Wilayah',
       filterPengiriman: [],
       filterKondisi: '',
-      filterAddress: 1116,
+      filterAddress: '',
       filterBrand: [],
       filterOthers: []
     })
@@ -408,7 +408,13 @@ class Filter extends React.Component {
   }
 
   renderRowDataBrand = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centangBiru : null
+    let centang = rowData.is_checked ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterBrand.length; i++) {
+      if (rowData.id === this.state.filterBrand[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickBrand(rowID)} >
         <View style={styles.labelContainerSecond}>
@@ -425,7 +431,13 @@ class Filter extends React.Component {
   }
 
   renderRowDataLainnya = (rowData) => {
-    const centang = rowData.active ? Images.centangBiru : null
+    let centang = rowData.active ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterOthers.length; i++) {
+      if (rowData.value === this.state.filterOthers[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickLainnya(rowData.id)} >
         <View style={styles.labelContainerSecond}>

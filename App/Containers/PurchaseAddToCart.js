@@ -442,7 +442,15 @@ class PurchaseAddToCart extends React.Component {
     const { kurir, tipeKurir, asuransi, errorKurir, errorSubKurir } = this.state
     let renderkurir
     let rendersubkurir
-    let renderasuransi
+    let renderasuransi =
+    (<TouchableOpacity
+      style={styles.containerPicker}
+      onPress={() => this.setState({ modalAsuransi: true })}
+    >
+      <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
+      <Text style={styles.teksPicker}>{asuransi}</Text>
+      <Image source={Images.down} style={styles.imagePicker} />
+    </TouchableOpacity>)
 
     if (kurir === '' && !errorKurir) {
       renderkurir = (
@@ -492,27 +500,15 @@ class PurchaseAddToCart extends React.Component {
         <Text style={styles.teksPicker}>{tipeKurir}</Text>
         <Image source={Images.down} style={styles.imagePicker} />
       </TouchableOpacity>)
-
-      renderasuransi =
-      (<TouchableOpacity
-        style={styles.containerPicker}
-        onPress={() => this.setState({ modalAsuransi: true })}
-      >
-        <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
-        <Text style={styles.teksPicker}>{asuransi}</Text>
-        <Image source={Images.down} style={styles.imagePicker} />
-      </TouchableOpacity>)
     } else if (kurir !== '' && tipeKurir === '' && !errorSubKurir) {
       rendersubkurir =
-      (<View>
-        <TouchableOpacity
-          style={styles.containerPicker}
-          onPress={() => this.setState({ modalSubkurir: true })}
-        >
-          <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
-          <Image source={Images.down} style={styles.imagePicker} />
-        </TouchableOpacity>
-        <View style={styles.separator} /></View>)
+      (<TouchableOpacity
+        style={styles.containerPicker}
+        onPress={() => this.setState({ modalSubkurir: true })}
+      >
+        <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
+        <Image source={Images.down} style={styles.imagePicker} />
+      </TouchableOpacity>)
     } else if (kurir !== '' && tipeKurir === '' && errorSubKurir) {
       rendersubkurir =
       (<View>

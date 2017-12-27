@@ -280,6 +280,7 @@ class PriceAndSpecificationProduct extends React.Component {
         <Text style={styles.title}>Spesifikasi</Text>
         <View style={styles.spesifkasi}>
           <View style={styles.flexRow}>
+            <Text style={[styles.inputText, { marginRight: 10, borderBottomWidth: 0, paddingLeft: 0 }]}>Rp </Text>
             <View style={styles.left}>
               <TextInput
                 style={styles.inputText}

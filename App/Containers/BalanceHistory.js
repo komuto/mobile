@@ -221,6 +221,7 @@ class BalanceHistory extends React.Component {
     const year = moment.unix(rowData.date).format('YYYY')
     const balanceText = this.maskedMoney(rowData.last_saldo)
     const type = rowData.trans_type.toLowerCase()
+    let summaryType = rowData.summaryable_type
     let textType
     switch (type) {
       case 'tpup':
@@ -246,7 +247,7 @@ class BalanceHistory extends React.Component {
         break
     }
     return (
-      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id)}>
+      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id, summaryType)}>
         <View style={styles.dataContainer}>
           <View style={styles.data}>
             <Text style={[styles.textTitle, {marginBottom: 5}]}>{textType}</Text>
@@ -402,9 +403,14 @@ class BalanceHistory extends React.Component {
     })
   }
 
-  detail (category, id) {
-    if (category === 'SELL') {
+  detail (category, id, summaryType) {
+    if (category === 'SELL' || (category === 'RFND' && summaryType === 'invoice')) {
       NavigationActions.balancehistoryselling({
+        type: ActionConst.PUSH
+      })
+      this.props.getDetailHistory(id)
+    } else if (category === 'SFEE') {
+      NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
       this.props.getDetailHistory(id)
@@ -415,11 +421,6 @@ class BalanceHistory extends React.Component {
       this.props.getDetailHistory(id)
     } else if (category === 'TPUP') {
       NavigationActions.balancehistorytopup({
-        type: ActionConst.PUSH
-      })
-      this.props.getDetailHistory(id)
-    } else if (category === 'SFEE') {
-      NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
       this.props.getDetailHistory(id)

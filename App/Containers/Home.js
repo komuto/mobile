@@ -277,6 +277,7 @@ class Home extends React.Component {
       })
     } else if (nextProps.dataBanner.status !== 200 && nextProps.dataBanner.status !== 0) {
       ToastAndroid.show(nextProps.dataBanner.message, ToastAndroid.SHORT)
+      nextProps.dataBanner.status = 0
     }
   }
 

@@ -272,7 +272,7 @@ class BalanceHistorySelling extends React.Component {
           {this.renderTotal('Total Tagihan', moneyTotal)}
           {this.renderExpand()}
           {this.renderSeparator()}
-          {this.renderData('Komisi (' + marketplace + comissionText + '%)', moneyComission, true)}
+          {this.renderData('Komisi (' + marketplace + ' ' + comissionText + '%)', moneyComission, true)}
           {this.renderMoney('Uang yang Anda terima', paidMoney)}
           {this.renderSeparator()}
           {this.renderTitle('Info Penjualan', true)}

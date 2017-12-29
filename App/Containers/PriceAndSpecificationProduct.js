@@ -280,24 +280,30 @@ class PriceAndSpecificationProduct extends React.Component {
         <Text style={styles.title}>Spesifikasi</Text>
         <View style={styles.spesifkasi}>
           <View style={styles.flexRow}>
-            <Text style={[styles.inputText, { marginRight: 10, borderBottomWidth: 0, paddingLeft: 0 }]}>Rp </Text>
-            <View style={styles.left}>
-              <TextInput
-                style={styles.inputText}
-                value={String(this.state.harga)}
-                keyboardType='numeric'
-                returnKeyType='done'
-                autoCapitalize='none'
-                maxLength={10}
-                autoCorrect={false}
-                onFocus={() => this.onFocus('price')}
-                onBlur={() => this.onBlur('price')}
-                onChangeText={this.handleTextprice}
-                underlineColorAndroid='transparent'
-                placeholder='Harga Produk'
-              />
+            <View style={{ flexDirection: 'column', flex: 3 }}>
+              <Text style={[styles.inputText, { borderBottomWidth: 0, paddingLeft: 0, paddingBottom: 0, color: Colors.labelgrey }]}>Harga Produk</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={[styles.inputText, { marginRight: 10, borderBottomWidth: 0, paddingLeft: 0 }]}>Rp </Text>
+                <View style={styles.left}>
+                  <TextInput
+                    style={styles.inputText}
+                    value={String(this.state.harga)}
+                    keyboardType='numeric'
+                    returnKeyType='done'
+                    autoCapitalize='none'
+                    maxLength={10}
+                    autoCorrect={false}
+                    onFocus={() => this.onFocus('price')}
+                    onBlur={() => this.onBlur('price')}
+                    onChangeText={this.handleTextprice}
+                    underlineColorAndroid='transparent'
+                    placeholder='0'
+                  />
+                </View>
+              </View>
             </View>
-            <View style={styles.right}>
+            <View style={[styles.right, { flexDirection: 'column' }]}>
+              <Text style={[styles.inputText, { borderBottomWidth: 0, paddingLeft: 0, paddingBottom: 0, color: Colors.labelgrey }]}>Diskon</Text>
               <View style={styles.rowDiskon}>
                 <TextInput
                   style={styles.inputNoBOrder}
@@ -309,7 +315,7 @@ class PriceAndSpecificationProduct extends React.Component {
                   autoCorrect
                   onChangeText={this.handleTextDiscount}
                   underlineColorAndroid='transparent'
-                  placeholder='Diskon'
+                  placeholder='0'
                 />
                 <Text style={[styles.inputNoBOrder, {flex: 0}]}>%</Text>
               </View>
@@ -317,6 +323,7 @@ class PriceAndSpecificationProduct extends React.Component {
           </View>
           <Text style={[styles.textError, {color: errorColorPrice}]}>Harga produk harus diisi</Text>
           {this.rincianDiskon()}
+          <Text style={[styles.inputText, { borderBottomWidth: 0, paddingLeft: 0, paddingBottom: 0, color: Colors.labelgrey }]}>Berat Produk</Text>
           <View style={styles.rowBerat}>
             <TextInput
               style={styles.inputNoBOrder}
@@ -330,11 +337,12 @@ class PriceAndSpecificationProduct extends React.Component {
               onBlur={() => this.onBlur('wight')}
               onChangeText={(text) => this.setState({beratProduk: text})}
               underlineColorAndroid='transparent'
-              placeholder='Berat Produk'
+              placeholder='0'
             />
             <Text style={[styles.inputNoBOrder, {flex: 0}]}>gram</Text>
           </View>
           <Text style={[styles.textError, {color: errorColorWight}]}>Berat produk harus diisi</Text>
+          <Text style={[styles.inputText, { borderBottomWidth: 0, paddingLeft: 0, paddingBottom: 0, color: Colors.labelgrey }]}>Stok Produk</Text>
           <View style={styles.rowBerat}>
             <TextInput
               style={styles.inputNoBOrder}
@@ -348,7 +356,7 @@ class PriceAndSpecificationProduct extends React.Component {
               onBlur={() => this.onBlur('stock')}
               onChangeText={(text) => this.setState({stokProduk: text})}
               underlineColorAndroid='transparent'
-              placeholder='Stock Produk'
+              placeholder='0'
             />
           </View>
           <Text style={[styles.textError, {color: errorColorStock}]}>Stok harus diisi</Text>
@@ -438,31 +446,25 @@ class PriceAndSpecificationProduct extends React.Component {
     let total = salePrice - commission
     let totalPriceMasked = this.maskedMoneyManual(total)
 
-    if (this.state.harga.length > 0) {
-      return (
-        <View style={styles.rincianContainrer}>
-          <Text style={[styles.title, {paddingLeft: 20, paddingTop: 0}]}>Rincian Penerimaan</Text>
-          <View style={styles.borderBottom}>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Harga Jual</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
-            </View>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Komisi  ({commissionTemp}%  dari {hargaMasked})</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
-            </View>
-            <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>
-              <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{totalPriceMasked}</Text>
-            </View>
+    return (
+      <View style={styles.rincianContainrer}>
+        <Text style={[styles.title, {paddingLeft: 20, paddingTop: 0}]}>Rincian Penerimaan</Text>
+        <View style={styles.borderBottom}>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Harga Jual</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
+          </View>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Komisi  ({commissionTemp}%  dari {hargaMasked})</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
+          </View>
+          <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>
+            <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{totalPriceMasked}</Text>
           </View>
         </View>
-      )
-    } else {
-      return (
-        <View />
-      )
-    }
+      </View>
+    )
   }
 
   handleDropshipping () {

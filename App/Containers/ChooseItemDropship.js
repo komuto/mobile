@@ -67,12 +67,13 @@ class ChooseItemDropship extends React.Component {
       loadmore: false,
       isRefreshing: true,
       isLoading: false,
-      kondisi: '',
-      pengiriman: '',
-      price: '',
-      address: '',
-      brand: '',
-      other: '',
+      filterKondisi: '',
+      filterPengiriman: [],
+      filterPrice: [0, 0],
+      filterAddress: '',
+      filterBrand: [],
+      filterOthers: [],
+      statusFilter: false,
       sort: 'newest',
       wishlist: props.propsWishlist || null,
       category1: props.category1 || null,
@@ -86,7 +87,10 @@ class ChooseItemDropship extends React.Component {
       idCategory1: '',
       fieldCategory1: 'Semua Kategori',
       colorCategory1: Colors.labelgrey,
-      iconCategory1: Images.down
+      iconCategory1: Images.down,
+      provinsi: '',
+      kota: '',
+      provinsiId: ''
     }
   }
 
@@ -165,33 +169,36 @@ class ChooseItemDropship extends React.Component {
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    const { search, page, sort, idCategory1 } = this.state
+  handlingFilter (filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) {
+    const { search, sort, idCategory1 } = this.state
     this.submitting.category = true
     this.props.getDropshipper({
       q: search,
       category_id: idCategory1,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: page,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
+      page: 1,
       sort: sort
     })
     this.setState({
       filter: false,
       page: 1,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
       isRefreshing: true,
       rowDataContainer: [],
-      listDataSource: []
+      listDataSource: [],
+      provinsi: provinsi,
+      provinsiId: provinsiId,
+      kota: kota
     })
   }
 
@@ -260,30 +267,14 @@ class ChooseItemDropship extends React.Component {
   }
 
   dispatchSort (typesort) {
-    const {lightblack} = Colors
     this.setState({
       isRefreshing: true,
       listDataSource: [],
       rowDataSource: [],
-      page: 1,
-      terbaruColor: lightblack,
-      termurahColor: lightblack,
-      termahalColor: lightblack,
-      terlarisColor: lightblack,
-      terbaruCek: 0,
-      termurahCek: 0,
-      termahalCek: 0,
-      terlarisCek: 0
+      page: 1
     })
     const {
       search,
-      kondisi,
-      pengiriman,
-      price,
-      address,
-      brand,
-      other,
-      page,
       sort,
       idCategory1
     } = this.state
@@ -291,13 +282,13 @@ class ChooseItemDropship extends React.Component {
     this.props.getDropshipper({
       q: search,
       category_id: idCategory1,
-      condition: kondisi,
-      services: pengiriman,
-      price: price,
-      address: address,
-      brands: brand,
-      other: other,
-      page: page,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      page: 1,
       sort: sort
     })
   }
@@ -383,8 +374,17 @@ class ChooseItemDropship extends React.Component {
             </TouchableOpacity>
           </View>
           <Filter
-            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+            filterPengiriman={this.state.filterPengiriman}
+            filterKondisi={this.state.filterKondisi}
+            filterAddress={this.state.filterAddress}
+            filterPrice={this.state.filterPrice}
+            filterBrand={this.state.filterBrand}
+            filterOthers={this.state.filterOthers}
+            provinsiId={this.state.provinsiId}
+            provinsi={this.state.provinsi}
+            kota={this.state.kota}
+            handlingFilter={(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) =>
+            this.handlingFilter(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota)} />
         </View>
       </Modal>
     )
@@ -397,7 +397,7 @@ class ChooseItemDropship extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 
@@ -652,18 +652,18 @@ class ChooseItemDropship extends React.Component {
   }
 
   loadMore () {
-    const {isLoading, loadmore, search, kondisi, pengiriman, price, address, brand, other, page, sort, idCategory1} = this.state
+    const {isLoading, loadmore, search, page, sort, idCategory1} = this.state
     if (!isLoading) {
       if (loadmore) {
         this.props.getDropshipper({
           q: search,
           category_id: idCategory1,
-          condition: kondisi,
-          services: pengiriman,
-          price: price,
-          address: address,
-          brands: brand,
-          other: other,
+          condition: this.state.filterKondisi,
+          services: this.state.filterPengiriman,
+          price: this.state.filterPrice,
+          address: this.state.filterAddress,
+          brands: this.state.filterBrand,
+          other: this.state.filterOthers,
           page: page,
           sort: sort
         })
@@ -673,7 +673,18 @@ class ChooseItemDropship extends React.Component {
 
   refresh = () => {
     this.setState({ isRefreshing: true, listDataSource: [], page: 1, search: '', idCategory1: '' })
-    this.props.getDropshipper()
+    this.props.getDropshipper({
+      q: this.state.search,
+      category_id: this.state.idCategory1,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      page: 1,
+      sort: this.state.sort
+    })
   }
 
   renderImageTypeView () {

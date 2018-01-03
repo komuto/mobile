@@ -147,6 +147,7 @@ const store = function * () {
   yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG), storeSaga.getStoreProductsByCatalog)
   yield takeEvery(typeReq(storeActions.UNREAD_DISPUTES_STORE), storeSaga.getUnreadDisputesStore)
   yield takeLatest(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH), storeSaga.getStoreProductsByCatalogSearch)
+  yield takeLatest(typeReq(storeActions.GET_STORE_PRODUCTS_HIDDEN_BY_CATALOG_SEARCH), storeSaga.getStoreProductsHiddenByCatalogSearch)
   yield takeEvery(typeReq(storeActions.GET_DROPSHIPPER_FAQ), storeSaga.getDropshipFaq)
 }
 

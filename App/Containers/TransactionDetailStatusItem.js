@@ -167,7 +167,7 @@ class TransaksiDetailStatusBarang extends React.Component {
     }
     return (
       <View style={[styles.barangContainer, { alignItems: 'center' }]}>
-        <Text style={[styles.textTitle, { flex: 1 }]}>Status</Text>
+        <Text style={[styles.textTitle, { flex: 1 }]}>Status Barang</Text>
         <View style={[styles.warna, { backgroundColor: warna }]} />
         <Text style={styles.teks}>{teks}</Text>
       </View>

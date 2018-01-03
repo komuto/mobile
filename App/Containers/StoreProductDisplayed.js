@@ -10,7 +10,8 @@ import {
   Modal,
   ListView,
   ToastAndroid,
-  RefreshControl
+  RefreshControl,
+  TextInput
 } from 'react-native'
 import {connect} from 'react-redux'
 import {Actions as NavigationActions, ActionConst} from 'react-native-router-flux'
@@ -46,7 +47,10 @@ class StoreProductDisplayed extends React.Component {
       loading: true,
       modal: false,
       callback: this.props.callback,
-      isRefreshing: false
+      isRefreshing: false,
+      search: '',
+      dataSearch: [],
+      searchBool: false
     }
   }
 
@@ -83,6 +87,13 @@ class StoreProductDisplayed extends React.Component {
       if (isFound(dataProduk)) {
         this.setState({ product: dataProduk })
       }
+    }
+    if (nextProps.dataSearch.status === 200) {
+      this.setState({
+        dataSearch: nextProps.dataSearch.products
+      })
+    } else if (nextProps.dataSearch.status !== 200 && nextProps.dataSearch.status !== 0) {
+      ToastAndroid.show(nextProps.dataSearch.message, ToastAndroid.SHORT)
     }
   }
 
@@ -501,6 +512,61 @@ class StoreProductDisplayed extends React.Component {
     )
   }
 
+  renderSearch () {
+    const { search, product } = this.state
+    if (product.storeProducts.length > 0) {
+      return (
+        <View style={styles.searchContainer}>
+          <Image source={Images.searchGrey} style={styles.searchImage} />
+          <TextInput
+            ref='search'
+            style={styles.inputText}
+            value={search}
+            keyboardType='default'
+            autoCapitalize='none'
+            autoCorrect
+            onChangeText={this.handleSearch}
+            underlineColorAndroid='transparent'
+            placeholder='Cari Produk'
+          />
+        </View>
+      )
+    }
+    return null
+  }
+
+  handleSearch = (text) => {
+    if (text !== '') {
+      this.setState({ search: text, searchBool: true })
+      this.props.searchProduct(text)
+    } else {
+      this.setState({ search: text, searchBool: false })
+    }
+  }
+
+  renderDataSearch () {
+    const { dataSearch } = this.state
+    const mapProduk = dataSearch.map((data, i) => {
+      return (
+        <TouchableOpacity key={i} style={styles.dataListProduk}
+          onPress={() => this.produkDetail(data.id, data.name, data.image, data.price, data, '')}>
+          <View style={styles.flexRow}>
+            <Image source={{uri: data.image}} style={styles.imageProduk} />
+            <View style={styles.column}>
+              {this.checkLabelProduct(data.name, data.is_discount, data.is_wholesaler)}
+              {this.labeldaridropshipper(data)}
+            </View>
+          </View>
+        </TouchableOpacity>
+      )
+    })
+    return (
+      <View>
+        {mapProduk}
+      </View>
+    )
+  }
+
   render () {
     if (this.submitting.doneFetching) {
       return (
@@ -511,12 +577,19 @@ class StoreProductDisplayed extends React.Component {
     }
     let view, viewModal
     if (this.state.product.storeProducts.length > 0) {
-      view = (
-        this.DaftarProdukDiTampilkan(this.state.product)
-      )
-      viewModal = (
-        this.renderKatalogtButton()
-      )
+      if (this.state.searchBool) {
+        view = (
+          this.renderDataSearch()
+        )
+        viewModal = null
+      } else {
+        view = (
+          this.DaftarProdukDiTampilkan(this.state.product)
+        )
+        viewModal = (
+          this.renderKatalogtButton()
+        )
+      }
     } else {
       view = (
         this.renderEmpty()
@@ -525,6 +598,7 @@ class StoreProductDisplayed extends React.Component {
     }
     return (
       <View>
+        {this.renderSearch()}
         <ScrollView
           ref='produkTampil'
           refreshControl={
@@ -550,12 +624,14 @@ class StoreProductDisplayed extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  dataProduk: state.storeProducts
+  dataProduk: state.storeProducts,
+  dataSearch: state.storeCatalogProductsSearch
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getListProduk: (param) => dispatch(storeAction.getStoreProducts(param)),
-  getCatalog: () => dispatch(catalogAction.getListCatalog())
+  getCatalog: () => dispatch(catalogAction.getListCatalog()),
+  searchProduct: (query) => dispatch(storeAction.getStoreProductsByCatalogSearch({q: query}))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(StoreProductDisplayed)

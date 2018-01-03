@@ -156,6 +156,12 @@ export const getStoreProductsByCatalogSearch = createReducer(buildInitState({ pr
     resultName: 'products'
   }).run()
 
+export const getStoreProductsHiddenByCatalogSearch = createReducer(buildInitState({ products: [] }, true))
+  .addReducer({
+    type: actions.GET_STORE_PRODUCTS_HIDDEN_BY_CATALOG_SEARCH,
+    resultName: 'products'
+  }).run()
+
 export const getDropshipperFaq = createReducer(buildInitState({ faq: '' }))
 .addReducer({
   type: actions.GET_DROPSHIPPER_FAQ,

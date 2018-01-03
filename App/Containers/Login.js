@@ -70,6 +70,7 @@ class Login extends React.Component {
         this.setState({loading: true})
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
+            console.log('token: ', tokenFCM)
             this.props.attemptLogin(email, password, tokenFCM)
           }
         })
@@ -201,7 +202,7 @@ class Login extends React.Component {
                 onPress={this.handlePressLogin}
               >
                 <View style={styles.loginButton}>
-                  <Text style={styles.loginText}>Login</Text>
+                  <Text style={styles.loginText}>Masuk</Text>
                 </View>
               </TouchableOpacity>
             </View>

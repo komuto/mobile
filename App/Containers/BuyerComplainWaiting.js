@@ -1,10 +1,11 @@
 import React from 'react'
 import { View, ActivityIndicator, RefreshControl, ScrollView, Text, ListView, Image, TouchableOpacity, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { Colors, Images } from '../Themes'
+import { Colors, Images, Fonts } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as transactionAction from '../actions/transaction'
 import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
 
 // Styles
 import styles from './Styles/BuyerComplainWaitingStyle'
@@ -106,30 +107,36 @@ class BuyerComplainWaiting extends React.Component {
 
   listViewComplain (data) {
     return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(data)}
-        renderRow={(rowData) => this.renderRow(rowData)}
-        onEndReached={() => this.loadMore()}
-        renderFooter={() => {
-          if (this.state.loadmore) {
-            return (
-              <ActivityIndicator
-                style={[styles.loadingStyle, { height: 50 }]}
-                size='small'
-                color='#ef5656'
-              />
-            )
-          }
-          return <View />
-        }}
-        enableEmptySections
-        style={{flex: 1}}
-      />
+      <View>
+        <View style={styles.header}>
+          <Text style={styles.regularSlate}>Berikut adalah daftar pembelian yang terdapat barang bermasalah di dalamnya</Text>
+        </View>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(data)}
+          renderRow={(rowData) => this.renderRow(rowData)}
+          onEndReached={() => this.loadMore()}
+          renderFooter={() => {
+            if (this.state.loadmore) {
+              return (
+                <ActivityIndicator
+                  style={[styles.loadingStyle, { height: 50 }]}
+                  size='small'
+                  color='#ef5656'
+                />
+              )
+            }
+            return <View />
+          }}
+          enableEmptySections
+          style={{flex: 1}}
+        />
+      </View>
     )
   }
 
   renderRow (rowData) {
     const data = rowData.dispute_products
+    Reactotron.log(data)
     let renderData
     if (data.length < 5) {
       const image = data.map((data, i) => {
@@ -142,6 +149,7 @@ class BuyerComplainWaiting extends React.Component {
           <View style={styles.imageContainer}>
             {image}
           </View>
+          <Text style={{paddingLeft: 10, fontFamily: Fonts.type.regular, fontSize: Fonts.size.smallMed, flex: 1}}>{data[0].name}</Text>
           <Image source={Images.rightArrow} style={styles.arrow} />
         </View>
       )
@@ -149,7 +157,7 @@ class BuyerComplainWaiting extends React.Component {
       const gambar = data.length - 5
       renderData = (
         <View style={styles.dataSingle}>
-          <View style={styles.imageContainer}>
+          <View style={[styles.imageContainer, {flex: 1}]}>
             <Image source={{ uri: data[0].image }} style={styles.imageRowStyle} />
             <Image source={{ uri: data[1].image }} style={styles.imageRowStyle} />
             <Image source={{ uri: data[2].image }} style={styles.imageRowStyle} />

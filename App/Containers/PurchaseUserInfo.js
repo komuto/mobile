@@ -654,7 +654,7 @@ class PurchaseUserInfo extends React.Component {
               onFocus={() => this.onFocus('nohape')}
               onBlur={() => this.onBlur('nohape')}
             />
-            <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomer Handphone harus diisi</Text>
+            <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomor Handphone harus diisi</Text>
           </View>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Info Lokasi</Text>

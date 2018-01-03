@@ -44,7 +44,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
-                <action android:name="SELLER_DISCUSSION" />
+                <action android:name="SELLER_CREATE_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_COMMENT_DISCUSSION" />
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
@@ -52,7 +56,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
-                <action android:name="SELLER_RESOLUTION" />
+                <action android:name="SELLER_TRANSACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_ORDER_RECEIVED" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="ORDER_COMPLAINED_REFUND" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="ORDER_COMPLAINED_EXCHANGE" />
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
@@ -60,17 +76,21 @@
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
-                <action android:name="BUYER_DISCUSSION" />
+                <action android:name="BUYER_COMMENT_DISCUSSION" />
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
-                <action android:name="BUYER_REVIEW" />
+                <action android:name="BUYER_ORDER_PROCEED" />
                 <category android:name="android.intent.category.DEFAULT" />
              </intent-filter>
              <intent-filter>
-                <action android:name="BUYER_RESOLUTION" />
+                <action android:name="BUYER_ORDER_SENT" />
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_ORDER_REJECTED" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
 
             <intent-filter android:label="Komuto">
                 <action android:name="android.intent.action.VIEW" />

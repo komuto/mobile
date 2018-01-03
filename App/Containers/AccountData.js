@@ -190,9 +190,9 @@ class AccountData extends React.Component {
     if (data.length === 0) {
       return (
         <View style={styles.containerEmpty}>
-          <Image source={Images.emptyDiscussion} style={{ width: 173, height: 178 }} />
+          <Image source={Images.emptyCatalog} style={{ width: 173, height: 178 }} />
           <Text style={styles.textTitleEmpty}>Rekening Anda Kosong</Text>
-          <Text style={styles.textTitleEmpty2}>----</Text>
+          <Text style={styles.textTitleEmpty2}>Silahkan tambahkan rekening Anda</Text>
         </View>
       )
     }

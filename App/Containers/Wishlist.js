@@ -99,16 +99,16 @@ class Wishlist extends React.Component {
     })
     const {bluesky, lightblack} = Colors
     if (field === 'newest') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.setState({header: 'Produk Terbaru', terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'cheapest') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.setState({header: 'Produk Termurah', terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'expensive') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.setState({header: 'Produk Termahal', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'selling') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.setState({header: 'Produk Terlaris', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
       this.dispatchSort(field)
     }
   }
@@ -135,7 +135,7 @@ class Wishlist extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={stylesProduk.imageVerified} />
+      <Image source={Images.notVerified} style={stylesProduk.imageVerified} />
     )
   }
 

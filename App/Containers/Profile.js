@@ -216,12 +216,12 @@ class Profile extends React.Component {
           <View style={styles.containerButton}>
             <TouchableOpacity style={styles.buttonRegister} onPress={() => this.register()}>
               <Text style={styles.textButtonRegister}>
-                Register
+                Daftar
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonLogin} onPress={() => this.login()}>
               <Text style={styles.textButtonLogin}>
-                Login
+                Masuk
               </Text>
             </TouchableOpacity>
           </View>
@@ -284,7 +284,7 @@ class Profile extends React.Component {
       return (
         <View style={styles.notifContainer}>
           <Text style={styles.notif}>
-            !
+            1
           </Text>
         </View>
       )

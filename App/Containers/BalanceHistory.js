@@ -66,6 +66,7 @@ class BalanceHistory extends React.Component {
       modalFilter: false,
       startDate: 'Pilih Tanggal',
       endDate: 'Pilih Tanggal',
+      days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
       months: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
         'Agustus', 'September', 'Oktober', 'November', 'Desember'],
       page: 1,
@@ -219,11 +220,37 @@ class BalanceHistory extends React.Component {
     const textMonth = this.state.months[month].substring(0, 3)
     const year = moment.unix(rowData.date).format('YYYY')
     const balanceText = this.maskedMoney(rowData.last_saldo)
+    const type = rowData.trans_type.toLowerCase()
+    let summaryType = rowData.summaryable_type
+    let textType
+    switch (type) {
+      case 'tpup':
+        textType = 'Top Up Saldo'
+        break
+      case 'paid':
+        textType = 'Pembelian Barang'
+        break
+      case 'rfnd':
+        textType = 'Dana Refund Barang'
+        break
+      case 'sell':
+        textType = 'Dana Penjualan Barang'
+        break
+      case 'wthd':
+        textType = 'Penarikan Saldo'
+        break
+      case 'sfee':
+        textType = 'Komisi Reseller'
+        break
+      default:
+        textType = type
+        break
+    }
     return (
-      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id)}>
+      <TouchableOpacity style={styles.rowContainer} onPress={() => this.detail(rowData.trans_type, rowData.id, summaryType)}>
         <View style={styles.dataContainer}>
           <View style={styles.data}>
-            <Text style={[styles.textTitle, {marginBottom: 5}]}>{rowData.remark}</Text>
+            <Text style={[styles.textTitle, {marginBottom: 5}]}>{textType}</Text>
             <Text style={styles.textDate}>{day} {textMonth} {year}</Text>
           </View>
           <View style={styles.money}>
@@ -232,7 +259,7 @@ class BalanceHistory extends React.Component {
           </View>
         </View>
         <View style={styles.balanceContainer}>
-          <Text style={styles.textBalance}>{balanceText}</Text>
+          <Text style={styles.textBalance}>Sisa Saldo: {balanceText}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -307,8 +334,9 @@ class BalanceHistory extends React.Component {
         const d = new Date(tempLabel)
 
         const tempTimestamp = day + '/' + (parseInt(month) + 1) + '/' + year
+        const textDay = this.state.days[d.getDay()]
         const bulan = months[d.getMonth()]
-        const label = day + ' ' + bulan + ' ' + year
+        const label = textDay + ', ' + day + ' ' + bulan + ' ' + year
 
         const timestamp = moment(tempTimestamp, 'DD-MM-YYYY').unix()
 
@@ -335,8 +363,9 @@ class BalanceHistory extends React.Component {
         const d = new Date(tempLabel)
 
         const tempTimestamp = day + '/' + (parseInt(month) + 1) + '/' + year
+        const textDay = this.state.days[d.getDay()]
         const bulan = months[d.getMonth()]
-        const label = day + ' ' + bulan + ' ' + year
+        const label = textDay + ', ' + day + ' ' + bulan + ' ' + year
 
         const timestamp = moment(tempTimestamp, 'DD-MM-YYYY').unix()
 
@@ -374,9 +403,14 @@ class BalanceHistory extends React.Component {
     })
   }
 
-  detail (category, id) {
-    if (category === 'SELL') {
+  detail (category, id, summaryType) {
+    if (category === 'SELL' || (category === 'RFND' && summaryType === 'invoice')) {
       NavigationActions.balancehistoryselling({
+        type: ActionConst.PUSH
+      })
+      this.props.getDetailHistory(id)
+    } else if (category === 'SFEE') {
+      NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
       this.props.getDetailHistory(id)
@@ -387,11 +421,6 @@ class BalanceHistory extends React.Component {
       this.props.getDetailHistory(id)
     } else if (category === 'TPUP') {
       NavigationActions.balancehistorytopup({
-        type: ActionConst.PUSH
-      })
-      this.props.getDetailHistory(id)
-    } else if (category === 'SFEE') {
-      NavigationActions.balancehistorycomission({
         type: ActionConst.PUSH
       })
       this.props.getDetailHistory(id)

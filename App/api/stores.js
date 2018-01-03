@@ -141,6 +141,12 @@ export const getStoreProductsByCatalogSearch = (params) => {
   return axios.get(`/users/store/products/search?${query}`)
 }
 
+export const getStoreProductsHiddenByCatalogSearch = (params) => {
+  const axios = authApiKomuto()
+  const query = buildQuery(params)
+  return axios.get(`/users/store/products/search?${query}` + '&hidden=true')
+}
+
 export const getDropshipperFaq = () => {
   const axios = authApiKomuto()
   return axios.get('dropship/faq')

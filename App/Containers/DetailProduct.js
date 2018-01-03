@@ -80,9 +80,9 @@ class DetailProduct extends React.Component {
       totalWeight: 0,
       originId: 0,
       otherProduct: [],
-      provinsiTerpilih: 'Semua Wilayah',
-      kabTerpilih: 'Semua Wilayah',
-      kecTerpilih: 'Semua Wilayah',
+      provinsiTerpilih: 'Pilih Provinsi',
+      kabTerpilih: 'Pilih Kabupaten',
+      kecTerpilih: 'Pilih Kecamatan',
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
@@ -334,7 +334,7 @@ class DetailProduct extends React.Component {
     this.setState({ modalLaporkan: false })
     NavigationActions.report({
       type: ActionConst.PUSH,
-      images: this.state.fotoToko,
+      images: this.state.dataImage[0].file,
       namaBarang: this.state.title,
       harga: this.state.price,
       id: this.state.id
@@ -390,7 +390,7 @@ class DetailProduct extends React.Component {
                 source={Images.laporkan}
                 style={styles.imageStyle}
               />
-              <Text style={styles.textBagikan}>Laporkan</Text>
+              <Text style={styles.textBagikan}>Laporkan Barang</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -758,7 +758,7 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={{height: 25, width: 25}} />
+      <Image source={Images.notVerified} style={{height: 25, width: 25}} />
     )
   }
 
@@ -769,7 +769,7 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.image24p} />
+      <Image source={Images.notVerified} style={styles.image24p} />
     )
   }
 
@@ -891,7 +891,7 @@ class DetailProduct extends React.Component {
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Dilihat</Text>
-          <Text style={styles.staticProductVal}>{this.state.jumlahLihat}</Text>
+          <Text style={styles.staticProductVal}>{this.state.jumlahLihat} kali</Text>
         </View>
         <View style={[styles.staticList, {borderBottomWidth: 0}]}>
           <Text style={styles.staticProduct}>Terjual</Text>
@@ -951,11 +951,11 @@ class DetailProduct extends React.Component {
   renderAsuransi () {
     if (this.state.asuransi) {
       return (
-        <Text style={styles.infoProductVal}>Wajib</Text>
+        <Text style={styles.infoProductVal}>Ya</Text>
       )
     }
     return (
-      <Text style={styles.infoProductVal}>Optional</Text>
+      <Text style={styles.infoProductVal}>Tidak</Text>
     )
   }
 
@@ -1080,7 +1080,7 @@ class DetailProduct extends React.Component {
       id: id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaToko: this.state.namaToko
     })
     this.props.reviewAction(id, 1)
@@ -1094,8 +1094,8 @@ class DetailProduct extends React.Component {
         onPress={() => {
           this.setState({
             provinsiTerpilih: rowData.name,
-            kabTerpilih: 'Semua Wilayah',
-            kecTerpilih: 'Semua Wilayah',
+            kabTerpilih: 'Pilih Kabupaten',
+            kecTerpilih: 'Pilih Kecamatan',
             idProvinsiTerpilih: rowData.id,
             modalProvinsi: false })
           this.props.getKota(rowData.id)
@@ -1115,7 +1115,7 @@ class DetailProduct extends React.Component {
           this.setState({
             kabTerpilih: rowData.name,
             idKabTerpilih: rowData.ro_id,
-            kecTerpilih: 'Semua Wilayah',
+            kecTerpilih: 'Pilih Kecamatan',
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
         }}
@@ -1326,7 +1326,7 @@ class DetailProduct extends React.Component {
       return (
         <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
           <Text style={styles.labelButtonFav}>
-            Favorit
+             + Favorit
           </Text>
         </TouchableOpacity>
       )
@@ -1522,11 +1522,12 @@ class DetailProduct extends React.Component {
 
   diskusi () {
     this.props.getDiscussion(this.state.id, 1)
+    Reactotron.log(this.state.dataImage[0].file)
     NavigationActions.productdiscussion({
       id: this.state.id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaProduk: this.state.title,
       data: []
     })
@@ -1567,7 +1568,7 @@ class DetailProduct extends React.Component {
       } else {
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
-          fotoToko: this.state.fotoToko,
+          fotoToko: this.state.dataImage[0].file,
           productName: this.state.title,
           namaToko: this.state.namaToko,
           price: this.state.price,

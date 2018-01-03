@@ -22,4 +22,5 @@ export const getStoreProductDetail = buildSaga(apis.getStoreProductDetail, actio
 export const getStoreProductsByCatalog = buildSaga(apis.getStoreProductsByCatalog, actions.GET_STORE_PRODUCTS_BY_CATALOG)
 export const getUnreadDisputesStore = buildSaga(apis.getUnreadDisputeStore, actions.UNREAD_DISPUTES_STORE)
 export const getStoreProductsByCatalogSearch = buildSagaDelay(apis.getStoreProductsByCatalogSearch, actions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH)
+export const getStoreProductsHiddenByCatalogSearch = buildSagaDelay(apis.getStoreProductsHiddenByCatalogSearch, actions.GET_STORE_PRODUCTS_HIDDEN_BY_CATALOG_SEARCH)
 export const getDropshipFaq = buildSaga(apis.getDropshipperFaq, actions.GET_DROPSHIPPER_FAQ)

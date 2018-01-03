@@ -60,12 +60,12 @@ class Category4 extends React.Component {
       loadmore: false,
       isRefreshing: true,
       isLoading: false,
-      kondisi: '',
-      pengiriman: '',
-      price: '',
-      address: '',
-      brand: '',
-      other: '',
+      filterKondisi: '',
+      filterPengiriman: [],
+      filterPrice: [0, 0],
+      filterAddress: '',
+      filterBrand: [],
+      filterOthers: [],
       sort: 'newest',
       wishlist: props.propsWishlist || null,
       id: this.props.id,
@@ -74,7 +74,10 @@ class Category4 extends React.Component {
       modalSearch: false,
       refreshSearch: false,
       valueSearch: '',
-      gettingData: true
+      gettingData: true,
+      provinsi: '',
+      kota: '',
+      provinsiId: ''
     }
   }
 
@@ -233,12 +236,12 @@ class Category4 extends React.Component {
         this.props.getProduct({
           q: this.state.valueSearch,
           category_id: this.state.id,
-          condition: this.state.kondisi,
-          services: this.state.pengiriman,
-          price: this.state.price,
-          address: this.state.address,
-          brands: this.state.brand,
-          other: this.state.other,
+          condition: this.state.filterKondisi,
+          services: this.state.filterPengiriman,
+          price: this.state.filterPrice,
+          address: this.state.filterAddress,
+          brands: this.state.filterBrand,
+          other: this.state.filterOthers,
           page: this.state.page,
           sort: this.state.sort
         })
@@ -248,8 +251,8 @@ class Category4 extends React.Component {
 
   refresh = () => {
     const { lightblack } = Colors
-    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true, valueSearch: '' })
-    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sort: 'newest' })
+    this.setState({ gettingData: true, isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true })
     this.submitting = {
       wishlist: false,
       category: true,
@@ -258,8 +261,16 @@ class Category4 extends React.Component {
       sort: false
     }
     this.props.getProduct({
+      q: this.state.valueSearch,
       category_id: this.state.id,
-      page: 1
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      page: 1,
+      sort: this.state.sort
     })
   }
 
@@ -292,7 +303,7 @@ class Category4 extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 
@@ -596,39 +607,51 @@ class Category4 extends React.Component {
             </TouchableOpacity>
           </View>
           <Filter
-            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+            filterPengiriman={this.state.filterPengiriman}
+            filterKondisi={this.state.filterKondisi}
+            filterAddress={this.state.filterAddress}
+            filterPrice={this.state.filterPrice}
+            filterBrand={this.state.filterBrand}
+            filterOthers={this.state.filterOthers}
+            provinsiId={this.state.provinsiId}
+            provinsi={this.state.provinsi}
+            kota={this.state.kota}
+            handlingFilter={(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) =>
+            this.handlingFilter(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota)} />
         </View>
       </Modal>
     )
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
+  handlingFilter (filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) {
+    this.submitting.product = true
     this.setState({
       filter: false,
       page: 1,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
       isRefreshing: true,
       rowDataContainer: [],
       listDataSource: [],
-      gettingData: true
+      gettingData: true,
+      provinsi: provinsi,
+      provinsiId: provinsiId,
+      kota: kota
     })
-    this.submitting.category = true
     this.props.getProduct({
       q: this.state.valueSearch,
       category_id: this.state.id,
-      condition: this.state.kondisi,
-      services: this.state.pengiriman,
-      price: this.state.price,
-      address: this.state.address,
-      brands: this.state.brand,
-      other: this.state.other,
-      page: this.state.page,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
       sort: this.state.sort
     })
   }
@@ -686,17 +709,27 @@ class Category4 extends React.Component {
       sort: typesort,
       gettingData: true
     })
+    const {
+      valueSearch,
+      filterKondisi,
+      filterPengiriman,
+      filterPrice,
+      filterAddress,
+      filterBrand,
+      filterOthers,
+      id
+    } = this.state
     this.submitting.category = true
     this.props.getProduct({
-      q: this.state.valueSearch,
-      category_id: this.state.id,
-      condition: this.state.kondisi,
-      services: this.state.pengiriman,
-      price: this.state.price,
-      address: this.state.address,
-      brands: this.state.brand,
-      other: this.state.other,
-      page: this.state.page,
+      q: valueSearch,
+      category_id: id,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
       sort: typesort
     })
   }
@@ -704,16 +737,16 @@ class Category4 extends React.Component {
   onClickSort (field) {
     const {bluesky, lightblack} = Colors
     if (field === 'newest') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.setState({header: 'Produk Terbaru', terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'cheapest') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.setState({header: 'Produk Termurah', terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'expensive') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.setState({header: 'Produk Termahal', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
       this.dispatchSort(field)
     } else if (field === 'selling') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.setState({header: 'Produk Terlaris', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
       this.dispatchSort(field)
     }
   }

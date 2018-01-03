@@ -71,6 +71,7 @@ const handleFCM = (data) => {
 }
 
 FCM.on(FCMEvent.Notification, async (notif) => {
+  console.log(notif)
   const data = {
     click_action: notif.type,
     body: notif
@@ -139,6 +140,7 @@ class Home extends React.Component {
 
   componentWillMount () {
     FCM.getInitialNotification().then(notif => {
+      console.log(notif)
       const data = {
         click_action: notif.type,
         body: notif
@@ -196,7 +198,11 @@ class Home extends React.Component {
     if (!isFetching(propsProducts) && this.submitting.products) {
       this.submitting = { ...this.submitting, products: false }
       if (isError(propsProducts)) {
-        ToastAndroid.show(propsProducts.message, ToastAndroid.SHORT)
+        try {
+          ToastAndroid.show(propsProducts.message, ToastAndroid.SHORT)
+        } catch (e) {
+          ToastAndroid.show('Terjadi kesalahan pada server', ToastAndroid.SHORT)
+        }
       }
       if (isFound(propsProducts)) {
         this.setState({ product: propsProducts, isRefreshing: false })
@@ -206,7 +212,11 @@ class Home extends React.Component {
     if (!isFetching(propsCategory) && this.submitting.category) {
       this.submitting = { ...this.submitting, category: false }
       if (isError(propsCategory)) {
-        ToastAndroid.show(propsCategory.message, ToastAndroid.SHORT)
+        try {
+          ToastAndroid.show(propsCategory.message, ToastAndroid.SHORT)
+        } catch (e) {
+          ToastAndroid.show('Terjadi kesalahan pada server', ToastAndroid.SHORT)
+        }
       }
       if (isFound(propsCategory)) {
         let tempData = []
@@ -221,7 +231,11 @@ class Home extends React.Component {
     if (!isFetching(propsWishlist) && this.submitting.wishlist) {
       this.submitting = { ...this.submitting, wishlist: false }
       if (isError(propsWishlist)) {
-        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+        try {
+          ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+        } catch (e) {
+          ToastAndroid.show('Terjadi kesalahan pada server', ToastAndroid.SHORT)
+        }
       }
       if (isFound(propsWishlist)) {
         this.setState({ wishlist: propsWishlist })
@@ -250,7 +264,11 @@ class Home extends React.Component {
     if (!isFetching(dataSearch) && this.submitting.search) {
       this.submitting = { ...this.submitting, search: false }
       if (isError(dataSearch)) {
-        ToastAndroid.show(dataSearch.message, ToastAndroid.SHORT)
+        try {
+          ToastAndroid.show(dataSearch.message, ToastAndroid.SHORT)
+        } catch (e) {
+          ToastAndroid.show('Terjadi kesalahan pada server', ToastAndroid.SHORT)
+        }
       }
       if (isFound(dataSearch)) {
         const result = dataSearch.products
@@ -274,7 +292,12 @@ class Home extends React.Component {
         banner: nextProps.dataBanner.data
       })
     } else if (nextProps.dataBanner.status !== 200 && nextProps.dataBanner.status !== 0) {
-      ToastAndroid.show(nextProps.dataBanner.message, ToastAndroid.SHORT)
+      try {
+        ToastAndroid.show(nextProps.dataBanner.message, ToastAndroid.SHORT)
+      } catch (e) {
+        ToastAndroid.show('Terjadi kesalahan pada server', ToastAndroid.SHORT)
+      }
+      nextProps.dataBanner.status = 0
     }
   }
 
@@ -361,7 +384,7 @@ class Home extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 

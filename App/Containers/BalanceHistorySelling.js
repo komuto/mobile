@@ -33,7 +33,8 @@ class BalanceHistorySelling extends React.Component {
       biayaOngkir: 0,
       comission: 0,
       comissionText: '',
-      balance: 0
+      balance: 0,
+      refund: false
     }
   }
 
@@ -64,6 +65,11 @@ class BalanceHistorySelling extends React.Component {
           comissionText: commission.percent.toString().substring(0, 3),
           balance: transaction.amount
         })
+        if (transaction.trans_type === 'RFND') {
+          this.setState({
+            refund: true
+          })
+        }
         nextProps.dataHistory.status = 0
       } catch (e) {
 
@@ -78,7 +84,20 @@ class BalanceHistorySelling extends React.Component {
     return 'Rp ' + RupiahFormat(value)
   }
 
-  renderData (label, data) {
+  renderData (label, data, type) {
+    const { refund } = this.state
+    if (type) {
+      if (!refund) {
+        return (
+          <View style={styles.dataContainer}>
+            <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
+            <Text style={styles.data}>{data}</Text>
+          </View>
+        )
+      } else {
+        return null
+      }
+    }
     return (
       <View style={styles.dataContainer}>
         <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
@@ -88,18 +107,22 @@ class BalanceHistorySelling extends React.Component {
   }
 
   renderTotal (label, data) {
-    return (
-      <View style={styles.dataContainer}>
-        <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
-        <Text style={[styles.data, { marginRight: 10 }]}>{data}</Text>
-        <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center' }}
-          onPress={() => this.expand()}>
-          <Text style={[styles.blueText, { marginRight: 10 }]}>Detail</Text>
-          <Image source={this.state.arrow} style={styles.arrow} />
-        </TouchableOpacity>
-      </View>
-    )
+    const { refund } = this.state
+    if (!refund) {
+      return (
+        <View style={styles.dataContainer}>
+          <Text style={[styles.label, { flex: 1 }]}>{label}</Text>
+          <Text style={[styles.data, { marginRight: 10 }]}>{data}</Text>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+            onPress={() => this.expand()}>
+            <Text style={[styles.blueText, { marginRight: 10 }]}>Detail</Text>
+            <Image source={this.state.arrow} style={styles.arrow} />
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    return null
   }
 
   renderExpand () {
@@ -164,21 +187,32 @@ class BalanceHistorySelling extends React.Component {
     )
   }
 
-  renderTitle (title) {
-    return (
-      <Text style={styles.title}>{title}</Text>
-    )
+  renderTitle (title, type) {
+    const { refund } = this.state
+    if (!type) {
+      if (!refund) {
+        return (
+          <Text style={styles.title}>{title}</Text>
+        )
+      } else {
+        return null
+      }
+    }
+    return null
   }
 
   renderBuyer () {
-    const { image, name } = this.state
-    return (
-      <View style={styles.dataContainer}>
-        <Text style={[styles.label, { flex: 1 }]}>Pembeli</Text>
-        <Image source={{uri: image}} style={styles.image} />
-        <Text style={styles.data}>{name}</Text>
-      </View>
-    )
+    const { image, name, refund } = this.state
+    if (!refund) {
+      return (
+        <View style={styles.dataContainer}>
+          <Text style={[styles.label, { flex: 1 }]}>Pembeli</Text>
+          <Image source={{uri: image}} style={styles.image} />
+          <Text style={styles.data}>{name}</Text>
+        </View>
+      )
+    }
+    return null
   }
 
   renderMoney (label, data) {
@@ -218,27 +252,34 @@ class BalanceHistorySelling extends React.Component {
   }
 
   render () {
-    const { date, total, invoice, comissionText, balance, comission } = this.state
+    const { date, total, invoice, comissionText, balance, comission, refund } = this.state
     const moneyTotal = this.maskedMoney(total)
     const moneyComission = this.maskedMoney(comission)
     const paidMoney = this.maskedMoney(balance)
-
+    let transType, titleItem
+    if (refund) {
+      transType = this.renderData('Jenis Transaksi', 'Refund Barang')
+      titleItem = this.renderTitle('Daftar Barang yang direfund', false)
+    } else {
+      transType = this.renderData('Jenis Transaksi', 'Penjualan Barang')
+      titleItem = this.renderTitle('Daftar Barang yang dijual', true)
+    }
     return (
       <View style={styles.container}>
         <ScrollView>
-          {this.renderData('Jenis Transaksi', 'Penjualan Barang')}
-          {this.renderData('Tanggal Transaksi', date)}
+          {transType}
+          {this.renderData('Tanggal Transaksi', date, false)}
           {this.renderTotal('Total Tagihan', moneyTotal)}
           {this.renderExpand()}
           {this.renderSeparator()}
-          {this.renderData('Komisi (' + {marketplace} + comissionText + '%)', moneyComission)}
+          {this.renderData('Komisi (' + marketplace + ' ' + comissionText + '%)', moneyComission, true)}
           {this.renderMoney('Uang yang Anda terima', paidMoney)}
           {this.renderSeparator()}
-          {this.renderTitle('Info Penjualan')}
-          {this.renderData('No Invoice', invoice)}
+          {this.renderTitle('Info Penjualan', true)}
+          {this.renderData('No Invoice', invoice, true)}
           {this.renderBuyer()}
           {this.renderSeparator()}
-          {this.renderTitle('Daftar Barang yang dijual')}
+          {titleItem}
           {this.renderListView()}
         </ScrollView>
       </View>

@@ -419,7 +419,7 @@ class ListFavoriteStores extends React.Component {
             <Image source={Images.notFound} style={styles.image} />
             <Text style={styles.textLabel}>Toko Favorit Anda Kosong</Text>
             <Text style={styles.textInfo}>
-              Anda belum menambah toko apapun ke dalam daftar toko favorit
+              Anda belum menambahkan toko apapun ke dalam daftar toko favorit
             </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>

@@ -78,33 +78,42 @@ class SalesDashboard extends React.Component {
   }
 
   checkAmountOrder (data) {
-    return (
-      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-        <Text style={styles.statusAmount}>
-          {data}
-        </Text>
-      </View>
-    )
+    if (data !== 0) {
+      return (
+        <View style={[styles.circleRed]}>
+          <Text style={[styles.statusAmount, { color: Colors.snow }]}>
+            {data}
+          </Text>
+        </View>
+      )
+    }
+    return null
   }
 
   checkAmountDeliv (data) {
-    return (
-      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-        <Text style={styles.statusAmount}>
-          {data}
-        </Text>
-      </View>
-    )
+    if (data !== 0) {
+      return (
+        <View style={[styles.circleRed]}>
+          <Text style={[styles.statusAmount, { color: Colors.snow }]}>
+            {data}
+          </Text>
+        </View>
+      )
+    }
+    return null
   }
 
   checkAmountSale (data) {
-    return (
-      <View style={[styles.circleRed, {backgroundColor: Colors.snow}]}>
-        <Text style={[styles.statusAmount]}>
-          {data}
-        </Text>
-      </View>
-    )
+    if (data !== 0) {
+      return (
+        <View style={[styles.circleRed]}>
+          <Text style={[styles.statusAmount, { color: Colors.snow }]}>
+            {data}
+          </Text>
+        </View>
+      )
+    }
+    return null
   }
 
   render () {

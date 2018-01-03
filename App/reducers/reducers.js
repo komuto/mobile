@@ -110,6 +110,7 @@ const store = {
   storeProductsByCatalog: storeReducers.getStoreProductsByCatalog,
   unreadDisputesStore: storeReducers.unreadDisputesStore,
   storeCatalogProductsSearch: storeReducers.getStoreProductsByCatalogSearch,
+  storeCatalogProductsHiddenSearch: storeReducers.getStoreProductsHiddenByCatalogSearch,
   dropshipfaq: storeReducers.getDropshipperFaq
 }
 

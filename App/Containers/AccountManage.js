@@ -239,7 +239,7 @@ class AccountManage extends React.Component {
               <View style={[styles.borderContainer, {borderBottomWidth: 0}]}>
                 <View style={styles.namaContainer}>
                   <Text style={styles.textNama}>
-                    Logout
+                    Keluar
                   </Text>
                 </View>
                 <Image source={Images.rightArrow} style={styles.rightArrow} />

@@ -257,14 +257,14 @@ class NavigationRouter extends Component {
           <Scene
             key='register'
             component={Register}
-            title='Register'
+            title='Daftar'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
             key='login'
             component={Login}
-            title='Login'
+            title='Masuk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -363,7 +363,7 @@ class NavigationRouter extends Component {
           <Scene
             key='infostore'
             component={InfoStore}
-            title='Isi Informasi Toko'
+            title='Informasi Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -405,7 +405,7 @@ class NavigationRouter extends Component {
           <Scene
             key='newdiscussion'
             component={NewDiscussion}
-            title='Buat Diskusi Baru'
+            title='Diskusi Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -440,7 +440,7 @@ class NavigationRouter extends Component {
           <Scene
             key='commentproductdiscussion'
             component={CommentProductDiscussion}
-            title='Detail Diskusi'
+            title='Diskusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -495,7 +495,7 @@ class NavigationRouter extends Component {
           <Scene
             key='biodata'
             component={Biodata}
-            title='Biodata'
+            title='Kelola Akun'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -724,7 +724,7 @@ class NavigationRouter extends Component {
           <Scene
             key='transactiondetailstatus'
             component={TransactionDetailStatus}
-            title='Detail Status Barang'
+            title='Detail Pesanan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -1029,7 +1029,7 @@ class NavigationRouter extends Component {
           <Scene
             key='inputshippinginfo'
             component={InputShippingInfo}
-            title='MasukKan Informasi Pengiriman'
+            title='Masukkan Informasi Pengiriman'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />

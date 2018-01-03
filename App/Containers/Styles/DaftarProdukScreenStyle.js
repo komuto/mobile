@@ -140,7 +140,7 @@ export default StyleSheet.create({
   },
   inputText: {
     flex: 1,
-    fontSize: Fonts.size.smallMed,
+    fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.regular,
     marginLeft: 10
   },

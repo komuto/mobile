@@ -628,7 +628,7 @@ class CartDetailItem extends React.Component {
       <View style={styles.spinnerCart}>
         <ActivityIndicator color={Colors.snow} size='large' />
       </View>
-    ) : (<Text style={styles.textButton}> Update Keranjang</Text>)
+    ) : (<Text style={styles.textButton}>Simpan Perubahan</Text>)
     return (
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => this.update()}>

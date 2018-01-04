@@ -134,12 +134,13 @@ class StoreCatalog extends React.Component {
 
   handleCreateKatalog () {
     NavigationActions.addeditstorecatalog({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      titleButton: 'Buat Katalog Baru'
     })
   }
 
   handleEditKatalog (idKatalog) {
-    this.setState({statusDot: false, isRefreshing: true})
+    this.setState({statusDot: false, isRefreshing: false})
     if (!this.submitting.catalog) {
       this.submitting = {
         ...this.submitting,

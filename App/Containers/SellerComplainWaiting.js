@@ -19,7 +19,7 @@ import Reactotron from 'reactotron-react-native'
 // Styles
 import styles from './Styles/SellerComplainWaitingStyle'
 import {Colors, Images} from '../Themes'
-import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index'
 
 class SellerComplainWaiting extends React.Component {
 

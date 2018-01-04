@@ -18,7 +18,7 @@ import * as salesAction from '../actions/transaction'
 // Styles
 import styles from './Styles/SellerComplainWaitingStyle'
 import {Colors, Images} from '../Themes'
-import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index'
 
 class SellerComplainDone extends React.Component {
 

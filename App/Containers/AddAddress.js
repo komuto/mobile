@@ -53,7 +53,8 @@ class AddAddress extends React.Component {
       alamatLengkap: '',
       kodePos: '',
       idAlamat: this.props.idAlamat,
-      colorNamaAlias: Colors.snow,
+      namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
+      colorNamaAlias: Colors.lightblack,
       colorNamaPenerima: Colors.snow,
       colorNoHape: Colors.snow,
       colorFulladdress: Colors.snow,
@@ -293,6 +294,7 @@ class AddAddress extends React.Component {
     switch (field) {
       case 'alias':
         this.setState({
+          namaAliasLabel: 'Nama Alias harus diisi',
           colorNamaAlias: Colors.red
         })
         break
@@ -356,7 +358,8 @@ class AddAddress extends React.Component {
     switch (field) {
       case 'alias':
         this.setState({
-          colorNamaAlias: Colors.snow
+          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
+          colorNamaAlias: Colors.lightblack
         })
         break
       case 'penerima':
@@ -381,7 +384,8 @@ class AddAddress extends React.Component {
         break
       case 'empty':
         this.setState({
-          colorNamaAlias: Colors.snow,
+          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
+          colorNamaAlias: Colors.lightblack,
           colorNamaPenerima: Colors.snow,
           colorNoHape: Colors.snow,
           colorFulladdress: Colors.snow,
@@ -399,7 +403,8 @@ class AddAddress extends React.Component {
     switch (field) {
       case 'alias':
         this.setState({
-          colorNamaAlias: Colors.snow
+          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
+          colorNamaAlias: Colors.lightblack
         })
         break
       case 'penerima':
@@ -424,7 +429,8 @@ class AddAddress extends React.Component {
         break
       case 'empty':
         this.setState({
-          colorNamaAlias: Colors.snow,
+          namaAliasLabel: 'Contoh: Rumah Sendiri, Kantor',
+          colorNamaAlias: Colors.lightblack,
           colorNamaPenerima: Colors.snow,
           colorNoHape: Colors.snow,
           colorFulladdress: Colors.snow,
@@ -457,7 +463,7 @@ class AddAddress extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Nama Alias'
         />
-        <Text style={[styles.textLabel, {color: colorNamaAlias}]}>Nama Alias harus diisi</Text>
+        <Text style={[styles.textLabel, {color: colorNamaAlias}]}>{this.state.namaAliasLabel}</Text>
         <TextInput
           ref='penerima'
           style={styles.inputText}

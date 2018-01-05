@@ -28,14 +28,13 @@ class Filter extends React.Component {
       {id: 2, title: 'Seller Terverifikasi', value: 'verified', active: false},
       {id: 3, title: 'Grosir', value: 'wholesaler', active: false}
     ]
-    // this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     const rowHasChanged = (r1, r2) => r1 !== r2
     const ds = new ListView.DataSource({rowHasChanged})
     this.state = {
       dataSource: ds.cloneWithRows(dataObjects),
       dataSourceKondisi: ds.cloneWithRows(dataKondisi),
       dataSourceLainnya: ds.cloneWithRows(dataLainnya),
-      dataSourcePengiriman: ds.cloneWithRows([]),
       dataObjects,
       dataKondisi,
       dataPengiriman: [],
@@ -91,22 +90,20 @@ class Filter extends React.Component {
     }
     this.props.getExpedition()
     this.props.getBrand()
-    const {dataKondisi, dataSourceKondisi} = this.state
+    let tempData = [...this.state.dataKondisi]
     if (this.props.filterKondisi === 'new') {
-      const newDataSource = dataKondisi.map(data => {
-        return {...data, active: data.id === 2}
-      })
+      tempData[0].active = false
+      tempData[1].active = true
+      tempData[2].active = false
       this.setState({
-        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
-        activeKondisi: 2
+        dataSourceKondisi: tempData
       })
     } else if (this.props.filterKondisi === 'used') {
-      const newDataSource = dataKondisi.map(data => {
-        return {...data, active: data.id === 3}
-      })
+      tempData[0].active = false
+      tempData[1].active = false
+      tempData[2].active = true
       this.setState({
-        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
-        activeKondisi: 3
+        dataSourceKondisi: tempData
       })
     }
     if (this.props.filterPrice[0] !== 0) {
@@ -134,11 +131,8 @@ class Filter extends React.Component {
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
       const data = this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
-      const rowHasChanged = (r1, r2) => r1 !== r2
-      const ds = new ListView.DataSource({rowHasChanged})
       this.setState({
-        dataPengiriman: data,
-        dataSourcePengiriman: ds.cloneWithRows(data)
+        dataPengiriman: data
       })
     }
     if (nextProps.dataBrandReducer.status === 200) {
@@ -244,29 +238,74 @@ class Filter extends React.Component {
   }
 
   onClickKondisi = (selected) => (e) => {
-    const {dataKondisi, activeKondisi, dataSourceKondisi} = this.state
-    if (activeKondisi !== selected) {
-      const newDataSource = dataKondisi.map(data => {
-        return {...data, active: selected === data.id}
-      })
-      if (dataKondisi[selected - 1].title.includes('Semua')) {
+    const {dataKondisi} = this.state
+    let tempData = [...dataKondisi]
+    if (parseInt(selected) === 0) {
+      if (tempData[selected].active) {
+        tempData[0].active = false
+        tempData[1].active = false
+        tempData[2].active = false
         this.setState({
-          filterKondisi: ''
+          dataSourceKondisi: tempData
         })
-      } else if (dataKondisi[selected - 1].title.includes('Baru')) {
+      } else {
+        tempData[0].active = true
+        tempData[1].active = true
+        tempData[2].active = true
         this.setState({
-          filterKondisi: 'new'
-        })
-      } else if (dataKondisi[selected - 1].title.includes('Bekas')) {
-        this.setState({
-          filterKondisi: 'used'
+          dataSourceKondisi: tempData
         })
       }
+    } else {
+      if (tempData[selected].active) {
+        tempData[selected].active = false
+        tempData[0].active = false
+        this.setState({
+          dataSourceKondisi: tempData
+        })
+      } else {
+        tempData[selected].active = true
+        this.setState({
+          dataSourceKondisi: tempData
+        })
+      }
+    }
+    console.log(tempData[selected])
+    if (tempData[0].active || ((tempData[1].active && tempData[2].active))) {
       this.setState({
-        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
-        activeKondisi: selected
+        filterKondisi: ''
+      })
+    } else if (tempData[1].active) {
+      this.setState({
+        filterKondisi: 'new'
+      })
+    } else if (tempData[2].active) {
+      this.setState({
+        filterKondisi: 'used'
       })
     }
+    // if (activeKondisi !== selected) {
+    //   const newDataSource = dataKondisi.map(data => {
+    //     return {...data, active: selected === data.id}
+    //   })
+    //   if (dataKondisi[selected - 1].title.includes('Semua')) {
+    //     this.setState({
+    //       filterKondisi: ''
+    //     })
+    //   } else if (dataKondisi[selected - 1].title.includes('Baru')) {
+    //     this.setState({
+    //       filterKondisi: 'new'
+    //     })
+    //   } else if (dataKondisi[selected - 1].title.includes('Bekas')) {
+    //     this.setState({
+    //       filterKondisi: 'used'
+    //     })
+    //   }
+    //   this.setState({
+    //     dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+    //     activeKondisi: selected
+    //   })
+    // }
   }
 
   onClickPengiriman (selected) {
@@ -282,10 +321,7 @@ class Filter extends React.Component {
         for (var k = 0; k < dataPengiriman.length; k++) {
           tempData[k].is_checked = false
         }
-        const rowHasChanged = (r1, r2) => r1 !== r2
-        const ds = new ListView.DataSource({rowHasChanged})
         this.setState({
-          dataSourcePengiriman: ds.cloneWithRows(tempData),
           dataPengiriman: tempData,
           filterPengiriman: []
         })
@@ -295,10 +331,7 @@ class Filter extends React.Component {
           tempData[t].is_checked = true
           dummy.push(dataPengiriman[t].id)
         }
-        const rowHasChanged = (r1, r2) => r1 !== r2
-        const ds = new ListView.DataSource({rowHasChanged})
         this.setState({
-          dataSourcePengiriman: ds.cloneWithRows(tempData),
           dataPengiriman: tempData,
           filterPengiriman: dummy
         })
@@ -313,20 +346,14 @@ class Filter extends React.Component {
         }
         tempData[selected].is_checked = false
         tempData[0].is_checked = false
-        const rowHasChanged = (r1, r2) => r1 !== r2
-        const ds = new ListView.DataSource({rowHasChanged})
         this.setState({
-          dataSourcePengiriman: ds.cloneWithRows(tempData),
           dataPengiriman: tempData,
           filterPengiriman: dummy
         })
       } else {
         dummy.push(dataPengiriman[selected].id)
         tempData[selected].is_checked = true
-        const rowHasChanged = (r1, r2) => r1 !== r2
-        const ds = new ListView.DataSource({rowHasChanged})
         this.setState({
-          dataSourcePengiriman: ds.cloneWithRows(tempData),
           dataPengiriman: tempData,
           filterPengiriman: dummy
         })
@@ -409,10 +436,10 @@ class Filter extends React.Component {
     )
   }
 
-  renderRowData = (rowData) => {
+  renderRowData = (rowData, sectionID, rowID) => {
     const centang = rowData.active ? Images.centangBiru : null
     return (
-      <TouchableOpacity style={styles.rowButton} onPress={this.onClickKondisi(rowData.id)} >
+      <TouchableOpacity style={styles.rowButton} onPress={this.onClickKondisi(rowID)} >
         <View style={styles.labelContainerSecond}>
           <Text style={styles.label}>{rowData.title}</Text>
           <View style={styles.box}>
@@ -532,7 +559,7 @@ class Filter extends React.Component {
       case 1:
         return (
           <ListView
-            dataSource={this.state.dataSourceKondisi}
+            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataKondisi)}
             renderRow={this.renderRowData}
           />
         )
@@ -540,7 +567,7 @@ class Filter extends React.Component {
         return (
           <ListView
             enableEmptySections
-            dataSource={this.state.dataSourcePengiriman}
+            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataPengiriman)}
             renderRow={this.renderRowDataPengiriman}
           />)
       case 3:

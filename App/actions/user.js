@@ -31,6 +31,11 @@ export const GET_UNRESOLVED_RESOLUTIONS = 'GET_UNRESOLVED_RESOLUTIONS'
 export const GET_RESOLUTION_DETAIL = 'GET_RESOLUTION_DETAIL'
 export const CREATE_RESOLUTION = 'CREATE_RESOLUTION'
 export const REPLY_RESOLUTION = 'REPLY_RESOLUTION'
+<<<<<<< HEAD
+=======
+export const RESEND_SIGNUP = 'RESEND_SIGNUP'
+export const UNREAD_DISPUTES = 'UNREAD_DISPUTES'
+>>>>>>> beny
 
 /**
  * @param params are the same as the api
@@ -157,9 +162,10 @@ export const verifyPhone = params => buildAction(typeReq(VERIFIY_PHONE), params)
 export const sendOTPBank = () => buildAction(typeReq(SEND_BANK_OTP))
 
 /**
+ * @params params are the same as the api query
  * @state wishlist
  */
-export const wishlist = () => buildAction(typeReq(GET_WISHLIST))
+export const wishlist = params => buildAction(typeReq(GET_WISHLIST), params)
 
 /**
  * @param params are the same as the api
@@ -179,6 +185,7 @@ export const getNotifSettings = () => buildAction(typeReq(GET_NOTIF_SETTINGS))
 export const updateNotifSettings = params => buildAction(typeReq(UPDATE_NOTIF_SETTINGS), params)
 
 /**
+<<<<<<< HEAD
  * @state resolvedResolutions
  */
 export const getResolvedResolutions = () => buildAction(typeReq(GET_RESOLVED_RESOLUTIONS))
@@ -187,6 +194,18 @@ export const getResolvedResolutions = () => buildAction(typeReq(GET_RESOLVED_RES
  * @state unresolvedResolutions
  */
 export const getUnresolvedResolutions = () => buildAction(typeReq(GET_UNRESOLVED_RESOLUTIONS))
+=======
+ * @params params are the same as the api query
+ * @state resolvedResolutions
+ */
+export const getResolvedResolutions = params => buildAction(typeReq(GET_RESOLVED_RESOLUTIONS), params)
+
+/**
+ * @params params are the same as the api query
+ * @state unresolvedResolutions
+ */
+export const getUnresolvedResolutions = params => buildAction(typeReq(GET_UNRESOLVED_RESOLUTIONS), params)
+>>>>>>> beny
 
 /**
  * @params id {int} resolution id
@@ -196,12 +215,32 @@ export const getResolutionDetail = params => buildAction(typeReq(GET_RESOLUTION_
 
 /**
  * @params params are the same as the api
+<<<<<<< HEAD
  * @state resolution
+=======
+ * @state createResolution
+>>>>>>> beny
  */
 export const createResolution = params => buildAction(typeReq(CREATE_RESOLUTION), params)
 
 /**
  * @params id {int} resolution id
+<<<<<<< HEAD
  * @state resolution
  */
 export const replyResolution = params => buildAction(typeReq(REPLY_RESOLUTION), params)
+=======
+ * @state replyResolution
+ */
+export const replyResolution = params => buildAction(typeReq(REPLY_RESOLUTION), params)
+
+/**
+ * @state alterUser
+ */
+export const resendSignup = () => buildAction(typeReq(RESEND_SIGNUP))
+
+/**
+ * @state unread dispute
+ */
+export const getUnreadDispute = () => buildAction(typeReq(UNREAD_DISPUTES))
+>>>>>>> beny

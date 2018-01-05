@@ -1,54 +1,57 @@
-import axios from 'axios'
+import apisauce from 'apisauce'
 import { serviceUrl, apiKomuto, storage } from '../config'
 import {token} from '../store'
 
 export function authApi () {
-  return axios.create({
+  return apisauce.create({
     baseURL: serviceUrl + '/',
     headers: {'Authorization': token()}
   })
 }
 
 export function publicApi () {
-  return axios.create({
+  return apisauce.create({
     baseURL: serviceUrl + '/'
   })
 }
 
 export function publicApiKomuto () {
-  return axios.create({
+  return apisauce.create({
     baseURL: apiKomuto + '/',
     timeout: 10000
   })
 }
 
 export function uploadApi () {
-  const api = axios.create({
+  const api = apisauce.create({
     baseURL: apiKomuto + '/',
     headers: {
       'Accept': 'application/json',
       'enctype': 'multipart/form-data'
     }
   })
-  api.interceptors.request.use(async config => {
-    try {
-      const token = await storage.getItem('token')
-      if (token !== null) {
-        config.headers['Authorization'] = 'JWT ' + token
-      }
-      return config
-    } catch (err) {
-      config.log('Error with message: ', err)
+  api.addAsyncRequestTransform(config => async () => {
+    const token = await storage.getItem('token')
+    if (token !== null) {
+      config.headers['Authorization'] = 'JWT ' + token
     }
+    return config
   })
   return api
 }
 
+<<<<<<< HEAD
 export function authApiKomuto (custToken) {
   const api = axios.create({
+=======
+export function authApiKomuto (custToken, timeout = 10000) {
+  const api = apisauce.create({
+>>>>>>> beny
     baseURL: apiKomuto + '/',
-    timeout: 10000
+    headers: { 'Content-Type': 'application/json' },
+    timeout
   })
+<<<<<<< HEAD
   api.interceptors.request.use(async config => {
     try {
       const token = !custToken ? await storage.getItem('token') : custToken
@@ -58,7 +61,14 @@ export function authApiKomuto (custToken) {
       return config
     } catch (err) {
       config.log('Error with message: ', err)
+=======
+  api.addAsyncRequestTransform(config => async () => {
+    const token = !custToken ? await storage.getItem('token') : custToken
+    if (token !== null) {
+      config.headers['Authorization'] = 'JWT ' + token
+>>>>>>> beny
     }
+    return config
   })
   return api
 }

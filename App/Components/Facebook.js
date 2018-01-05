@@ -1,6 +1,7 @@
 import React from 'react'
-import { Alert, Text, TouchableOpacity, Image, View, ActivityIndicator } from 'react-native'
+import { Text, TouchableOpacity, Image, View, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import FBSDK from 'react-native-fbsdk'
 import Styles from './Styles/FacebookStyle'
@@ -23,14 +24,11 @@ class Facebook extends React.Component {
       this.props.getProfile()
       this.props.stateLogin(true)
       NavigationActions.backtab({ type: ActionConst.RESET })
-    } else if (nextProps.datalogin.status > 200) {
+    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
       this.setState({
         loading: false
       })
-    } else if (nextProps.datalogin.status === 'ENOENT') {
-      this.setState({
-        loading: false
-      })
+      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.SHORT)
     }
   }
 
@@ -52,7 +50,7 @@ class Facebook extends React.Component {
   }
   fbAuth () {
     const _this = this
-    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_photos', 'pages_show_list'])
+    LoginManager.logInWithReadPermissions(['public_profile'])
     .then(
       function (result) {
         if (result.isCancelled) {
@@ -70,8 +68,7 @@ class Facebook extends React.Component {
         }
       },
       function (error) {
-        console.log('Login fail with error: ' + error)
-        Alert.alert('Error', 'Login fail with error: ' + error)
+        ToastAndroid.show('Login fail with error: ' + error, ToastAndroid.SHORT)
       }
     )
     .catch((err) => console.log(err))
@@ -86,13 +83,11 @@ class Facebook extends React.Component {
         loading: false
       })
       console.log(json)
-      this.props.loginSocial(providerName, json.id, token1)
-      // AsyncStorage.setItem('nama', json.name)
-      // AsyncStorage.setItem('saldo', '0')
-      // AsyncStorage.setItem('foto', json.picture.data.url)
-      // AsyncStorage.setItem('token', token1)
-      // AsyncStorage.setItem('status', '0')
-      // AsyncStorage.setItem('email', json.email)
+      FCM.getFCMToken().then(tokenFCM => {
+        if (tokenFCM !== null && tokenFCM !== undefined) {
+          this.props.loginSocial(providerName, json.id, token1, tokenFCM)
+        }
+      })
     })
     .catch((err) => console.log(err))
   }
@@ -112,7 +107,7 @@ class Facebook extends React.Component {
     return (
       <View style={Styles.containerText}>
         <Image source={Images.facebook} style={Styles.loginIconThirdParty} />
-        <Text style={Styles.loginTextThirdParty}>Login dengan Facebook</Text>
+        <Text style={Styles.loginTextThirdParty}>Masuk dengan Facebook</Text>
       </View>
     )
   }
@@ -137,8 +132,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     stateLogin: (login) => dispatch(loginAction.stateLogin({login})),
-    loginSocial: (providerName, providerUid, accessToken) => dispatch(loginAction.loginSocial({
-      provider_name: providerName, provider_uid: providerUid, access_token: accessToken})),
+    loginSocial: (providerName, providerUid, accessToken, fcmToken) => dispatch(loginAction.loginSocial({
+      provider_name: providerName, provider_uid: providerUid, access_token: accessToken, reg_token: fcmToken})),
     getProfile: (login) => dispatch(loginAction.getProfile())
   }
 }

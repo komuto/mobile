@@ -7,15 +7,26 @@ import ScrollableTabView from 'react-native-scrollable-tab-view'
 // import YourActions from '../Redux/YourRedux'
 import TransactionDetailStatusItem from './TransactionDetailStatusItem'
 import TransactionDetailStatusPurchase from './TransactionDetailStatusPurchase'
+import * as transactionAction from '../actions/transaction'
 // Styles
 import styles from './Styles/TransaksiDetailStatusStyle'
 
 class TransactionDetailStatus extends React.Component {
 
-  // constructor (props) {
-  //   super(props)
-  //   this.state = {}
-  // }
+  constructor (props) {
+    super(props)
+    this.state = {
+      idBucket: this.props.idBucket,
+      invoiceId: this.props.invoiceId
+    }
+  }
+
+  componentDidMount () {
+    if (this.props.from === 'history') {
+    } else {
+      this.props.getDetailInvoice(this.state.idBucket, this.state.invoiceId)
+    }
+  }
 
   render () {
     return (
@@ -26,10 +37,14 @@ class TransactionDetailStatus extends React.Component {
           tabBarUnderlineStyle={{ backgroundColor: Colors.snow, height: 2 }}
           tabBarInactiveTextColor={Colors.paleGrey}
           tabBarTextStyle={styles.textTab}
+          prerenderingSiblingsNumber={2}
           locked
         >
           <ScrollView tabLabel='Status' ref='Barang' style={styles.scrollView}>
-            <TransactionDetailStatusItem statusBarang={this.props.statusBarang} />
+            <TransactionDetailStatusItem
+              statusBarang={this.props.statusBarang}
+              idBucket={this.props.idBucket}
+            />
           </ScrollView>
           <ScrollView tabLabel='Detail Pembelian' ref='Pembelian' style={styles.scrollView}>
             <TransactionDetailStatusPurchase />
@@ -47,6 +62,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId}))
   }
 }
 

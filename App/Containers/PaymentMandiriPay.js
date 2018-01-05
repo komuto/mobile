@@ -1,7 +1,8 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Modal } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -149,33 +150,17 @@ class PaymentMandiriPay extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRincian () {
     const { kode, total, diskon, kodeUnik } = this.state
     const sisaBayar = total - diskon - kodeUnik
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSisaBayar = MaskService.toMask('money', sisaBayar, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
+    const hargaDiskon = this.maskedMoney(diskon)
+    const hargaKodeUnik = this.maskedMoney(kodeUnik)
+    const hargaSisaBayar = this.maskedMoney(sisaBayar)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianTitle}>

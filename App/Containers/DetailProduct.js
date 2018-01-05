@@ -8,14 +8,17 @@ import {
   ListView,
   ActivityIndicator,
   BackAndroid,
-  Alert,
   Modal,
-  ToastAndroid
+  ToastAndroid,
+  Share
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
+import ModalLogin from '../Components/ModalLogin'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -26,6 +29,7 @@ import * as reviewAction from '../actions/review'
 import * as productAction from '../actions/product'
 import * as storeAction from '../actions/stores'
 import * as catalogAction from '../actions/catalog'
+import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/ProductDetailScreenStyle'
@@ -37,6 +41,9 @@ class DetailProduct extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submiting = {
+      detail: this.props.detail || false
+    }
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
       dataImage: [],
@@ -48,14 +55,14 @@ class DetailProduct extends React.Component {
       diskon: 0,
       price: 0,
       kondisi: 1,
-      avgQuantity: 4.5,
-      avgAccurate: 4.5,
+      avgQuantity: 0,
+      avgAccurate: 0,
       numOfLine: 3,
       lokasiPenjual: '',
       namaToko: '',
       like: false,
       idLokasiPenjual: 0,
-      numOfLineTerm: 3,
+      numOfLineTerm: null,
       readmore: styles.readMoreTextContainer,
       readmoreTerm: styles.readMoreTextContainer,
       verified: false,
@@ -71,10 +78,11 @@ class DetailProduct extends React.Component {
       sold: 0,
       weight: 0,
       totalWeight: 0,
+      originId: 0,
       otherProduct: [],
-      provinsiTerpilih: 'Semua Wilayah',
-      kabTerpilih: 'Semua Wilayah',
-      kecTerpilih: 'Semua Wilayah',
+      provinsiTerpilih: 'Pilih Provinsi',
+      kabTerpilih: 'Pilih Kabupaten',
+      kecTerpilih: 'Pilih Kecamatan',
       idProvinsiTerpilih: 0,
       idKabTerpilih: 0,
       idKecTerpilih: 0,
@@ -121,12 +129,19 @@ class DetailProduct extends React.Component {
       idBrand: '',
       isDropship: '',
       photoProductDropship: [],
-      expeditionDropship: []
+      expeditionDropship: [],
+      shareUrl: '',
+      isHere: true,
+      modalLogin: false,
+      commission: this.props.commission || 0,
+      fetchData: true,
+      maxHeight: 112
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDetailProduk.status === 200) {
+<<<<<<< HEAD
       console.log('masuk')
       this.setState({
         id: nextProps.dataDetailProduk.detail.product.id,
@@ -172,68 +187,161 @@ class DetailProduct extends React.Component {
         })
       } catch (e) {
         console.log(e)
+=======
+      if (this.state.id === nextProps.dataDetailProduk.detail.product.id) {
+        if (this.state.fetchData) {
+          this.setState({
+            id: nextProps.dataDetailProduk.detail.product.id,
+            loadingProduk: false,
+            grosir: nextProps.dataDetailProduk.detail.product.is_wholesaler,
+            discount: nextProps.dataDetailProduk.detail.product.is_discount,
+            price: nextProps.dataDetailProduk.detail.product.price,
+            ulasan: nextProps.dataDetailProduk.detail.reviews.slice(0, 3),
+            sizeUlasan: nextProps.dataDetailProduk.detail.reviews.length,
+            dataImage: nextProps.dataDetailProduk.detail.images,
+            title: nextProps.dataDetailProduk.detail.product.name,
+            like: nextProps.dataDetailProduk.detail.product.is_liked,
+            diskon: nextProps.dataDetailProduk.detail.product.discount,
+            verified: nextProps.dataDetailProduk.detail.store.is_verified,
+            otherProduct: nextProps.dataDetailProduk.detail.other_products,
+            avgQuantity: nextProps.dataDetailProduk.detail.rating.quality,
+            avgAccurate: nextProps.dataDetailProduk.detail.rating.accuracy,
+            stock: nextProps.dataDetailProduk.detail.product.stock,
+            sold: nextProps.dataDetailProduk.detail.product.count_sold,
+            diskusi: nextProps.dataDetailProduk.detail.product.count_discussion,
+            weight: nextProps.dataDetailProduk.detail.product.weight,
+            totalWeight: nextProps.dataDetailProduk.detail.product.weight,
+            kondisi: nextProps.dataDetailProduk.detail.product.condition,
+            kategori: nextProps.dataDetailProduk.detail.category.name,
+            deskripsi: nextProps.dataDetailProduk.detail.product.description,
+            termcondition: nextProps.dataDetailProduk.detail.store.term_condition,
+            idLokasiPenjual: nextProps.dataDetailProduk.detail.location.province.id,
+            lokasiPenjual: nextProps.dataDetailProduk.detail.location.province.name,
+            namaToko: nextProps.dataDetailProduk.detail.store.name,
+            service: nextProps.dataDetailProduk.detail.expeditions,
+            jumlahServis: nextProps.dataDetailProduk.detail.expeditions.length,
+            storeId: nextProps.dataDetailProduk.detail.store.id,
+            isStoreFavorite: nextProps.dataDetailProduk.detail.store.is_favorite,
+            originId: nextProps.dataDetailProduk.detail.location.district.ro_id,
+            dataGrosir: nextProps.dataDetailProduk.detail.wholesaler,
+            asuransi: nextProps.dataDetailProduk.detail.product.is_insurance,
+            jumlahLihat: nextProps.dataDetailProduk.detail.product.count_view,
+            idCategory: nextProps.dataDetailProduk.detail.product.category_id,
+            idBrand: nextProps.dataDetailProduk.detail.product.identifier_brand,
+            isDropship: nextProps.dataDetailProduk.detail.product.is_dropshipper,
+            shareUrl: nextProps.dataDetailProduk.detail.share_link,
+            fetchData: false
+          })
+          try {
+            this.setState({
+              fotoToko: nextProps.dataDetailProduk.detail.store.logo
+            })
+          } catch (e) {
+            console.log(e)
+          }
+          let tempPhoto = []
+          let tempExpedition = []
+          nextProps.dataDetailProduk.detail.images.map((data, i) => {
+            tempPhoto.push({'name': data.file})
+          })
+          nextProps.dataDetailProduk.detail.expeditions.map((data, i) => {
+            tempExpedition.push({'expedition_service_id': data.id})
+          })
+          this.setState({
+            photoProductDropship: tempPhoto,
+            expeditionDropship: tempExpedition
+          })
+          nextProps.dataDetailProduk.status = 0
+          // this.props.resetProduk()
+        }
+>>>>>>> beny
       }
-      let tempPhoto = []
-      let tempExpedition = []
-      nextProps.dataDetailProduk.detail.images.map((data, i) => {
-        tempPhoto.push({'name': data.file})
-      })
-      nextProps.dataDetailProduk.detail.expeditions.map((data, i) => {
-        tempExpedition.push({'expedition_service_id': data.id})
-      })
+    } else if (nextProps.dataDetailProduk.status !== 200 && nextProps.dataDetailProduk.status !== 0) {
+      ToastAndroid.show(nextProps.dataDetailProduk.message, ToastAndroid.SHORT)
       this.setState({
-        photoProductDropship: tempPhoto,
-        expeditionDropship: tempExpedition
+        loadingProduk: false
       })
-      nextProps.dataDetailProduk.status = 0
-      this.props.resetProduk()
-    }
-    if (nextProps.dataDetailProduk.status === 406) {
-      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
+      // nextProps.dataDetailProduk.status = 0
     }
     if (nextProps.dataProvinsi.status === 200) {
       this.setState({
         provinsi: this.state.tambahanProvinsi.concat(nextProps.dataProvinsi.provinces)
       })
+      // nextProps.dataProvinsi.status = 0
+    } else if (nextProps.dataProvinsi.status !== 200 && nextProps.dataProvinsi.status !== 0) {
+      ToastAndroid.show(nextProps.dataProvinsi.message, ToastAndroid.SHORT)
+      // nextProps.dataProvinsi.status = 0
     }
     if (nextProps.dataKota.status === 200) {
       this.setState({
         kabupaten: this.state.tambahanKota.concat(nextProps.dataKota.districts)
       })
+      // nextProps.dataKota.status = 0
+    } else if (nextProps.dataKota.status !== 200 && nextProps.dataKota.status !== 0) {
+      ToastAndroid.show(nextProps.dataKota.message, ToastAndroid.SHORT)
+      // nextProps.dataKota.status = 0
     }
     if (nextProps.dataSubDistrict.status === 200) {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
+      // nextProps.dataSubDistrict.status = 0
+    } else if (nextProps.dataSubDistrict.status !== 200 && nextProps.dataSubDistrict.status !== 0) {
+      ToastAndroid.show(nextProps.dataSubDistrict.message, ToastAndroid.SHORT)
+      // nextProps.dataSubDistrict.status = 0
     }
     if (nextProps.dataServis.status === 200) {
       this.setState({
         dataServices: nextProps.dataServis.charges
       })
+<<<<<<< HEAD
     } else if (nextProps.dataServis.status > 200) {
+=======
+      nextProps.dataServis.status = 0
+    } else if (nextProps.dataServis.status !== 200 && nextProps.dataServis.status !== 0) {
+>>>>>>> beny
       this.setState({
         messageServices: nextProps.dataServis.message
       })
+      nextProps.dataServis.status = 0
     }
     if (nextProps.dataWishlist.status === 200) {
       if (this.state.like) {
         this.setState({
           like: false
         })
-        this.props.resetAddToWishlist()
       } else if (!this.state.like) {
         this.setState({
           like: true
         })
-        this.props.resetAddToWishlist()
       }
+      this.props.getDetailProduk(this.state.id)
+      this.props.resetAddToWishlist()
+    } else if (nextProps.dataWishlist.status !== 200 && nextProps.dataWishlist.status !== 0) {
+      ToastAndroid.show(nextProps.dataWishlist.message, ToastAndroid.SHORT)
+      this.props.resetAddToWishlist()
+    }
+    if (nextProps.dataFavorit.status === 200) {
+      if (this.state.isStoreFavorite) {
+        this.setState({isStoreFavorite: false})
+        // ToastAndroid.show('Berhasil menghapus dari toko favorit', ToastAndroid.SHORT)
+      } else if (!this.state.isStoreFavorite) {
+        this.setState({isStoreFavorite: true})
+        // ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
+      }
+      ToastAndroid.show(nextProps.dataFavorit.message.toString(), ToastAndroid.SHORT)
+      nextProps.dataFavorit.status = 0
+    } else if (nextProps.dataFavorit.status !== 200 && nextProps.dataFavorit.status !== 0) {
+      ToastAndroid.show(nextProps.dataFavorit.message, ToastAndroid.SHORT)
+      nextProps.dataFavorit.status = 0
     }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    // this.props.getDetailProduk(this.state.id)
     this.props.getProvinsi()
-    this.props.getKota(11)
+    // this.props.getKota(11)
   }
 
   componentWillUnmount () {
@@ -241,12 +349,25 @@ class DetailProduct extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
-    return true
+    if (NavigationActions.pop()) {
+      return true
+    } else {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+      return true
+    }
   }
 
   backButton () {
-    NavigationActions.pop()
+    if (NavigationActions.pop()) {
+      return true
+    } else {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+      return true
+    }
   }
 
   openLaporkan () {
@@ -265,9 +386,10 @@ class DetailProduct extends React.Component {
     this.setState({ modalLaporkan: false })
     NavigationActions.report({
       type: ActionConst.PUSH,
-      images: this.state.fotoToko,
+      images: this.state.dataImage[0].file,
       namaBarang: this.state.title,
-      harga: this.state.price
+      harga: this.state.price,
+      id: this.state.id
     })
   }
 
@@ -277,6 +399,21 @@ class DetailProduct extends React.Component {
       id: id
     })
     this.props.getDetailProduk(id)
+  }
+
+  onShare () {
+    const price = this.maskedMoney(this.state.price)
+    Share.share({
+      message: 'Coba Lihat Product ' + this.state.title + ' dengan harga ' + price +
+        '\n' + this.state.shareUrl,
+      url: '',
+      title: 'Bagikan Product Ini'
+    }, {
+      dialogTitle: 'Bagikan Product',
+      tintColor: 'green'
+    })
+    .then(this._showResult)
+    .catch((error) => this.setState({result: 'error: ' + error.message}))
   }
 
   renderModalLaporkan () {
@@ -289,7 +426,11 @@ class DetailProduct extends React.Component {
         >
         <TouchableOpacity style={styles.modalContainer} onPress={() => this.closeLaporkan()}>
           <View style={styles.menuLaporkanContainer}>
-            <TouchableOpacity style={styles.menuLaporkan} activeOpacity={0.8}>
+            <TouchableOpacity
+              style={styles.menuLaporkan}
+              activeOpacity={0.8}
+              onPress={() => this.onShare()}
+            >
               <Image
                 source={Images.share}
                 style={styles.imageStyle}
@@ -301,7 +442,7 @@ class DetailProduct extends React.Component {
                 source={Images.laporkan}
                 style={styles.imageStyle}
               />
-              <Text style={styles.textBagikan}>Laporkan</Text>
+              <Text style={styles.textBagikan}>Laporkan Barang</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -359,54 +500,113 @@ class DetailProduct extends React.Component {
     )
   }
 
+  renderCommission (dropship, commission) {
+    if (dropship) {
+      return (
+        <Text style={styles.commissionText}>
+         - Komisi {commission}%
+        </Text>
+      )
+    }
+  }
+
+  renderDiskon (status, nominal) {
+    Reactotron.log('render dis ;' + status)
+    if (status) {
+      const money = this.maskedMoney(nominal)
+      return (
+        <Text style={styles.nominalDiskon}>
+          {money}
+        </Text>
+      )
+    }
+    return (
+      <Text style={styles.nominalDiskon1}>
+        asd
+      </Text>
+    )
+  }
+
+  renderDiskon2 (status, nominal) {
+    Reactotron.log('render dis ;' + status)
+    if (status) {
+      const money = this.maskedMoney(nominal)
+      return (
+        <Text style={styles.nominalDiskon2}>
+          {money}
+        </Text>
+      )
+    }
+    return (
+      <Text style={styles.nominalDiskon1}>
+        asd
+      </Text>
+    )
+  }
+
   renderTitle () {
-    const {grosir, discount} = this.state
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaDiskon = this.discountCalculate(this.state.price, this.state.discount)
+    const {id, grosir, title, discount, diskon, pickFromDropshipper, commission, price} = this.state
+    const totalHarga = this.maskedMoney(price)
+    let valueCommission
+    if (pickFromDropshipper) {
+      valueCommission = (
+        <Text style={styles.commissionText}>
+        -{'\b'}Komisi {commission} %
+        </Text>
+      )
+    }
+
+    const hargaDiskon = this.discountCalculate(price, diskon)
+    const hargaDiskonMasked = this.maskedMoney(hargaDiskon)
+    const wholesalerMasked = this.maskedMoney(price)
     if (!grosir && !discount) {
+      Reactotron.log('tidak dis, tidak gros')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
-          <Text style={styles.price}>
-            {totalHarga}
-          </Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.price}>
+              {totalHarga}{'\b'}
+            </Text>
+            {valueCommission}
+          </View>
         </View>
       )
     } else if (discount && !grosir) {
+      Reactotron.log('dis')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
-              <Text style={styles.diskon}>
-                {this.state.diskon}%
+              <Text allowFontScaling style={styles.diskon}>
+                {diskon}%
               </Text>
             </View>
             <View>
-              {this.renderDiskon(true, totalHarga)}
-              <Text style={[styles.price, {marginTop: 0}]}>
-                {hargaDiskon}
-              </Text>
+              {this.renderDiskon(discount, price)}
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={[styles.price, {marginTop: 0}]}>
+                  {hargaDiskonMasked}{'\b'}
+                </Text>
+                {valueCommission}
+              </View>
             </View>
           </View>
         </View>
       )
     } else if (!discount && grosir) {
+      Reactotron.log('gros')
       return (
         <View>
           <View style={styles.flexRow}>
@@ -415,35 +615,50 @@ class DetailProduct extends React.Component {
                 GROSIR
               </Text>
             </View>
-            <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
-              <Text style={styles.title}>
-                {this.state.title}
+            <View style={{ flexDirection: 'column', flex: 1 }}>
+              <View style={[styles.titleContainer, {flex: 1, marginLeft: 15}]}>
+                <Text style={styles.title}>
+                  {title}
+                </Text>
+                {this.renderLikes(pickFromDropshipper, id)}
+              </View>
+              <Text style={[styles.price, { marginLeft: 15 }]}>
+                {wholesalerMasked}
               </Text>
-              {this.renderLikes()}
+              {valueCommission}
             </View>
           </View>
         </View>
       )
     } else {
+      Reactotron.log('normal')
       return (
         <View>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {this.state.title}
+              {title}
             </Text>
-            {this.renderLikes()}
+            {this.renderLikes(pickFromDropshipper, id)}
           </View>
           <View style={styles.flexRow}>
             <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10}]}>
-              <Text style={styles.diskon}>
-                {this.state.diskon}%
+              <Text allowFontScaling style={styles.diskon}>
+                {diskon}%
+              </Text>
+            </View>
+            <View style={[styles.containerDiskon, {marginTop: 10, marginRight: 10, backgroundColor: Colors.darkMint}]}>
+              <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny, color: Colors.background}]}>
+                GROSIR
               </Text>
             </View>
             <View>
-              {this.renderDiskon(true, totalHarga)}
-              <Text style={[styles.price, {marginTop: 0}]}>
-                {hargaDiskon}
-              </Text>
+              {this.renderDiskon(discount, price)}
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text style={[styles.price, {marginTop: 0}]}>
+                  {hargaDiskonMasked}{'\b'}
+                </Text>
+                {valueCommission}
+              </View>
             </View>
           </View>
         </View>
@@ -595,7 +810,7 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={{height: 25, width: 25}} />
+      <Image source={Images.notVerified} style={{height: 25, width: 25}} />
     )
   }
 
@@ -606,62 +821,63 @@ class DetailProduct extends React.Component {
       )
     }
     return (
-      <Image source={Images.love} style={styles.image24p} />
+      <Image source={Images.notVerified} style={styles.image24p} />
     )
   }
 
-  renderDiskon (status, nominal) {
-    if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+  renderLikes (pickFromDropshipper, id) {
+    if (!pickFromDropshipper) {
+      if (this.state.like) {
+        return (
+          <TouchableOpacity onPress={() => this.addWishList(id)}>
+            <Image source={Images.lovered} style={styles.imageStyleLike} />
+          </TouchableOpacity>
+        )
+      }
       return (
-        <Text style={styles.nominalDiskon}>
-          {money}
-        </Text>
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
+          <Image source={Images.love} style={styles.imageStyleNotLike} />
+        </TouchableOpacity>
       )
     }
-    return (
-      <Text style={styles.nominalDiskon1}>
-        asd
-      </Text>
-    )
   }
 
-  addWishList () {
+  addWishList (ids) {
     if (this.state.isLogin) {
-      this.props.addWishList(this.state.id)
+      this.props.addWishList({id: ids})
     } else {
-      Alert.alert('Pesan', 'Anda belum login')
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
     }
   }
 
-  renderLikes () {
-    if (this.state.like) {
+  addWishListOther (id) {
+    const {otherProduct} = this.state
+    if (this.props.datalogin.login) {
+      otherProduct.map((myProduct) => {
+        if (myProduct.id === id) {
+          myProduct.is_liked ? myProduct.count_like -= 1 : myProduct.count_like += 1
+          myProduct.is_liked = !myProduct.is_liked
+        }
+      })
+      this.props.addWishList({id: id})
+      this.setState({ otherProduct })
+    } else {
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
+    }
+  }
+
+  renderLikesProduk (status, id) {
+    if (status) {
       return (
-        <TouchableOpacity onPress={() => this.addWishList()}>
+        <TouchableOpacity onPress={() => this.addWishListOther(id)}>
           <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity onPress={() => this.addWishList()}>
+      <TouchableOpacity onPress={() => this.addWishListOther(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
-    )
-  }
-
-  renderLikesProduk (status) {
-    if (status) {
-      return (
-        <Image source={Images.lovered} style={styles.imageStyleLike} />
-      )
-    }
-    return (
-      <Image source={Images.love} style={styles.imageStyleNotLike} />
     )
   }
 
@@ -672,12 +888,16 @@ class DetailProduct extends React.Component {
 
   renderRowService (rowData) {
     const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.totalWeight / 1000) * rowData.cost
+<<<<<<< HEAD
     const money = MaskService.toMask('money', temp2, {
       unit: '',
       separator: '.',
       delimiter: '.',
       precision: 3
     })
+=======
+    const money = this.maskedMoney(temp2)
+>>>>>>> beny
     return (
       <View style={styles.serviceContainer}>
         <Text style={styles.serviceName}>{rowData.full_name}</Text>
@@ -732,9 +952,9 @@ class DetailProduct extends React.Component {
         </View>
         <View style={styles.staticList}>
           <Text style={styles.staticProduct}>Dilihat</Text>
-          <Text style={styles.staticProductVal}>{this.state.jumlahLihat}</Text>
+          <Text style={styles.staticProductVal}>{this.state.jumlahLihat} kali</Text>
         </View>
-        <View style={styles.staticList}>
+        <View style={[styles.staticList, {borderBottomWidth: 0}]}>
           <Text style={styles.staticProduct}>Terjual</Text>
           {this.renderSold()}
         </View>
@@ -762,12 +982,7 @@ class DetailProduct extends React.Component {
 
   renderRowGrosir (rowData, sectionID, rowID, highlightRow) {
     let warnaText
-    const money = MaskService.toMask('money', rowData.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(rowData.price)
     if (parseInt(rowID) === this.state.dataGrosir.length - 1) {
       warnaText = { color: Colors.darkMint }
     } else {
@@ -797,11 +1012,11 @@ class DetailProduct extends React.Component {
   renderAsuransi () {
     if (this.state.asuransi) {
       return (
-        <Text style={styles.infoProductVal}>Wajib</Text>
+        <Text style={styles.infoProductVal}>Ya</Text>
       )
     }
     return (
-      <Text style={styles.infoProductVal}>Optional</Text>
+      <Text style={styles.infoProductVal}>Tidak</Text>
     )
   }
 
@@ -812,7 +1027,7 @@ class DetailProduct extends React.Component {
         <View style={styles.infoContainer}>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Berat</Text>
-            <Text style={styles.infoProductVal}>{weight}</Text>
+            <Text style={styles.infoProductVal}>{weight} gram</Text>
           </View>
           <View style={styles.infoList}>
             <Text style={styles.infoProduct}>Kondisi</Text>
@@ -876,12 +1091,12 @@ class DetailProduct extends React.Component {
     if (numOfLine !== null) {
       this.setState({
         numOfLine: null,
-        readmore: styles.readMoreTextContainer1
+        readmore: styles.readMoreTextContainerTerm
       })
     } else if (numOfLine === null) {
       this.setState({
         numOfLine: 3,
-        readmore: styles.readMoreTextContainer
+        readmore: styles.readMoreTextContainerTerm
       })
     }
   }
@@ -891,12 +1106,14 @@ class DetailProduct extends React.Component {
     if (numOfLineTerm !== null) {
       this.setState({
         numOfLineTerm: null,
-        readmoreTerm: styles.readMoreTextContainer1
+        maxHeight: 112,
+        readmoreTerm: styles.readMoreTextContainerTerm
       })
     } else if (numOfLineTerm === null) {
       this.setState({
         numOfLineTerm: 3,
-        readmoreTerm: styles.readMoreTextContainer
+        maxHeight: 1000,
+        readmoreTerm: styles.readMoreTextContainerTerm
       })
     }
   }
@@ -924,7 +1141,7 @@ class DetailProduct extends React.Component {
       id: id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaToko: this.state.namaToko
     })
     this.props.reviewAction(id, 1)
@@ -938,8 +1155,8 @@ class DetailProduct extends React.Component {
         onPress={() => {
           this.setState({
             provinsiTerpilih: rowData.name,
-            kabTerpilih: 'Semua Wilayah',
-            kecTerpilih: 'Semua Wilayah',
+            kabTerpilih: 'Pilih Kabupaten',
+            kecTerpilih: 'Pilih Kecamatan',
             idProvinsiTerpilih: rowData.id,
             modalProvinsi: false })
           this.props.getKota(rowData.id)
@@ -959,7 +1176,11 @@ class DetailProduct extends React.Component {
           this.setState({
             kabTerpilih: rowData.name,
             idKabTerpilih: rowData.ro_id,
+<<<<<<< HEAD
             kecTerpilih: 'Semua Wilayah',
+=======
+            kecTerpilih: 'Pilih Kecamatan',
+>>>>>>> beny
             modalKabupaten: false })
           this.props.getSubDistrict(rowData.id)
         }}
@@ -1157,11 +1378,37 @@ class DetailProduct extends React.Component {
 
   detailPenjual (id) {
     this.props.getToko(id)
+    this.props.getStoreReview(id)
+    this.setState({
+      isHere: false
+    })
     NavigationActions.storedetail({ type: ActionConst.PUSH })
   }
 
+  checkIsFavorite (data) {
+    const {storeId} = this.state
+    if (!data) {
+      return (
+        <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
+          <Text style={styles.labelButtonFav}>
+             + Favorit
+          </Text>
+        </TouchableOpacity>
+      )
+    } else {
+      return (
+        <TouchableOpacity style={styles.buttonFav} onPress={() => this.handleFavoriteStore(storeId)}>
+          <Image source={Images.centangBiru} style={styles.image24p} />
+          <Text style={styles.labelButtonFav}>
+            Di Favoritkan
+          </Text>
+        </TouchableOpacity>
+      )
+    }
+  }
+
   renderInfoPenjual () {
-    const {numOfLine, storeId} = this.state
+    const {storeId} = this.state
     return (
       <View style={[styles.ulasanContainer]}>
         <View style={styles.border}>
@@ -1173,53 +1420,60 @@ class DetailProduct extends React.Component {
             <View style={styles.containerNamaToko}>
               <View style={styles.namaContainer}>
                 <View style={styles.flexRow}>
-                  <Text style={styles.textNama}>
+                  <Text style={styles.textNama} numberOfLines={2} ellipsizeMode={'tail'}>
                     {this.state.namaToko}
                   </Text>
                   {this.renderVerifiedPenjual(this.state.verified)}
                 </View>
-                <Text style={[styles.textKelola, {color: Colors.lightgrey}]}>
+                <Text numberOfLines={2} ellipsizeMode={'tail'} style={[styles.textKelola, {color: Colors.lightgrey}]}>
                   {this.state.lokasiPenjual}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.buttonFav}>
-                <Image source={Images.centang} style={styles.image24p} />
-                <Text style={styles.labelButtonFav}>
-                  Di Favoritkan
-                </Text>
-              </TouchableOpacity>
+              {this.checkIsFavorite(this.state.isStoreFavorite)}
             </View>
           </TouchableOpacity>
         </View>
-        <View style={[styles.infoContainer, {flexDirection: 'column', marginTop: 1.8}]}>
-          <Text style={styles.infoProduct}>Terms and Conditions</Text>
-          <Text
-            numberOfLines={numOfLine}
-            style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
-          >
-            {this.state.termcondition}
-          </Text>
-          <TouchableOpacity style={this.state.readmoreTerm} onPress={() => this.readMoreTerm()}>
-            <View style={{alignItems: 'center'}}>
+        <View style={styles.infoContainerTerm}>
+          <View style={{ maxHeight: this.state.maxHeight }}>
+            <Text style={styles.infoProduct}>Terms and Conditions</Text>
+            <Text
+              style={[styles.infoProductVal, {color: Colors.darkgrey, paddingRight: 26, paddingBottom: 0}]}
+            >
+              {this.state.termcondition}
+            </Text>
+          </View>
+          <View style={{ marginTop: 10 }}>
+            <TouchableOpacity style={styles.termButton} onPress={() => this.readMoreTerm()}>
               <Image source={Images.down} style={styles.imageDown} />
-            </View>
-          </TouchableOpacity>
-          <View style={{marginBottom: 22.1}} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
   }
 
-  renderProduk () {
+  handleFavoriteStore (id) {
+    this.props.putFavoriteStore(id)
+  }
+
+  handleNewProduct (id) {
+    NavigationActions.newproduct({
+      type: ActionConst.PUSH,
+      header: 'Produk Terbaru',
+      storeId: id
+    })
+  }
+
+  renderProdukSeller () {
     return (
       <View style={{elevation: 1, backgroundColor: Colors.background}}>
         <ListView
           contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
           dataSource={this.dataSource.cloneWithRows(this.state.otherProduct)}
-          renderRow={this.renderRowProduk.bind(this)}
+          renderRow={this.renderRowProdukPenjual.bind(this)}
           enableEmptySections
         />
-        <TouchableOpacity style={styles.allCategory} onPress={() => {}}>
+        <TouchableOpacity style={styles.allCategory} onPress={() => this.handleNewProduct(this.state.storeId)}>
           <Text style={styles.textAllCategory}>
             Lihat semua produk terbaru
           </Text>
@@ -1229,36 +1483,62 @@ class DetailProduct extends React.Component {
     )
   }
 
-  renderRowProduk (rowData) {
-    if (rowData.discount > 0) {
-      this.statusDiskon = true
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
+            <Text allowFontScaling style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={[styles.containerDiskon2, {top: -15, left: -10}]}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
+      return (
+        <View style={[styles.containerDiskon, {top: -15, left: -15}]}>
+          <Text allowFontScaling style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {top: -15, left: -15, backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
+  renderRowProdukPenjual (rowData) {
+    if (rowData.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.price, rowData.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
       <TouchableOpacity
         style={stylesHome.rowDataContainer}
         activeOpacity={0.5}
         onPress={() => this.produkDetail(rowData.id)}
       >
-        <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.discount} %
-          </Text>
-        </View>
+        <Image source={{ uri: rowData.image }} style={stylesHome.imageProduct}>
+          {this.checkDiscount(rowData.discount, rowData.is_discount, rowData.is_wholesaler)}
+        </Image>
         <View style={stylesHome.containerTitle}>
-          <Text style={stylesHome.textTitleProduct}>
+          <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.textTitleProduct}>
             {rowData.name}
           </Text>
           <View style={stylesHome.tokoContainer}>
@@ -1267,7 +1547,7 @@ class DetailProduct extends React.Component {
             </Text>
             {this.renderVerified(this.state.verified)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.price)}
+          {this.renderDiskon2(rowData.is_discount, rowData.price)}
           <View style={styles.otherProductMoneyContainer}>
             <View style={{flex: 1}}>
               <Text style={stylesHome.harga}>
@@ -1275,7 +1555,7 @@ class DetailProduct extends React.Component {
               </Text>
             </View>
             <View style={stylesHome.likesContainer}>
-              {this.renderLikesProduk(rowData.is_liked)}
+              {this.renderLikesProduk(rowData.is_liked, rowData.id)}
               <Text style={stylesHome.like}>
                 {rowData.count_like}
               </Text>
@@ -1286,12 +1566,16 @@ class DetailProduct extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProductSeller () {
     if (!this.state.pickFromDropshipper) {
       return (
         <View style={{ marginBottom: 80 }}>
           <Text style={styles.bigTitle}>Produk lain dari Penjual ini</Text>
-          {this.renderProduk()}
+          {this.renderProdukSeller()}
         </View>
       )
     } else {
@@ -1303,45 +1587,92 @@ class DetailProduct extends React.Component {
 
   diskusi () {
     this.props.getDiscussion(this.state.id, 1)
+    Reactotron.log(this.state.dataImage[0].file)
     NavigationActions.productdiscussion({
       id: this.state.id,
       type: ActionConst.PUSH,
       price: this.state.price,
-      foto: this.state.fotoToko,
+      foto: this.state.dataImage[0].file,
       namaProduk: this.state.title,
       data: []
     })
   }
 
   beliSekarang () {
+    const { id,
+      grosir,
+      price,
+      dataImage,
+      title,
+      diskon,
+      stock,
+      weight,
+      namaToko,
+      service,
+      dataGrosir,
+      originId } = this.state
     if (this.state.isLogin) {
       if (!this.state.pickFromDropshipper) {
         NavigationActions.purchaseaddtocart({
-          type: ActionConst.PUSH
+          type: ActionConst.PUSH,
+          idProduct: id,
+          price: price - (diskon / 100 * price),
+          foto: dataImage[0].file,
+          namaProduk: title,
+          namaToko: namaToko,
+          weight: weight,
+          subtotal: price - (diskon / 100 * price),
+          diskon: String(diskon / 100 * price),
+          originId: originId,
+          dataKurir: service,
+          stock: stock,
+          grosir: grosir,
+          dataGrosir: dataGrosir
         })
         this.props.getDetailProduk(this.state.id)
       } else {
         NavigationActions.placeincatalog({
           type: ActionConst.PUSH,
-          fotoToko: this.state.fotoToko,
+          fotoToko: this.state.dataImage[0].file,
           productName: this.state.title,
           namaToko: this.state.namaToko,
           price: this.state.price,
           id: this.state.id,
-          createDropshipper: true
+          createDropshipper: true,
+          commission: this.state.commission
         })
-        this.props.getCatalog()
       }
     } else {
-      Alert.alert('Pesan', 'Mohon login terlebih dahulu untuk membeli produk ini')
+      this.setState({
+        modalLogin: true
+      })
     }
   }
 
+  onClose () {
+    this.setState({ modalLogin: false })
+  }
+
   render () {
+<<<<<<< HEAD
     const spinner = this.state.loadingProduk
     ? (<View style={styles.spinnerProduk}>
       <ActivityIndicator color='white' size='small' />
     </View>) : (<View />)
+=======
+    const { loadingProduk, modalLogin } = this.state
+    if (loadingProduk) {
+      return (
+        <View style={styles.spinner}>
+          <ActivityIndicator color={Colors.red} size='large' />
+        </View>
+      )
+    }
+    let view = null
+    if (modalLogin) {
+      view = <ModalLogin visible={modalLogin} onClose={() => this.onClose()} />
+    }
+>>>>>>> beny
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -1368,7 +1699,7 @@ class DetailProduct extends React.Component {
           <TouchableOpacity style={styles.buttonReset} onPress={() => this.diskusi()}>
             <Image source={Images.diskusi} style={{marginTop: 2, height: 14, width: 15}} />
             <Text style={styles.labelButtonReset}>
-                Diskusi ({this.state.diskusi})
+              Diskusi ({this.state.diskusi})
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonOke} onPress={() => this.beliSekarang()}>
@@ -1377,11 +1708,11 @@ class DetailProduct extends React.Component {
             </Text>
           </TouchableOpacity>
         </View>
-        {spinner}
         {this.renderModalLaporkan()}
         {this.renderModalProvinsi()}
         {this.renderModalKabupaten()}
         {this.renderModalKecamatan()}
+        {view}
       </View>
     )
   }
@@ -1395,7 +1726,8 @@ const mapStateToProps = (state) => {
     dataSubDistrict: state.subdistricts,
     dataServis: state.estimatedCharges,
     dataWishlist: state.addWishlist,
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataFavorit: state.favorite
   }
 }
 
@@ -1409,13 +1741,15 @@ const mapDispatchToProps = (dispatch) => {
       id: id, origin_id: originId, destination_id: destinationId, weight: weight
     })),
     reviewAction: (id, page) => dispatch(reviewAction.listReviews({ id: id, page: page })),
-    addWishList: (id) => dispatch(productAction.addToWishlist({ id: id })),
+    addWishList: (param) => dispatch(productAction.addToWishlist(param)),
     resetAddToWishlist: () => dispatch(productAction.resetAddToWishlist()),
     getToko: (id) => dispatch(storeAction.getStores({ id: id })),
     getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
     getDiscussion: (id, page) => dispatch(productAction.getDiscussion({ id: id, page: page })),
     resetProduk: () => dispatch(productAction.resetDetail()),
-    getCatalog: () => dispatch(catalogAction.getListCatalog())
+    getCatalog: () => dispatch(catalogAction.getListCatalog()),
+    putFavoriteStore: (id) => dispatch(userAction.favoriteStore({id: id})),
+    getStoreReview: (id) => dispatch(reviewAction.getStoreReview({id: id, page: 1}))
   }
 }
 

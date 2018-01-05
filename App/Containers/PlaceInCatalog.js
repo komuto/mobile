@@ -12,9 +12,14 @@ import {
   ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadioCatalog'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
+import Reactotron from 'reactotron-react-native'
+
+// import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -30,6 +35,13 @@ class PlaceInCatalog extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      catalog: false,
+      updateDropship: false,
+      deleteDropship: false,
+      createDropship: false,
+      createCatalog: false
+    }
     this.state = {
       listKatalog: [],
       id: this.props.id,
@@ -41,69 +53,117 @@ class PlaceInCatalog extends React.Component {
       idCatalog: this.props.catalogId,
       modalTambahKatalog: false,
       namaKatalog: '',
-      statusCreateProduct: this.props.createDropshipper || false
+      statusCreateProduct: this.props.createDropshipper || false,
+      commission: this.props.commission || 0,
+      textHeader: this.props.title || 'Tempatkan di Katalog',
+      loading: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataCatalog.status === 200) {
-      if (nextProps.dataCatalog.catalogs.length <= 0) {
-        ToastAndroid.show('Anda tidak memiliki katalog..', ToastAndroid.LONG)
-      } else {
-        let temp = this.state.listKatalog
-        nextProps.dataCatalog.catalogs.map((data, i) => {
-          temp[i] = ({'index': data.id, 'label': data.name})
-        })
+    const {dataCatalog, dataCreateCatalog, dataCreateProdukDropshipper, alterProduct} = nextProps
+
+    if (!isFetching(dataCatalog) && this.submitting.catalog) {
+      this.submitting = { ...this.submitting, catalog: false }
+      if (isError(dataCatalog)) {
+        ToastAndroid.show(dataCatalog.message, ToastAndroid.SHORT)
         this.setState({
-          listKatalog: temp,
-          idCatalog: nextProps.dataCatalog.catalogs[0].id
+          loading: false
         })
       }
-      nextProps.dataCatalog.status = 0
-    } if (nextProps.dataCreateCatalog.status === 200) {
-      this.setState({
-        namaKatalog: ''
-      })
-      nextProps.dataCreateCatalog.status = 0
-      this.props.getCatalog()
-    } if (nextProps.dataCreateProdukDropshipper.status === 200) {
-      this.setState({
-        loading: false
-      })
-      NavigationActions.notification({
-        type: ActionConst.PUSH,
-        tipeNotikasi: 'succestambahproduk',
-        hideNavBar: true,
-        hideBackImage: true
-      })
-      nextProps.dataCreateProdukDropshipper.status = 0
-    } if (nextProps.alterProduct.status === 200) {
-      this.setState({
-        loading: false
-      })
-      nextProps.alterProduct.status = 0
-    } if (nextProps.dataCreateProdukDropshipper.status === 400) {
-      ToastAndroid.show('Produk sudah ada di daftar dropship..', ToastAndroid.LONG)
-      this.setState({
-        loading: false
-      })
-      nextProps.dataCreateProdukDropshipper.status = 0
-    } if (nextProps.dataCreateProdukDropshipper.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan..', ToastAndroid.LONG)
-      this.setState({
-        loading: false
-      })
+      if (isFound(dataCatalog)) {
+        const isFound = dataCatalog.catalogs.length
+        if (isFound <= 0) {
+          ToastAndroid.show('Anda tidak memiliki katalog', ToastAndroid.SHORT)
+          this.setState({
+            loading: false
+          })
+        } else {
+          let temp = this.state.listKatalog
+          dataCatalog.catalogs.map((data, i) => {
+            temp[i] = ({'index': data.id, 'label': data.name})
+          })
+          this.setState({
+            listKatalog: temp,
+            idCatalog: dataCatalog.catalogs[0].id,
+            loading: false
+          })
+        }
+      }
+    }
+
+    if (!isFetching(dataCreateCatalog) && this.submitting.createCatalog) {
+      this.submitting = { ...this.submitting, createCatalog: false }
+      if (isError(dataCreateCatalog)) {
+        ToastAndroid.show(dataCreateCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCreateCatalog)) {
+        this.setState({ namaKatalog: '' })
+        if (!this.submitting.catalog) {
+          this.submitting = {
+            ...this.submitting,
+            catalog: true,
+            loading: false
+          }
+          this.props.getCatalog()
+        }
+      }
+    }
+
+    if (!isFetching(dataCreateProdukDropshipper) && this.submitting.createDropship) {
+      this.submitting = { ...this.submitting, createDropship: false }
+      if (isError(dataCreateProdukDropshipper)) {
+        ToastAndroid.show(dataCreateProdukDropshipper.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCreateProdukDropshipper)) {
+        this.setState({ loading: false })
+        NavigationActions.notification({
+          type: ActionConst.PUSH,
+          tipeNotikasi: 'succestambahproduk',
+          hideNavBar: true,
+          hideBackImage: true
+        })
+      }
+    }
+
+    if (!isFetching(alterProduct) && this.submitting.updateDropship) {
+      this.submitting = { ...this.submitting, updateDropship: false }
+      if (isError(alterProduct)) {
+        ToastAndroid.show(alterProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(alterProduct)) {
+        this.setState({ loading: false })
+        NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+        return true
+      }
+    }
+
+    if (!isFetching(alterProduct) && this.submitting.deleteDropship) {
+      this.submitting = { ...this.submitting, deleteDropship: false }
+      if (isError(alterProduct)) {
+        ToastAndroid.show(alterProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(alterProduct)) {
+        this.setState({ loading: false })
+        NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+        return true
+      }
     }
   }
 
   componentDidMount () {
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        catalog: true
+      }
+      this.props.getCatalog()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-    this.props.getListProduk()
-    this.props.getHiddenProduct()
   }
 
   handleBack = () => {
@@ -111,13 +171,12 @@ class PlaceInCatalog extends React.Component {
     return true
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -133,7 +192,7 @@ class PlaceInCatalog extends React.Component {
               <Text style={styles.textKelola}>
                 {totalHarga}
               </Text>
-              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi 10%</Text>
+              <Text style={[styles.textKelola, {color: Colors.darkMint}]}> - Komisi {this.state.commission}%</Text>
             </View>
           </View>
         </View>
@@ -194,8 +253,14 @@ class PlaceInCatalog extends React.Component {
   }
 
   handleTambahKatalog () {
-    this.setState({modalTambahKatalog: false})
-    this.props.createCatalog(this.state.namaKatalog)
+    if (!this.submitting.createCatalog) {
+      this.submitting = {
+        ...this.submitting,
+        createCatalog: true
+      }
+      this.setState({modalTambahKatalog: false, loading: true})
+      this.props.createCatalog(this.state.namaKatalog)
+    }
   }
 
   renderCatalog () {
@@ -221,15 +286,25 @@ class PlaceInCatalog extends React.Component {
 
   nextState () {
     const {idCatalog, id, statusCreateProduct} = this.state
-    this.setState({
-      loading: true
-    })
+    this.setState({loading: true})
     if (statusCreateProduct) {
-      this.props.createProductFromDropshipper(id, idCatalog)
+      if (!this.submitting.catalog) {
+        this.submitting = {
+          ...this.submitting,
+          createDropship: true
+        }
+        this.props.createProductFromDropshipper(id, idCatalog)
+      }
     } else {
       let tempIdProduct = []
       tempIdProduct[0] = id
-      this.props.changeCatalog(idCatalog, tempIdProduct)
+      if (!this.submitting.catalog) {
+        this.submitting = {
+          ...this.submitting,
+          updateDropship: true
+        }
+        this.props.changeCatalog(idCatalog, tempIdProduct)
+      }
     }
   }
 
@@ -251,13 +326,51 @@ class PlaceInCatalog extends React.Component {
     }
   }
 
+  delete () {
+    let data = []
+    data[0] = this.state.id
+    Reactotron.log(this.state.id)
+    this.setState({loading: true})
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        deleteDropship: true
+      }
+      this.props.deleteItems({product_ids: data})
+    }
+  }
+
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          {this.state.textHeader}
+        </Text>
+        <TouchableOpacity onPress={() => this.delete()}>
+          <Image
+            source={Images.deletWhite}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   render () {
+    Reactotron.log(this.state.commission)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
+      <ActivityIndicator color={Colors.red} size='large' />
     </View>) : (<View />)
     return (
       <View style={[styles.container]}>
+        {this.renderHeader()}
         {this.renderStage()}
         {this.renderProduct()}
         <Text style={styles.bigTitle}>Pilih Katalog yang sesuai dengan produk Anda</Text>
@@ -291,7 +404,8 @@ const mapDispatchToProps = (dispatch) => {
     changeCatalog: (id, data) => dispatch(productAction.changeCatalogProducts({catalog_id: id, product_ids: data})),
     createProductFromDropshipper: (id, idCatalog) => dispatch(productAction.addDropshipProducts({id: id, catalog_id: idCatalog})),
     getListProduk: () => dispatch(storeAction.getStoreProducts()),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    deleteItems: (param) => dispatch(productAction.deleteProducts(param))
   }
 }
 

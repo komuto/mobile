@@ -7,10 +7,10 @@ export const getReviews = createReducer(buildInitState({ reviews: [] }, true))
     resultName: 'reviews'
   }).run()
 
-export const addReview = createReducer(buildInitState({ review: {} }))
+export const addReviews = createReducer(buildInitState({ reviews: [] }))
   .addReducer({
-    type: actions.ADD_REVIEW,
-    resultName: 'review',
+    type: actions.ADD_REVIEWS,
+    resultName: 'reviews',
     includeNonSaga: true
   }).run()
 
@@ -25,3 +25,9 @@ export const getSellerReview = createReducer(buildInitState({ sellerReview: [] }
     type: actions.GET_SELLER_REVIEW,
     resultName: 'sellerReview'
   }).run()
+
+export const storeReview = createReducer(buildInitState({ review: [] }, true))
+.addReducer({
+  type: actions.GET_STORE_REVIEW,
+  resultName: 'review'
+}).run()

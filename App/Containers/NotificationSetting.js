@@ -1,5 +1,16 @@
 import React from 'react'
+<<<<<<< HEAD
 import { View, Text, TouchableOpacity, Image, ListView } from 'react-native'
+=======
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ListView,
+  ToastAndroid
+} from 'react-native'
+>>>>>>> beny
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 
@@ -16,8 +27,15 @@ class NotificationSetting extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+<<<<<<< HEAD
     this.state = {
       notif: false,
+=======
+    this.update = false
+    this.state = {
+      notif: false,
+      messageNotif: '',
+>>>>>>> beny
       listNotifications: []
     }
   }
@@ -27,6 +45,23 @@ class NotificationSetting extends React.Component {
       this.setState({
         listNotifications: nextProps.dataNotifications.settings
       })
+<<<<<<< HEAD
+=======
+    } else if (nextProps.dataNotifications.status !== 200 && nextProps.dataNotifications.status !== 0) {
+      ToastAndroid.show(nextProps.dataNotifications.message, ToastAndroid.SHORT)
+      nextProps.dataNotifications.status = 0
+    }
+
+    if (nextProps.dataNotifications.status === 200 && this.update) {
+      this.setState({
+        notif: true,
+        messageNotif: nextProps.dataNotifications.message,
+        listNotifications: nextProps.dataNotifications.settings
+      })
+    } else if (nextProps.dataNotifications.status !== 200 && nextProps.dataNotifications.status !== 0) {
+      ToastAndroid.show(nextProps.dataNotifications.message, ToastAndroid.SHORT)
+      nextProps.dataNotifications.status = 0
+>>>>>>> beny
     }
   }
 
@@ -38,7 +73,7 @@ class NotificationSetting extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses memperbarui pengaturan notifikasi</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -68,7 +103,10 @@ class NotificationSetting extends React.Component {
     this.setState({
       listNotifications: newDataSource
     })
+<<<<<<< HEAD
     console.log(listNotifications)
+=======
+>>>>>>> beny
   }
 
   renderNotification (rowData) {
@@ -90,9 +128,14 @@ class NotificationSetting extends React.Component {
 
   handleUpdataNotification () {
     let temp = this.state.listNotifications
+<<<<<<< HEAD
     console.log(temp)
     this.props.updateNotificationUser(temp)
     this.setState({notif: true})
+=======
+    this.update = true
+    this.props.updateNotificationUser(temp)
+>>>>>>> beny
   }
 
   render () {

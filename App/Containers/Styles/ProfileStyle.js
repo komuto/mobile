@@ -10,7 +10,8 @@ export default StyleSheet.create({
   },
   loginContainer: {
     backgroundColor: Colors.snow,
-    paddingBottom: 50
+    paddingBottom: 50,
+    paddingTop: 50
   },
   imagestyle: {
     height: 186,
@@ -21,6 +22,7 @@ export default StyleSheet.create({
   welcomeContainer: {
     width: Metrics.screenWidth,
     marginTop: 46,
+    marginBottom: 20,
     justifyContent: 'center'
   },
   welcomeText: {
@@ -170,15 +172,15 @@ export default StyleSheet.create({
     color: Colors.darkgrey,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.37,
-    flex: 1
+    marginRight: 50
   },
   klikLink: {
     fontFamily: Fonts.type.regular,
     color: Colors.lightgrey,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.37,
-    marginTop: 5,
-    flex: 1
+    marginRight: 50,
+    marginTop: 5
   },
   buttonVerifikasi: {
     borderRadius: 5,
@@ -263,5 +265,14 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  spinnerScreen: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.transparent,
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight - Metrics.navBarHeight
   }
 })

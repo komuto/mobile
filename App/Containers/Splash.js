@@ -1,10 +1,10 @@
 import React from 'react'
-import { AsyncStorage } from 'react-native'
+import { AsyncStorage, Linking, ToastAndroid } from 'react-native'
 import SplashScreen from 'react-native-splash-screen'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
+import { baseUrl } from '../config'
 import * as loginaction from '../actions/user'
-import FCM from 'react-native-fcm'
 import * as messageAction from '../actions/message'
 import * as reviewAction from '../actions/review'
 import * as productAction from '../actions/product'
@@ -20,6 +20,7 @@ class Splash extends React.Component {
     }
   }
 
+<<<<<<< HEAD
   componentWillMount () {
     FCM.getFCMToken().then(tokenFCM => {
       if (tokenFCM !== null && tokenFCM !== undefined) {
@@ -54,13 +55,29 @@ class Splash extends React.Component {
             break
           default:
         }
+=======
+  componentDidMount () {
+    SplashScreen.show()
+    Linking.getInitialURL().then(url => {
+      if (url === null || url === undefined) {
+        AsyncStorage.getItem('token').then((value) => {
+          if (value === null || value === undefined || value === '') {
+          } else {
+            this.props.stateLogin(true)
+            NavigationActions.backtab({ type: ActionConst.REPLACE })
+            SplashScreen.hide()
+          }
+          SplashScreen.hide()
+          NavigationActions.backtab({ type: ActionConst.REPLACE })
+        })
+      } else {
+        this.openUrl(url)
+>>>>>>> beny
       }
     })
-    setTimeout(() => {
-      this._loadInitialState().done()
-    }, 1000)
   }
 
+<<<<<<< HEAD
   _loadInitialState = async () => {
     // check if already state fix for android back
     AsyncStorage.getItem('token').then((value) => {
@@ -93,6 +110,37 @@ class Splash extends React.Component {
       SplashScreen.hide()
       NavigationActions.backtab({ type: ActionConst.REPLACE })
     })
+=======
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataVerify.status === 200) {
+      NavigationActions.notification({
+        type: ActionConst.REPLACE,
+        tipeNotikasi: 'welcome'
+      })
+      this.props.stateLogin(true)
+      nextProps.dataVerify.status = 0
+    } else if (nextProps.dataVerify.status !== 200 && nextProps.dataVerify.status !== 0) {
+      NavigationActions.backtab({
+        type: ActionConst.REPLACE
+      })
+      ToastAndroid.show(nextProps.dataVerify.message, ToastAndroid.SHORT)
+      nextProps.dataVerify.status = 0
+    }
+  }
+
+  async openUrl (url) {
+    if (url.includes('product')) {
+      const id = url.replace(baseUrl + 'product-detail?id=', '')
+      NavigationActions.detailproduct({
+        type: ActionConst.REPLACE,
+        id: id
+      })
+      this.props.getDetailProduk(id)
+    } else if (url.includes('verification')) {
+      const verifyToken = await url.replace(baseUrl + 'signup/verification?token=', '')
+      this.props.verify(verifyToken)
+    }
+>>>>>>> beny
   }
 
   render () {
@@ -102,7 +150,8 @@ class Splash extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    datalogin: state.isLogin
+    datalogin: state.isLogin,
+    dataVerify: state.verification
   }
 }
 
@@ -111,7 +160,9 @@ const mapDispatchToProps = (dispatch) => {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getDetailDiscussion: (id) => dispatch(productAction.getComment({id})),
-    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id}))
+    getDetailMessage: (id) => dispatch(messageAction.getBuyerDetailMessage({id})),
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id})),
+    verify: (token) => dispatch(loginaction.verification({token: token}))
   }
 }
 

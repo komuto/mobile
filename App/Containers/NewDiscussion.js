@@ -1,6 +1,8 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator, ToastAndroid } from 'react-native'
-import { MaskService } from 'react-native-masked-text'
+import { View, Text, Image, TouchableOpacity, TextInput, ActivityIndicator, ToastAndroid } from 'react-native'
+import RupiahFormat from '../Services/MaskedMoneys'
+
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -30,20 +32,21 @@ class NewDiscussion extends React.Component {
         pertanyaan: '',
         loading: false
       })
-      ToastAndroid.show('Diskusi berhasil ditambahkan..!!', ToastAndroid.LONG)
-    } else if (nextProps.dataDiskusi.status > 200) {
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
+      this.props.getDetailProduk(this.state.id)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
       this.setState({ loading: false })
-      Alert.alert('Pesan', nextProps.dataDiskusi.message)
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -74,7 +77,7 @@ class NewDiscussion extends React.Component {
       this.setState({ loading: true })
       this.props.newDiscussion(id, pertanyaan)
     } else {
-      Alert.alert('Pesan', 'Pertanyaan tidak boleh kosong..')
+      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.SHORT)
     }
   }
 
@@ -136,7 +139,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    newDiscussion: (id, question) => dispatch(productAction.newDiscussion({ id: id, question: question }))
+    newDiscussion: (id, question) => dispatch(productAction.newDiscussion({ id: id, question: question })),
+    getDetailProduk: (id) => dispatch(productAction.getProduct({id: id}))
   }
 }
 

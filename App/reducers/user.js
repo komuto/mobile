@@ -121,7 +121,8 @@ export const changePassword = createReducer(buildInitState())
 
 export const favoriteStore = createReducer(buildInitState())
   .addReducer({
-    type: actions.FAVORITE_STORE
+    type: actions.FAVORITE_STORE,
+    resultName: 'favorite'
   }).run()
 
 export const getPhone = createReducer(buildInitState({ phone: '' }))
@@ -171,6 +172,9 @@ export const listFavoriteStore = createReducer(buildInitState({ stores: [] }, tr
 export const alterUser = createReducer(buildInitState())
   .addReducer({
     type: actions.UPDATE_FIREBASE_REG_TOKEN
+  })
+  .addReducer({
+    type: actions.RESEND_SIGNUP
   }).run()
 
 export const notifSettings = createReducer(buildInitState({ settings: [] }))
@@ -203,12 +207,31 @@ export const getResolutionDetail = createReducer(buildInitState({ resolution: {}
     resultName: 'resolution'
   }).run()
 
+<<<<<<< HEAD
 export const resolution = createReducer(buildInitState({ resolution: {} }))
   .addReducer({
     type: actions.CREATE_RESOLUTION,
     resultName: 'resolution'
   })
+=======
+export const createResolution = createReducer(buildInitState({ resolution: {} }))
+  .addReducer({
+    type: actions.CREATE_RESOLUTION,
+    resultName: 'resolution'
+  }).run()
+
+export const replyResolution = createReducer(buildInitState({ resolution: {} }))
+>>>>>>> beny
   .addReducer({
     type: actions.REPLY_RESOLUTION,
     resultName: 'resolution'
   }).run()
+<<<<<<< HEAD
+=======
+
+export const unreadDisputes = createReducer(buildInitState({ unreaddisputes: '' }))
+.addReducer({
+  type: actions.UNREAD_DISPUTES,
+  customSuccState: (state, action) => ({ disputes: action.data.disputes, ...succState(action) })
+}).run()
+>>>>>>> beny

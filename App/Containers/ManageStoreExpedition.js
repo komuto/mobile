@@ -1,6 +1,18 @@
 import React from 'react'
-import { View, ScrollView, Text, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View,
+  ScrollView,
+  Text,
+  Image,
+  ToastAndroid,
+  ListView,
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native'
 import { connect } from 'react-redux'
+// import Reactotron from 'reactotron-react-native'
+import {Actions as NavigationActions} from 'react-native-router-flux'
+
 import * as expeditionAction from '../actions/expedition'
 
 import { Images, Fonts } from '../Themes'
@@ -12,6 +24,9 @@ class ManageStoreExpedition extends React.Component {
   constructor (props) {
     super(props)
     this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      update: false
+    }
     this.state = {
       dataListExpedition: [],
       filterExpedition: [],
@@ -22,45 +37,21 @@ class ManageStoreExpedition extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataExpeditions.status === 200) {
+    if (nextProps.dataManageExpedition.status === 200) {
       this.setState({
-        dataListExpedition: nextProps.dataExpeditions.manageExpeditions,
+        dataListExpedition: nextProps.dataManageExpedition.manageExpeditions,
         loading: false
       })
-      let dataTemp = []
-      let dataTempSec = []
-      nextProps.dataExpeditions.manageExpeditions.map((data, i) => (
-        data.services.map((data, i) => {
-          if (data.is_active) {
-            data.is_checked = true
-          }
-          dataTemp.push(data)
-        }
-        )
-      ))
-      dataTemp.map((data, i) => {
-        if (data.is_active) {
-          dataTempSec.push({'expedition_service_id': data.id, 'status': 1, 'parent': data.expedition.id})
-        } else {
-          dataTempSec.push({'expedition_service_id': data.id, 'status': 2, 'parent': data.expedition.id})
-        }
-      })
-      this.setState({
-        filterExpedition: dataTempSec,
-        expeditionServices: dataTempSec
-      })
-    } if (nextProps.dataUpdate.status === 200) {
-      this.setState({
-        loading: false
-      })
-    } if (nextProps.dataUpdate.status > 200) {
-      this.setState({
-        loading: true
-      })
-    } if (nextProps.dataExpeditions.status > 200) {
-      this.setState({
-        loading: true
-      })
+    } if (nextProps.dataUpdate.status === 200 && this.submitting.update) {
+      this.submitting = { ...this.submitting, update: false }
+      this.setState({ loading: false })
+      ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)
+      NavigationActions.pop()
+    } if (nextProps.dataUpdate.status > 200 && this.submitting.update) {
+      this.setState({ loading: false })
+      ToastAndroid.show(nextProps.dataUpdate.message, ToastAndroid.SHORT)
+    } if (nextProps.dataManageExpedition.status > 200) {
+      this.setState({ loading: true })
     }
   }
 
@@ -69,24 +60,31 @@ class ManageStoreExpedition extends React.Component {
   }
 
   nextState () {
-    const {expeditionServices} = this.state
-    this.setState({
-      loading: true
+    const {dataListExpedition} = this.state
+    this.setState({loading: true})
+    this.submitting.update = true
+    var temp = []
+    dataListExpedition.map((data, i) => {
+      data.services.map((datas, j) => {
+        if (datas.is_active) {
+          temp.push({'expedition_service_id': datas.id, 'status': 1})
+        } else {
+          temp.push({'expedition_service_id': datas.id, 'status': 2})
+        }
+        return temp
+      })
     })
-    this.props.updateExpedition(expeditionServices)
+
+    this.props.updateExpedition(temp)
   }
 
-  checkParent (title) {
-  }
-
-  mapParent (a) {
-    const { dataListExpedition } = this.state
-    const mapparent = dataListExpedition.map((data, i) => {
-      const img = dataListExpedition[i].is_checked ? Images.centang : null
+  mapParent (expedition) {
+    const mapparent = expedition.map((data, i) => {
+      const img = expedition[i].is_active ? Images.centangBiru : null
       return (
         <View key={i} >
           <View style={styles.containerSinge}>
-            <TouchableOpacity onPress={this.onClickPengiriman2(i, i, data.id)}>
+            <TouchableOpacity onPress={this.onClickAll(i, i, data.id)}>
               <View style={styles.containerEkspedisi}>
                 <View style={styles.box}>
                   <Image
@@ -112,19 +110,37 @@ class ManageStoreExpedition extends React.Component {
     )
   }
 
-  mapChild (data, parentindex) {
-    const mapChild = data.map((dataService, i) => {
-      this.check = data[i].is_checked ? Images.centang : null
+  onClickAll = (selected, i, parentId) => (e) => {
+    const { dataListExpedition } = this.state
+
+    if (dataListExpedition[i].is_active) {
+      dataListExpedition[i].is_active = false
+      dataListExpedition[i].services.map((data, i) => {
+        data.is_active = false
+      })
+    } else {
+      dataListExpedition[i].is_active = true
+      dataListExpedition[i].services.map((data, i) => {
+        data.is_active = true
+      })
+    }
+
+    this.setState({...dataListExpedition})
+  }
+
+  mapChild (services, parentId) {
+    const mapChild = services.map((data, i) => {
+      this.centang = services[i].is_active ? Images.centangBiru : null
       return (
-        <TouchableOpacity key={i} onPress={this.onClickPengiriman(parentindex, i, dataService.id)}>
+        <TouchableOpacity key={i} onPress={this.onClickSingle(i, parentId, services.length, services)}>
           <View style={styles.childEkspedisi}>
             <View style={styles.box}>
               <Image
-                source={this.check}
+                source={this.centang}
                 style={styles.gambarCentangBox}
               />
             </View>
-            <Text style={[styles.title]}>{dataService.name}</Text>
+            <Text style={[styles.title]}>{data.name}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -136,79 +152,43 @@ class ManageStoreExpedition extends React.Component {
     )
   }
 
-  onClickPengiriman = (parentIndex, childIndex, parents) => (e) => {
-    const {dataListExpedition, filterExpedition} = this.state
-    if (dataListExpedition[parentIndex].services[childIndex].is_checked) {
-      filterExpedition.filter(function (data) {
-        if (data.expedition_service_id === parents) {
-          data.status = 2
-        }
-      })
-      dataListExpedition[parentIndex].services[childIndex].is_checked = false
-      const newDataSource = dataListExpedition.map(data => {
-        return {...data}
-      })
+  onClickSingle = (selected, parentId, length, dataChild) => (e) => {
+    const { dataListExpedition } = this.state
+
+    if (dataChild[selected].is_active) {
+      dataChild[selected].is_active = false
       this.setState({
-        dataListExpedition: newDataSource,
-        expeditionServices: filterExpedition
+        ...dataListExpedition
       })
     } else {
-      filterExpedition.filter(function (data) {
-        if (data.expedition_service_id === parents) {
-          data.status = 1
-        }
-      })
-      dataListExpedition[parentIndex].services[childIndex].is_checked = true
-      const newDataSource = dataListExpedition.map(data => {
-        return {...data}
-      })
+      dataChild[selected].is_active = true
       this.setState({
-        dataListExpedition: newDataSource,
-        expeditionServices: filterExpedition
+        ...dataListExpedition
       })
     }
-  }
 
-  onClickPengiriman2 = (selected, i, parentId) => (e) => {
-    const {dataListExpedition, filterExpedition} = this.state
-    if (dataListExpedition[i].id === parentId) {
-      if (dataListExpedition[i].is_checked === false) {
-        dataListExpedition[i].is_checked = true
-      } else {
-        dataListExpedition[i].is_checked = false
+    var count = 0
+    dataChild.map((data, i) => {
+      if (data.is_active) {
+        count++
       }
-      dataListExpedition[i].services.filter(function (data) {
-        if (data.is_checked === false) {
-          data.is_checked = true
-        } else {
-          data.is_checked = false
-        }
-      })
-      this.setState({dataListExpedition: dataListExpedition})
-      filterExpedition.filter(function (data) {
-        if (data.parent === parentId) {
-          if (data.status === 2) {
-            data.status = 1
-          } else {
-            data.status = 2
-          }
-        }
-      })
-      this.setState({expeditionServices: filterExpedition})
+    })
+
+    if (count === length) {
+      dataListExpedition[parentId].is_active = true
     } else {
-      window.alert('Internal Error')
+      dataListExpedition[parentId].is_active = false
     }
   }
 
   renderStateTwo () {
-    let a = 0
     return (
       <View>
         <View style={styles.titleEkspedisi}>
           <Text style={styles.textTitle}>Pilihlah ekspedisi pengiriman yang digunakan oleh toko Anda untuk mengirim barang</Text>
         </View>
-        <ScrollView style={{marginBottom: 100}}>
-          {this.mapParent(a)}
+        <ScrollView style={{marginBottom: 90}}>
+          {this.mapParent(this.state.dataListExpedition)}
           <View style={{ flex: 1 }}>
             <TouchableOpacity style={[styles.buttonnext]} onPress={() => this.nextState()}>
               <Text style={styles.textButtonNext}>
@@ -237,7 +217,7 @@ class ManageStoreExpedition extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataExpeditions: state.manageExpeditions,
+    dataManageExpedition: state.manageExpeditions,
     dataUpdate: state.updateExpedition
   }
 }

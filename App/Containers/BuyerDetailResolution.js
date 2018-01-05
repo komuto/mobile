@@ -6,11 +6,21 @@ import {
   View,
   TextInput,
   ListView,
+<<<<<<< HEAD
   BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+=======
+  BackAndroid,
+  ToastAndroid,
+  TouchableOpacity
+} from 'react-native'
+import { connect } from 'react-redux'
+import ScrollableTabView from 'react-native-scrollable-tab-view'
+import { Actions as NavigationActions } from 'react-native-router-flux'
+>>>>>>> beny
 import moment from 'moment'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -19,7 +29,11 @@ import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/BuyerDetailResolutionStyle'
+<<<<<<< HEAD
 import { Colors } from '../Themes/'
+=======
+import { Colors, Images } from '../Themes/'
+>>>>>>> beny
 
 class BuyerDetailResolution extends React.Component {
   constructor (props) {
@@ -30,7 +44,11 @@ class BuyerDetailResolution extends React.Component {
       tabViewStyle: {
         backgroundColor: 'transparent'
       },
+<<<<<<< HEAD
       messages: '',
+=======
+      content: '',
+>>>>>>> beny
       discussionSolution: [],
       detailResolution: [],
       complaintMessage: [],
@@ -52,9 +70,24 @@ class BuyerDetailResolution extends React.Component {
         discussionSolution: nextProps.dataDetailResolution.resolution.discussions,
         photoComplaint: nextProps.dataDetailResolution.resolution.images
       })
+<<<<<<< HEAD
     } if (nextProps.dataReplyResolution.status === 200) {
       this.props.getDetailResolution(this.state.idResolution)
       nextProps.dataReplyResolution.status = 0
+=======
+      nextProps.dataDetailResolution.status = 0
+    } else if (nextProps.dataDetailResolution.status !== 200 && nextProps.dataDetailResolution.status !== 0) {
+      ToastAndroid.show(nextProps.dataDetailResolution.message, ToastAndroid.SHORT)
+      nextProps.dataDetailResolution.status = 0
+    }
+    if (nextProps.dataReplyResolutions.status === 200) {
+      this.setState({content: ''})
+      this.props.getDetailResolution(this.state.idResolution)
+      nextProps.dataReplyResolutions.status = 0
+    } else if (nextProps.dataReplyResolutions.status !== 200 && nextProps.dataReplyResolutions.status !== 0) {
+      ToastAndroid.show(nextProps.dataReplyResolutions.message, ToastAndroid.SHORT)
+      nextProps.dataReplyResolutions.status = 0
+>>>>>>> beny
     }
   }
 
@@ -71,6 +104,7 @@ class BuyerDetailResolution extends React.Component {
     return true
   }
 
+<<<<<<< HEAD
   handelDetailMessage (typeMessage) {
     NavigationActions.detailmessage({
       type: ActionConst.PUSH,
@@ -78,6 +112,8 @@ class BuyerDetailResolution extends React.Component {
     })
   }
 
+=======
+>>>>>>> beny
   renderRowInformation (rowData) {
     return (
       <View style={styles.containerMessage}>
@@ -207,7 +243,10 @@ class BuyerDetailResolution extends React.Component {
   }
 
   renderPhotoProduct () {
+<<<<<<< HEAD
     console.log(this.state.photoComplaint)
+=======
+>>>>>>> beny
     if (!this.state.photoComplaint) {
       return (
         <View />
@@ -234,12 +273,31 @@ class BuyerDetailResolution extends React.Component {
     }
   }
 
+<<<<<<< HEAD
   sendReply () {
     this.setState({messages: ''})
     this.props.replyDiscussion(this.state.idResolution, this.state.messages)
   }
 
   render () {
+=======
+  handleComment = (text) => {
+    this.setState({ content: text })
+  }
+
+  send () {
+    const { idResolution, content } = this.state
+    this.props.replyDiscussion(idResolution, content)
+  }
+
+  render () {
+    let image
+    if (this.state.content === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
+>>>>>>> beny
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -267,6 +325,7 @@ class BuyerDetailResolution extends React.Component {
                 enableEmptySections
               />
             </ScrollView>
+<<<<<<< HEAD
             <TextInput
               style={[styles.inputText]}
               value={this.state.messages}
@@ -283,6 +342,24 @@ class BuyerDetailResolution extends React.Component {
               underlineColorAndroid='transparent'
               placeholder='Tulis pesan Anda disini'
             />
+=======
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInput}
+                value={this.state.content}
+                keyboardType='default'
+                autoCapitalize='none'
+                autoCorrect
+                blurOnSubmit
+                onChangeText={this.handleComment}
+                underlineColorAndroid='transparent'
+                placeholder='Tulis Komentar'
+              />
+              <TouchableOpacity style={styles.sendContainer} onPress={() => this.send()}>
+                <Image source={image} style={styles.sendMessage} />
+              </TouchableOpacity>
+            </View>
+>>>>>>> beny
           </View>
         </ScrollableTabView>
       </View>
@@ -294,7 +371,11 @@ class BuyerDetailResolution extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataDetailResolution: state.resolutionDetail,
+<<<<<<< HEAD
     dataReplyResolution: state.resolution
+=======
+    dataReplyResolutions: state.replyResolution
+>>>>>>> beny
   }
 }
 

@@ -58,7 +58,7 @@ export default StyleSheet.create({
   textButtonNext: {
     color: Colors.background,
     fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.regular
+    fontSize: Fonts.size.medium
   },
   infoContainer: {
     paddingLeft: 20,
@@ -93,9 +93,8 @@ export default StyleSheet.create({
   textError: {
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.small,
-    textAlign: 'center',
     opacity: 0.8,
-    paddingBottom: 10.8
+    paddingBottom: 20
   },
   lokasiSeparator: {
     marginBottom: 24.8

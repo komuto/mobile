@@ -39,7 +39,9 @@ yarn-error.log
 # BUCK
 buck-out/
 \.buckd/
-*.keystore
+
+# folder apk
+android/app/apks/
 
 # fastlane
 #

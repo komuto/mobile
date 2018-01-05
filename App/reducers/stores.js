@@ -143,3 +143,30 @@ export const getStoreProductsByCatalog = createReducer(buildInitState({ products
     type: actions.GET_STORE_PRODUCTS_BY_CATALOG,
     resultName: 'products'
   }).run()
+<<<<<<< HEAD
+=======
+
+export const unreadDisputesStore = createReducer(buildInitState({ disputes: '' }))
+.addReducer({
+  type: actions.UNREAD_DISPUTES_STORE,
+  resultName: 'disputes'
+}).run()
+
+export const getStoreProductsByCatalogSearch = createReducer(buildInitState({ products: [] }, true))
+  .addReducer({
+    type: actions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH,
+    resultName: 'products'
+  }).run()
+
+export const getStoreProductsHiddenByCatalogSearch = createReducer(buildInitState({ products: [] }, true))
+  .addReducer({
+    type: actions.GET_STORE_PRODUCTS_HIDDEN_BY_CATALOG_SEARCH,
+    resultName: 'products'
+  }).run()
+
+export const getDropshipperFaq = createReducer(buildInitState({ faq: '' }))
+.addReducer({
+  type: actions.GET_DROPSHIPPER_FAQ,
+  resultName: 'faq'
+}).run()
+>>>>>>> beny

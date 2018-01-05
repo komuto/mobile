@@ -1,10 +1,12 @@
 import React from 'react'
 import { ScrollView, Text, View, TouchableOpacity } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
 import * as cartAction from '../actions/cart'
+import * as bankAction from '../actions/bank'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -64,11 +66,19 @@ class PaymentTransferBank extends React.Component {
       })
     }
     if (nextProps.dataCheckout.status === 200) {
+      const { total, diskon, kodeUnik, kode } = this.state
+      const sisaBayar = total - diskon + kodeUnik
       this.setState({
         loading: false
       })
+      this.props.getTransferBank()
       NavigationActions.paymenttransferbankdetail({
-        type: ActionConst.RESET
+        type: ActionConst.RESET,
+        totalPayment: sisaBayar,
+        total: total,
+        discount: diskon,
+        kode: kode,
+        kodeUnik: kodeUnik
       })
     }
   }
@@ -109,23 +119,17 @@ class PaymentTransferBank extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRincian () {
     const { kode, total, diskon, kodeUnik } = this.state
     const sisaBayar = total - diskon + kodeUnik
     let viewDiscount
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
     if (kode !== null) {
-      const hargaDiskon = MaskService.toMask('money', diskon, {
-        unit: 'Rp -',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const hargaDiskon = this.maskedMoney(diskon)
       viewDiscount = (
         <View style={styles.rincianRow}>
           <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
@@ -133,12 +137,7 @@ class PaymentTransferBank extends React.Component {
         </View>
       )
     }
-    const hargaSisaBayar = MaskService.toMask('money', sisaBayar, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSisaBayar = this.maskedMoney(sisaBayar)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianTitle}>
@@ -176,9 +175,9 @@ class PaymentTransferBank extends React.Component {
       )
     } else {
       viewButton = (
-        <TouchableOpacity style={styles.button} onPress={() => this.transferBank()}>
+        <View style={styles.button} onPress={() => this.transferBank()}>
           <Spinner />
-        </TouchableOpacity>
+        </View>
       )
     }
     return (
@@ -224,7 +223,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getCart: dispatch(cartAction.getCart()),
     getCartReset: () => dispatch(cartAction.getCartReset()),
-    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment}))
+    checkout: (idPayment) => dispatch(cartAction.checkout({payment_method_id: idPayment})),
+    getTransferBank: () => dispatch(bankAction.getKomutoBankAccounts())
   }
 }
 

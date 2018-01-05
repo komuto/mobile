@@ -1,13 +1,17 @@
 import React from 'react'
-import { ScrollView, Text, View, TouchableOpacity, Image, BackAndroid, ListView } from 'react-native'
+import { AsyncStorage, Text, View, TouchableOpacity, Image, BackAndroid, ListView, ToastAndroid } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import Spinner from '../Components/Spinner'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import * as paymentAction from '../actions/payment'
+import * as transactionAction from '../actions/transaction'
 import * as cartAction from '../actions/cart'
+import * as userAction from '../actions/user'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/PembayaranStyle'
 
@@ -18,11 +22,25 @@ class Payment extends React.Component {
     this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.state = {
       total: '0',
-      saldo: '300000',
+      saldo: 0,
       data: [],
       getCartPayment: true,
-      idCart: this.props.idCart
+      idCart: this.props.idCart,
+      token: '',
+      loading: false,
+      transaction: this.props.transaction,
+      payWithSaldo: false,
+      statusTransaction: -1,
+      isWallet: 0
     }
+  }
+
+  componentWillMount () {
+    AsyncStorage.getItem('token').then(token => {
+      this.setState({
+        token
+      })
+    }).done()
   }
 
   componentDidMount () {
@@ -44,39 +62,128 @@ class Payment extends React.Component {
       this.setState({
         data: nextProps.dataPaymentMethod.paymentMethods
       })
+    } else if (nextProps.dataPaymentMethod.status !== 200 && nextProps.dataPaymentMethod.status !== 0) {
+      ToastAndroid.show(nextProps.dataPaymentMethod.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCart.status === 200) {
-      if (this.state.getCartPayment) {
-        let temp = 0
-        nextProps.dataCart.cart.items.map((obj, i) =>
-          (
-            temp = temp + obj.total_price
+      if (!this.state.transaction) {
+        if (this.state.getCartPayment) {
+          let temp = 0
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              temp = temp + obj.total_price + obj.shipping.delivery_cost
+            )
           )
-        )
-        if (nextProps.dataCart.cart.promo !== null) {
-          if (nextProps.dataCart.cart.promo.type === 0) {
-            temp = temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
-          } else {
-            temp = temp - parseInt(nextProps.dataCart.cart.promo.nominal)
+          if (nextProps.dataCart.cart.promo !== null) {
+            if (nextProps.dataCart.cart.promo.type === 0) {
+              temp = temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100
+            } else {
+              temp = temp - parseInt(nextProps.dataCart.cart.promo.nominal)
+            }
           }
+          this.setState({
+            idCart: nextProps.dataCart.cart.id,
+            total: temp,
+            getCartPayment: false
+          })
+          this.props.getCartReset()
         }
-        this.setState({
-          total: temp,
-          getCartPayment: false
-        })
-        this.props.getCartReset()
+      }
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
+      if (!this.state.transaction) {
+        if (this.state.getCartPayment) {
+          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
+          this.props.getCartReset()
+        }
       }
     }
+    if (nextProps.dataCheckout.status === 200) {
+      if (this.state.payWithSaldo) {
+        this.props.getDetailTransaction(this.state.idCart)
+        NavigationActions.paymentbalance({
+          type: ActionConst.PUSH,
+          transaction: this.state.transaction
+        })
+      } else {
+        this.props.getSnapToken(this.state.idCart)
+      }
+      nextProps.dataCheckout.status = 0
+    } else if (nextProps.dataCheckout.status !== 200 && nextProps.dataCheckout.status !== 0) {
+      if (nextProps.dataCheckout.message.toLowerCase().includes('keranjang tidak ditemukan')) {
+        ToastAndroid.show('Silakan buka menu transaksi untuk melanjutkan transaksi ini', ToastAndroid.LONG)
+      } else {
+        ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
+      }
+      this.setState({
+        loading: false
+      })
+      nextProps.dataCheckout.status = 0
+    }
+    if (nextProps.dataToken.status === 200) {
+      nextProps.dataToken.status = 0
+      this.setState({
+        loading: false
+      })
+      console.log('snap token', nextProps.dataToken.token)
+      NavigationActions.paymentmidtrans({
+        type: ActionConst.PUSH,
+        token: nextProps.dataToken.token,
+        from: 'payment'
+      })
+    } else if (nextProps.dataToken.status !== 200 && nextProps.dataToken.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataToken.message, ToastAndroid.SHORT)
+      nextProps.dataToken.status = 0
+    }
+
+    if (nextProps.dataTransaction.status === 200) {
+      if (this.state.transaction) {
+        const discount = nextProps.dataTransaction.transaction.bucket.promo
+        if (discount === '' || discount === undefined || discount === null) {
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
+            getCartPayment: false,
+            idCart: nextProps.dataTransaction.transaction.bucket.id
+          })
+        } else {
+          const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
+          let nominalDiscount = 0
+          if (typeDiscount === 0) {
+            nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100
+          } else {
+            nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal)
+          }
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount,
+            getCartPayment: false,
+            idCart: nextProps.dataTransaction.transaction.bucket.id
+          })
+        }
+        this.setState({
+          statusTransaction: nextProps.dataTransaction.transaction.bucket.status
+        })
+      }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.SHORT)
+    }
+    if (nextProps.dataProfile.status === 200) {
+      this.setState({
+        saldo: nextProps.dataProfile.user.user.saldo_wallet
+      })
+    } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
+    }
+  }
+
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderTotal () {
     const { total } = this.state
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(total)
     return (
       <View style={styles.totalContainer}>
         <View style={styles.total}>
@@ -97,12 +204,7 @@ class Payment extends React.Component {
 
   renderSaldo () {
     const { saldo } = this.state
-    const totalSaldo = MaskService.toMask('money', saldo, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSaldo = this.maskedMoney(saldo)
     return (
       <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer} onPress={() => this.saldo()}>
         <View style={styles.total}>
@@ -116,12 +218,25 @@ class Payment extends React.Component {
   }
 
   renderListPayment () {
+    const { loading } = this.state
+    if (!loading) {
+      return (
+        <TouchableOpacity activeOpacity={0.5} style={styles.totalContainer} onPress={() => this.midtrans()}>
+          <View style={styles.total}>
+            <View style={styles.textContainer}>
+              <Text style={styles.textLabel}>Metode Pembayaran Lain</Text>
+            </View>
+            <Image source={Images.rightArrow} style={styles.imagePicker} />
+          </View>
+        </TouchableOpacity>
+      )
+    }
     return (
-      <ListView
-        dataSource={this.dataSource.cloneWithRows(this.state.data)}
-        renderRow={this.renderRow.bind(this)}
-        enableEmptySections
-      />
+      <View activeOpacity={0.5} style={styles.totalContainer}>
+        <View style={[styles.total, { justifyContent: 'center' }]}>
+          <Spinner color={Colors.red} />
+        </View>
+      </View>
     )
   }
 
@@ -183,15 +298,47 @@ class Payment extends React.Component {
   }
 
   detail () {
+    if (this.state.transaction) {
+      this.props.getDetailTransaction(this.state.idCart)
+    }
     NavigationActions.paymentcart({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      transaction: this.state.transaction
     })
   }
 
   saldo () {
-    NavigationActions.paymentbalance({
-      type: ActionConst.PUSH
+    if (this.state.transaction) {
+      this.props.getDetailTransaction(this.state.idCart)
+    }
+    this.setState({
+      payWithSaldo: true
     })
+    if (this.state.statusTransaction !== 3) {
+      this.props.checkout()
+    } else {
+      this.props.getDetailTransaction(this.state.idCart)
+      NavigationActions.paymentbalance({
+        type: ActionConst.PUSH,
+        transaction: this.state.transaction
+      })
+    }
+  }
+
+  midtrans () {
+    if (this.state.transaction) {
+      this.setState({
+        loading: true
+      })
+      this.props.getSnapToken(this.state.idCart)
+    } else {
+      this.setState({
+        loading: true
+      })
+      if (this.state.statusTransaction !== 3) {
+        this.props.checkout()
+      }
+    }
   }
 
   atm () {
@@ -203,11 +350,9 @@ class Payment extends React.Component {
   render () {
     return (
       <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {this.renderTotal()}
-          {this.renderSaldo()}
-          {this.renderListPayment()}
-        </ScrollView>
+        {this.renderTotal()}
+        {this.renderSaldo()}
+        {this.renderListPayment()}
       </View>
     )
   }
@@ -216,15 +361,22 @@ class Payment extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataPaymentMethod: state.paymentMethods,
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataCheckout: state.checkout,
+    dataToken: state.snapToken,
+    dataTransaction: state.transaction,
+    dataProfile: state.profile
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    paymentAction: dispatch(paymentAction.getPaymentMethods()),
+    getSnapToken: (id) => dispatch(paymentAction.getMidtransToken({id: id, platform: 'apps'})),
     getCartReset: () => dispatch(cartAction.getCartReset()),
-    getCart: dispatch(cartAction.getCart())
+    getCart: dispatch(cartAction.getCart()),
+    checkout: () => dispatch(cartAction.checkout()),
+    getDetailTransaction: (id) => dispatch(transactionAction.getTransaction({id: id})),
+    getProfile: dispatch(userAction.getProfile())
   }
 }
 

@@ -47,5 +47,18 @@ export default StyleSheet.create({
     width: 24,
     marginLeft: 10,
     marginRight: 13
+  },
+  containerNumber: {
+    height: 24,
+    width: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.red
+  },
+  number: {
+    fontSize: Fonts.size.tiny,
+    color: Colors.snow,
+    fontFamily: Fonts.type.bold
   }
 })

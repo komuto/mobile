@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   AsyncStorage,
-  Alert
+  ToastAndroid,
+  BackAndroid
 } from 'react-native'
+import { marketplace } from '../config'
 import { connect } from 'react-redux'
 import FCM from 'react-native-fcm'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -16,6 +18,7 @@ import Facebook from '../Components/Facebook'
 import Hr from '../Components/Hr'
 import * as registerAction from '../actions/user'
 import * as EmailValidator from 'email-validator'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -23,7 +26,7 @@ import * as EmailValidator from 'email-validator'
 // Styles
 import styles from './Styles/RegisterStyle'
 
-import CustomRadio from '../Components/CustomRadio'
+import CustomRadio from '../Components/CustomRadioCatalog'
 
 class Register extends React.Component {
 
@@ -35,12 +38,24 @@ class Register extends React.Component {
       email: '',
       password: '',
       konfirmasiPassword: '',
-      gender: 'male',
-      index: 0,
-      label: 'Pria',
-      data: [{label: 'Pria', value: 0}, {label: 'Wanita', value: 1}],
+      gender: '',
+      index: -1,
+      data: [{'index': 0, 'label': 'Pria'}, {'index': 1, 'label': 'Wanita'}],
       loading: false
     }
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
   }
 
   componentWillReceiveProps (nextProps) {
@@ -54,16 +69,11 @@ class Register extends React.Component {
       NavigationActions.backtab({
         type: ActionConst.RESET
       })
-    } else if (nextProps.dataRegister.status > 200) {
+    } else if (nextProps.dataRegister.status !== 200 && nextProps.dataRegister.status !== 0) {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataRegister.message)
-    } else if (nextProps.dataRegister.status === 'ENOENT') {
-      this.setState({
-        loading: false
-      })
-      Alert.alert('Error', nextProps.dataRegister.message)
+      ToastAndroid.show(nextProps.dataRegister.message, ToastAndroid.SHORT)
     }
   }
 
@@ -90,22 +100,35 @@ class Register extends React.Component {
   handlingRadio (index, value) {
     if (value.toLowerCase() === 'pria') {
       this.setState({
-        gender: 'male'
+        gender: 'male',
+        index: index
       })
     } else {
       this.setState({
-        gender: 'female'
+        gender: 'female',
+        index: index
       })
     }
   }
 
   handlePressRegister = () => {
     const {name, phoneNumber, email, password, konfirmasiPassword, gender} = this.state
+    let errorEmail = false
+    var format = /^([a-zA-Z0-9_\.])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/
+    if (format.test(email)) {
+      errorEmail = false
+    } else {
+      errorEmail = true
+    }
     if (EmailValidator.validate(email)) {
       if (name === '') {
         this.onError('name')
+      } else if (name.length < 3) {
+        this.onError('nameNotValid')
       } else if (email === '') {
         this.onError('email')
+      } else if (errorEmail) {
+        this.onError('emailNotValid')
       } else if (phoneNumber === '') {
         this.onError('phoneNumber')
       } else if (password === '') {
@@ -114,14 +137,20 @@ class Register extends React.Component {
         this.onError('konfirmasiPassword')
       } else if (konfirmasiPassword !== password) {
         this.onError('passwordBeda')
+      } else if (gender === '') {
+        this.onError('genderNull')
       } else {
-        this.setState({
-          loading: true
-        })
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
             console.log('token', tokenFCM)
-            this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+            if (password.length > 4) {
+              this.setState({
+                loading: true
+              })
+              this.props.registers(name, phoneNumber, email, gender, password, tokenFCM)
+            } else {
+              ToastAndroid.show('Panjang password harus lebih dari 5 karakter', ToastAndroid.SHORT)
+            }
           }
         })
       }
@@ -133,37 +162,31 @@ class Register extends React.Component {
   onError = (field) => {
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
-        window.alert('Email harus diisi')
+        ToastAndroid.show('Email harus diisi', ToastAndroid.SHORT)
         break
       case 'phoneNumber':
-        window.alert('Nomer hp harus diisi')
+        ToastAndroid.show('Nomor hp harus diisi', ToastAndroid.SHORT)
         break
       case 'password':
-        window.alert('Password harus diisi')
+        ToastAndroid.show('Password harus diisi', ToastAndroid.SHORT)
         break
       case 'name':
-        window.alert('name harus diisi')
+        ToastAndroid.show('Nama harus diisi', ToastAndroid.SHORT)
+        break
+      case 'nameNotValid':
+        ToastAndroid.show('Nama tidak boleh kurang dari 3 karakter', ToastAndroid.SHORT)
         break
       case 'konfirmasiPassword':
-        window.alert('Konfirmasi Password harus diisi')
+        ToastAndroid.show('Konfirmasi Password harus diisi', ToastAndroid.SHORT)
         break
       case 'passwordBeda':
-        window.alert('Password tidak cocok')
+        ToastAndroid.show('Password tidak cocok', ToastAndroid.SHORT)
         break
-      case 'NETWORK_ERROR':
-        window.alert('Gangguan Jaringan')
-        break
-      case 'CLIENT_ERROR':
-        window.alert('Terjadi kesalahan')
-        break
-      case 'empty':
-        window.alert('Field tidak boleh kosong')
-        break
-      default:
-        window.alert('Internal Error')
+      case 'genderNull':
+        ToastAndroid.show('Pilih salah satu gender', ToastAndroid.SHORT)
         break
     }
   }
@@ -175,6 +198,7 @@ class Register extends React.Component {
   }
 
   render () {
+    Reactotron.log(this.state.gender)
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -188,7 +212,7 @@ class Register extends React.Component {
               Sudah punya akun?
             </Text>
             <TouchableOpacity onPress={() => this.login()}>
-              <Text style={styles.textLogin}> Login Disini</Text>
+              <Text style={styles.textLogin}> Masuk Disini</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.form}>
@@ -197,6 +221,7 @@ class Register extends React.Component {
                 ref='name'
                 style={styles.inputText}
                 value={name}
+                maxLength={40}
                 keyboardType='default'
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.phoneNumber.focus()}
@@ -216,6 +241,7 @@ class Register extends React.Component {
                 returnKeyType='next'
                 onSubmitEditing={() => this.refs.email.focus()}
                 autoCapitalize='none'
+                maxLength={12}
                 autoCorrect
                 onChangeText={this.handleChangeHape}
                 underlineColorAndroid='transparent'
@@ -272,8 +298,9 @@ class Register extends React.Component {
               <Text style={styles.radioLabel}>Gender</Text>
               <CustomRadio
                 data={this.state.data}
-                handlingRadio={(index1, value1) =>
-                  this.handlingRadio(index1, value1)}
+                index={this.state.index}
+                handlingRadio={(index, value) =>
+                  this.handlingRadio(index, value)}
                 horizontal
               />
             </View>
@@ -283,7 +310,7 @@ class Register extends React.Component {
                 <TouchableOpacity>
                   <Text style={styles.textLogin}>Syarat dan Ketentuan </Text>
                 </TouchableOpacity>
-                <Text style={styles.textBanner}>dari Komuto</Text>
+                <Text style={styles.textBanner}>dari {marketplace}</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -291,7 +318,7 @@ class Register extends React.Component {
               onPress={this.handlePressRegister}
             >
               <Text style={styles.textButtonLogin}>
-                Register
+                Daftar
               </Text>
             </TouchableOpacity>
             <View style={styles.line}>

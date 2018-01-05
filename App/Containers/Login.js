@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ToastAndroid,
   ActivityIndicator
 } from 'react-native'
 import FCM from 'react-native-fcm'
@@ -18,7 +17,7 @@ import Hr from '../Components/Hr'
 import ForgotPassword from '../Components/ForgotPassword'
 import * as loginAction from '../actions/user'
 import { Colors } from '../Themes'
-
+// import Reactotron from 'reactotron-react-native'
 class Login extends React.Component {
 
   constructor (props) {
@@ -40,16 +39,10 @@ class Login extends React.Component {
         loading: false
       })
       this.props.stateLogin(true)
-    } else if (nextProps.datalogin.status > 200) {
+    } else if (nextProps.datalogin.status !== 200 && nextProps.datalogin.status !== 0) {
       this.setState({
         loading: false
       })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
-    } else if (nextProps.datalogin.status === 'ENOENT') {
-      this.setState({
-        loading: false
-      })
-      ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.LONG)
     }
   }
   handleChangeEmail = (text) => {
@@ -74,23 +67,23 @@ class Login extends React.Component {
       if (password === '') {
         this.onError('password')
       } else {
-        this.setState({
-          loading: true
-        })
+        this.setState({loading: true})
         FCM.getFCMToken().then(tokenFCM => {
           if (tokenFCM !== null && tokenFCM !== undefined) {
+            console.log('token: ', tokenFCM)
             this.props.attemptLogin(email, password, tokenFCM)
           }
         })
       }
     } else {
-      this.onError('emailNotValid')
+      if (password === '') {
+        this.onError('password')
+        this.onError('emailNotValid')
+      }
     }
   }
 
   onError = (field) => {
-    console.tron.log('field')
-    console.tron.log(field)
     switch (field) {
       case 'emailNotValid':
         this.setState({
@@ -110,24 +103,6 @@ class Login extends React.Component {
           passErrorColor: Colors.red
         })
         break
-      case 'NETWORK_ERROR':
-        window.alert('Gangguan Jaringan')
-        break
-      case 'CLIENT_ERROR':
-        this.setState({
-          emailText: 'Email tidak terdaftar',
-          emailErrorColor: Colors.red
-        })
-        break
-      case 'empty':
-        this.setState({
-          emailText: 'Email harus diisi',
-          passwordText: 'Password harus diisi'
-        })
-        break
-      default:
-        window.alert('Internal Error')
-        break
     }
   }
 
@@ -141,7 +116,7 @@ class Login extends React.Component {
         break
       default:
         this.setState({
-          passText: 'Password shit',
+          passText: 'Password',
           passErrorColor: Colors.snow
         })
         break
@@ -174,7 +149,7 @@ class Login extends React.Component {
         <ScrollView contentContainerStyle={styles.contentContainerStyle}>
           <View style={styles.containerBanner}>
             <Text style={styles.textBanner}>
-              Sudah punya akun?
+              Belum punya akun?
             </Text>
             <TouchableOpacity onPress={() => this.daftar()}>
               <Text style={styles.textLogin}> Daftar Disini</Text>
@@ -227,7 +202,7 @@ class Login extends React.Component {
                 onPress={this.handlePressLogin}
               >
                 <View style={styles.loginButton}>
-                  <Text style={styles.loginText}>Login</Text>
+                  <Text style={styles.loginText}>Masuk</Text>
                 </View>
               </TouchableOpacity>
             </View>

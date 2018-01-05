@@ -39,7 +39,7 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.small,
     color: Colors.labelgrey,
-    textAlign: 'center'
+    textAlign: 'left'
   },
   rowContainer: {
     flexDirection: 'column',

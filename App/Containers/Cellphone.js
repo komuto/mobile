@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import { Text, Image, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -9,6 +9,7 @@ import * as userAction from '../actions/user'
 
 // Styles
 import styles from './Styles/NomerHandphoneScreenStyle'
+import {Images, Colors} from '../Themes/'
 
 class Cellphone extends React.Component {
 
@@ -30,14 +31,16 @@ class Cellphone extends React.Component {
       })
       NavigationActions.otpcode({
         type: ActionConst.PUSH,
-        title: 'Verifikasi Nomer Telepon',
+        title: 'Verifikasi Nomor Telepon',
         fieldPass: this.state.nomerHape,
         typeVerifikasi: 'verifikasiKelolatelepon'
       })
+      nextProps.dataUser.status = 0
     } else if (nextProps.dataUser.status > 200) {
       this.setState({
         loading: true
       })
+      nextProps.dataUser.status = 0
     }
   }
 
@@ -50,12 +53,8 @@ class Cellphone extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.popTo('accountmanage')
     return true
-  }
-
-  backButton () {
-    NavigationActions.pop()
   }
 
   handlenomerHape = (text) => {
@@ -66,11 +65,16 @@ class Cellphone extends React.Component {
   }
 
   verifikasiKelola () {
-    this.props.updateNomerHape(this.state.nomerHape)
-    this.props.sentOTP()
-    this.setState({
-      loading: true
-    })
+    const { nomerHape } = this.state
+    if (nomerHape.length > 8) {
+      this.props.updateNomerHape(this.state.nomerHape)
+      this.props.sentOTP()
+      this.setState({
+        loading: true
+      })
+    } else {
+      ToastAndroid.show('Nomor ponsel belum benar', ToastAndroid.SHORT)
+    }
   }
 
   renderTanpaNoHape () {
@@ -82,6 +86,7 @@ class Cellphone extends React.Component {
             style={styles.inputText}
             value={this.state.nomerHape}
             keyboardType='numeric'
+            maxLength={12}
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect
@@ -101,13 +106,16 @@ class Cellphone extends React.Component {
 
   renderVerifikasi () {
     if (this.state.statusVerifikasi) {
-      this.textStatus = 'sudah'
+      this.textStatus = 'telah'
+      this.image = Images.hpVerify
     } else {
       this.textStatus = 'belum'
+      this.image = Images.noHpNotVerify
     }
     return (
-      <View>
-        <View style={[styles.infoContainer, {paddingTop: 321}]}>
+      <View style={{alignItems: 'center'}}>
+        <Image source={this.image} style={{height: 172, width: 172}} />
+        <View style={[styles.infoContainer]}>
           <Text style={styles.textLabelDark}>Nomor Handphone Anda {this.textStatus} terverifikasi</Text>
           <Text style={styles.textNomerHape}>{this.state.nomerHape}</Text>
         </View>
@@ -127,7 +135,7 @@ class Cellphone extends React.Component {
     }
     return (
       <TouchableOpacity style={[styles.buttonnext, {marginLeft: 40, marginRight: 40}]} onPress={() => this.verifikasiKelola()}>
-        <Text style={styles.textButtonNext}>
+        <Text style={[styles.textButtonNext, {paddingHorizontal: 75}]}>
           Verifikasi Sekarang
         </Text>
       </TouchableOpacity>
@@ -143,20 +151,37 @@ class Cellphone extends React.Component {
       )
     } else {
       return (
-        <View>
+        <View style={{flex: 1, justifyContent: 'center'}}>
           {this.renderVerifikasi()}
         </View>
       )
     }
   }
 
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Nomor Handphone
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
+      <ActivityIndicator color={Colors.red} size='large' />
     </View>) : (<View />)
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.renderAll()}
         {spinner}
       </View>
@@ -174,7 +199,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     updateNomerHape: (nomerHape) => dispatch(userAction.updatePhone({phone_number: nomerHape})),
-    sentOTP: () => dispatch(userAction.sendOTPPhone())
+    sentOTP: () => dispatch(userAction.sendOTPPhone()),
+    getProfile: (login) => dispatch(userAction.getProfile())
   }
 }
 

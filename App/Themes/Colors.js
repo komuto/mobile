@@ -67,7 +67,18 @@ const colors = {
   backgroundKadaluarsa: '#f3eced',
   fullOrange: '#f4bc50',
   violet: '#c36ce8',
+<<<<<<< HEAD
   iceBlue: '#f6f9ff'
+=======
+  iceBlue: '#f6f9ff',
+  textYellow: '#ffcd00',
+  whiteThree: '#f0f0f0',
+  pumpkinOrange: '#fe8224',
+  pink: '#ff639b',
+  charcoalGrey: '#404852',
+  ocher: '#d69515',
+  slate: '#41475e'
+>>>>>>> beny
 }
 
 export default colors

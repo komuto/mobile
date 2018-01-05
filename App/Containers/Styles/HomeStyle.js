@@ -86,9 +86,8 @@ export default StyleSheet.create({
     backgroundColor: Colors.background
   },
   imageSlider: {
-    flex: 1,
-    width: Metrics.screenWidth - 100,
-    height: 140
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight / 3
   },
   titleCategory: {
     fontSize: Fonts.size.smallMed,
@@ -178,6 +177,17 @@ export default StyleSheet.create({
     top: 11,
     left: 10
   },
+  containerDiskon2: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: 11,
+    left: 60
+  },
   diskon: {
     fontSize: Fonts.size.smallMed,
     color: Colors.snow,
@@ -193,7 +203,9 @@ export default StyleSheet.create({
     marginTop: 20
   },
   tokoContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    flex: 1,
+    marginRight: 30
   },
   namaToko: {
     fontSize: Fonts.size.small,
@@ -281,5 +293,16 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     paddingTop: 100
+  },
+  buttonStyle: {
+    flex: 1,
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textResult: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey
   }
 })

@@ -41,7 +41,7 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: Colors.darkgrey,
     width: 35,
-    height: 35,
+    height: 45,
     borderBottomWidth: 1,
     borderColor: Colors.silver
   },

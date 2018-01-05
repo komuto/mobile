@@ -5,46 +5,49 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TextInput,
   BackAndroid,
   Modal,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import Filter from '../Components/Filter'
-import * as produkAction from '../actions/product'
+import RupiahFormat from '../Services/MaskedMoneys'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import Reactotron from 'reactotron-react-native'
+
+import Filter from '../Components/Filter'
+import {isFetching, isError, isFound} from '../Services/Status'
+import ModalSearchGeneral from '../Components/Search'
+
 // import YourActions from '../Redux/YourRedux'
+import * as produkAction from '../actions/product'
+import * as homeAction from '../actions/home'
 
 // Styles
 import styles from './Styles/ProdukTerbaruScreenStyle'
 import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 
-import { Images, Colors, Metrics } from '../Themes'
+import { Images, Colors, Metrics, Fonts } from '../Themes'
 
 class NewProduct extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-    ]
-    this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
-    this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.submitting = {
+      wishlist: false,
+      product: false,
+      search: false
+    }
     this.state = {
       search: '',
       listDataSource: [],
       rowDataSource: [],
+      dataProduct: props.propsProduct || null,
       header: this.props.header || 'search',
-      tipe: this.props.tipe || 'kategori',
       tipeView: 'list',
       sortModal: false,
       terbaruColor: Colors.lightblack,
@@ -55,24 +58,42 @@ class NewProduct extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      sortData: menu,
       filter: false,
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
+      loadmore: false,
+      isRefreshing: true,
       isLoading: false,
-      kondisi: '',
-      pengiriman: '',
-      price: '',
-      address: '',
-      brand: '',
-      other: '',
+      filterKondisi: '',
+      filterPengiriman: [],
+      filterPrice: [0, 0],
+      filterAddress: '',
+      filterBrand: [],
+      filterOthers: [],
       statusFilter: false,
-      sort: 'newest'
+      sort: 'newest',
+      wishlist: props.propsWishlist || null,
+      storeId: this.props.storeId || '',
+      isFound: false,
+      modalSearch: false,
+      refreshSearch: false,
+      valueSearch: this.props.query || '',
+      resultSearch: [],
+      provinsi: '',
+      kota: '',
+      provinsiId: ''
     }
   }
 
   componentDidMount () {
+    Reactotron.log('new product')
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      Reactotron.log('new product')
+      this.props.getListProduct({page: 1, store_id: this.state.storeId, q: this.state.valueSearch})
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -81,137 +102,170 @@ class NewProduct extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataFilter.status === 200) {
-      if (!this.state.statusFilter) {
-        if (nextProps.dataFilter.products.length > 0) {
-          let data = [...this.state.listDataSource, ...nextProps.dataFilter.products]
+    const {propsWishlist, propsProduct, dataSearch} = nextProps
+
+    if (!isFetching(propsProduct) && this.submitting.product) {
+      this.submitting = { ...this.submitting, product: false }
+      if (isError(propsProduct)) {
+        ToastAndroid.show(propsProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsProduct)) {
+        const isFound = propsProduct.products.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
           this.setState({
+            dataProduct: propsProduct,
             listDataSource: data,
             rowDataSource: data,
-            isRefreshing: false,
             isLoading: false,
             loadmore: true,
-            page: this.state.page + 1
+            page: this.state.page + 1,
+            isRefreshing: false,
+            gettingData: false
+          })
+        } else {
+          const data = [...this.state.listDataSource, ...propsProduct.products]
+          this.setState({
+            dataProduct: propsProduct,
+            listDataSource: data,
+            rowDataSource: data,
+            isLoading: false,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false
+          })
+        }
+      }
+    }
+
+    if (!isFetching(dataSearch) && this.submitting.search) {
+      this.submitting = { ...this.submitting, search: false }
+      if (isError(dataSearch)) {
+        ToastAndroid.show(dataSearch.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataSearch)) {
+        const result = dataSearch.products
+        if (result.length === 0) {
+          this.setState({
+            resultSearch: dataSearch.products,
+            isFound: true,
+            refreshSearch: false
           })
         } else {
           this.setState({
-            loadmore: false,
-            isLoading: false
+            resultSearch: dataSearch.products,
+            isFound: false,
+            refreshSearch: false
           })
         }
-      } else {
-        this.setState({
-          listDataSource: nextProps.dataFilter.products,
-          rowDataSource: nextProps.dataFilter.products,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true,
-          statusFilter: false,
-          page: 1
-        })
       }
-    } else if (nextProps.dataFilter.status > 200) {
-      console.log(nextProps.dataFilter.status)
-      this.setState({
-        isRefreshing: false,
-        isLoading: false,
-        loadmore: true
-      })
     }
-  }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other, sort) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, sort)
-    this.setState({
-      filter: false,
-      page: 1,
-      kondisi: kondisi,
-      pengiriman: pengiriman,
-      price: price,
-      address: address,
-      brand: brand,
-      other: other,
-      statusFilter: true,
-      isRefreshing: true
-    })
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+        this.setState({ wishlist: propsWishlist })
+      }
+    }
   }
 
   handleBack = () => {
-    if (this.state.tipe === 'search') {
-      this.setState({
-        tipe: 'data'
-      })
-      return true
-    } else if (NavigationActions.pop()) {
-      return true
-    }
+    NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {
-    this.setState({ search: text })
+    this.setState({ search: text, isFound: false, refreshSearch: true })
+    this.submitting.search = true
+    if (text !== '') {
+      this.props.getSearch({q: text, store_id: this.state.storeId})
+    } else {
+      this.props.getSearch({q: 'null', store_id: this.state.storeId})
+    }
   }
 
-  search () {
-    console.log('dispatch search')
+  detailResult (name) {
+    this.setState({ gettingData: true, header: name, isRefreshing: true, listDataSource: [], rowDataSource: [], modalSearch: false, page: 1, resultSearch: [], search: '', valueSearch: name })
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true
+      }
+      Reactotron.log('search result detail ' + name)
+      this.props.getListProduct({q: name})
+    }
   }
 
-  backButton () {
-    NavigationActions.pop()
-  }
-
-  backSearch () {
+  searchFocus () {
     this.setState({
-      tipe: 'data'
+      isFound: false,
+      search: ''
     })
   }
 
+  renderRowSearch (rowData) {
+    return (
+      <TouchableOpacity style={styles.buttonStyle} onPress={() => this.detailResult(rowData.name)}>
+        <Text style={styles.textResult}>
+          {rowData.name}
+        </Text>
+      </TouchableOpacity>
+    )
+  }
+
   loadMore () {
-    const { page, loadmore, isLoading, kondisi, pengiriman, price, address, brand, other } = this.state
+    const {
+      loadmore,
+      isLoading
+    } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, page)
+        this.submitting.product = true
+        this.props.getListProduct({
+          q: this.state.valueSearch,
+          store_id: this.state.storeId,
+          condition: this.state.filterKondisi,
+          services: this.state.filterPengiriman,
+          price: this.state.filterPrice,
+          address: this.state.filterAddress,
+          brands: this.state.filterBrand,
+          other: this.state.filterOthers,
+          page: this.state.page,
+          sort: this.state.sort
+        })
       }
     }
   }
 
   refresh = () => {
-    const { kondisi, pengiriman, price, address, brand, other, sort } = this.state
-    this.setState({ isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 1, sort)
+    const { lightblack } = Colors
+    this.setState({ gettingData: true, header: 'Produk Terbaru', isRefreshing: true, listDataSource: [], rowDataSource: [], page: 1, isLoading: true })
+    this.setState({ terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true })
+    this.submitting = {
+      wishlist: false,
+      product: true
+    }
+    this.props.getListProduct({
+      store_id: this.state.storeId,
+      page: 1,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      sort: this.state.sort
+    })
   }
 
   renderHeader () {
-    const { search } = this.state
-    if (this.state.tipe === 'search') {
-      return (
-        <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backSearch()}>
-            <Image
-              source={Images.leftArrow}
-              style={stylesSearch.imageStyle}
-            />
-          </TouchableOpacity>
-          <View style={stylesSearch.textInputContainer}>
-            <TextInput
-              ref='search'
-              autoFocus
-              onSubmitEditing={() => this.search()}
-              style={stylesSearch.inputText}
-              value={search}
-              keyboardType='default'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleTextSearch}
-              underlineColorAndroid='transparent'
-              placeholder='Cari barang atau toko'
-            />
-          </View>
-        </View>
-      )
-    }
     return (
       <View style={stylesSearch.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => NavigationActions.pop()}>
           <Image
             source={Images.iconBack}
             style={stylesSearch.imageStyle}
@@ -220,7 +274,7 @@ class NewProduct extends React.Component {
         <Text style={stylesSearch.headerText}>
           {this.state.header}
         </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
+        <TouchableOpacity onPress={() => this.setState({modalSearch: true})}>
           <Image
             source={Images.searchWhite}
             style={stylesSearch.imageStyle}
@@ -230,106 +284,20 @@ class NewProduct extends React.Component {
     )
   }
 
-  openFilter () {
-    this.setState({
-      filter: true
-    })
-  }
-
-  closeModal () {
-    this.setState({
-      filter: false
-    })
-  }
-
-  setSortModal (visible) {
-    this.setState({sortModal: visible})
-  }
-
-  _onPress (field) {
-    const {bluesky, lightblack} = Colors
-    const {kondisi, pengiriman, price, address, brand, other} = this.state
-    if (field === 'terbaru') {
-      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'newest'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'newest')
-    } else if (field === 'termahal') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'expensive'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'expensive')
-    } else if (field === 'termurah') {
-      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'cheapest'})
-      return this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'cheapest')
-    } else if (field === 'terlaris') {
-      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, statusFilter: true, sortModal: false, sort: 'selling'})
-      this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other, 0, 'selling')
-    }
-  }
-
-  renderModalSort () {
-    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
-    return (
-      <Modal
-        animationType={'slide'}
-        transparent
-        visible={this.state.sortModal}
-        onRequestClose={() => this.setState({ sortModal: false })}
-        >
-        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
-        <View style={styles.modalSortContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Urutkan Berdasarkan</Text>
-          </View>
-          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centang} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termurah')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centang} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termahal')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centang} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
-            <View style={styles.itemContainer}>
-              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centang} />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-    )
-  }
-
-  openSearch () {
-    NavigationActions.search({ type: ActionConst.PUSH, from: 'product' })
-  }
-
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -343,16 +311,36 @@ class NewProduct extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  addWishList (id) {
+    const {listDataSource} = this.state
+    if (this.props.datalogin.login) {
+      this.submitting = {
+        ...this.submitting,
+        wishlist: true
+      }
+      listDataSource.map((myProduct) => {
+        if (myProduct.product.id === id) {
+          myProduct.product.is_liked ? myProduct.product.count_like -= 1 : myProduct.product.count_like += 1
+          myProduct.product.is_liked = !myProduct.product.is_liked
+        }
+      })
+      this.props.addWishList({id: id})
+      this.setState({ listDataSource })
+    } else {
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
+    }
+  }
+
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.addWishList(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.addWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
@@ -363,41 +351,72 @@ class NewProduct extends React.Component {
     return hargaDiskon
   }
 
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View stlye={{left: -10, flexDirection: 'column'}}>
+          <View style={styles.containerDiskon}>
+            <Text allowFontScaling style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text allowFontScaling style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
+    }
+  }
+
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRowList (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} >
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
           </Text>
-          <View style={styles.tokoContainer}>
+          <View style={[styles.tokoContainer, {marginRight: 20}]}>
             <Text style={styles.namaToko}>
               {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(rowData.store.is_verified)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
               <Text style={styles.harga}>
@@ -405,9 +424,9 @@ class NewProduct extends React.Component {
               </Text>
             </View>
             <View style={styles.likesContainer}>
-              {this.renderLikes(rowData.like)}
+              {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
               <Text style={styles.like}>
-                {rowData.product.stock}
+                {rowData.product.count_like}
               </Text>
             </View>
           </View>
@@ -417,49 +436,48 @@ class NewProduct extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5}>
-        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
-        <Text style={stylesHome.textTitleProduct}>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() =>
+        this.produkDetail(rowData.product.id)}>
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct}>
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
+        <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>
         <View style={stylesHome.tokoContainer}>
-          <Text style={stylesHome.namaToko}>
+          <Text numberOfLines={2} ellipsizeMode={'tail'} style={stylesHome.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(rowData.like)}
+          {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
           <Text style={stylesHome.like}>
-            {rowData.product.stock}
+            {rowData.product.count_like}
           </Text>
         </View>
       </TouchableOpacity>
     )
+  }
+
+  produkDetail (id) {
+    NavigationActions.detailproduct({
+      type: ActionConst.PUSH,
+      id: id
+    })
+    this.props.getDetailProduk(id)
   }
 
   changeView () {
@@ -480,7 +498,7 @@ class NewProduct extends React.Component {
         <ListView
           contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
           enableEmptySections
-          dataSource={this.dataSourceRow.cloneWithRows(this.state.rowDataSource)}
+          dataSource={this.dataSource.cloneWithRows(this.state.rowDataSource)}
           renderRow={this.renderRowGrid.bind(this)}
           refreshControl={
             <RefreshControl
@@ -492,7 +510,7 @@ class NewProduct extends React.Component {
               titleColor={Colors.red}
               progressBackgroundColor={Colors.snow}
             />
-        }
+          }
           onEndReached={this.loadMore.bind(this)}
           renderFooter={() => {
             if (this.state.loadmore) {
@@ -514,7 +532,7 @@ class NewProduct extends React.Component {
       <ListView
         contentContainerStyle={{ flexDirection: 'column', flexWrap: 'wrap' }}
         enableEmptySections
-        dataSource={this.dataSourceList.cloneWithRows(this.state.listDataSource)}
+        dataSource={this.dataSource.cloneWithRows(this.state.listDataSource)}
         renderRow={this.renderRowList.bind(this)}
         refreshControl={
           <RefreshControl
@@ -556,13 +574,174 @@ class NewProduct extends React.Component {
     )
   }
 
+  renderModalFilter () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.filter}
+        onRequestClose={() => { this.setState({ filter: false }) }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeaderContainer}>
+            <Text style={styles.modalHeaderText}>
+              Filter
+            </Text>
+            <TouchableOpacity onPress={() => this.setState({filter: false})}>
+              <Image
+                source={Images.close}
+                style={styles.imageCancel}
+              />
+            </TouchableOpacity>
+          </View>
+          <Filter
+            filterPengiriman={this.state.filterPengiriman}
+            filterKondisi={this.state.filterKondisi}
+            filterAddress={this.state.filterAddress}
+            filterPrice={this.state.filterPrice}
+            filterBrand={this.state.filterBrand}
+            filterOthers={this.state.filterOthers}
+            provinsiId={this.state.provinsiId}
+            provinsi={this.state.provinsi}
+            kota={this.state.kota}
+            handlingFilter={(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) =>
+            this.handlingFilter(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota)} />
+        </View>
+      </Modal>
+    )
+  }
+
+  handlingFilter (filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) {
+    this.submitting.product = true
+    this.setState({
+      filter: false,
+      page: 1,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
+      isRefreshing: true,
+      rowDataContainer: [],
+      listDataSource: [],
+      gettingData: true,
+      provinsi: provinsi,
+      provinsiId: provinsiId,
+      kota: kota
+    })
+    this.props.getListProduct({
+      q: this.state.valueSearch,
+      store_id: this.state.storeId,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
+      sort: this.state.sort
+    })
+  }
+
+  modalSort () {
+    const {terbaruColor, termurahColor, termahalColor, terlarisColor, terbaruCek, termurahCek, termahalCek, terlarisCek} = this.state
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.sortModal}
+        onRequestClose={() => this.setState({ sortModal: false })}
+        >
+        <TouchableOpacity activeOpacity={1} style={styles.blackContainer} onPress={() => this.setState({ sortModal: false })} />
+        <View style={styles.modalSortContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Urutkan Berdasarkan</Text>
+          </View>
+          <TouchableOpacity onPress={() => this.onClickSort('newest')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('cheapest')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('expensive')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.onClickSort('selling')}>
+            <View style={styles.itemContainer}>
+              <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
+            </View>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    )
+  }
+
+  dispatchSort (typesort) {
+    this.setState({
+      isRefreshing: true,
+      listDataSource: [],
+      rowDataSource: [],
+      page: 1,
+      sortModal: false,
+      sort: typesort,
+      gettingData: true
+    })
+    const {
+      valueSearch,
+      filterKondisi,
+      filterPengiriman,
+      filterPrice,
+      filterAddress,
+      filterBrand,
+      filterOthers,
+      id
+    } = this.state
+    this.submitting.product = true
+    this.props.getListProduct({
+      q: valueSearch,
+      category_id: id,
+      condition: filterKondisi,
+      services: filterPengiriman,
+      price: filterPrice,
+      address: filterAddress,
+      brands: filterBrand,
+      other: filterOthers,
+      page: 1,
+      sort: typesort
+    })
+  }
+
+  onClickSort (field) {
+    const {bluesky, lightblack} = Colors
+    if (field === 'newest') {
+      this.setState({header: 'Produk Terbaru', terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'cheapest') {
+      this.setState({header: 'Produk Termurah', terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'expensive') {
+      this.setState({header: 'Produk Termahal', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
+      this.dispatchSort(field)
+    } else if (field === 'selling') {
+      this.setState({header: 'Produk Terlaris', terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
+      this.dispatchSort(field)
+    }
+  }
+
   render () {
     let background
-    if (this.state.tipe === 'search') {
-      background = stylesSearch.search
-    } else {
-      background = stylesSearch.kategori
-    }
+    background = stylesSearch.kategori
     return (
       <View style={styles.container}>
         <View style={[styles.headerContainer, background]}>
@@ -570,13 +749,13 @@ class NewProduct extends React.Component {
         </View>
         {this.viewProduk()}
         <View style={styles.footerMenu}>
-          <TouchableOpacity style={styles.blah} onPress={() => this.setSortModal(true)}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({sortModal: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.sort} />
               <Text style={styles.footerButton}>Urutkan</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.blah} onPress={() => this.openFilter()}>
+          <TouchableOpacity style={styles.blah} onPress={() => this.setState({filter: true})}>
             <View style={styles.buttonFooter}>
               <Image style={styles.imageFooter} source={Images.filter} />
               <Text style={styles.footerButton}>Filter</Text>
@@ -589,30 +768,20 @@ class NewProduct extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
-        <Modal
-          animationType={'slide'}
-          transparent
-          visible={this.state.filter}
-          onRequestClose={() => { this.setState({ filter: false }) }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeaderContainer}>
-              <Text style={styles.modalHeaderText}>
-                Filter
-              </Text>
-              <TouchableOpacity onPress={() => this.closeModal()}>
-                <Image
-                  source={Images.close}
-                  style={styles.imageCancel}
-                />
-              </TouchableOpacity>
-            </View>
-            <Filter
-              handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-              this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
-          </View>
-        </Modal>
-        {this.renderModalSort()}
+        <ModalSearchGeneral
+          visible={this.state.modalSearch}
+          onClose={() => this.setState({modalSearch: false})}
+          onBack={() => this.setState({modalSearch: false})}
+          refreshing={this.state.refreshSearch}
+          value={this.state.search}
+          onChangeText={this.handleTextSearch}
+          notFound={this.state.isFound}
+          dataSource={this.dataSource.cloneWithRows(this.state.resultSearch)}
+          renderRow={this.renderRowSearch.bind(this)}
+          onChangeSearch={() => this.searchFocus()}
+        />
+        {this.renderModalFilter()}
+        {this.modalSort()}
       </View>
     )
   }
@@ -620,23 +789,23 @@ class NewProduct extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+<<<<<<< HEAD
     dataFilter: state.productBySearch
+=======
+    propsProduct: state.productBySearch,
+    propsWishlist: state.addWishlist,
+    datalogin: state.isLogin,
+    dataSearch: state.searchProduct
+>>>>>>> beny
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getProdukTerbaru: dispatch(produkAction.listProductBySearch()),
-    getFilterProduk: (condition, services, price, address, brands, other, page, sort) => dispatch(produkAction.listProductBySearch({
-      condition: condition,
-      services: services,
-      price: price,
-      address: address,
-      brands: brands,
-      other: other,
-      page: page,
-      sort: sort
-    }))
+    getListProduct: (param) => dispatch(produkAction.listProductBySearch(param)),
+    addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
+    getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
+    getSearch: (param) => dispatch(homeAction.search(param))
   }
 }
 

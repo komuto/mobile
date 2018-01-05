@@ -14,7 +14,8 @@ import {
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as addressAction from '../actions/address'
@@ -128,7 +129,7 @@ class CartDetailItem extends React.Component {
           address: shipping.address.address,
           province: shipping.address.province.name,
           phone: shipping.address.phone_number,
-          originId: item.store.district.ro_id,
+          originId: item.location.district.ro_id,
           roIdDistrict: shipping.address.district.ro_id,
           courier: shipping.expedition_service.expedition.name,
           idKurir: shipping.expedition_service.expedition.id,
@@ -136,13 +137,39 @@ class CartDetailItem extends React.Component {
           service: shipping.expedition_service.name,
           insurance: shipping.is_insurance,
           note: nextProps.dataCartItem.item.note,
-          subtotal: item.price * nextProps.dataCartItem.item.qty,
           insuranceCost: shipping.insurance_fee || 0,
           deliveryCost: shipping.delivery_cost,
           total: nextProps.dataCartItem.item.total_price,
           dataKurir: item.expeditions,
           getData: false
         })
+        if (item.is_wholesaler) {
+          const dataGrosir = item.wholesale
+          const tempCount = nextProps.dataCartItem.item.qty
+          for (var i = 0; i < dataGrosir.length; i++) {
+            if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+              this.setState({
+                subtotal: dataGrosir[i].price * tempCount
+              })
+              break
+            } else {
+              this.setState({
+                subtotal: item.price * nextProps.dataCartItem.item.qty
+              })
+            }
+          }
+        } else {
+          if (item.is_discount) {
+            const discountPrice = item.price - item.price * item.discount / 100
+            this.setState({
+              subtotal: discountPrice * nextProps.dataCartItem.item.qty
+            })
+          } else {
+            this.setState({
+              subtotal: item.price * nextProps.dataCartItem.item.qty
+            })
+          }
+        }
       }
       if (nextProps.dataServices.status === 200) {
         if (nextProps.dataServices.charges.length > 0) {
@@ -164,22 +191,22 @@ class CartDetailItem extends React.Component {
       }
     }
     if (nextProps.dataCart.status === 200) {
-      ToastAndroid.show('Keranjang berhasil di update silahkan refresh di halaman keranjang..', ToastAndroid.LONG)
+      ToastAndroid.show('Keranjang berhasil di update silahkan refresh di halaman keranjang..', ToastAndroid.SHORT)
       if (this.state.activeCartDetailItem) {
         this.setState({ loadingCart: false })
       }
       this.props.resetCreateStatus()
-    } else if (nextProps.dataCart.status > 200) {
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
       this.setState({ loadingCart: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
       this.props.resetCreateStatus()
     }
     if (nextProps.dataAddressList.status === 200) {
       console.log(nextProps.dataAddressList.address)
       this.setState({ dataAddress: nextProps.dataAddressList.address, loadingAddress: false })
-    } else if (nextProps.dataAddressList.status > 200) {
+    } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAddress: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.SHORT)
     }
   }
 
@@ -274,32 +301,16 @@ class CartDetailItem extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRincian (subtotal, insuranceCost, deliveryCost) {
     const total = subtotal + insuranceCost + deliveryCost
-    const totalSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiayaAsuransi = MaskService.toMask('money', insuranceCost, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalOngkir = MaskService.toMask('money', deliveryCost, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiaya = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSubtotal = this.maskedMoney(subtotal)
+    const totalBiayaAsuransi = this.maskedMoney(insuranceCost)
+    const totalOngkir = this.maskedMoney(deliveryCost)
+    const totalBiaya = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianContainer}>
@@ -379,7 +390,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListAlamat (rowData, section, row) {
-    const centang = row === this.state.activeAlamat ? Images.centang : null
+    const centang = row === this.state.activeAlamat ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -491,7 +502,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListKurir (rowData, section, row) {
-    const centang = row === this.state.activeKurir ? Images.centang : null
+    const centang = row === this.state.activeKurir ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -528,7 +539,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListSubKurir (rowData, section, row) {
-    const centang = row === this.state.activeSubKurir ? Images.centang : Images.closewhite
+    const centang = row === this.state.activeSubKurir ? Images.centangBiru : Images.closewhite
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -564,7 +575,7 @@ class CartDetailItem extends React.Component {
   }
 
   renderListAsuransi (rowData, section, row) {
-    const centang = row === this.state.activeAsuransi ? Images.centang : null
+    const centang = row === this.state.activeAsuransi ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -617,7 +628,7 @@ class CartDetailItem extends React.Component {
       <View style={styles.spinnerCart}>
         <ActivityIndicator color={Colors.snow} size='large' />
       </View>
-    ) : (<Text style={styles.textButton}> Update Keranjang</Text>)
+    ) : (<Text style={styles.textButton}>Simpan Perubahan</Text>)
     return (
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => this.update()}>

@@ -18,6 +18,19 @@ export default StyleSheet.create({
     letterSpacing: 0.22,
     color: Colors.darkgrey
   },
+  textLabel: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.lightblack,
+    paddingTop: 5,
+    paddingBottom: 0
+  },
+  textLabelErrorInfo: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.small,
+    color: Colors.lightblack,
+    paddingTop: 5
+  },
   infoAlamatContainer: {
     paddingLeft: 20,
     paddingRight: 20,

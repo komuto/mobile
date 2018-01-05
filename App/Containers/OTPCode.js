@@ -1,9 +1,10 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, Modal, ActivityIndicator, Image } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, Modal, ActivityIndicator, Image, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as userAction from '../actions/user'
 import * as bankAction from '../actions/bank'
+import * as saldoAction from '../actions/saldo'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -38,7 +39,10 @@ class OTPCode extends React.Component {
       idBank: this.props.idBank,
       namaCabang: this.props.cabangBank,
       loading: false,
-      textButton: this.props.textButton || 'Verifikasi Nomor Telepon'
+      textButton: this.props.textButton || 'Verifikasi Nomor Telepon',
+      amount: this.props.amount,
+      idBankAccount: this.props.idBankAccount,
+      callback: this.props.callback
     }
   }
 
@@ -60,30 +64,45 @@ class OTPCode extends React.Component {
     } if (nextProps.deleteAccount.status === 200 && nextProps.typeVerifikasi === 'verificationdeleteaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'menghapus rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.deleteAccount.message } })
       nextProps.deleteAccount.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'otptambahrekening') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'menambah rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.createRek.message } })
       nextProps.createRek.status = 0
     } if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'verificationeditaccount') {
       this.setState({loading: false})
       this.props.getListRekening()
-      NavigationActions.accountdata({
-        type: ActionConst.RESET,
-        notif: true,
-        pesanNotif: 'mengubah rekening'
-      })
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.createRek.message } })
       nextProps.createRek.status = 0
+    }
+    if (nextProps.createRek.status === 200 && nextProps.typeVerifikasi === 'newaccountbalance') {
+      ToastAndroid.show(nextProps.createRek.message, ToastAndroid.SHORT)
+      this.setState({loading: false})
+      NavigationActions.popTo('balancepull')
+      this.props.getListRekening()
+      nextProps.dataOTP.status = 0
+    }
+    if (nextProps.createRek.status > 200) {
+      ToastAndroid.show(nextProps.createRek.message, ToastAndroid.SHORT)
+      this.setState({ loading: false })
+    }
+    if (nextProps.dataSaldo.status === 200) {
+      this.setState({loading: false})
+      NavigationActions.balancenotification({
+        type: ActionConst.REPLACE
+      })
+      this.props.getProfile()
+      nextProps.dataSaldo.status = 0
+    } else if (nextProps.dataSaldo.status === 400) {
+      this.setState({loading: false})
+      ToastAndroid.show(nextProps.dataSaldo.message, ToastAndroid.SHORT)
+      nextProps.dataSaldo.status = 0
+    } else if (nextProps.dataOTP.status !== 200 && nextProps.dataOTP.status !== 0) {
+      this.setState({loading: false})
+      ToastAndroid.show(nextProps.dataOTP.message, ToastAndroid.SHORT)
+      nextProps.dataSaldo.status = 0
     }
   }
 
@@ -280,6 +299,21 @@ class OTPCode extends React.Component {
         tempOTp,
         this.state.idBank
       )
+    } else if (typeVerifikasi === 'newaccountbalance') {
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.createRekening(
+        tempOTp,
+        this.state.idBank,
+        this.state.namaPemilik,
+        this.state.nomerRek,
+        this.state.namaCabang
+      )
+    } else if (typeVerifikasi === 'withdraw') {
+      const { idBankAccount, amount } = this.state
+      this.setState({loading: true})
+      let tempOTp = this.state.code1 + this.state.code2 + this.state.code3 + this.state.code4 + this.state.code5
+      this.props.withdraw(idBankAccount, amount, tempOTp)
     }
   }
 
@@ -295,6 +329,10 @@ class OTPCode extends React.Component {
       this.props.sendOtpEmail()
     } else if (typeVerifikasi === 'verificationdeleteaccount') {
       this.props.sendOtpEmail()
+    } else if (typeVerifikasi === 'newaccountbalance') {
+      this.props.sentOTPCode()
+    } else if (typeVerifikasi === 'withdraw') {
+      this.props.sentOTPCode()
     }
   }
 
@@ -311,14 +349,14 @@ class OTPCode extends React.Component {
       </View>
     )
   }
-
 }
 
 const mapStateToProps = (state) => {
   return {
     dataOTP: state.verifyPhone,
     createRek: state.bankAccount,
-    deleteAccount: state.bankAccount
+    deleteAccount: state.bankAccount,
+    dataSaldo: state.withdrawal
   }
 }
 
@@ -328,25 +366,30 @@ const mapDispatchToProps = (dispatch) => {
     sentOTPCode: () => dispatch(userAction.sendOTPPhone()),
     sendOtpEmail: () => dispatch(userAction.sendOTPBank()),
     createRekening: (code, idBank, namaPemilik, nomerRek, namaCabang) =>
-    dispatch(bankAction.addBankAccount({
-      code: code,
-      master_bank_id: idBank,
-      holder_name: namaPemilik,
-      holder_account_number: nomerRek,
-      bank_branch_office_name: namaCabang
-    })),
+      dispatch(bankAction.addBankAccount({
+        code: code,
+        master_bank_id: idBank,
+        holder_name: namaPemilik,
+        holder_account_number: nomerRek,
+        bank_branch_office_name: namaCabang
+      })),
     updateAccount: (id, code, idBank, namaPemilik, nomerRek, namaCabang) =>
-    dispatch(bankAction.updateBankAccount({
-      id: id,
-      code: code,
-      master_bank_id: idBank,
-      holder_name: namaPemilik,
-      holder_account_number: nomerRek,
-      bank_branch_office_name: namaCabang
-    })),
+      dispatch(bankAction.updateBankAccount({
+        id: id,
+        code: code,
+        master_bank_id: idBank,
+        holder_name: namaPemilik,
+        holder_account_number: nomerRek,
+        bank_branch_office_name: namaCabang
+      })),
     deleteAccounts: (code, id) => dispatch(bankAction.deleteBankAccount({code: code, id: id})),
     getListRekening: () => dispatch(bankAction.getBankAccounts()),
-    getProfile: (login) => dispatch(userAction.getProfile())
+    getProfile: (login) => dispatch(userAction.getProfile()),
+    withdraw: (id, amount, code) => dispatch(saldoAction.withdraw({
+      bank_account_id: id,
+      amount: amount,
+      code: code
+    }))
   }
 }
 

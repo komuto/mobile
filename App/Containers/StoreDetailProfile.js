@@ -2,6 +2,7 @@ import React from 'react'
 import { View, Text, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Images } from '../Themes'
+import moment from 'moment'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -17,18 +18,21 @@ class DetailTokoProfile extends React.Component {
       slogan: '',
       deskripsi: '',
       produkTerjual: '0',
-      totalFavorit: 0
+      totalFavorit: 0,
+      open: 0
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
+      const time = moment(nextProps.dataToko.store.created_at * 1000).fromNow()
       this.setState({
         alamat: nextProps.dataToko.store.origin || 'Belum Mendaftarkan Alamat Toko',
         slogan: nextProps.dataToko.store.slogan,
         deskripsi: nextProps.dataToko.store.description,
         produkTerjual: nextProps.dataToko.store.total_product_sold,
-        totalFavorit: nextProps.dataToko.store.total_favorite || 0
+        totalFavorit: nextProps.dataToko.store.total_favorite || 0,
+        open: time
       })
     }
   }
@@ -67,7 +71,7 @@ class DetailTokoProfile extends React.Component {
           </Text>
         </View>
         {this.renderMenu(Images.lokasi, 'Lokasi Toko', this.state.alamat)}
-        {this.renderMenu(Images.kalender, 'Buka sejak', '4 bulan yang lalu')}
+        {this.renderMenu(Images.kalender, 'Buka sejak', this.state.open)}
         {this.renderMenu(Images.bintang, 'Favorit', String(this.state.totalFavorit))}
         {this.renderMenu(Images.sold, 'Produk Terjual', this.state.produkTerjual)}
       </View>

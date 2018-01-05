@@ -16,6 +16,24 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  notif: {
+    flexDirection: 'row',
+    backgroundColor: Colors.duckEggBlue,
+    alignItems: 'center',
+    paddingRight: 19,
+    position: 'relative'
+  },
+  textNotif: {
+    flex: 1,
+    padding: 20,
+    color: Colors.greenish,
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed
+  },
+  image: {
+    height: 25,
+    width: 25
+  },
   state: {
     borderRadius: 21,
     height: 25,
@@ -93,7 +111,7 @@ export default StyleSheet.create({
   inputText: {
     marginLeft: -4,
     color: Colors.darkgrey,
-    fontFamily: Fonts.type.semiBolds,
+    fontFamily: Fonts.type.regular,
     fontSize: Fonts.size.smallMed,
     paddingBottom: 8.3
   },
@@ -287,5 +305,11 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  information: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    letterSpacing: 0.23,
+    color: Colors.labelgrey
   }
 })

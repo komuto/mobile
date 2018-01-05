@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Scene, Router } from 'react-native-router-flux'
+import { Scene, Router, ActionConst } from 'react-native-router-flux'
 import { View, Text, Image } from 'react-native'
 
 // s identified by the router
@@ -55,7 +55,7 @@ import PaymentTransferBankDetail from '../Containers/PaymentTransferBankDetail'
 import PaymentItemDetail from '../Containers/PaymentItemDetail'
 import PaymentCreditCard from '../Containers/PaymentCreditCard'
 import PaymentBalance from '../Containers/PaymentBalance'
-import ProductList from '../Containers/ProductList'
+import StoreProduct from '../Containers/StoreProduct'
 import AddProduct from '../Containers/AddProduct'
 import UploadProductPhoto from '../Containers/UploadProductPhoto'
 import ProductInfoNameAndCategory from '../Containers/ProductInfoNameAndCategory'
@@ -69,8 +69,6 @@ import PaymentDoku from '../Containers/PaymentDoku'
 import PaymentAlfamart from '../Containers/PaymentAlfamart'
 import PaymentSuccess from '../Containers/PaymentSuccess'
 import PaymentAlfamartDetail from '../Containers/PaymentAlfamartDetail'
-import SearchByCategory from '../Containers/SearchByCategory'
-import SearchResultByCategory from '../Containers/SearchResultByCategory'
 import ChooseItemDropship from '../Containers/ChooseItemDropship'
 import PlaceInCatalog from '../Containers/PlaceInCatalog'
 import ProductListByCatalog from '../Containers/ProductListByCatalog'
@@ -106,6 +104,43 @@ import EditProductPriceAndSpecification from '../Containers/EditProductPriceAndS
 import EditProductExpedition from '../Containers/EditProductExpedition'
 import EditProductCatalog from '../Containers/EditProductCatalog'
 import EditWholesale from '../Containers/EditWholesale'
+import SellerNotificationMessage from '../Containers/SellerNotificationMessage'
+import SellerNotificationMessageDetail from '../Containers/SellerNotificationMessageDetail'
+import SellerNotificationDiscussion from '../Containers/SellerNotificationDiscussion'
+import SellerNotificationReview from '../Containers/SellerNotificationReview'
+import SellerNotificationResolution from '../Containers/SellerNotificationResolution'
+import PaymentMidtrans from '../Containers/PaymentMidtrans'
+import Balance from '../Containers/Balance'
+import BalanceRefill from '../Containers/BalanceRefill'
+import BalanceStatusRefill from '../Containers/BalanceStatusRefill'
+import BalancePull from '../Containers/BalancePull'
+import BalanceNewAccount from '../Containers/BalanceNewAccount'
+import BalanceNotification from '../Containers/BalanceNotification'
+import SalesDashboard from '../Containers/SalesDashboard'
+import ListNewOrder from '../Containers/ListNewOrder'
+import DetailOrder from '../Containers/DetailOrder'
+import DeliveryConfirmation from '../Containers/DeliveryConfirmation'
+import InputShippingInfo from '../Containers/InputShippingInfo'
+import SalesList from '../Containers/SalesList'
+import DetailSales from '../Containers/DetailSales'
+import TransactionDetailItem from '../Containers/TransactionDetailItem'
+import BalanceHistory from '../Containers/BalanceHistory'
+import BalanceHistorySelling from '../Containers/BalanceHistorySelling'
+import BalanceHistoryRefund from '../Containers/BalanceHistoryRefund'
+import BalanceHistoryTopup from '../Containers/BalanceHistoryTopup'
+import BalanceHistoryComission from '../Containers/BalanceHistoryComission'
+import BalanceHistoryWithdraw from '../Containers/BalanceHistoryWithdraw'
+import BalanceHistoryPurchase from '../Containers/BalanceHistoryPurchase'
+import BalanceStatusWithdraw from '../Containers/BalanceStatusWithdraw'
+import SellerComplain from '../Containers/SellerComplain'
+import SellerComplainDetail from '../Containers/SellerComplainDetail'
+import BuyerComplain from '../Containers/BuyerComplain'
+import BuyerComplainDetail from '../Containers/BuyerComplainDetail'
+import ListFavoriteStores from '../Containers/ListFavoriteStores'
+import BuyerComplainConfirmation from '../Containers/BuyerComplainConfirmation'
+import BuyerComplainRefundReview from '../Containers/BuyerComplainRefundReview'
+import StoreDetailProductCatalogs from '../Containers/StoreDetailProductCatalogs'
+import StoreInputCodeVerification from '../Containers/StoreInputCodeVerification'
 
 // custom navbar
 import CustomNavBar from './CustomNavBar'
@@ -133,7 +168,10 @@ class NavigationRouter extends Component {
       <Router>
         <Scene key='root'>
           <Scene key='splash' component={Splash} hideNavBar />
-          <Scene key='backtab'>
+          <Scene
+            key='backtab'
+            type={ActionConst.RESET}
+          >
             <Scene
               key='tabbar'
               tabs
@@ -141,14 +179,14 @@ class NavigationRouter extends Component {
               <Scene
                 key='home'
                 initial
-                title='Home'
+                title='Beranda'
                 icon={TabIcon}
                 iconDefault={Images.home}
                 iconActive={Images.homeActive}>
                 <Scene
                   key='homescreen'
                   component={Home}
-                  title='Home'
+                  title='Beranda'
                   navBar={CustomNavBar}
                   hideNavBar
                   hideBackImage />
@@ -183,14 +221,14 @@ class NavigationRouter extends Component {
               </Scene>
               <Scene
                 key='acccount'
-                title='Profile'
+                title='Profil'
                 icon={TabIcon}
                 iconDefault={Images.profile}
                 iconActive={Images.profileActive}>
                 <Scene
                   key='acccountscreen'
                   component={Profile}
-                  title='Profile'
+                  title='Profil'
                   navBar={CustomNavBar}
                   hideNavBar={false}
                   hideBackImage />
@@ -219,14 +257,14 @@ class NavigationRouter extends Component {
           <Scene
             key='register'
             component={Register}
-            title='Register'
+            title='Daftar'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
             key='login'
             component={Login}
-            title='Login'
+            title='Masuk'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -325,7 +363,7 @@ class NavigationRouter extends Component {
           <Scene
             key='infostore'
             component={InfoStore}
-            title='Isi Informasi Toko'
+            title='Informasi Toko'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -367,7 +405,7 @@ class NavigationRouter extends Component {
           <Scene
             key='newdiscussion'
             component={NewDiscussion}
-            title='Buat Diskusi Baru'
+            title='Diskusi Baru'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -402,7 +440,7 @@ class NavigationRouter extends Component {
           <Scene
             key='commentproductdiscussion'
             component={CommentProductDiscussion}
-            title='Detail Diskusi'
+            title='Diskusi'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -424,9 +462,8 @@ class NavigationRouter extends Component {
             key='addressdata'
             component={AddressData}
             title='Data Alamat'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='addaccount'
             component={AddAccount}
@@ -458,7 +495,7 @@ class NavigationRouter extends Component {
           <Scene
             key='biodata'
             component={Biodata}
-            title='Biodata'
+            title='Kelola Akun'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -466,9 +503,8 @@ class NavigationRouter extends Component {
             key='cellphone'
             component={Cellphone}
             title='Nomor Handphone'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='changepassword'
             component={ChangePassword}
@@ -547,8 +583,8 @@ class NavigationRouter extends Component {
             hideNavBar={false}
             hideBackImage={false} />
           <Scene
-            key='productlist'
-            component={ProductList}
+            key='storeproduct'
+            component={StoreProduct}
             title='Daftar Produk'
             navBar={CustomNavBar}
             hideNavBar={false}
@@ -645,20 +681,6 @@ class NavigationRouter extends Component {
             hideNavBar
             hideBackImage={false} />
           <Scene
-            key='searchresultbycategory'
-            component={SearchResultByCategory}
-            title='Search Result'
-            navBar={CustomNavBar}
-            hideNavBar
-            hideBackImage={false} />
-          <Scene
-            key='searchbycategory'
-            component={SearchByCategory}
-            title='Search'
-            navBar={CustomNavBar}
-            hideNavBar
-            hideBackImage={false} />
-          <Scene
             key='chooseitemdropship'
             component={ChooseItemDropship}
             title='Pilih Barang dari Dropshipping'
@@ -669,9 +691,8 @@ class NavigationRouter extends Component {
             key='placeincatalog'
             component={PlaceInCatalog}
             title='Tempatkan di Katalog'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='productlistbycatalog'
             component={ProductListByCatalog}
@@ -703,7 +724,7 @@ class NavigationRouter extends Component {
           <Scene
             key='transactiondetailstatus'
             component={TransactionDetailStatus}
-            title='Detail Status Barang'
+            title='Detail Pesanan'
             navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
@@ -740,7 +761,7 @@ class NavigationRouter extends Component {
             component={StoreCatalog}
             title='Katalog'
             navBar={CustomNavBar}
-            hideNavBar={false}
+            hideNavBar
             hideBackImage={false} />
           <Scene
             key='addeditstorecatalog'
@@ -760,9 +781,8 @@ class NavigationRouter extends Component {
             key='managestoreaddress'
             component={ManageStoreAddress}
             title='Info Alamat'
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='updatestoreaddress'
             component={UpdateStoreAddress}
@@ -841,9 +861,8 @@ class NavigationRouter extends Component {
           <Scene
             key='movingproduct'
             component={MovingProduct}
-            navBar={CustomNavBar}
-            hideNavBar={false}
-            hideBackImage={false} />
+            hideNavBar
+            hideBackImage />
           <Scene
             key='detailproductstore'
             component={DetailProductStore}
@@ -896,6 +915,262 @@ class NavigationRouter extends Component {
             component={EditWholesale}
             navBar={CustomNavBar}
             title='Harga Grosir'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationmessage'
+            component={SellerNotificationMessage}
+            navBar={CustomNavBar}
+            title='Pesan'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationmessagedetail'
+            component={SellerNotificationMessageDetail}
+            title=''
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='sellernotificationdiscussion'
+            component={SellerNotificationDiscussion}
+            navBar={CustomNavBar}
+            title='Diskusi Produk'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationreview'
+            component={SellerNotificationReview}
+            navBar={CustomNavBar}
+            title='Review Produk'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellernotificationresolution'
+            component={SellerNotificationResolution}
+            navBar={CustomNavBar}
+            title='Pusat Resolusi'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='paymentmidtrans'
+            component={PaymentMidtrans}
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage={false} />
+          <Scene
+            key='balance'
+            component={Balance}
+            navBar={CustomNavBar}
+            title='Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancerefill'
+            component={BalanceRefill}
+            navBar={CustomNavBar}
+            title='Pilih Nominal Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancestatusrefill'
+            component={BalanceStatusRefill}
+            navBar={CustomNavBar}
+            title='Status Pengisian Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancepull'
+            component={BalancePull}
+            navBar={CustomNavBar}
+            title='Tarik Saldo'
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancenewaccount'
+            component={BalanceNewAccount}
+            navBar={CustomNavBar}
+            title='Tambah Data Rekening'
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='balancenotification'
+            component={BalanceNotification}
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene key='salesdashboard'
+            component={SalesDashboard}
+            title='Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='listneworder'
+            component={ListNewOrder}
+            title='Pesanan Baru'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailorder'
+            component={DetailOrder}
+            title='Detail Pesanan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='deliveryConfirmation'
+            component={DeliveryConfirmation}
+            title='Konfirmasi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='inputshippinginfo'
+            component={InputShippingInfo}
+            title='Masukkan Informasi Pengiriman'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='saleslist'
+            component={SalesList}
+            title='Daftar Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='detailsales'
+            component={DetailSales}
+            title='Detail Penjualan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='transactiondetailitem'
+            component={TransactionDetailItem}
+            title='Detail Pesanan'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistory'
+            component={BalanceHistory}
+            title='Riwayat Saldo'
+            navBar={CustomNavBar}
+            hideNavBar
+            hideBackImage />
+          <Scene
+            key='balancehistoryselling'
+            component={BalanceHistorySelling}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistoryrefund'
+            component={BalanceHistoryRefund}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorytopup'
+            component={BalanceHistoryTopup}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorycomission'
+            component={BalanceHistoryComission}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorywithdraw'
+            component={BalanceHistoryWithdraw}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancehistorypurchase'
+            component={BalanceHistoryPurchase}
+            title='Detail Transaksi'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='balancestatuswithdraw'
+            component={BalanceStatusWithdraw}
+            title='Status Penarikan Saldo'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellercomplain'
+            component={SellerComplain}
+            title='Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='sellercomplaindetail'
+            component={SellerComplainDetail}
+            title='Detail Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplain'
+            component={BuyerComplain}
+            title='Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplaindetail'
+            component={BuyerComplainDetail}
+            title='Detail Komplain Barang'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='listfavoritestores'
+            component={ListFavoriteStores}
+            title='Daftar Toko Favorit'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplainconfirmation'
+            component={BuyerComplainConfirmation}
+            title='Konfirmasi Barang Diterima'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='buyercomplainrefundreview'
+            component={BuyerComplainRefundReview}
+            title='Memberi Review'
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='storedetailproductcatalogs'
+            component={StoreDetailProductCatalogs}
+            title=''
+            navBar={CustomNavBar}
+            hideNavBar={false}
+            hideBackImage={false} />
+          <Scene
+            key='storeinputcodeverification'
+            component={StoreInputCodeVerification}
+            title='Verifikasi toko'
+            navBar={CustomNavBar}
             hideNavBar={false}
             hideBackImage={false} />
         </Scene>

@@ -1,9 +1,11 @@
 import React from 'react'
-import { Text, View, Image, ListView, TouchableOpacity } from 'react-native'
+import { Text, View, Image, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
+import moment from 'moment'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as reviewAction from '../actions/review'
 // Styles
 import styles from './Styles/DetailTokoPenilaianStyle'
 import { Images } from '../Themes'
@@ -16,43 +18,48 @@ class DetailTokoPenilaian extends React.Component {
       data: [],
       quality: 0,
       accuracy: 0,
-      namaToko: ''
+      namaToko: '',
+      page: 1,
+      loadmore: true,
+      loading: true,
+      id: ''
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
+      const temp = [...this.state.data, ...nextProps.dataToko.review.reviews]
       this.setState({
-        quality: nextProps.dataToko.store.rating.quality || 0,
-        accuracy: nextProps.dataToko.store.rating.accuracy || 0,
-        data: nextProps.dataToko.store.rating.reviews,
-        namaToko: nextProps.dataToko.store.name
+        quality: nextProps.dataToko.review.rating.quality || 0,
+        accuracy: nextProps.dataToko.review.rating.accuracy || 0,
+        data: temp,
+        loading: false,
+        page: this.state.page + 1
+      })
+      if (temp.length > 0) {
+        this.setState({
+          loadmore: true
+        })
+      } else {
+        this.setState({
+          loadmore: false
+        })
+      }
+    }
+    if (nextProps.dataInfoToko.status === 200) {
+      this.setState({
+        namaToko: nextProps.dataInfoToko.store.name,
+        id: nextProps.dataInfoToko.store.id
       })
     }
   }
 
-  renderFotoProduk () {
-    if (this.state.foto !== null) {
-      return (
-        <Image
-          source={{ uri: this.state.foto }}
-          style={styles.styleFotoToko}
-        />
-      )
-    }
-    return (
-      <Image
-        source={Images.contohproduct}
-        style={styles.styleFotoToko}
-      />
-    )
-  }
   renderFotoProfil (value) {
     let image
     if (value !== null) {
       image = { uri: value }
     } else {
-      image = Images.contohproduct
+      image = null
     }
     return (
       <Image
@@ -62,12 +69,39 @@ class DetailTokoPenilaian extends React.Component {
     )
   }
 
+  loadMore () {
+    const { id, page, loading, loadmore } = this.state
+    if (!loading) {
+      if (loadmore) {
+        this.setState({
+          loading: true
+        })
+        this.props.getStoreReview(id, page)
+      }
+    }
+  }
+
   listViewUlasan () {
     return (
       <ListView
+        renderHeader={this.renderRating.bind(this)}
         dataSource={this.dataSource.cloneWithRows(this.state.data)}
         renderRow={this.renderRow.bind(this)}
         enableEmptySections
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore && this.state.data > 10) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          } else {
+            return <View />
+          }
+        }}
       />
     )
   }
@@ -115,6 +149,7 @@ class DetailTokoPenilaian extends React.Component {
     } catch (e) {
       image = null
     }
+    const time = moment(rowData.created_at * 1000).fromNow()
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -124,11 +159,11 @@ class DetailTokoPenilaian extends React.Component {
               {rowData.user.name}
             </Text>
             <Text style={[styles.textKelola]}>
-              3 hari yang lalu
+              {time}
             </Text>
           </View>
         </View>
-        {this.renderProduk(rowData.product.image, rowData.product.name, rowData.namaToko)}
+        {this.renderProduk(rowData.image, rowData.name, this.state.namaToko)}
         {this.renderRatingUlasan(rowData.accuracy, rowData.quality, rowData.review)}
       </View>
     )
@@ -195,22 +230,21 @@ class DetailTokoPenilaian extends React.Component {
   }
   render () {
     return (
-      <View>
-        <View style={[styles.ulasanContainer]}>
-          {this.renderRating()}
-          {this.listViewUlasan()}
-        </View>
+      <View style={[styles.ulasanContainer]}>
+        {this.listViewUlasan()}
       </View>
     )
   }
 }
 const mapStateToProps = (state) => {
   return {
-    dataToko: state.stores
+    dataToko: state.storeReview,
+    dataInfoToko: state.stores
   }
 }
 const mapDispatchToProps = (dispatch) => {
   return {
+    getStoreReview: (id, page) => dispatch(reviewAction.getStoreReview({id: id, page: page}))
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(DetailTokoPenilaian)

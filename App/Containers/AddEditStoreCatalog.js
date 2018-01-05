@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, BackAndroid, ActivityIndicator, ToastAndroid, Keyboard } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 
@@ -17,7 +17,7 @@ class AddEditStoreCatalog extends React.Component {
     this.state = {
       loading: false,
       namaKatalog: this.props.namaKatalog || '',
-      textButton: this.props.titleButton || 'Buat Katalog Baru',
+      textButton: this.props.titleButton || 'Simpan Perubahan',
       edit: false,
       idkatalog: this.props.idKatalogs || ''
     }
@@ -25,25 +25,36 @@ class AddEditStoreCatalog extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataCatalog.status === 200) {
+      this.setState({
+        loading: false
+      })
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,
-        pesanNotif: 'menambahkan katalog baru'
+        pesanNotif: nextProps.dataCatalog.message
       })
+      Keyboard.dismiss()
       this.props.getCatalog()
       nextProps.dataCatalog.status = 0
-    } if (nextProps.updateCatalogs.status === 200) {
-      console.log('lol')
+    } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.SHORT)
+      nextProps.dataCatalog.status = 0
+    }
+    if (nextProps.updateCatalogs.status === 200) {
+      Keyboard.dismiss()
       NavigationActions.storecatalog({
         type: ActionConst.PUSH,
         notif: true,
-        pesanNotif: 'mengedit katalog'
+        pesanNotif: nextProps.updateCatalogs.message
       })
       this.props.getCatalog()
       nextProps.updateCatalogs.status = 0
-    }
-    if (nextProps.dataCatalog.status > 200) {
-      window.alert(nextProps.dataCatalog.message)
+    } else if (nextProps.updateCatalogs.status !== 200 && nextProps.updateCatalogs.status !== 0) {
+      ToastAndroid.show(nextProps.updateCatalogs.message, ToastAndroid.SHORT)
+      nextProps.updateCatalogs.status = 0
     }
   }
 
@@ -69,18 +80,21 @@ class AddEditStoreCatalog extends React.Component {
   }
 
   tambahKatalog () {
-    if (this.props.edit) {
-      console.log('edit')
-      this.props.updateCatalog(this.state.idkatalog, this.state.namaKatalog)
+    if (this.state.namaKatalog === '') {
+      ToastAndroid.show('Nama Katalog Harus diisi', ToastAndroid.SHORT)
     } else {
-      this.setState({
-        loading: true
-      })
-      this.props.createCatalog(this.state.namaKatalog)
+      if (this.props.edit) {
+        this.props.updateCatalog(this.state.idkatalog, this.state.namaKatalog)
+      } else {
+        this.setState({
+          loading: true
+        })
+        this.props.createCatalog(this.state.namaKatalog)
+      }
     }
   }
 
-  renderTanpaNoHape () {
+  renderFormInputCatalog () {
     return (
       <View>
         <View style={styles.infoContainer}>
@@ -95,6 +109,7 @@ class AddEditStoreCatalog extends React.Component {
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect
+            placeholder='Masukkan Nama Katalog'
             onChangeText={this.handleNamaKatalog}
             underlineColorAndroid='transparent'
           />
@@ -115,7 +130,7 @@ class AddEditStoreCatalog extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
-        {this.renderTanpaNoHape()}
+        {this.renderFormInputCatalog()}
         {spinner}
       </View>
     )

@@ -1,7 +1,8 @@
 import React from 'react'
-import { Text, View, Image, ListView, ActivityIndicator, RefreshControl } from 'react-native'
+import { Text, View, Image, ListView, ActivityIndicator, RefreshControl, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
 
@@ -47,16 +48,22 @@ class Review extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataReview.status !== 200 && nextProps.dataReview.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataReview.message, ToastAndroid.SHORT)
     }
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>

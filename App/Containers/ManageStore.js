@@ -44,7 +44,6 @@ class ManageStore extends React.Component {
   }
 
   handleKatalog () {
-    this.props.getCatalog()
     NavigationActions.storecatalog({ type: ActionConst.PUSH, loading: true })
   }
 

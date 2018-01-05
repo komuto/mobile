@@ -1,11 +1,14 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, TouchableOpacity, BackAndroid, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
+// import moment from 'moment'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as storeAction from '../actions/stores'
 
+import Reactotron from 'reactotron-react-native'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as reviewAction from '../actions/review'
 
 // Styles
 import styles from './Styles/TokoDashboardScreenStyle'
@@ -23,16 +26,49 @@ class StoreDashboard extends React.Component {
       status: '1',
       email: '',
       foto: 'default',
-      statusVerifikasi: true
+      statusVerifikasi: this.props.isStoreVerify,
+      createStoresAt: this.props.createStoresAt,
+      notif: false,
+      complainItems: 0,
+      callback: false,
+      verificationTime: this.props.verificationTime,
+      disableButton: false,
+      loading: true
     }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    if (this.state.verificationTime === 0 && !this.state.statusVerifikasi) {
+      this.setState({
+        disableButton: false
+      })
+    }
   }
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      Reactotron.log('callback ' + nextProps.callback)
+      if (nextProps.callback !== this.state.callback) {
+        this.setState({
+          callback: nextProps.callback,
+          notif: true,
+          statusVerifikasi: true
+        })
+      }
+    }
+    if (nextProps.dataDisputes.status === 200) {
+      this.setState({
+        complainItems: nextProps.dataDisputes.disputes.disputes,
+        loading: false
+      })
+    } else if (nextProps.dataDisputes.status !== 0 && nextProps.dataDisputes.status !== 200) {
+      ToastAndroid.show(nextProps.dataDisputes.message, ToastAndroid.SHORT)
+    }
   }
 
   handleBack = () => {
@@ -41,16 +77,20 @@ class StoreDashboard extends React.Component {
   }
 
   nextState () {
-    NavigationActions.notification({
+    NavigationActions.storeinputcodeverification({
       type: ActionConst.PUSH,
-      tipeNotikasi: 'successBukaToko'
+      callback: this.state.callback
     })
   }
 
   handleDaftarProduk () {
-    this.props.getListProduk(false)
-    this.props.getHiddenProduct()
-    NavigationActions.productlist({
+    NavigationActions.storeproduct({
+      type: ActionConst.PUSH
+    })
+  }
+
+  handleSales () {
+    NavigationActions.salesdashboard({
       type: ActionConst.PUSH
     })
   }
@@ -62,15 +102,23 @@ class StoreDashboard extends React.Component {
   }
 
   renderNotifAktivasi () {
-    if (this.state.statusVerifikasi) {
+    const { verificationTime } = this.state
+    let daysLeft
+    if (verificationTime === null || verificationTime === undefined || verificationTime === '') {
+      daysLeft = 0
+    } else {
+      daysLeft = verificationTime
+    }
+
+    if (!this.state.statusVerifikasi) {
       return (
-        <View>
+        <View style={{marginBottom: 30}}>
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.textMenu, {paddingTop: 15.5, paddingBottom: 15.2, fontSize: Fonts.size.smallMed}]}>
               Batas Waktu Penjualan:
             </Text>
             <Text style={[styles.textMenu, {paddingTop: 15.5, paddingBottom: 15.2, paddingLeft: 8, fontSize: Fonts.size.smallMed, color: Colors.brownishGrey}]}>
-              28 Hari
+              {daysLeft} Hari
             </Text>
           </View>
           <View style={[styles.dataProfileContainer, {justifyContent: 'center', alignItems: 'center', paddingLeft: -20}]}>
@@ -88,9 +136,13 @@ class StoreDashboard extends React.Component {
           </View>
         </View>
       )
-    } else {
+    }
+  }
+
+  notification () {
+    if (this.state.notif) {
       return (
-        <View>
+        <View style={{marginBottom: 30}}>
           <View style={{flexDirection: 'row', backgroundColor: Colors.duckEggBlue}}>
             <Text style={[styles.textMenu, {flex: 1, color: Colors.darkMint, paddingTop: 15.5, paddingBottom: 15.2, fontSize: Fonts.size.smallMed}]}>
               Selamat, Toko Anda telah terverifikasi.{'\n'}Kini Anda adalah verified seller
@@ -105,18 +157,59 @@ class StoreDashboard extends React.Component {
   }
 
   notifClose () {
-    return (
-      <View />
-    )
+    this.setState({notif: false})
+  }
+
+  openMessageNotification () {
+    NavigationActions.sellernotificationmessage({
+      type: ActionConst.PUSH,
+      callback: false
+    })
+  }
+
+  openDiscussionNotification () {
+    // this.props.getStoreDiscussions(1)
+    NavigationActions.sellernotificationdiscussion({
+      type: ActionConst.PUSH
+    })
+  }
+
+  openReviewNotification () {
+    // this.props.getListReview(1)
+    NavigationActions.sellernotificationreview({
+      type: ActionConst.PUSH
+    })
+  }
+
+  openResolutionNotification () {
+    NavigationActions.sellercomplain({
+      type: ActionConst.PUSH
+    })
   }
 
   render () {
+    const { complainItems } = this.state
+    let view = null
+    if (complainItems > 0) {
+      view = (
+        <View style={styles.containerNumber}>
+          <Text style={styles.number}>
+            {String(this.state.complainItems)}
+          </Text>
+        </View>
+      )
+    }
+    const spinner = this.state.loading
+    ? (<View style={styles.spinner}>
+      <ActivityIndicator color={Colors.red} size='large' />
+    </View>) : (<View />)
     return (
       <View style={styles.container}>
         <ScrollView>
           {this.renderNotifAktivasi()}
-          <View style={[styles.dataProfileContainer, {marginTop: 30}]}>
-            <TouchableOpacity onPress={() => this.handleKelolaToko()}>
+          {this.notification()}
+          <View style={[styles.dataProfileContainer]}>
+            <TouchableOpacity onPress={() => this.handleKelolaToko()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.pengaturanToko} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>
@@ -134,7 +227,7 @@ class StoreDashboard extends React.Component {
             Menu Toko
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity onPress={() => this.handleDaftarProduk()}>
+            <TouchableOpacity onPress={() => this.handleDaftarProduk()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.listProduk} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -147,7 +240,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.handleSales()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.penjualan} style={styles.imageCategory} />
                 <View style={styles.noBorderContainer}>
@@ -165,7 +258,7 @@ class StoreDashboard extends React.Component {
             Notifikasi
           </Text>
           <View style={styles.dataProfileContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openMessageNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.chat} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -178,7 +271,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openDiscussionNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.komentar} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -191,7 +284,7 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openReviewNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
                 <Image source={Images.diReview} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
@@ -204,21 +297,23 @@ class StoreDashboard extends React.Component {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => this.openResolutionNotification()} disabled={this.state.disableButton}>
               <View style={styles.profile}>
-                <Image source={Images.help} style={styles.imageCategory} />
+                <Image source={Images.laporkan} style={styles.imageCategory} />
                 <View style={styles.borderContainer}>
                   <View style={styles.namaContainer}>
                     <Text style={styles.textNama}>
-                      Pusat Resolusi
+                      Komplain Barang
                     </Text>
                   </View>
+                  {view}
                   <Image source={Images.rightArrow} style={styles.rightArrow} />
                 </View>
               </View>
             </TouchableOpacity>
           </View>
         </ScrollView>
+        {spinner}
       </View>
     )
   }
@@ -227,13 +322,14 @@ class StoreDashboard extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataDisputes: state.unreadDisputesStore
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getStoreDiscussions: (page) => dispatch(storeAction.getStoreDiscussions({page: page})),
+    getListReview: (page) => dispatch(reviewAction.getSellerReview({ page: page }))
   }
 }
 

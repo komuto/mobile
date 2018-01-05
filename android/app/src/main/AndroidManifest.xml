@@ -32,6 +32,7 @@
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,17 +40,63 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="fcm.ACTION.HELLO" />
                 <action android:name="SELLER_MESSAGE" />
-                <action android:name="SELLER_DISCUSSION" />
-                <action android:name="SELLER_REVIEW" />
-                <action android:name="SELLER_RESOLUTION" />
-                <action android:name="BUYER_MESSAGE" />
-                <action android:name="BUYER_DISCUSSION" />
-                <action android:name="BUYER_REVIEW" />
-                <action android:name="BUYER_RESOLUTION" />
-
                 <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_CREATE_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_COMMENT_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_TRANSACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="SELLER_ORDER_RECEIVED" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="ORDER_COMPLAINED_REFUND" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="ORDER_COMPLAINED_EXCHANGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_COMMENT_DISCUSSION" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_ORDER_PROCEED" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_ORDER_SENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+             <intent-filter>
+                <action android:name="BUYER_ORDER_REJECTED" />
+                <category android:name="android.intent.category.DEFAULT" />
+             </intent-filter>
+
+            <intent-filter android:label="Komuto">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="mobiledev.komuto.com" />
             </intent-filter>
         </activity>
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
@@ -87,6 +134,9 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="870fa7cc4bfd4de9e8b9e2062bf0432d55bfe1b6" />
 
     </application>
 

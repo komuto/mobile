@@ -6,6 +6,19 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.paleGrey
   },
+  imageVerified: {
+    height: 24,
+    width: 24,
+    marginLeft: 3.9
+  },
+  spinner: {
+    position: 'absolute',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight
+  },
   spinnerProduk: {
     position: 'absolute',
     flex: 1,
@@ -75,6 +88,14 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  containerDiskon2: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.green,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   diskon: {
     fontSize: Fonts.size.smallMed,
     color: Colors.snow,
@@ -106,9 +127,22 @@ export default StyleSheet.create({
     color: Colors.red,
     fontFamily: Fonts.type.bold
   },
+  commissionText: {
+    fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.greenish,
+    letterSpacing: 0.2
+  },
   nominalDiskon: {
     textDecorationLine: 'line-through',
     fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.labelgrey,
+    marginTop: 10
+  },
+  nominalDiskon2: {
+    textDecorationLine: 'line-through',
+    fontSize: Fonts.size.tiny,
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
     marginTop: 10
@@ -198,6 +232,14 @@ export default StyleSheet.create({
     borderBottomColor: Colors.silver,
     elevation: 1
   },
+  infoContainerTerm: {
+    flexDirection: 'column',
+    backgroundColor: Colors.background,
+    paddingLeft: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver,
+    elevation: 1
+  },
   infoList: {
     flexDirection: 'column',
     width: Metrics.screenWidth / 2 - 10
@@ -222,7 +264,11 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
   readMoreTextContainer1: {
-    paddingTop: 10,
+    paddingTop: -10,
+    marginLeft: -20,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)'
+  },
+  readMoreTextContainerTerm: {
     marginLeft: -20,
     backgroundColor: 'rgba(255, 255, 255, 0.5)'
   },
@@ -253,7 +299,8 @@ export default StyleSheet.create({
   namaContainer: {
     flexDirection: 'column',
     flex: 1,
-    marginLeft: 16
+    marginLeft: 16,
+    marginRight: 30
   },
   textNama: {
     fontFamily: Fonts.type.semiBolds,
@@ -340,6 +387,7 @@ export default StyleSheet.create({
   },
   buttonContainer: {
     height: 66,
+    width: Metrics.screenWidth,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
@@ -351,7 +399,7 @@ export default StyleSheet.create({
   },
   buttonReset: {
     flexDirection: 'row',
-    width: 164.4,
+    flex: 1,
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',
@@ -372,7 +420,7 @@ export default StyleSheet.create({
     marginLeft: 6.8
   },
   buttonOke: {
-    width: 164.4,
+    flex: 1,
     height: 45,
     alignItems: 'center',
     justifyContent: 'center',
@@ -542,5 +590,11 @@ export default StyleSheet.create({
     paddingRight: 5,
     flex: 0.5,
     justifyContent: 'flex-end'
+  },
+  termButton: {
+    alignItems: 'center',
+    marginLeft: -20,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 1)'
   }
 })

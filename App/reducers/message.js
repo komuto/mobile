@@ -1,13 +1,13 @@
 import * as actions from '../actions/message'
 import { buildInitState, createReducer } from '../config'
 
-export const getBuyerMessages = createReducer(buildInitState({ buyerMessages: [] }))
+export const getBuyerMessages = createReducer(buildInitState({ buyerMessages: [] }, true))
   .addReducer({
     type: actions.GET_BUYER_MESSAGES,
     resultName: 'buyerMessages'
   }).run()
 
-export const getSellerMessages = createReducer(buildInitState({ sellerMessages: [] }))
+export const getSellerMessages = createReducer(buildInitState({ sellerMessages: [] }, true))
   .addReducer({
     type: actions.GET_SELLER_MESSAGES,
     resultName: 'sellerMessages'
@@ -25,13 +25,13 @@ export const getSellerDetailMessage = createReducer(buildInitState({ sellerDetai
     resultName: 'sellerDetailMessage'
   }).run()
 
-export const getArchiveBuyerMessages = createReducer(buildInitState({ archiveMessages: {} }))
+export const getArchiveBuyerMessages = createReducer(buildInitState({ archiveMessages: [] }, true))
   .addReducer({
     type: actions.GET_ARCHIVE_BUYER_MESSAGES,
     resultName: 'archiveMessages'
   }).run()
 
-export const getArchiveSellerMessages = createReducer(buildInitState({ archiveMessage: {} }))
+export const getArchiveSellerMessages = createReducer(buildInitState({ archiveMessages: [] }))
   .addReducer({
     type: actions.GET_ARCHIVE_SELLER_MESSAGES,
     resultName: 'archiveMessages'
@@ -63,4 +63,18 @@ export const deleteMessage = createReducer(buildInitState())
   })
   .addReducer({
     type: actions.SELLER_DELETE_MESSAGE
+  }).run()
+
+export const transactionMessage = createReducer(buildInitState({ message: {} }))
+  .addReducer({
+    type: actions.MESSAGE_BUYER,
+    resultName: 'message'
+  })
+  .addReducer({
+    type: actions.MESSAGE_SELLER,
+    resultName: 'message'
+  })
+  .addReducer({
+    type: actions.MESSAGE_RESELLER,
+    resultName: 'message'
   }).run()

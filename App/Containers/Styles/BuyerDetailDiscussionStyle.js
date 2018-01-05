@@ -30,7 +30,6 @@ export default StyleSheet.create({
     flex: 1,
     fontSize: Fonts.size.regular,
     fontFamily: Fonts.type.bold,
-    top: -1,
     marginLeft: 10,
     marginRight: 10,
     color: 'transparent'
@@ -147,5 +146,34 @@ export default StyleSheet.create({
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     opacity: 0.5
+  },
+  floatImageContainer: {
+    height: 56,
+    flexDirection: 'row',
+    backgroundColor: Colors.snow,
+    bottom: 0,
+    right: 0,
+    borderTopColor: Colors.silver,
+    borderTopWidth: 1,
+    width: Metrics.screenWidth,
+    alignItems: 'center'
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+  sendContainer: {
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sendMessage: {
+    height: 30,
+    width: 30
   }
 })

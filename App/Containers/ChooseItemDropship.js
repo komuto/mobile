@@ -1,6 +1,8 @@
 import React from 'react'
 import {
   Text,
+  ScrollView,
+  ToastAndroid,
   ListView,
   View,
   Image,
@@ -12,42 +14,43 @@ import {
   RefreshControl
 } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Filter from '../Components/Filter'
-import * as homeAction from '../actions/home'
+import Reactotron from 'reactotron-react-native'
+
 import * as produkAction from '../actions/product'
+import * as categoriAction from '../actions/home'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
-// Styles
 import styles from './Styles/ProdukTerbaruScreenStyle'
-import stylesSearch from './Styles/SearchResultStyle'
 import stylesHome from './Styles/HomeStyle'
 import stylesDropshipping from './Styles/PilihBarangDropshippingScreenStyle'
+import stylesLokasi from './Styles/ProductDetailScreenStyle'
 
-import { Images, Colors, Metrics } from '../Themes'
+import { Images, Colors, Metrics, Fonts } from '../Themes'
 
 class ChooseItemDropship extends React.Component {
 
   constructor (props) {
     super(props)
-    var menu = [
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 90000, harga: 90000, like: true, jumlahlikes: 130, dateCreate: '06/19/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Army simple Sling Bag for daily usage', toko: 'GadgetArena', status: 'unverified', statusDiskon: true, nominalDiskon: 80000, harga: 80000, like: false, jumlahlikes: 140, dateCreate: '06/18/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'unverified', statusDiskon: false, nominalDiskon: 70000, harga: 70000, like: true, jumlahlikes: 150, dateCreate: '06/21/2017' },
-      { diskon: '58%', gambar: Images.contohproduct, title: 'Casual and Light Nike Shoes Running', toko: 'GadgetArena', status: 'verified', statusDiskon: true, nominalDiskon: 60000, harga: 60000, like: true, jumlahlikes: 120, dateCreate: '06/20/2017' }
-    ]
     this.dataSourceList = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
     this.dataSourceRow = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.dataSource = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+    this.submitting = {
+      product: false,
+      search: false,
+      category1: false
+    }
     this.state = {
       search: '',
       data: [],
+      dataProduct: props.dataProduk || null,
       listDataSource: [],
       rowDataSource: [],
       header: this.props.header || 'search',
-      tipe: this.props.tipe || 'kategori',
       tipeView: 'list',
       sortModal: false,
       terbaruColor: Colors.lightblack,
@@ -58,17 +61,50 @@ class ChooseItemDropship extends React.Component {
       termurahCek: 0,
       termahalCek: 0,
       terlarisCek: 0,
-      sortData: menu,
       filter: false,
       loading: true,
       page: 1,
-      loadmore: true,
-      isRefreshing: false,
-      isLoading: false
+      loadmore: false,
+      isRefreshing: true,
+      isLoading: false,
+      filterKondisi: '',
+      filterPengiriman: [],
+      filterPrice: [0, 0],
+      filterAddress: '',
+      filterBrand: [],
+      filterOthers: [],
+      statusFilter: false,
+      sort: 'newest',
+      wishlist: props.propsWishlist || null,
+      category1: props.category1 || null,
+      addCategory1: [
+        {
+          'id': 0,
+          'name': 'Pilih Kategori'
+        }
+      ],
+      modalCategory1: false,
+      idCategory1: '',
+      fieldCategory1: 'Semua Kategori',
+      colorCategory1: Colors.labelgrey,
+      iconCategory1: Images.down,
+      provinsi: '',
+      kota: '',
+      provinsiId: ''
     }
   }
 
   componentDidMount () {
+    if (!this.submitting.product) {
+      this.submitting = {
+        ...this.submitting,
+        product: true,
+        category1: true
+      }
+      Reactotron.log('ChooseItemDropship')
+      this.props.getCategory1()
+      this.props.getDropshipper()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -77,120 +113,141 @@ class ChooseItemDropship extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      if (nextProps.dataProduk.products.length > 0) {
-        let data = [...this.state.listDataSource, ...nextProps.dataProduk.products]
-        this.setState({
-          listDataSource: data,
-          rowDataSource: data,
-          page: this.state.page + 1,
-          isRefreshing: false,
-          isLoading: false,
-          loadmore: true,
-          loading: false
-        })
-      } else {
-        this.setState({
-          loadmore: false,
-          isLoading: false
-        })
+    const {category1, dataProduk, propsWishlist} = nextProps
+
+    if (!isFetching(category1) && this.submitting.category1) {
+      this.submitting = { ...this.submitting, category1: false }
+      if (isError(category1)) {
+        ToastAndroid.show(category1.message, ToastAndroid.SHORT)
       }
-      nextProps.dataProduk.status === 0
-    } if (nextProps.dataFilter.status === 200) {
-      this.setState({
-        listDataSource: nextProps.dataFilter.products,
-        rowDataSource: nextProps.dataFilter.products,
-        loading: false
-      })
-    } else if (nextProps.dataFilter.status > 200) {
-      console.log(nextProps.dataFilter.status)
+      if (isFound(category1)) {
+        this.setState({ category1: category1 })
+      }
+    }
+
+    if (!isFetching(dataProduk)) {
+      this.submitting = { ...this.submitting }
+      if (isError(dataProduk)) {
+        ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataProduk)) {
+        const isFound = dataProduk.products.length
+        if (isFound >= 10) {
+          let data = [...this.state.listDataSource, ...dataProduk.products]
+          this.setState({
+            dataProduct: dataProduk,
+            listDataSource: data,
+            rowDataSource: data,
+            isLoading: false,
+            loadmore: true,
+            page: this.state.page + 1,
+            isRefreshing: false
+          })
+        } else {
+          let data = [...this.state.listDataSource, ...dataProduk.products]
+          this.setState({
+            dataProduct: dataProduk,
+            listDataSource: data,
+            rowDataSource: data,
+            isLoading: false,
+            loadmore: false,
+            page: 1,
+            isRefreshing: false
+          })
+        }
+      }
+    }
+
+    if (!isFetching(propsWishlist) && this.submitting.wishlist) {
+      this.submitting = { ...this.submitting, wishlist: false }
+      if (isError(propsWishlist)) {
+        ToastAndroid.show(propsWishlist.message, ToastAndroid.SHORT)
+      }
+      if (isFound(propsWishlist)) {
+        this.setState({ wishlist: propsWishlist })
+      }
     }
   }
 
-  handlingFilter (kondisi, pengiriman, price, address, brand, other) {
-    this.props.getFilterProduk(kondisi, pengiriman, price, address, brand, other)
+  handlingFilter (filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) {
+    const { search, sort, idCategory1 } = this.state
+    this.submitting.category = true
+    this.props.getDropshipper({
+      q: search,
+      category_id: idCategory1,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
+      page: 1,
+      sort: sort
+    })
     this.setState({
-      filter: false
+      filter: false,
+      page: 1,
+      filterKondisi: filterKondisi,
+      filterPengiriman: filterPengiriman,
+      filterPrice: filterPrice,
+      filterAddress: filterAddress,
+      filterBrand: filterBrand,
+      filterOthers: filterOthers,
+      isRefreshing: true,
+      rowDataContainer: [],
+      listDataSource: [],
+      provinsi: provinsi,
+      provinsiId: provinsiId,
+      kota: kota
     })
   }
 
-  handleBack = () => {
-    if (this.state.tipe === 'search') {
-      this.setState({
-        tipe: 'data'
-      })
-      return true
-    } else if (NavigationActions.pop()) {
-      return true
+  checkDiscount (discount, isDiscount, isWholesaler) {
+    if (isDiscount && isWholesaler) {
+      return (
+        <View stlye={{left: -10, flexDirection: 'column'}}>
+          <View style={styles.containerDiskon}>
+            <Text allowFontScaling style={styles.diskon}>
+              {discount}%
+            </Text>
+          </View>
+          <View style={styles.containerDiskon2}>
+            <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+              GROSIR
+            </Text>
+          </View>
+        </View>
+      )
+    } if (isDiscount) {
+      return (
+        <View style={styles.containerDiskon}>
+          <Text allowFontScaling style={styles.diskon}>
+            {discount}%
+          </Text>
+        </View>
+      )
+    } if (isWholesaler) {
+      return (
+        <View style={[styles.containerDiskon, {backgroundColor: Colors.green}]}>
+          <Text style={[styles.diskon, {fontSize: Fonts.size.extraTiny}]}>
+            GROSIR
+          </Text>
+        </View>
+      )
+    } else {
+      return (<View />)
     }
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
   }
 
   handleTextSearch = (text) => {
     this.setState({ search: text })
-  }
-
-  search () {
-    console.log('dispatch search')
-  }
-
-  backButton () {
-    NavigationActions.pop()
-  }
-
-  backSearch () {
-    this.setState({
-      tipe: 'data'
-    })
-  }
-
-  renderHeader () {
-    const { search } = this.state
-    if (this.state.tipe === 'search') {
-      return (
-        <View style={stylesSearch.headerContainerRender}>
-          <TouchableOpacity onPress={() => this.backSearch()}>
-            <Image
-              source={Images.leftArrow}
-              style={stylesSearch.imageStyle}
-            />
-          </TouchableOpacity>
-          <View style={stylesSearch.textInputContainer}>
-            <TextInput
-              ref='search'
-              autoFocus
-              onSubmitEditing={() => this.search()}
-              style={stylesSearch.inputText}
-              value={search}
-              keyboardType='default'
-              autoCapitalize='none'
-              autoCorrect
-              onChangeText={this.handleTextSearch}
-              underlineColorAndroid='transparent'
-              placeholder='Cari barang atau toko'
-            />
-          </View>
-        </View>
-      )
-    }
-    return (
-      <View style={stylesSearch.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
-          <Image
-            source={Images.iconBack}
-            style={stylesSearch.imageStyle}
-          />
-        </TouchableOpacity>
-        <Text style={stylesSearch.headerText}>
-          {this.state.header}
-        </Text>
-        <TouchableOpacity onPress={() => this.openSearch()}>
-          <Image
-            source={Images.searchWhite}
-            style={stylesSearch.imageStyle}
-          />
-        </TouchableOpacity>
-      </View>
-    )
+    this.setState({listDataSource: [], rowDataSource: []})
+    this.props.getDropshipper({q: text})
   }
 
   openFilter () {
@@ -209,41 +266,48 @@ class ChooseItemDropship extends React.Component {
     this.setState({sortModal: visible})
   }
 
-  sortArrayAsc (array, key, field) {
-    const {bluesky, lightblack} = Colors
-    switch (field) {
-      case 'terbaru':
-        this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return new Date(a.product.created_at).getTime() - new Date(b.product.dateCreate).getTime()
-        }).reverse()
-      case 'termurah':
-        this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        }).reverse()
-      case 'termahal':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0})
-        return array.sort(function (a, b) {
-          return b.product.price - a.product.price
-        })
-      case 'terlaris':
-        this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1})
-        return array.sort(function (a, b) {
-          return b.product.stock - a.product.stock
-        })
-      default:
-        window.alert('Internal Error')
-        break
-    }
+  dispatchSort (typesort) {
+    this.setState({
+      isRefreshing: true,
+      listDataSource: [],
+      rowDataSource: [],
+      page: 1
+    })
+    const {
+      search,
+      sort,
+      idCategory1
+    } = this.state
+    this.submitting.category = true
+    this.props.getDropshipper({
+      q: search,
+      category_id: idCategory1,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      page: 1,
+      sort: sort
+    })
   }
 
-  _onPress (field) {
-    const {listDataSource} = this.state
-    let sortedData = this.sortArrayAsc(listDataSource, 'price', field)
-    this.setState({
-      listDataSource: sortedData
-    })
+  onClickSort (field) {
+    const {bluesky, lightblack} = Colors
+    if (field === 'terbaru') {
+      this.setState({terbaruColor: bluesky, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 1, termurahCek: 0, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'newest'})
+      this.dispatchSort('newest')
+    } else if (field === 'termahal') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: bluesky, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 0, termahalCek: 1, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'expensive'})
+      this.dispatchSort('expensive')
+    } else if (field === 'termurah') {
+      this.setState({terbaruColor: lightblack, termurahColor: bluesky, termahalColor: lightblack, terlarisColor: lightblack, terbaruCek: 0, termurahCek: 1, termahalCek: 0, terlarisCek: 0, isRefreshing: true, sortModal: false, sort: 'cheapest'})
+      this.dispatchSort('cheapest')
+    } else if (field === 'terlaris') {
+      this.setState({terbaruColor: lightblack, termurahColor: lightblack, termahalColor: lightblack, terlarisColor: bluesky, terbaruCek: 0, termurahCek: 0, termahalCek: 0, terlarisCek: 1, isRefreshing: true, sortModal: false, sort: 'selling'})
+      this.dispatchSort('selling')
+    }
   }
 
   renderModalSort () {
@@ -260,39 +324,33 @@ class ChooseItemDropship extends React.Component {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Urutkan Berdasarkan</Text>
           </View>
-          <TouchableOpacity onPress={() => this._onPress('terbaru')}>
+          <TouchableOpacity onPress={() => this.onClickSort('terbaru')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terbaruColor}]}>Terbaru</Text>
-              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: terbaruCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termurah')}>
+          <TouchableOpacity onPress={() => this.onClickSort('termurah')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termurahColor}]}>Termurah</Text>
-              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: termurahCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('termahal')}>
+          <TouchableOpacity onPress={() => this.onClickSort('termahal')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: termahalColor}]}>Termahal</Text>
-              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: termahalCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this._onPress('terlaris')}>
+          <TouchableOpacity onPress={() => this.onClickSort('terlaris')}>
             <View style={styles.itemContainer}>
               <Text style={[styles.title, {color: terlarisColor}]}>Terlaris</Text>
-              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centang} />
+              <Image style={[styles.checkImage, {opacity: terlarisCek}]} source={Images.centangBiru} />
             </View>
           </TouchableOpacity>
         </View>
       </Modal>
     )
-  }
-
-  openSearch () {
-    this.setState({
-      tipe: 'search'
-    })
   }
 
   modalFilter () {
@@ -316,32 +374,36 @@ class ChooseItemDropship extends React.Component {
             </TouchableOpacity>
           </View>
           <Filter
-            handlingFilter={(kondisi, pengiriman, price, address, brand, other) =>
-            this.handlingFilter(kondisi, pengiriman, price, address, brand, other)} />
+            filterPengiriman={this.state.filterPengiriman}
+            filterKondisi={this.state.filterKondisi}
+            filterAddress={this.state.filterAddress}
+            filterPrice={this.state.filterPrice}
+            filterBrand={this.state.filterBrand}
+            filterOthers={this.state.filterOthers}
+            provinsiId={this.state.provinsiId}
+            provinsi={this.state.provinsi}
+            kota={this.state.kota}
+            handlingFilter={(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota) =>
+            this.handlingFilter(filterKondisi, filterPengiriman, filterPrice, filterAddress, filterBrand, filterOthers, provinsiId, provinsi, kota)} />
         </View>
       </Modal>
     )
   }
 
   renderVerified (status) {
-    if (status === 'verified') {
+    if (status) {
       return (
         <Image source={Images.verified} style={styles.imageVerified} />
       )
     }
     return (
-      <Image source={Images.love} style={styles.imageVerified} />
+      <Image source={Images.notVerified} style={styles.imageVerified} />
     )
   }
 
   renderDiskon (status, nominal) {
     if (status) {
-      const money = MaskService.toMask('money', nominal, {
-        unit: 'Rp ',
-        separator: '.',
-        delimiter: '.',
-        precision: 3
-      })
+      const money = this.maskedMoney(nominal)
       return (
         <Text style={styles.nominalDiskon}>
           {money}
@@ -355,19 +417,39 @@ class ChooseItemDropship extends React.Component {
     )
   }
 
-  renderLikes (status) {
+  renderLikes (status, id) {
     if (status) {
       return (
-        <TouchableOpacity>
-          <Image source={Images.love} style={styles.imageStyleLike} />
+        <TouchableOpacity onPress={() => this.onClickWishList(id)}>
+          <Image source={Images.lovered} style={styles.imageStyleLike} />
         </TouchableOpacity>
       )
     }
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.onClickWishList(id)}>
         <Image source={Images.love} style={styles.imageStyleNotLike} />
       </TouchableOpacity>
     )
+  }
+
+  onClickWishList (id) {
+    const {listDataSource} = this.state
+    if (this.props.datalogin.login) {
+      this.submitting = {
+        ...this.submitting,
+        wishlist: true
+      }
+      listDataSource.map((myProduct) => {
+        if (myProduct.product.id === id) {
+          myProduct.product.is_liked ? myProduct.product.count_like -= 1 : myProduct.product.count_like += 1
+          myProduct.product.is_liked = !myProduct.product.is_liked
+        }
+      })
+      this.props.addWishList({id})
+      this.setState({ listDataSource })
+    } else {
+      ToastAndroid.show('Anda belum login', ToastAndroid.SHORT)
+    }
   }
 
   discountCalculate (price, discount) {
@@ -375,61 +457,58 @@ class ChooseItemDropship extends React.Component {
     return hargaDiskon
   }
 
-  produkDetail (id) {
+  produkDetail (id, commission) {
     NavigationActions.detailproduct({
       type: ActionConst.PUSH,
       id: id,
       dropship: true,
-      buttonText: 'Pilih Barang ini'
+      buttonText: 'Pilih Barang ini',
+      commission: commission
     })
-    this.props.getDetailProduk(id)
+    this.props.getDetailProduk({id: id})
   }
 
   renderRowList (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
+    const commission = (rowData.product.commission)
 
     return (
-      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} />
-        <View style={styles.containerDiskon}>
-          <Text style={styles.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+      <TouchableOpacity style={styles.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>
+        <Image source={{ uri: rowData.product.image }} style={styles.imageProduct} >
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
         <View style={styles.containerTitle}>
           <Text style={styles.textTitleProduct}>
             {rowData.product.name}
           </Text>
-          <View style={styles.tokoContainer}>
+          <View style={[styles.tokoContainer, {marginRight: 30}]}>
             <Text style={styles.namaToko}>
               {rowData.store.name}
             </Text>
-            {this.renderVerified(rowData.store.remarks_status)}
+            {this.renderVerified(rowData.store.is_verified)}
           </View>
-          {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+          {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
+          <View style={{flex: 1, marginBottom: 20}}>
+            <Text style={styles.harga}>
+              {money}
+            </Text>
+          </View>
           <View style={styles.moneyLikesContainer}>
             <View style={{flex: 1}}>
-              <Text style={styles.harga}>
-                {money}
+              <Text style={styles.commissionText}>
+                Komisi {commission}%
               </Text>
             </View>
             <View style={styles.likesContainer}>
-              {this.renderLikes(rowData.like)}
+              {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
               <Text style={styles.like}>
-                {rowData.product.stock}
+                {rowData.product.count_like}
               </Text>
             </View>
           </View>
@@ -439,28 +518,20 @@ class ChooseItemDropship extends React.Component {
   }
 
   renderRowGrid (rowData) {
-    if (rowData.product.discount > 0) {
-      this.statusDiskon = true
+    if (rowData.product.is_discount) {
       this.hargaDiskon = this.discountCalculate(rowData.product.price, rowData.product.discount)
     } else {
-      this.statusDiskon = false
       this.hargaDiskon = rowData.product.price
     }
 
-    const money = MaskService.toMask('money', this.hargaDiskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.hargaDiskon)
+    const commission = (rowData.product.commission)
+
     return (
-      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id)}>
-        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct} />
-        <View style={stylesHome.containerDiskon}>
-          <Text style={stylesHome.diskon}>
-            {rowData.product.discount} %
-          </Text>
-        </View>
+      <TouchableOpacity style={stylesHome.rowDataContainer} activeOpacity={0.5} onPress={() => this.produkDetail(rowData.product.id, rowData.product.commission)}>
+        <Image source={{ uri: rowData.product.image }} style={stylesHome.imageProduct}>
+          {this.checkDiscount(rowData.product.discount, rowData.product.is_discount, rowData.product.is_wholesaler)}
+        </Image>
         <Text style={stylesHome.textTitleProduct}>
           {rowData.product.name}
         </Text>
@@ -468,20 +539,29 @@ class ChooseItemDropship extends React.Component {
           <Text style={stylesHome.namaToko}>
             {rowData.store.name}
           </Text>
-          {this.renderVerified(rowData.store.remarks_status)}
+          {this.renderVerified(rowData.store.is_verified)}
         </View>
-        {this.renderDiskon(this.statusDiskon, rowData.product.price)}
+        {this.renderDiskon(rowData.product.is_discount, rowData.product.price)}
         <Text style={stylesHome.harga}>
           {money}
         </Text>
+        <View style={{flex: 1, marginTop: 20}}>
+          <Text style={styles.commissionText}>
+            Komisi {commission}%
+          </Text>
+        </View>
         <View style={stylesHome.likesContainer}>
-          {this.renderLikes(rowData.like)}
-          <Text style={stylesHome.like}>
-            {rowData.product.stock}
+          {this.renderLikes(rowData.product.is_liked, rowData.product.id)}
+          <Text style={styles.like}>
+            {rowData.product.count_like}
           </Text>
         </View>
       </TouchableOpacity>
     )
+  }
+
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   changeView () {
@@ -572,17 +652,39 @@ class ChooseItemDropship extends React.Component {
   }
 
   loadMore () {
-    const { page, loadmore, isLoading } = this.state
+    const {isLoading, loadmore, search, page, sort, idCategory1} = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getDropshipper(true, page)
+        this.props.getDropshipper({
+          q: search,
+          category_id: idCategory1,
+          condition: this.state.filterKondisi,
+          services: this.state.filterPengiriman,
+          price: this.state.filterPrice,
+          address: this.state.filterAddress,
+          brands: this.state.filterBrand,
+          other: this.state.filterOthers,
+          page: page,
+          sort: sort
+        })
       }
     }
   }
 
   refresh = () => {
-    this.setState({ isRefreshing: true, listDataSource: [], page: 1, isLoading: true })
-    this.props.getDropshipper(true, 1)
+    this.setState({ isRefreshing: true, listDataSource: [], page: 1, search: '', idCategory1: '' })
+    this.props.getDropshipper({
+      q: this.state.search,
+      category_id: this.state.idCategory1,
+      condition: this.state.filterKondisi,
+      services: this.state.filterPengiriman,
+      price: this.state.filterPrice,
+      address: this.state.filterAddress,
+      brands: this.state.filterBrand,
+      other: this.state.filterOthers,
+      page: 1,
+      sort: this.state.sort
+    })
   }
 
   renderImageTypeView () {
@@ -605,13 +707,12 @@ class ChooseItemDropship extends React.Component {
             ref='search'
             style={stylesDropshipping.inputText}
             value={this.state.search}
-            onSubmitEditing={() => this.search()}
             keyboardType='default'
             autoCapitalize='none'
             autoCorrect
-            onChangeText={this.handleTextSearch}
+            onChangeText={this.handleTextSearch.bind(this)}
             underlineColorAndroid='transparent'
-            placeholder='Cari Produk atau Nama Toko'
+            placeholder='Cari Produk'
           />
         </View>
       </View>
@@ -622,19 +723,61 @@ class ChooseItemDropship extends React.Component {
     return (
       <View style={stylesDropshipping.containerKategori}>
         <Text style={stylesDropshipping.textKategori}>Kategori : </Text>
-        <TouchableOpacity style={{alignItems: 'center', flexDirection: 'row', flex: 1}} activeOpacity={0.5} onPress={() => console.log('tai')}>
-          <Text style={[stylesDropshipping.textKategori, {flex: 1}]}>Semua Kategori</Text>
-          <Image source={Images.down} style={stylesDropshipping.image} />
+        <TouchableOpacity style={{alignItems: 'center', flexDirection: 'row', flex: 1}} activeOpacity={0.5} onPress={() => this.setState({ modalCategory1: true, iconCategory1: Images.up })}>
+          <Text style={[stylesDropshipping.textKategori, {flex: 1, color: this.state.colorCategory1}]}>{this.state.fieldCategory1}</Text>
+          <Image source={this.state.iconCategory1} style={stylesDropshipping.image} />
         </TouchableOpacity>
       </View>
     )
   }
 
+  renderRowCategory1 (rowData) {
+    return (
+      <TouchableOpacity
+        style={[stylesLokasi.menuLaporkan, { padding: 15 }]}
+        activeOpacity={0.9}
+        onPress={() => {
+          this.setState({
+            fieldCategory1: rowData.name,
+            idCategory1: rowData.id,
+            colorCategory1: Colors.darkgrey,
+            iconCategory1: Images.down,
+            modalCategory1: false,
+            listDataSource: [],
+            rowDataSource: [],
+            isRefreshing: true
+          })
+          this.props.getDropshipper({category_id: rowData.id})
+        }}
+      >
+        <Text style={[stylesLokasi.textBagikan, { marginLeft: 0 }]}>{rowData.name}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  modalCategory1 () {
+    return (
+      <Modal
+        animationType={'slide'}
+        transparent
+        visible={this.state.modalCategory1}
+        onRequestClose={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}
+        >
+        <TouchableOpacity activeOpacity={1} style={styles.modalContainer2} onPress={() => this.setState({ modalCategory1: false, iconCategory1: Images.down })}>
+          <ScrollView style={styles.menuProvinsiContainer}>
+            <ListView
+              contentContainerStyle={{ flex: 1, flexWrap: 'wrap' }}
+              dataSource={this.dataSource.cloneWithRows(this.state.addCategory1.concat(this.state.category1.categories))}
+              renderRow={this.renderRowCategory1.bind(this)}
+              enableEmptySections
+            />
+          </ScrollView>
+        </TouchableOpacity>
+      </Modal>
+    )
+  }
+
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
     return (
       <View style={[styles.container, {marginTop: Metrics.navBarHeight}]}>
         <View style={stylesDropshipping.header}>
@@ -675,7 +818,7 @@ class ChooseItemDropship extends React.Component {
         </View>
         {this.modalFilter()}
         {this.renderModalSort()}
-        {spinner}
+        {this.modalCategory1()}
       </View>
     )
   }
@@ -683,20 +826,16 @@ class ChooseItemDropship extends React.Component {
 
 const mapStateToProps = (state) => ({
   dataProduk: state.dropshipProducts,
-  dataFilter: state.filterProduct
+  propsWishlist: state.addWishlist,
+  datalogin: state.isLogin,
+  category1: state.category
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getFilterProduk: (condition, services, price, address, brands, other) => dispatch(homeAction.filter({
-    condition: condition,
-    services: services,
-    price: price,
-    address: address,
-    brands: brands,
-    other: other
-  })),
-  getDetailProduk: (id) => dispatch(produkAction.getProduct({id: id})),
-  getDropshipper: (dropshipper, page) => dispatch(produkAction.getDropshipProducts({is_dropship: dropshipper, page: page}))
+  addWishList: (param) => dispatch(produkAction.addToWishlist(param)),
+  getDetailProduk: (param) => dispatch(produkAction.getProduct(param)),
+  getDropshipper: (param) => dispatch(produkAction.getDropshipProducts(param)),
+  getCategory1: () => dispatch(categoriAction.categoryList())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChooseItemDropship)

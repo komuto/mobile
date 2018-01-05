@@ -22,6 +22,14 @@ export const getProduct = createReducer(buildInitState({ detail: {} }))
     resultName: 'detail',
     includeNonSaga: true,
     resetPrevState: { state: 0 }
+  })
+  .addReducer({
+    type: actions.GET_DROPSHIP_PRODUCT_FOR_ADD,
+    resultName: 'detail'
+  })
+  .addReducer({
+    type: actions.GET_DROPSHIP_PRODUCT_FOR_MANAGE,
+    resultName: 'detail'
   }).run()
 
 export const productByCategory = createReducer(buildInitState({ products: [] }, true))
@@ -53,7 +61,7 @@ export const addToWishlistHome = createReducer(buildInitState({ wishlist: [] }))
 export const getDiscussion = createReducer(buildInitState({ discussions: [] }, true))
   .addReducer({
     type: actions.GET_DISCUSSION,
-    resultName: true
+    resultName: 'discussions'
   }).run()
 
 export const newDiscussion = createReducer(buildInitState({ discussion: {} }))
@@ -109,6 +117,10 @@ export const alterProducts = createReducer(buildInitState({ product: {} }))
   .addReducer({
     type: actions.UPDATE_DROPSHIP_STATUS,
     add: { type: 'dropship_status' }
+  })
+  .addReducer({
+    type: actions.DELETE_DROPSHIP,
+    add: { type: 'delete_dropship' }
   }).run()
 
 export const getProductExpeditions = createReducer(buildInitState({ productExpeditions: [] }))

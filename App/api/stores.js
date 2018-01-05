@@ -1,8 +1,8 @@
-import { publicApiKomuto, authApiKomuto } from './api'
+import { authApiKomuto } from './api'
 import { buildQuery } from '../config'
 
 export const getStores = ({ id }) => {
-  const axios = publicApiKomuto()
+  const axios = authApiKomuto()
   return axios.get(`stores/${id}`)
 }
 
@@ -46,7 +46,7 @@ export const storeExpeditionList = () => {
 }
 
 export const photoUpload = ({ data }) => {
-  const axios = authApiKomuto()
+  const axios = authApiKomuto(null, 30000)
   return axios.post('images', data)
 }
 
@@ -81,7 +81,7 @@ export const getStoreProducts = (params) => {
   return axios.get(`users/store/products?${query}`)
 }
 
-export const getStoreCatalogProducts = ({ id = '', ...params }) => {
+export const getStoreCatalogProducts = ({ id, ...params }) => {
   const axios = authApiKomuto()
   const query = buildQuery(params)
   return axios.get(`users/store/products/catalogs/${id}?${query}`)
@@ -128,4 +128,26 @@ export const getStoreProductsByCatalog = ({ id, ...data }) => {
   const axios = authApiKomuto()
   const query = buildQuery(data)
   return axios.get(`users/store/products/catalogs/${id}/list?${query}`)
+}
+
+export const getUnreadDisputeStore = () => {
+  const axios = authApiKomuto()
+  return axios.get('pages/store')
+}
+
+export const getStoreProductsByCatalogSearch = (params) => {
+  const axios = authApiKomuto()
+  const query = buildQuery(params)
+  return axios.get(`/users/store/products/search?${query}`)
+}
+
+export const getStoreProductsHiddenByCatalogSearch = (params) => {
+  const axios = authApiKomuto()
+  const query = buildQuery(params)
+  return axios.get(`/users/store/products/search?${query}` + '&hidden=true')
+}
+
+export const getDropshipperFaq = () => {
+  const axios = authApiKomuto()
+  return axios.get('dropship/faq')
 }

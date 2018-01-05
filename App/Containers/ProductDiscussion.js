@@ -6,10 +6,13 @@ import {
   ListView,
   ActivityIndicator,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  ToastAndroid
 } from 'react-native'
+import moment from 'moment'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { Images, Colors } from '../Themes'
 import * as productAction from '../actions/product'
@@ -33,11 +36,20 @@ class ProductDiscussion extends React.Component {
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false
+      isLoading: false,
+      callback: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.refresh()
+        this.setState({
+          callback: nextProps.callback
+        })
+      }
+    }
     if (nextProps.dataDiskusi.status === 200) {
       if (nextProps.dataDiskusi.discussions.length > 0) {
         console.log(nextProps.dataDiskusi.discussions)
@@ -56,6 +68,13 @@ class ProductDiscussion extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
   }
 
@@ -78,13 +97,12 @@ class ProductDiscussion extends React.Component {
     })
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -106,6 +124,7 @@ class ProductDiscussion extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).fromNow()
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>
@@ -115,7 +134,7 @@ class ProductDiscussion extends React.Component {
               {rowData.user.name}
             </Text>
             <Text style={styles.textKelola}>
-              {rowData.created_at}
+              {time}
             </Text>
           </View>
         </View>
@@ -194,7 +213,8 @@ class ProductDiscussion extends React.Component {
       id: this.state.id,
       foto: this.state.foto,
       price: this.state.price,
-      namaProduk: this.props.namaProduk
+      namaProduk: this.props.namaProduk,
+      callback: this.state.callback
     })
   }
 

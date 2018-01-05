@@ -2,9 +2,14 @@ import React from 'react'
 import { ScrollView, ActivityIndicator, ToastAndroid, ListView, Text, View, RefreshControl, BackAndroid, TouchableOpacity, Image } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
+import Reactotron from 'reactotron-react-native'
+import {isFetching, isError, isFound} from '../Services/Status'
+
 import * as categoriAction from '../actions/home'
 import * as storeAction from '../actions/stores'
+import * as productAction from '../actions/product'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -18,6 +23,9 @@ class DetailProductStore extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      deleteProduct: false
+    }
     this.state = {
       productName: this.props.productName,
       loading: true,
@@ -30,25 +38,27 @@ class DetailProductStore extends React.Component {
       category: '',
       imageProduct: [],
       nameCategory: '',
-      id: '',
+      id: [this.props.idProduct],
       isRefreshing: false,
       callback: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
+    const {dataDeleteProducts} = nextProps
     if (nextProps.callback !== undefined) {
       if (nextProps.callback !== this.state.callback) {
         this.refresh()
         this.setState({
-          callback: nextProps.callback
+          callback: nextProps.callback,
+          loading: false
         })
       }
     }
     if (nextProps.dataDetailProduct.status === 200) {
+      console.log()
       this.setState({
         brand: nextProps.dataDetailProduct.storeProductDetail.brand,
-        catalog: nextProps.dataDetailProduct.storeProductDetail.catalog,
         expeditionServices: nextProps.dataDetailProduct.storeProductDetail.expedition_services,
         wholesaler: nextProps.dataDetailProduct.storeProductDetail.wholesaler,
         product: nextProps.dataDetailProduct.storeProductDetail.product,
@@ -60,10 +70,17 @@ class DetailProductStore extends React.Component {
         loading: false,
         isRefreshing: false
       })
+      try {
+        this.setState({
+          catalog: nextProps.dataDetailProduct.storeProductDetail.catalog
+        })
+      } catch (e) {
+      }
       nextProps.dataDetailProduct.status = 0
-      this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.parent_id)
-    } else if (nextProps.dataDetailProduct.status) {
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataDetailProduct.message, ToastAndroid.LONG)
+      this.props.getKategori(nextProps.dataDetailProduct.storeProductDetail.category.id)
+    } else if (!nextProps.dataDetailProduct.status > 200 && !nextProps.dataDetailProduct.status === 0) {
+      ToastAndroid.show(nextProps.dataDetailProduct.message, ToastAndroid.SHORT)
+      nextProps.dataDetailProduct.status = 0
     }
     if (nextProps.dataKategoriParent.status === 200) {
       this.setState({
@@ -71,29 +88,46 @@ class DetailProductStore extends React.Component {
         nameCategory: nextProps.dataKategoriParent.categories.name
       })
     }
+
+    if (!isFetching(dataDeleteProducts) && this.submitting.deleteProduct) {
+      this.submitting = { ...this.submitting, deleteProduct: false }
+      if (isError(dataDeleteProducts)) {
+        ToastAndroid.show(dataDeleteProducts.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataDeleteProducts)) {
+        this.setState({ loading: false })
+        NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+        return true
+      }
+    }
   }
 
   componentDidMount () {
+    Reactotron.log('detail product store')
+    this.props.getDetailStoreProduct(this.state.id)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-    this.props.getListProduk(false)
-    this.props.getHiddenProduct()
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     return true
   }
 
   backButton () {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
   }
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
+    return hargaDiskon
+  }
+
+  fee (price, commission) {
+    let hargaDiskon = price - commission
     return hargaDiskon
   }
 
@@ -106,13 +140,7 @@ class DetailProductStore extends React.Component {
   }
 
   maskedMoney (value) {
-    const maskedPrice = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return maskedPrice
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderHeader () {
@@ -127,7 +155,7 @@ class DetailProductStore extends React.Component {
         <Text style={styles.headerText}>
           {this.state.productName}
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => this.delete()}>
           <Image
             source={Images.deletWhite}
             style={styles.imageStyle}
@@ -135,6 +163,18 @@ class DetailProductStore extends React.Component {
         </TouchableOpacity>
       </View>
     )
+  }
+
+  delete () {
+    let data = []
+    data[0] = this.state.product.id
+    if (!this.submitting.deleteProduct) {
+      this.submitting = {
+        ...this.submitting,
+        deleteProduct: true
+      }
+      this.props.deleteItems({product_ids: data})
+    }
   }
 
   handleEditStatusStockDropshipping (title, action, color, id, data) {
@@ -212,10 +252,21 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changePhotos (id) {
+  changePhotos (id, images) {
+    let photo = []
+    let file = []
+
+    images.map((data, i) => {
+      photo.push(data.file)
+      file.push(data.file_name)
+    })
+
+    // Reactotron.log(photo)
     NavigationActions.editproductphoto({
       type: ActionConst.PUSH,
       id: id,
+      foto: photo,
+      fileName: file,
       callback: this.state.callback
     })
   }
@@ -225,7 +276,7 @@ class DetailProductStore extends React.Component {
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow, {borderBottomWidth: 0}]}>
           <Text style={styles.titleMenu}>Foto Produk</Text>
-          <TouchableOpacity onPress={() => this.changePhotos(this.state.product.id)}>
+          <TouchableOpacity onPress={() => this.changePhotos(this.state.product.id, this.state.imageProduct)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>
@@ -256,12 +307,6 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  checkCategory (data) {
-    return (
-      <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.nameCategory} / {this.state.category.name}</Text>
-    )
-  }
-
   checkBarand (data) {
     if (data) {
       return (
@@ -285,7 +330,6 @@ class DetailProductStore extends React.Component {
       description: this.state.product.description,
       callback: this.state.callback
     })
-    console.log(id)
     this.props.allCategory()
   }
 
@@ -312,7 +356,7 @@ class DetailProductStore extends React.Component {
           <Text style={styles.textMenuNoFlex}>Nama Produk</Text>
           <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.product.name}</Text>
           <Text style={styles.textMenuNoFlex}>Kategori</Text>
-          {this.checkCategory(this.state.category)}
+          <Text style={[styles.textValueMenu, {paddingBottom: 15, lineHeight: 20}]}>{this.state.category.full_name}</Text>
           {brand}
           <Text style={styles.textMenuNoFlex}>Deskripsi Produk</Text>
           <Text style={[styles.textValueMenu, {paddingBottom: 15, paddingRight: 40, lineHeight: 20}]}>{this.state.product.description}</Text>
@@ -326,50 +370,35 @@ class DetailProductStore extends React.Component {
     return value
   }
 
-  maskedText (value) {
-    const price = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return price
-  }
-
   detailReception () {
-    if (this.state.product.is_wholesaler) {
-      let hargaTemp = Number(this.state.product.price)
-      let komisi = 10
-      let hargaMasked = this.maskedText(hargaTemp)
-      let komisiCalculate = this.komisiCalculate(hargaTemp, komisi)
-      let diskonMasked = this.maskedText(komisiCalculate)
-      let diskonCalculate = this.discountCalculate(hargaTemp, komisi)
-      let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let discount = this.discountCalculate(Number(this.state.product.price), this.state.product.discount)
+    let hargaMasked = this.maskedMoney(discount)
 
-      return (
-        <View style={styles.rincianContainrer}>
-          <Text style={[styles.titleMenu, {paddingLeft: 20, paddingBottom: 10}]}>Rincian Penerimaan</Text>
-          <View>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Harga Jual</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
-            </View>
-            <View style={styles.containerRincian}>
-              <Text style={styles.textRincian}>Komisi  ({komisi}%  dari {hargaMasked})</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
-            </View>
-            <View style={[styles.containerRincian, {borderBottomWidth: 0, paddingBottom: 0}]}>
-              <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-              <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
-            </View>
+    let komisiCalculate = this.komisiCalculate(discount, this.state.product.commission)
+    let diskonMasked = this.maskedMoney(komisiCalculate)
+
+    let diskonCalculate = this.fee(discount, komisiCalculate)
+    let hargaDiskonMasked = this.maskedMoney(diskonCalculate)
+
+    return (
+      <View style={styles.rincianContainrer}>
+        <Text style={[styles.titleMenu, {paddingLeft: 20, paddingBottom: 10}]}>Rincian Penerimaan</Text>
+        <View>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Harga Jual</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
+          </View>
+          <View style={styles.containerRincian}>
+            <Text style={styles.textRincian}>Komisi  ({String(this.state.product.commission)}%  dari {hargaMasked})</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
+          </View>
+          <View style={[styles.containerRincian, {borderBottomWidth: 0, paddingBottom: 0}]}>
+            <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
           </View>
         </View>
-      )
-    } else {
-      return (
-        <View />
-      )
-    }
+      </View>
+    )
   }
 
   checkDiscount (data) {
@@ -383,7 +412,7 @@ class DetailProductStore extends React.Component {
     }
   }
 
-  changePrice (id, price, discount, weight, insurance, condition) {
+  changePrice (id, price, discount, weight, insurance, condition, commission) {
     NavigationActions.editproductpriceandspecification({
       type: ActionConst.PUSH,
       id: id,
@@ -393,7 +422,8 @@ class DetailProductStore extends React.Component {
       weight: weight,
       insurance: insurance,
       condition: condition,
-      callback: this.state.callback
+      callback: this.state.callback,
+      commission: commission
     })
   }
 
@@ -410,7 +440,8 @@ class DetailProductStore extends React.Component {
             product.discount,
             product.weight,
             product.is_insurance,
-            product.condition
+            product.condition,
+            product.commission
           )}
           >
             <Text style={styles.buttonChange}>
@@ -430,28 +461,36 @@ class DetailProductStore extends React.Component {
     )
   }
 
-  changeCatalog (id) {
-    console.log(id)
+  changeCatalog (id, catalogId) {
     NavigationActions.editproductcatalog({
       type: ActionConst.PUSH,
       id: id,
+      catalogId: catalogId,
       callback: this.state.callback
     })
   }
 
   renderCatalog () {
+    let name, id
+    if (this.state.catalog === undefined || this.state.catalog === null) {
+      name = 'Tanpa Katalog'
+      id = ''
+    } else {
+      name = this.state.catalog.name
+      id = this.state.catalog.id
+    }
     return (
       <View style={{backgroundColor: Colors.snow, marginBottom: 21.4}}>
         <View style={[styles.headerMenuRow]}>
           <Text style={styles.titleMenu}>Katalog</Text>
-          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id)}>
+          <TouchableOpacity onPress={() => this.changeCatalog(this.state.product.id, id)}>
             <Text style={styles.buttonChange}>
               Ubah
             </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.containerNameProduct}>
-          <Text style={[styles.textMenuNoFlex, {color: Colors.darkgrey}]}>{this.state.catalog.name}</Text>
+          <Text style={[styles.textMenuNoFlex, {color: Colors.darkgrey}]}>{name}</Text>
         </View>
       </View>
     )
@@ -506,7 +545,7 @@ class DetailProductStore extends React.Component {
 
   renderRowExpedition (rowData) {
     return (
-      <Text style={[styles.textValueMenu, {marginRight: 0, paddingBottom: 12}]}>{rowData}</Text>
+      <Text style={[styles.textValueMenu, {marginRight: 0, paddingBottom: 12}]}>{rowData.name}</Text>
     )
   }
 
@@ -547,10 +586,16 @@ class DetailProductStore extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
+    if (this.state.loading) {
+      return (
+        <View style={styles.container}>
+          {this.renderHeader()}
+          <View style={styles.spinner}>
+            <ActivityIndicator color={Colors.red} size='large' />
+          </View>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -575,7 +620,6 @@ class DetailProductStore extends React.Component {
           {this.renderWholeSale()}
           {this.renderExpedition()}
         </ScrollView>
-        {spinner}
       </View>
     )
   }
@@ -584,7 +628,8 @@ class DetailProductStore extends React.Component {
 const mapStateToProps = (state) => {
   return {
     dataDetailProduct: state.storeProductDetail,
-    dataKategoriParent: state.subCategory
+    dataKategoriParent: state.subCategory,
+    dataDeleteProducts: state.alterProducts
   }
 }
 
@@ -592,9 +637,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getDetailProduk: (id) => dispatch(storeAction.getStoreProductDetail({id: id})),
     allCategory: () => dispatch(categoriAction.categoryList()),
-    getKategori: (id) => dispatch(categoriAction.subCategory({id: id})),
+    getKategori: (id) => dispatch(categoriAction.subCategory({id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id: id})),
+    deleteItems: (param) => dispatch(productAction.deleteProducts(param))
   }
 }
 

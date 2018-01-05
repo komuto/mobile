@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import * as storage from 'redux-storage'
+import * as purchaseReducers from './purchase'
 import * as userReducers from './user'
 import * as homeReducers from './home'
 import * as brandReducers from './brand'
@@ -16,6 +17,17 @@ import * as paymentReducers from './payment'
 import * as transactionReducers from './transaction'
 import * as messageReducers from './message'
 import * as otherReducers from './other'
+import * as saldoReducers from './saldo'
+
+const purchase = {
+  addressSelected: purchaseReducers.addressSelected,
+  shippingInformation: purchaseReducers.shippingInformation,
+  courierExpedition: purchaseReducers.courierExpedition,
+  amountProduct: purchaseReducers.amountProduct,
+  packageExpedition: purchaseReducers.packageExpedition,
+  noted: purchaseReducers.noted,
+  insurance: purchaseReducers.insurance
+}
 
 const user = {
   user: userReducers.auth,
@@ -43,7 +55,13 @@ const user = {
   resolvedResolutions: userReducers.getResolvedResolutions,
   unresolvedResolutions: userReducers.getUnresolvedResolutions,
   resolutionDetail: userReducers.getResolutionDetail,
+<<<<<<< HEAD
   resolution: userReducers.resolution
+=======
+  createResolution: userReducers.createResolution,
+  replyResolution: userReducers.replyResolution,
+  unreadDisputes: userReducers.unreadDisputes
+>>>>>>> beny
 }
 
 const home = {
@@ -93,7 +111,11 @@ const store = {
   updateStoreAddress: storeReducers.updateStoreAddress,
   hiddenStoreProducts: storeReducers.getHiddenStoreProducts,
   storeDiscussions: storeReducers.getStoreDiscussions,
-  storeProductsByCatalog: storeReducers.getStoreProductsByCatalog
+  storeProductsByCatalog: storeReducers.getStoreProductsByCatalog,
+  unreadDisputesStore: storeReducers.unreadDisputesStore,
+  storeCatalogProductsSearch: storeReducers.getStoreProductsByCatalogSearch,
+  storeCatalogProductsHiddenSearch: storeReducers.getStoreProductsHiddenByCatalogSearch,
+  dropshipfaq: storeReducers.getDropshipperFaq
 }
 
 const address = {
@@ -165,32 +187,71 @@ const message = {
   archiveSellerMessages: messageReducers.getArchiveSellerMessages,
   updateMessage: messageReducers.updateMessage,
   replyMessage: messageReducers.replyMessage,
-  deleteMessage: messageReducers.deleteMessage
+  deleteMessage: messageReducers.deleteMessage,
+  transactionMessage: messageReducers.transactionMessage
 }
 
 const other = {
-  commission: otherReducers.getCommission
+  commission: otherReducers.getCommission,
+  saleCount: otherReducers.getSaleCount,
+  marketplace: otherReducers.getMarketPlace,
+  marketplaceCommission: otherReducers.getMarketPlaceCommission,
+  getBanner: otherReducers.getBanner
 }
 
 const payment = {
   paymentMethods: paymentReducers.getPaymentMethods,
   confirmation: paymentReducers.confirmTransfer,
+<<<<<<< HEAD
   withdrawal: paymentReducers.withdraw,
+=======
+>>>>>>> beny
   snapToken: paymentReducers.getMidtransToken,
   snapToken2: paymentReducers.getMidtransToken2
 }
 
 const review = {
   productReview: reviewReducers.getReviews,
-  addReview: reviewReducers.addReview,
+  addReviews: reviewReducers.addReviews,
   buyerReview: reviewReducers.getBuyerReview,
-  sellerReview: reviewReducers.getSellerReview
+  sellerReview: reviewReducers.getSellerReview,
+  storeReview: reviewReducers.storeReview
+}
+
+const saldo = {
+  saldoHistory: saldoReducers.getSaldoHistory,
+  withdrawal: saldoReducers.withdraw,
+  saldoToken: saldoReducers.getSaldoToken,
+  nominals: saldoReducers.getNominals,
+  topupStatus: saldoReducers.getTopupStatus,
+  withdrawStatus: saldoReducers.getWithdrawStatus,
+  saldoHistoryDetail: saldoReducers.getSaldoHistoryDetail
 }
 
 const transaction = {
   listTransactions: transactionReducers.listTransactions,
   transaction: transactionReducers.getTransaction,
-  saldoHistory: transactionReducers.getSaldoHistory
+  buyerInvoiceDetail: transactionReducers.getBuyerInvoiceDetail,
+  addComplaint: transactionReducers.addComplaint,
+  newOrders: transactionReducers.getNewOrders,
+  newOrderDetail: transactionReducers.getNewOrderDetail,
+  processingOrders: transactionReducers.getProcessingOrders,
+  processingOrderDetail: transactionReducers.getProcessingOrderDetail,
+  updateStatus: transactionReducers.updateStatus,
+  buyerComplainedOrders: transactionReducers.getComplainedOrdersBuyer,
+  sellerComplainedOrders: transactionReducers.getComplainedOrdersSeller,
+  buyerComplainedOrders2: transactionReducers.getComplainedOrdersBuyer2,
+  sellerComplainedOrders2: transactionReducers.getComplainedOrdersSeller2,
+  buyerComplainedOrderDetail: transactionReducers.getComplainedOrderDetailBuyer,
+  sellerComplainedOrderDetail: transactionReducers.getComplainedOrderDetailSeller,
+  buyerComplaintDiscussion: transactionReducers.createComplaintDiscussionBuyer,
+  sellerComplaintDiscussion: transactionReducers.createComplaintDiscussionSeller,
+  buyerReceived: transactionReducers.buyerDisputeReceived,
+  sellerReceived: transactionReducers.sellerDisputeReceived,
+  sales: transactionReducers.getSales,
+  sales2: transactionReducers.getSales2,
+  saleDetail: transactionReducers.getSaleDetail,
+  buyerRefund: transactionReducers.buyerRefund
 }
 
 const komutoApps = storage.reducer(combineReducers({
@@ -209,7 +270,9 @@ const komutoApps = storage.reducer(combineReducers({
   ...payment,
   ...transaction,
   ...message,
-  ...other
+  ...other,
+  ...saldo,
+  ...purchase
 }))
 
 export default komutoApps

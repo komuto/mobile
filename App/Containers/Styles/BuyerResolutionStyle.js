@@ -7,6 +7,13 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight,
     backgroundColor: Colors.paleGrey
   },
+<<<<<<< HEAD
+=======
+  containers: {
+    flex: 1,
+    backgroundColor: Colors.paleGrey
+  },
+>>>>>>> beny
   border: {
     marginLeft: 19.5
   },
@@ -109,7 +116,11 @@ export default StyleSheet.create({
   containerEmpty: {
     alignItems: 'center',
     justifyContent: 'center',
+<<<<<<< HEAD
     marginTop: 63
+=======
+    marginTop: 70
+>>>>>>> beny
   },
   textTitleEmpty: {
     paddingTop: 27.5,
@@ -133,7 +144,11 @@ export default StyleSheet.create({
     marginTop: 5
   },
   scrollView: {
+<<<<<<< HEAD
     paddingBottom: 10
+=======
+    flex: 1
+>>>>>>> beny
   },
   tabWaiting: {
     backgroundColor: Colors.snow,
@@ -200,7 +215,11 @@ export default StyleSheet.create({
   },
   create: {
     position: 'absolute',
+<<<<<<< HEAD
     bottom: 100,
+=======
+    top: Metrics.screenHeight - Metrics.navBarHeight - 100,
+>>>>>>> beny
     right: 30,
     backgroundColor: Colors.bluesky,
     borderRadius: 200,

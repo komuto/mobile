@@ -1,9 +1,10 @@
 import { buildAction, typeReq, typeReset } from '../config'
 
 export const GET_REVIEWS = 'GET_REVIEWS'
-export const ADD_REVIEW = 'ADD_REVIEW'
+export const ADD_REVIEWS = 'ADD_REVIEWS'
 export const GET_BUYER_REVIEW = 'GET_BUYER_REVIEW'
 export const GET_SELLER_REVIEW = 'GET_SELLER_REVIEW'
+export const GET_STORE_REVIEW = 'GET_STORE_REVIEW'
 
 /**
  * @params id {int} product id
@@ -13,12 +14,13 @@ export const GET_SELLER_REVIEW = 'GET_SELLER_REVIEW'
 export const listReviews = params => buildAction(typeReq(GET_REVIEWS), params)
 
 /**
- * @param id {int} product id
- * @params params are the same as the api
- * @state addReview
+ * @params transId {int} transaction id
+ * @params invoiceId {int}
+ * @params reviews {[object]} array of review objects
+ * @state addReviews
  */
-export const addReview = params => buildAction(typeReq(ADD_REVIEW), params)
-export const resetAddReview = () => buildAction(typeReset(ADD_REVIEW))
+export const addReviews = params => buildAction(typeReq(ADD_REVIEWS), params)
+export const resetAddReviews = () => buildAction(typeReset(ADD_REVIEWS))
 
 /**
  * @params params are the same as the api query
@@ -31,3 +33,5 @@ export const getBuyerReview = (params) => buildAction(typeReq(GET_BUYER_REVIEW),
  * @state sellerReview
  */
 export const getSellerReview = (params) => buildAction(typeReq(GET_SELLER_REVIEW), params)
+
+export const getStoreReview = (params) => buildAction(typeReq(GET_STORE_REVIEW), params)

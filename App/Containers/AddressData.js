@@ -3,6 +3,7 @@ import { ScrollView, Text, View, TouchableOpacity, BackAndroid, Image, Modal } f
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import Spinner from '../Components/Spinner'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -38,12 +39,13 @@ class AddressData extends React.Component {
       })
     }
     if (nextProps.dataDeletAlamat.status === 200) {
-      this.props.getAlamat()
+      Reactotron.log('hapus')
       this.setState({
         notif: true,
-        pesanNotif: 'menghapus Alamat',
+        pesanNotif: nextProps.dataDeletAlamat.message,
         loading: false
       })
+      this.props.getAlamat()
       nextProps.dataDeletAlamat.status = 0
     }
   }
@@ -57,16 +59,7 @@ class AddressData extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.accountmanage({
-      type: ActionConst.POP_AND_REPLACE
-    })
-    return true
-  }
-
-  backButton () {
-    NavigationActions.accountmanage({
-      type: ActionConst.PUSH_OR_POP
-    })
+    NavigationActions.popTo('accountmanage')
     return true
   }
 
@@ -74,7 +67,7 @@ class AddressData extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -97,9 +90,7 @@ class AddressData extends React.Component {
   }
 
   handlleEditAlamat (idAlamat) {
-    console.log(idAlamat)
     this.setState({statusDot: false})
-    this.props.getDetailAlamat(idAlamat)
     NavigationActions.addaddress({
       type: ActionConst.PUSH,
       edit: true,
@@ -109,14 +100,14 @@ class AddressData extends React.Component {
   }
 
   handleDeleteAlamat () {
-    this.setState({deletAlamat: false})
+    this.setState({deletAlamat: false, loading: true})
     this.props.deleteAddress(this.state.idDelete)
   }
 
   renderHeader () {
     return (
       <View style={styles.headerTextContainer}>
-        <TouchableOpacity onPress={() => this.backButton()}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
           <Image
             source={Images.iconBack}
             style={styles.imageStyle}
@@ -173,26 +164,37 @@ class AddressData extends React.Component {
 
   mapingAlamat () {
     const { listAlamat } = this.state
-    const mapparent = listAlamat.map((alamat, i) =>
-  (<TouchableOpacity key={i} activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
-    <View style={styles.headerInfoAlamat}>
-      <Text style={styles.textHeader}>{alamat.alias_address}</Text>
-      <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i, idDelete: alamat.id})}>
-        <Image source={Images.threeDotSilver} style={styles.imageDot} />
+    const mapparent = listAlamat.map((alamat, i) => {
+      let primary
+      if (alamat.is_primary_address) {
+        primary = (
+          <View style={{ backgroundColor: Colors.bluesky, marginLeft: 10, borderRadius: 5, alignItems: 'center', justifyContent: 'center', padding: 5 }}>
+            <Text style={styles.primaryAddress}>Alamat Utama</Text>
+          </View>
+        )
+      }
+      return (<TouchableOpacity key={i} activeOpacity={100} onPress={() => this.setState({statusDot: false})}>
+        <View style={styles.headerInfoAlamat}>
+          <Text style={[styles.textHeader, { flex: 0 }]}>{alamat.alias_address}</Text>
+          {primary}
+          <View style={{ flex: 1 }} />
+          <TouchableOpacity onPress={() => this.setState({statusDot: true, rowTerpilih: i, idDelete: alamat.id})}>
+            <Image source={Images.threeDotSilver} style={styles.imageDot} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dataInfoAlamat}>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
+          <Text style={styles.textHeader2}>{alamat.name}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
+          <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
+          <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
+          <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
+        </View>
+        {this.containerEdit(i, alamat.id)}
+        <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
       </TouchableOpacity>
-    </View>
-    <View style={styles.dataInfoAlamat}>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Nama Penerima</Text>
-      <Text style={styles.textHeader2}>{alamat.name}</Text>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>No Handphone</Text>
-      <Text style={styles.textHeader2}>{alamat.phone_number}</Text>
-      <Text style={[styles.textHeader, {fontFamily: Fonts.type.semiBolds}]}>Alamat</Text>
-      <Text numberOfLines={3} style={[styles.textHeader2, {paddingRight: 100}]}>{alamat.address}, {alamat.village.name}, {alamat.subDistrict.name}, {alamat.district.name}, {alamat.province.name}, {alamat.postal_code}</Text>
-    </View>
-    {this.containerEdit(i, alamat.id)}
-    <View style={{backgroundColor: Colors.paleGrey, height: 24.4}} />
-  </TouchableOpacity>
-    ))
+      )
+    })
     return (
       <View>
         {mapparent}
@@ -200,12 +202,27 @@ class AddressData extends React.Component {
     )
   }
 
+  renderEmpty (data) {
+    if (data.length === 0) {
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.sukesHapusAlamat} style={{ width: 173, height: 178 }} />
+          <Text style={styles.textTitleEmpty}>Alamat Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>Silahkan tambahkan rekening Anda</Text>
+        </View>
+      )
+    }
+    return null
+  }
+
   render () {
     const { loading } = this.state
     if (!loading) {
       return (
         <View style={styles.container}>
+          {this.renderHeader()}
           {this.notif()}
+          {this.renderEmpty(this.state.listAlamat)}
           <ScrollView>
             <View style={styles.infoAlamat}>
               {this.mapingAlamat()}
@@ -238,8 +255,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     deleteAddress: (id) => dispatch(addressAction.deleteAddress({id})),
-    getAlamat: () => dispatch(addressAction.getListAddress()),
-    getDetailAlamat: (id) => dispatch(addressAction.getAddressDetail({id}))
+    getAlamat: () => dispatch(addressAction.getListAddress())
   }
 }
 

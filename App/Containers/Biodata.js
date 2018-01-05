@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, View, BackAndroid, Text, DatePickerAndroid, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
+import { ScrollView, ToastAndroid, View, BackAndroid, Text, DatePickerAndroid, TouchableOpacity, TextInput, Image, Modal, ListView } from 'react-native'
 import { connect } from 'react-redux'
 import CameraModal from '../Components/CameraModal'
 import { Actions as NavigationActions } from 'react-native-router-flux'
@@ -11,6 +11,7 @@ import * as userAction from '../actions/user'
 
 import { Images, Colors } from '../Themes'
 import CustomRadio from '../Components/CustomRadio'
+import Reactotron from 'reactotron-react-native'
 
 import styles from './Styles/BiodataScreenStyle'
 import stylesLokasi from './Styles/ProductDetailScreenStyle'
@@ -20,7 +21,7 @@ class Biodata extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     var listMonths = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
-    var timeStampToDate = moment.unix(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
+    var timeStampToDate = moment(this.props.dataProfile.user.user.date_of_birth).format('DD/MM/YYYY').toString()
     var day = moment(timeStampToDate, 'DD/MM/YYYY').date()
     var months = moment(timeStampToDate, 'DD/MM/YYYY').month()
     var years = moment(timeStampToDate, 'DD/MM/YYYY').year()
@@ -36,10 +37,13 @@ class Biodata extends React.Component {
       idKabTerpilih: this.props.dataProfile.user.user.place_of_birth_id || 0,
       kabupaten: [],
       colorPicker: Colors.darkgrey,
-      dof: (day + 1) + ' ' + listMonths[months] + ' ' + years,
+      dof: (day) + ' ' + listMonths[months] + ' ' + years,
       timestamp: this.props.dataProfile.user.user.date_of_birth || '',
       notif: false,
-      loading: false
+      loading: false,
+      uploadDate: '',
+      updatePhoto: '',
+      messageNotif: ''
     }
   }
 
@@ -48,20 +52,35 @@ class Biodata extends React.Component {
       this.setState({kabupaten: nextProps.dataKota.districts})
     }
     if (nextProps.dataPhoto.status === 200) {
-      this.setState({fotoProfil: nextProps.dataPhoto.payload.images[0].name})
+      this.setState({
+        updatePhoto: nextProps.dataPhoto.payload.images[0].name
+      })
+      this.props.getProfil()
+      nextProps.dataPhoto.status = 0
     }
     if (nextProps.dataUpdate.status === 200) {
-      this.props.getProfil(this.state.idKabTerpilih)
-      this.setState({notif: true})
+      this.props.getProfil()
+      Reactotron.log(nextProps.dataUpdate.message)
+      this.setState({notif: true, messageNotif: nextProps.dataUpdate.message})
       nextProps.dataUpdate.status = 0
+    } else if (nextProps.dataUpdate.status !== 200 && nextProps.dataUpdate.status !== 0) {
+      ToastAndroid.show(String(nextProps.dataUpdate.message), ToastAndroid.SHORT)
     }
   }
 
-  componentDidMount () {
+  componentWillMount () {
     if (this.props.dataProfile.user.user.gender === 'male') {
       this.setState({index: 0})
     } else {
       this.setState({index: 1})
+    }
+  }
+
+  componentDidMount () {
+    if (this.props.dataProfile.user.user.date_of_birth === null) {
+      this.setState({
+        dof: 'Belum ada data'
+      })
     }
     this.props.getKota()
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
@@ -84,7 +103,7 @@ class Biodata extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Berhasil memperbarui biodata Anda</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -211,15 +230,29 @@ class Biodata extends React.Component {
   }
 
   handleUpdateProfil () {
-    console.log(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
-    this.props.updateProfile(this.state.namaPemilik, this.state.gender, this.state.fotoProfil, this.state.idKabTerpilih, this.state.timestamp)
+    const { namaPemilik } = this.state
+    let date
+    if (this.state.uploadDate === '') {
+      date = this.state.timestamp
+    } else {
+      date = this.state.uploadDate
+    }
+    if (namaPemilik.length < 3) {
+      ToastAndroid.show('Nama tidak boleh kurang dari 3 karakter', ToastAndroid.SHORT)
+    } else {
+      if (this.state.updatePhoto === '') {
+        this.props.updateProfileNoPhotos(this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+      } else {
+        this.props.updateProfile(this.state.updatePhoto, this.state.namaPemilik, this.state.gender, this.state.idKabTerpilih, date)
+      }
+    }
   }
 
   async date () {
     try {
       const {action, year, month, day} = await DatePickerAndroid.open({
         mode: 'calendar',
-        date: moment(this.timeStampToDate, 'DD/MM/YYYY')._d
+        date: moment(this.timeStampToDate, 'DD/MM/YYYY')
       })
 
       if (action !== DatePickerAndroid.dismissedAction) {
@@ -234,7 +267,8 @@ class Biodata extends React.Component {
 
         this.setState({
           dof: label,
-          timestamp: timestamp
+          timestamp: timestamp,
+          uploadDate: year + '-' + (month + 1) + '-' + day
         })
       }
     } catch ({code, message}) {
@@ -248,6 +282,9 @@ class Biodata extends React.Component {
         <CameraModal
           visible={this.state.showModalCamera}
           onClose={() => {
+            this.setState({showModalCamera: false})
+          }}
+          onPress={() => {
             this.setState({showModalCamera: false})
           }}
           onPhotoCaptured={(path) => {
@@ -267,6 +304,7 @@ class Biodata extends React.Component {
             style={styles.inputText}
             value={this.state.namaPemilik}
             keyboardType='default'
+            maxLength={40}
             returnKeyType='next'
             autoCapitalize='none'
             autoCorrect
@@ -338,7 +376,8 @@ const mapDispatchToProps = (dispatch) => {
     getProfil: () => dispatch(userAction.getProfile()),
     getKota: (id) => dispatch(locationAction.getDistrict({id: id})),
     searchKabupaten: (key) => dispatch(locationAction.getDistrict({q: key})),
-    updateProfile: (namaPemilik, gender, fotoProfil, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, photo: fotoProfil, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
+    updateProfile: (photo, namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({photo: photo, name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp})),
+    updateProfileNoPhotos: (namaPemilik, gender, idKabTerpilih, timestamp) => dispatch(userAction.updateProfile({name: namaPemilik, gender: gender, place_of_birth: idKabTerpilih, date_of_birth: timestamp}))
   }
 }
 

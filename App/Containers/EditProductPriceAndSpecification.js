@@ -2,12 +2,15 @@ import React from 'react'
 import { View, Text, ActivityIndicator, BackAndroid, Modal, ListView, TextInput, TouchableOpacity, Image, ScrollView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions } from 'react-native-router-flux'
-import { TextInputMask, MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import CustomRadio from '../Components/CustomRadio'
 import Switch from 'react-native-switch-pro'
 import Dropshipping from './Dropshipping'
 import * as katalogAction from '../actions/catalog'
 import * as productAction from '../actions/product'
+import * as otherAction from '../actions/other'
+import Reactotron from 'reactotron-react-native'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -56,7 +59,8 @@ class EditProductPriceAndSpecification extends React.Component {
       maksimalGrosir: '0',
       hargaGrosir: '0',
       normalizePrice: 0,
-      callback: this.props.callback
+      callback: this.props.callback,
+      commission: this.props.commission
     }
   }
 
@@ -65,17 +69,31 @@ class EditProductPriceAndSpecification extends React.Component {
       this.setState({
         listKatalog: nextProps.dataCatalog.catalogs
       })
-    } if (nextProps.dataCreateCatalog.status === 200) {
+    } else if (nextProps.dataCatalog.status !== 200 && nextProps.dataCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCatalog.message, ToastAndroid.SHORT)
+    }
+    if (nextProps.dataCreateCatalog.status === 200) {
       nextProps.dataCreateCatalog.status = 0
       this.props.getCatalog()
+    } else if (nextProps.dataCreateCatalog.status !== 200 && nextProps.dataCreateCatalog.status !== 0) {
+      ToastAndroid.show(nextProps.dataCreateCatalog.message, ToastAndroid.SHORT)
     }
-    if (nextProps.dataUpdateData.status === 200) {
+    if (nextProps.dataCommission.status === 200) {
+      nextProps.dataCommission.status = 0
+      this.setState({
+        commission: nextProps.dataCommission.commission.commission,
+        loading: false
+      })
+    } else if (nextProps.dataCommission.status !== 200 && nextProps.dataCommission.status !== 0) {
+      nextProps.dataCommission.status = 0
+      ToastAndroid.show(nextProps.dataCommission.message, ToastAndroid.SHORT)
+    } if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
-      nextProps.dataCreateProdukDropshipper.status = 0
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
+      nextProps.dataUpdateData.status = 0
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 
@@ -97,11 +115,25 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   changeDiscount = (text) => {
+    if (text > 100) {
+      text = ''
+    }
     this.setState({diskon: text})
   }
 
   changeHarga = (text) => {
     this.setState({harga: text})
+    this.trySearch(text)
+  }
+
+  trySearch (text) {
+    if (text !== '') {
+      this.setState({loading: true})
+      let commission = +text
+      setTimeout(() => {
+        this.props.getCommissions({price: commission})
+      }, 1000)
+    }
   }
 
   changeBeratProduk = (text) => {
@@ -238,20 +270,13 @@ class EditProductPriceAndSpecification extends React.Component {
           <View style={styles.flexRow}>
             <View style={styles.left}>
               <Text style={styles.textLabel}>Harga Produk</Text>
-              <TextInputMask
+              <TextInput
                 style={styles.inputText}
                 value={String(this.state.harga)}
                 keyboardType='numeric'
                 returnKeyType='done'
                 autoCapitalize='none'
-                type='money'
-                maxLength={18}
-                options={{
-                  unit: 'Rp ',
-                  separator: '.',
-                  delimiter: '.',
-                  precision: 3
-                }}
+                maxLength={10}
                 autoCorrect
                 onChangeText={this.changeHarga}
                 underlineColorAndroid='transparent'
@@ -321,6 +346,7 @@ class EditProductPriceAndSpecification extends React.Component {
 
   discountCalculate (price, discount) {
     let hargaDiskon = price - ((discount / 100) * price)
+    Reactotron.log(hargaDiskon)
     return hargaDiskon
   }
 
@@ -359,29 +385,24 @@ class EditProductPriceAndSpecification extends React.Component {
     return value
   }
 
-  maskedText (value) {
-    const price = MaskService.toMask('money', value, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    return price
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
+  maskedMoneyManual (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   rincianDiskon () {
-    let hargaTemp = 0
-    try {
-      hargaTemp = Number(this.state.harga.replace(/[^0-9,]+/g, ''))
-    } catch (e) {
-      hargaTemp = this.state.harga
-    }
-    let diskonTemp = +this.state.diskon
-    let hargaMasked = this.maskedText(hargaTemp)
-    let komisiCalculate = this.komisiCalculate(hargaTemp, diskonTemp)
-    let diskonMasked = this.maskedText(komisiCalculate)
-    let diskonCalculate = this.discountCalculate(hargaTemp, diskonTemp)
-    let hargaDiskonMasked = this.maskedText(diskonCalculate)
+    let hargaTemp = Number(this.state.harga)
+    let diskonCalculate = this.discountCalculate(hargaTemp, this.state.diskon)
+    let discountMasked = this.maskedMoneyManual(diskonCalculate)
+
+    let commission = this.komisiCalculate(diskonCalculate, this.state.commission)
+    let commissionMasked = this.maskedMoneyManual(commission)
+
+    let total = diskonCalculate - commission
+    let totalMasked = this.maskedMoneyManual(total)
 
     return (
       <View style={styles.rincianContainrer}>
@@ -389,15 +410,15 @@ class EditProductPriceAndSpecification extends React.Component {
         <View style={styles.borderBottom}>
           <View style={styles.containerRincian}>
             <Text style={styles.textRincian}>Harga Jual</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{hargaMasked}</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{discountMasked}</Text>
           </View>
           <View style={styles.containerRincian}>
-            <Text style={styles.textRincian}>Komisi  ({diskonTemp}%  dari {hargaMasked})</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{diskonMasked}</Text>
+            <Text style={styles.textRincian}>Komisi  ({this.state.commission}%  dari {discountMasked})</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkgrey}]}>{commissionMasked}</Text>
           </View>
           <View style={[styles.containerRincian, {borderBottomWidth: 0}]}>
             <Text style={styles.textRincian}>Uang yang akan Anda terima</Text>
-            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{hargaDiskonMasked}</Text>
+            <Text style={[styles.textRincian, {flex: 0, fontFamily: Fonts.type.semiBolds, color: Colors.darkMint}]}>{totalMasked}</Text>
           </View>
         </View>
       </View>
@@ -421,8 +442,8 @@ class EditProductPriceAndSpecification extends React.Component {
   }
 
   opsi () {
-    const centangDropshipping = this.state.dropShippingActive ? Images.centang : null
-    const centangSebunyikanBarang = this.state.sembunyikanBarang ? Images.centang : null
+    const centangDropshipping = this.state.dropShippingActive ? Images.centangBiru : null
+    const centangSebunyikanBarang = this.state.sembunyikanBarang ? Images.centangBiru : null
     return (
       <View>
         <Text style={styles.title}>Opsi</Text>
@@ -636,7 +657,8 @@ const mapStateToProps = (state) => {
     dataCatalog: state.getListCatalog,
     dataCreateCatalog: state.createCatalog,
     dataUpdateData: state.alterProducts,
-    dataDetailProduct: state.storeProductDetail
+    dataDetailProduct: state.storeProductDetail,
+    dataCommission: state.commission
   }
 }
 
@@ -646,7 +668,8 @@ const mapDispatchToProps = (dispatch) => {
     createCatalog: (name) => dispatch(katalogAction.createCatalog({name: name})),
     updateData: (id, price, weight, condition, isInsurance, discount) => dispatch(productAction.updateProduct({
       id: id, price: price, weight: weight, condition: condition, is_insurance: isInsurance, discount: discount
-    }))
+    })),
+    getCommissions: (param) => dispatch(otherAction.getCommission(param))
   }
 }
 

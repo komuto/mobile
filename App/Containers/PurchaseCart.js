@@ -14,7 +14,8 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -54,11 +55,18 @@ class PurchaseCart extends React.Component {
           let temp = 0
           let tempDataDelivery = []
           let data = []
-          nextProps.dataCart.cart.items.map((obj, i) =>
-            (
-              temp = temp + obj.total_price
-            )
-          )
+          nextProps.dataCart.cart.items.map((obj, i) => {
+            const dataGrosir = obj.product.wholesale
+            if (obj.product.is_wholesaler) {
+              for (var p = 0; p < dataGrosir.length; p++) {
+                if (obj.qty >= dataGrosir[p].min && obj.qty <= dataGrosir[p].max) {
+                  temp = temp + obj.qty * dataGrosir[p].price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
+                }
+              }
+            } else {
+              temp = temp + obj.total_price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
+            }
+          })
           nextProps.dataCart.cart.items.map((obj, i) =>
             (
               tempDataDelivery.push(obj.shipping.delivery_cost)
@@ -75,7 +83,7 @@ class PurchaseCart extends React.Component {
                 'address_id': obj.shipping.address.id,
                 'is_insurance': obj.shipping.is_insurance,
                 'service': obj.shipping.expedition_service.name,
-                'origin_ro_id': obj.product.store.district.ro_id,
+                'origin_ro_id': obj.product.location.district.ro_id,
                 'destination_ro_id': obj.shipping.address.district.ro_id
               })
             )
@@ -115,8 +123,8 @@ class PurchaseCart extends React.Component {
         }
         this.props.getCartReset()
       }
-    } else if (nextProps.dataCart.status > 200) {
-      // ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCart.message, ToastAndroid.LONG)
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
+      // ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
       this.setState({
         data: [],
         getData: false,
@@ -141,39 +149,40 @@ class PurchaseCart extends React.Component {
         })
       }
       nextProps.dataPromo.status = 0
-    } else if (nextProps.dataPromo.status > 200) {
+    } else if (nextProps.dataPromo.status !== 200 && nextProps.dataPromo.status !== 0) {
       this.setState({
         modalPromo: false
       })
-      nextProps.dataPromo.status
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataPromo.message, ToastAndroid.LONG)
+      nextProps.dataPromo.status = 0
+      ToastAndroid.show(nextProps.dataPromo.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCancelPromo.status === 200 && this.state.requestPromo) {
-      ToastAndroid.show('Penggunaan kode promo dibatalkan..', ToastAndroid.LONG)
+      ToastAndroid.show('Penggunaan kode promo dibatalkan', ToastAndroid.SHORT)
       this.setState({
         diskon: 0,
         statusDiskon: false,
         requestPromo: false
       })
       nextProps.dataCancelPromo.status = 0
-    } else if (nextProps.dataCancelPromo.status > 200) {
+    } else if (nextProps.dataCancelPromo.status !== 200 && nextProps.dataCancelPromo.status !== 0) {
       this.setState({ requestPromo: false })
       nextProps.dataCancelPromo.status = 0
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCancelPromo.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCancelPromo.message, ToastAndroid.SHORT)
     }
     if (nextProps.dataCheckout.status === 200) {
-      NavigationActions.payment({type: ActionConst.PUSH})
-      // ToastAndroid.show('Update keranjang belanja berhasil..', ToastAndroid.LONG)
-      // snap.show()
+      NavigationActions.payment({
+        type: ActionConst.PUSH,
+        idCart: this.props.dataCart.cart.id
+      })
       this.setState({
         loadingCheckout: false
       })
       this.props.resetUpdateCart()
-    } else if (nextProps.dataCheckout.status > 200) {
+    } else if (nextProps.dataCheckout.status !== 200 && nextProps.dataCheckout.status !== 0) {
       this.setState({
         loadingCheckout: false
       })
-      ToastAndroid.show('Terjadi Kesalahan..' + nextProps.dataCheckout.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataCheckout.message, ToastAndroid.SHORT)
       this.props.resetUpdateCart()
     }
     if (nextProps.dataDeleteItem.status === 200) {
@@ -183,6 +192,8 @@ class PurchaseCart extends React.Component {
         })
         this.refresh()
       }
+    } else if (nextProps.dataDeleteItem.status !== 200 && nextProps.dataDeleteItem.status !== 0) {
+      ToastAndroid.show(nextProps.dataDeleteItem.message, ToastAndroid.SHORT)
     }
   }
 
@@ -251,13 +262,12 @@ class PurchaseCart extends React.Component {
     }
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -292,18 +302,37 @@ class PurchaseCart extends React.Component {
   }
 
   renderRow (rowData, sectionData, row) {
-    const totalPrice = MaskService.toMask('money', rowData.product.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const subtotalPrice = MaskService.toMask('money', rowData.total_price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    let totalPrice, subtotalPrice
+    if (rowData.product.is_wholesaler) {
+      const dataGrosir = rowData.product.wholesale
+      const tempCount = rowData.qty
+      for (var i = 0; i < dataGrosir.length; i++) {
+        if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+          totalPrice = this.maskedMoney(dataGrosir[i].price)
+          subtotalPrice = this.maskedMoney(dataGrosir[i].price * rowData.qty + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+          break
+        } else if (tempCount < dataGrosir[0].min) {
+          if (rowData.product.is_discount) {
+            const discountPrice = rowData.product.price - rowData.product.price * rowData.product.discount / 100
+            totalPrice = this.maskedMoney(discountPrice)
+            subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+          } else {
+            totalPrice = this.maskedMoney(rowData.product.price)
+            subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+          }
+          break
+        }
+      }
+    } else {
+      if (rowData.product.is_discount) {
+        const discountPrice = rowData.product.price - rowData.product.price * rowData.product.discount / 100
+        totalPrice = this.maskedMoney(discountPrice)
+        subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+      } else {
+        totalPrice = this.maskedMoney(rowData.product.price)
+        subtotalPrice = this.maskedMoney(rowData.total_price + rowData.shipping.delivery_cost + rowData.shipping.insurance_fee)
+      }
+    }
     return (
       <View>
         <View style={styles.border}>
@@ -374,36 +403,86 @@ class PurchaseCart extends React.Component {
   }
 
   substract (row) {
-    const { data, subtotal, dataUpload } = this.state
+    const { data, subtotal, dataUpload, dataDelivery } = this.state
     let tempData = data
     let tempDataUpload = dataUpload
+    let tempDeliveryCost
     const rowData = data[row]
-    let insurance = rowData.shipping.insurance_fee
-    if (rowData.qty > 0) {
-      if (rowData.qty === 1) {
-        if (rowData.shipping.is_insurance) {
-          tempData[row].insurance_fee = 0
-          insurance = 0
-        } else if (!rowData.shipping.is_insurance) {
-          tempData[row].insurance_fee = 0
-          insurance = 0
+    const tempPrice = (rowData.qty - 1) * rowData.product.price
+    if (rowData.qty > 1) {
+      if (rowData.qty === 0) {
+        tempDeliveryCost = dataDelivery[row]
+      } else {
+        tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * (rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000)))
+      }
+      if (rowData.product.is_wholesaler) {
+        const dataGrosir = rowData.product.wholesale
+        const tempCount = rowData.qty - 1
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            const tempSubtotal = subtotal + tempCount * dataGrosir[i].price + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty - 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempCount * dataGrosir[i].price
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            if (rowData.product.is_discount) {
+              const tempSubtotal = subtotal + (tempPrice - tempPrice * rowData.product.discount / 100) + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+              tempData[row].qty = rowData.qty - 1
+              tempDataUpload[row].qty = tempData[row].qty
+              tempData[row].shipping.delivery_cost = tempDeliveryCost
+              tempData[row].total_price = (tempPrice - tempPrice * rowData.product.discount / 100)
+              this.setState({
+                data: tempData,
+                subtotal: tempSubtotal,
+                dataUpload: tempDataUpload
+              })
+            } else {
+              const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+              tempData[row].qty = rowData.qty - 1
+              tempDataUpload[row].qty = tempData[row].qty
+              tempData[row].shipping.delivery_cost = tempDeliveryCost
+              tempData[row].total_price = tempPrice
+              this.setState({
+                data: tempData,
+                subtotal: tempSubtotal,
+                dataUpload: tempDataUpload
+              })
+            }
+            break
+          }
+        }
+      } else {
+        if (rowData.product.is_discount) {
+          const tempSubtotal = subtotal + (tempPrice - tempPrice * rowData.product.discount / 100) + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+          tempData[row].qty = rowData.qty - 1
+          tempDataUpload[row].qty = tempData[row].qty
+          tempData[row].shipping.delivery_cost = tempDeliveryCost
+          tempData[row].total_price = (tempPrice - tempPrice * rowData.product.discount / 100)
+          this.setState({
+            data: tempData,
+            subtotal: tempSubtotal,
+            dataUpload: tempDataUpload
+          })
         } else {
-          tempData[row].insurance_fee = 10000
-          insurance = 10000
+          const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+          tempData[row].qty = rowData.qty - 1
+          tempDataUpload[row].qty = tempData[row].qty
+          tempData[row].shipping.delivery_cost = tempDeliveryCost
+          tempData[row].total_price = tempPrice
+          this.setState({
+            data: tempData,
+            subtotal: tempSubtotal,
+            dataUpload: tempDataUpload
+          })
         }
       }
-      const tempPrice = (rowData.qty - 1) * rowData.product.price
-      const tempDeliveryCost = Math.ceil((rowData.qty - 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
-      const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
-      tempData[row].qty = rowData.qty - 1
-      tempDataUpload[row].qty = tempData[row].qty
-      tempData[row].shipping.delivery_cost = tempDeliveryCost
-      tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
-      this.setState({
-        data: tempData,
-        subtotal: tempSubtotal,
-        dataUpload: tempDataUpload
-      })
     }
   }
 
@@ -413,30 +492,82 @@ class PurchaseCart extends React.Component {
     let tempDataUpload = dataUpload
     let tempDeliveryCost
     const rowData = data[row]
-    let insurance = rowData.shipping.insurance_fee
-    if (rowData.shipping.is_insurance) {
-      tempData[row].insurance_fee = 10000
-      insurance = 10000
-    } else {
-      tempData[row].insurance_fee = 0
-      insurance = 0
-    }
     const tempPrice = (rowData.qty + 1) * rowData.product.price
-    if (rowData.qty === 0) {
-      tempDeliveryCost = dataDelivery[row]
-    } else {
-      tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000))
+    if (rowData.qty + 1 <= rowData.product.stock) {
+      if (rowData.qty === 0) {
+        tempDeliveryCost = dataDelivery[row]
+      } else {
+        tempDeliveryCost = Math.ceil((rowData.qty + 1) * rowData.product.weight / 1000) * (rowData.shipping.delivery_cost / (Math.ceil((rowData.qty) * rowData.product.weight / 1000)))
+      }
+      if (rowData.product.is_wholesaler) {
+        const dataGrosir = rowData.product.wholesale
+        const tempCount = rowData.qty + 1
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            const tempSubtotal = subtotal + tempCount * dataGrosir[i].price + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+            tempData[row].qty = rowData.qty + 1
+            tempDataUpload[row].qty = tempData[row].qty
+            tempData[row].shipping.delivery_cost = tempDeliveryCost
+            tempData[row].total_price = tempCount * dataGrosir[i].price
+            this.setState({
+              data: tempData,
+              subtotal: tempSubtotal,
+              dataUpload: tempDataUpload
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            if (rowData.product.is_discount) {
+              const tempSubtotal = subtotal + (tempPrice - tempPrice * rowData.product.discount / 100) + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+              tempData[row].qty = rowData.qty + 1
+              tempDataUpload[row].qty = tempData[row].qty
+              tempData[row].shipping.delivery_cost = tempDeliveryCost
+              tempData[row].total_price = (tempPrice - tempPrice * rowData.product.discount / 100)
+              this.setState({
+                data: tempData,
+                subtotal: tempSubtotal,
+                dataUpload: tempDataUpload
+              })
+            } else {
+              const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+              tempData[row].qty = rowData.qty + 1
+              tempDataUpload[row].qty = tempData[row].qty
+              tempData[row].shipping.delivery_cost = tempDeliveryCost
+              tempData[row].total_price = tempPrice
+              this.setState({
+                data: tempData,
+                subtotal: tempSubtotal,
+                dataUpload: tempDataUpload
+              })
+            }
+            break
+          }
+        }
+      } else {
+        if (rowData.product.is_discount) {
+          const tempSubtotal = subtotal + (tempPrice - tempPrice * rowData.product.discount / 100) + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+          tempData[row].qty = rowData.qty + 1
+          tempDataUpload[row].qty = tempData[row].qty
+          tempData[row].shipping.delivery_cost = tempDeliveryCost
+          tempData[row].total_price = (tempPrice - tempPrice * rowData.product.discount / 100)
+          this.setState({
+            data: tempData,
+            subtotal: tempSubtotal,
+            dataUpload: tempDataUpload
+          })
+        } else {
+          const tempSubtotal = subtotal + tempPrice + tempDeliveryCost - rowData.total_price - rowData.shipping.delivery_cost
+          tempData[row].qty = rowData.qty + 1
+          tempDataUpload[row].qty = tempData[row].qty
+          tempData[row].shipping.delivery_cost = tempDeliveryCost
+          tempData[row].total_price = tempPrice
+          this.setState({
+            data: tempData,
+            subtotal: tempSubtotal,
+            dataUpload: tempDataUpload
+          })
+        }
+      }
     }
-    const tempSubtotal = subtotal + tempPrice + tempDeliveryCost + insurance - rowData.total_price
-    tempData[row].qty = rowData.qty + 1
-    tempDataUpload[row].qty = tempData[row].qty
-    tempData[row].shipping.delivery_cost = tempDeliveryCost
-    tempData[row].total_price = tempPrice + tempDeliveryCost + insurance
-    this.setState({
-      data: tempData,
-      subtotal: tempSubtotal,
-      dataUpload: tempDataUpload
-    })
   }
 
   renderButtonKode () {
@@ -452,12 +583,7 @@ class PurchaseCart extends React.Component {
 
   renderKode () {
     const { statusDiskon, diskon } = this.state
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaDiskon = this.maskedMoney(diskon)
     if (statusDiskon) {
       return (
         <View style={styles.rincianContainer}>
@@ -467,7 +593,7 @@ class PurchaseCart extends React.Component {
               <Text style={styles.textHapus}>Batal</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.diskon}>- {hargaDiskon}</Text>
+          <Text allowFontScaling style={styles.diskon}>- {hargaDiskon}</Text>
         </View>
       )
     } else {
@@ -476,14 +602,15 @@ class PurchaseCart extends React.Component {
   }
 
   renderTotal () {
-    const { subtotal, diskon, loadingCheckout } = this.state
-    const total = parseInt(subtotal) - parseInt(diskon)
-    const hargaTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const { data, diskon, loadingCheckout } = this.state
+    let tempTotal = 0
+    data.map((obj, i) =>
+    (
+      tempTotal = tempTotal + obj.total_price + obj.shipping.delivery_cost + obj.shipping.insurance_fee
+    )
+  )
+    const total = parseInt(tempTotal) - parseInt(diskon)
+    const hargaTotal = this.maskedMoney(total)
     const spinner = loadingCheckout
     ? (
       <View style={styles.button}>

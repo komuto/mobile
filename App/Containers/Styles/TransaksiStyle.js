@@ -6,10 +6,11 @@ export default StyleSheet.create({
     flex: 1,
     marginTop: Metrics.navBarHeight,
     marginBottom: 45,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.snow
   },
   rowContainer: {
     flexDirection: 'column',
+    backgroundColor: Colors.snow,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
   },
@@ -97,7 +98,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
-    resizeMode: 'contain'
+    resizeMode: 'cover'
   },
   imageRowStyle2: {
     height: 45,
@@ -112,5 +113,45 @@ export default StyleSheet.create({
     width: 45,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 30,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 173,
+    height: 201,
+    marginBottom: 10
+  },
+  textNotif: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 25,
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+  startShopping: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    backgroundColor: Colors.bluesky,
+    height: 50
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    lineHeight: 21,
+    letterSpacing: 0.2,
+    color: Colors.snow
   }
 })

@@ -13,7 +13,7 @@ class Filter extends React.Component {
     const dataObjects = [
       {id: 1, title: 'Kondisi', active: true},
       {id: 2, title: 'Jasa Pengiriman', active: false},
-      {id: 3, title: 'Rentan Harga', active: false},
+      {id: 3, title: 'Rentang Harga', active: false},
       {id: 4, title: 'Dikirim Dari', active: false},
       {id: 5, title: 'Brand', active: false},
       {id: 6, title: 'Lainnya', active: false}
@@ -28,13 +28,14 @@ class Filter extends React.Component {
       {id: 2, title: 'Seller Terverifikasi', value: 'verified', active: false},
       {id: 3, title: 'Grosir', value: 'wholesaler', active: false}
     ]
-    this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    // this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     const rowHasChanged = (r1, r2) => r1 !== r2
     const ds = new ListView.DataSource({rowHasChanged})
     this.state = {
       dataSource: ds.cloneWithRows(dataObjects),
       dataSourceKondisi: ds.cloneWithRows(dataKondisi),
       dataSourceLainnya: ds.cloneWithRows(dataLainnya),
+      dataSourcePengiriman: ds.cloneWithRows([]),
       dataObjects,
       dataKondisi,
       dataPengiriman: [],
@@ -52,6 +53,7 @@ class Filter extends React.Component {
       dataLainnya,
       active: 1,
       activeKondisi: 0,
+      provinsiId: this.props.provinsiId,
       hargaMinimal: '',
       hargaMaksimal: '',
       provinsi: [],
@@ -66,25 +68,57 @@ class Filter extends React.Component {
         {
           'id': 0,
           'ro_id': 0,
-          'name': 'Pilih Kota'
+          'name': this.props.kota || 'Pilih Kota'
         }
       ],
-      provinsiTerpilih: 'Semua Wilayah',
-      kotaTerpilih: 'Semua Wilayah',
-      filterPengiriman: [],
-      filterKondisi: '',
-      filterAddress: '',
-      filterPrice: [0, 0],
-      filterBrand: [],
-      filterOthers: []
+      provinsiTerpilih: this.props.provinsi || 'Semua Wilayah',
+      kotaTerpilih: this.props.kota || 'Semua Wilayah',
+      filterPengiriman: this.props.filterPengiriman, // default []
+      filterKondisi: this.props.filterKondisi, // default ''
+      filterAddress: this.props.filterAddress, // default ''
+      filterPrice: this.props.filterPrice, // default [0, 0]
+      filterBrand: this.props.filterBrand, // default []
+      filterOthers: this.props.filterOthers // default []
     }
   }
 
   componentDidMount () {
     this.props.getProvinsi()
-    this.props.getKota(11)
+    if (this.props.provinsiId === '') {
+      this.props.getKota(11)
+    } else {
+      this.props.getKota(this.props.provinsiId)
+    }
     this.props.getExpedition()
     this.props.getBrand()
+    const {dataKondisi, dataSourceKondisi} = this.state
+    if (this.props.filterKondisi === 'new') {
+      const newDataSource = dataKondisi.map(data => {
+        return {...data, active: data.id === 2}
+      })
+      this.setState({
+        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+        activeKondisi: 2
+      })
+    } else if (this.props.filterKondisi === 'used') {
+      const newDataSource = dataKondisi.map(data => {
+        return {...data, active: data.id === 3}
+      })
+      this.setState({
+        dataSourceKondisi: dataSourceKondisi.cloneWithRows(newDataSource),
+        activeKondisi: 3
+      })
+    }
+    if (this.props.filterPrice[0] !== 0) {
+      this.setState({
+        hargaMinimal: this.props.filterPrice[0]
+      })
+    }
+    if (this.props.filterPrice[1] !== 0) {
+      this.setState({
+        hargaMaksimal: this.props.filterPrice[1]
+      })
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -99,9 +133,12 @@ class Filter extends React.Component {
       })
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
-      console.log(nextProps.dataPengirimanReducer.expeditionServices)
+      const data = this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
+      const rowHasChanged = (r1, r2) => r1 !== r2
+      const ds = new ListView.DataSource({rowHasChanged})
       this.setState({
-        dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
+        dataPengiriman: data,
+        dataSourcePengiriman: ds.cloneWithRows(data)
       })
     }
     if (nextProps.dataBrandReducer.status === 200) {
@@ -130,7 +167,19 @@ class Filter extends React.Component {
   }
 
   handlingFilter (valueMin, valueMax) {
-    if (valueMax < valueMin) {
+    if (valueMax === 0 || valueMax === '') {
+      this.props.handlingFilter(
+        this.state.filterKondisi,
+        this.state.filterPengiriman,
+        this.state.filterPrice,
+        this.state.filterAddress,
+        this.state.filterBrand,
+        this.state.filterOthers,
+        this.state.provinsiId,
+        this.state.provinsiTerpilih,
+        this.state.kotaTerpilih
+      )
+    } else if (valueMax < valueMin) {
       Alert.alert('Pesan', 'Harga Maksimal harus lebih besar dari harga minimal')
     } else if (valueMin <= valueMax) {
       this.props.handlingFilter(
@@ -139,7 +188,10 @@ class Filter extends React.Component {
         this.state.filterPrice,
         this.state.filterAddress,
         this.state.filterBrand,
-        this.state.filterOthers
+        this.state.filterOthers,
+        this.state.provinsiId,
+        this.state.provinsiTerpilih,
+        this.state.kotaTerpilih
       )
     }
   }
@@ -163,11 +215,12 @@ class Filter extends React.Component {
       hargaMaksimal: '',
       provinsi: [],
       kota: [],
-      provinsiTerpilih: 'DKI Jakarta',
-      kotaTerpilih: 'Jakarta',
+      provinsiId: '',
+      provinsiTerpilih: 'Semua Wilayah',
+      kotaTerpilih: 'Semua Wilayah',
       filterPengiriman: [],
       filterKondisi: '',
-      filterAddress: 1116,
+      filterAddress: '',
       filterBrand: [],
       filterOthers: []
     })
@@ -216,33 +269,70 @@ class Filter extends React.Component {
     }
   }
 
-  onClickPengiriman = (selected) => (e) => {
+  onClickPengiriman (selected) {
     const {dataPengiriman, filterPengiriman} = this.state
     let dummy = filterPengiriman
-    if (dataPengiriman[selected].is_checked) {
-      var i = dummy.indexOf(dataPengiriman[selected].id)
-      if (i !== -1) {
-        dummy.splice(i, 1)
+    let tempData = dataPengiriman
+    if (selected === 0) {
+      if (dataPengiriman[0].is_checked) {
+        var j = dummy.indexOf(dataPengiriman[selected].id)
+        if (j !== -1) {
+          dummy.splice(j, 1)
+        }
+        for (var k = 0; k < dataPengiriman.length; k++) {
+          tempData[k].is_checked = false
+        }
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: []
+        })
+      } else if (!dataPengiriman[0].is_checked) {
+        // dummy.push(dataPengiriman[selected].id)
+        for (var t = 0; t < dataPengiriman.length; t++) {
+          tempData[t].is_checked = true
+          dummy.push(dataPengiriman[t].id)
+        }
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
       }
-      dataPengiriman[selected].is_checked = false
-      const newDataSource = dataPengiriman.map(data => {
-        return {...data}
-      })
-      this.setState({
-        dataSourcePengiriman: newDataSource,
-        filterPengiriman: dummy
-      })
     } else {
-      dummy.push(dataPengiriman[selected].id)
-      dataPengiriman[selected].is_checked = true
-      const newDataSource = dataPengiriman.map(data => {
-        return {...data}
-      })
-      this.setState({
-        dataSourcePengiriman: newDataSource,
-        filterPengiriman: dummy
-      })
+      if (dataPengiriman[selected].is_checked) {
+        var i = dummy.indexOf(dataPengiriman[selected].id)
+        var L = dummy.indexOf(dataPengiriman[0].id)
+        if (i !== -1) {
+          dummy.splice(i, 1)
+          dummy.splice(L, 1)
+        }
+        tempData[selected].is_checked = false
+        tempData[0].is_checked = false
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
+      } else {
+        dummy.push(dataPengiriman[selected].id)
+        tempData[selected].is_checked = true
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
+      }
     }
+    this.forceUpdate()
   }
 
   onClickBrand = (selected) => (e) => {
@@ -305,7 +395,7 @@ class Filter extends React.Component {
 
   renderRow = (rowData) => {
     const rowStyle = rowData.active ? styles.rowStyleActive : styles.rowStyle
-    const centang = rowData.active ? Images.centang : null
+    const centang = rowData.active ? Images.centangBiru : null
     return (
       <TouchableOpacity style={rowStyle} onPress={this.onClickLabel(rowData.id)} >
         <View style={styles.labelContainer}>
@@ -320,7 +410,7 @@ class Filter extends React.Component {
   }
 
   renderRowData = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+    const centang = rowData.active ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickKondisi(rowData.id)} >
         <View style={styles.labelContainerSecond}>
@@ -337,9 +427,15 @@ class Filter extends React.Component {
   }
 
   renderRowDataPengiriman = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centang : null
+    let centang = rowData.is_checked ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterPengiriman.length; i++) {
+      if (rowData.id === this.state.filterPengiriman[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
-      <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
+      <TouchableOpacity style={styles.rowButton} onPress={() => this.onClickPengiriman(parseInt(rowID))} >
         <View style={styles.labelContainerSecond}>
           <Text style={styles.label}>{rowData.full_name}</Text>
           <View style={styles.box}>
@@ -354,7 +450,13 @@ class Filter extends React.Component {
   }
 
   renderRowDataBrand = (rowData, sectionID, rowID, highlightRow) => {
-    const centang = rowData.is_checked ? Images.centang : null
+    let centang = rowData.is_checked ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterBrand.length; i++) {
+      if (rowData.id === this.state.filterBrand[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickBrand(rowID)} >
         <View style={styles.labelContainerSecond}>
@@ -371,7 +473,13 @@ class Filter extends React.Component {
   }
 
   renderRowDataLainnya = (rowData) => {
-    const centang = rowData.active ? Images.centang : null
+    let centang = rowData.active ? Images.centangBiru : null
+    for (var i = 0; i < this.state.filterOthers.length; i++) {
+      if (rowData.value === this.state.filterOthers[i]) {
+        centang = Images.centangBiru
+        break
+      }
+    }
     return (
       <TouchableOpacity style={styles.rowButton} onPress={this.onClickLainnya(rowData.id)} >
         <View style={styles.labelContainerSecond}>
@@ -396,7 +504,9 @@ class Filter extends React.Component {
       })
     } else {
       this.setState({
-        provinsiTerpilih: key
+        provinsiTerpilih: key,
+        kotaTerpilih: 'Pilih Kota',
+        provinsiId: this.state.provinsi[value].id
       })
       this.props.getKota(this.state.provinsi[value].id)
     }
@@ -430,7 +540,7 @@ class Filter extends React.Component {
         return (
           <ListView
             enableEmptySections
-            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataPengiriman)}
+            dataSource={this.state.dataSourcePengiriman}
             renderRow={this.renderRowDataPengiriman}
           />)
       case 3:
@@ -441,11 +551,13 @@ class Filter extends React.Component {
               Harga Minimal
             </Text>
             <View style={styles.inputContainer}>
+              <Text style={styles.textHarga}>
+                Rp{' '}
+              </Text>
               <TextInput
                 style={styles.inputText}
-                value={hargaMinimal}
+                value={String(hargaMinimal)}
                 keyboardType='numeric'
-                autoCorrect
                 onChangeText={this.handleChangeMinimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='100.000'
@@ -455,11 +567,13 @@ class Filter extends React.Component {
               Harga Maksimal
             </Text>
             <View style={styles.inputContainer}>
+              <Text style={styles.textHarga}>
+                Rp{' '}
+              </Text>
               <TextInput
                 style={styles.inputText}
-                value={hargaMaksimal}
+                value={String(hargaMaksimal)}
                 keyboardType='numeric'
-                autoCorrect
                 onChangeText={this.handleChangeMaksimal.bind(this)}
                 underlineColorAndroid='transparent'
                 placeholder='250.000'

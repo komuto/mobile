@@ -4,11 +4,10 @@ import { Actions as NavigationActions, ActionConst } from 'react-native-router-f
 import { Images } from '../Themes'
 import { connect } from 'react-redux'
 import * as storeAction from '../actions/stores'
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/NotifikasiStyle'
+import { marketplace } from '../Config'
 
 class Notification extends React.Component {
 
@@ -33,10 +32,9 @@ class Notification extends React.Component {
   }
 
   handleDaftarProduk () {
-    this.props.getListProduk(false)
-    this.props.getHiddenProduct()
-    NavigationActions.productlist({
-      type: ActionConst.RESET
+    NavigationActions.storeproduct({
+      type: ActionConst.PUSH_OR_POP,
+      callback: true
     })
   }
 
@@ -131,12 +129,12 @@ class Notification extends React.Component {
           <Image source={Images.welcome} style={styles.imagestyle} />
           <View style={styles.welcomeContainer}>
             <Text style={styles.welcomeText}>
-              Selamat Datang di Komuto
+              Selamat Datang di {marketplace}
             </Text>
           </View>
           <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
-              Selamat bergabung dengan komuto. Disini { '\n' }
+              Selamat bergabung dengan {marketplace}. Disini { '\n' }
               Anda bisa melakukan lorem ipsum dolor { '\n' }
               sit amet consequence dolor
             </Text>

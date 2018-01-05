@@ -1,16 +1,18 @@
 import { publicApiKomuto } from './api'
+import { buildQuery } from '../config'
 
-export const search = ({ query }) => {
+export const search = (data) => {
   const axios = publicApiKomuto()
-  return axios.get(`products/search?q=${query}`).catch((err) => { throw err })
+  const query = buildQuery(data)
+  return axios.get(`products/search?${query}`)
 }
 
 export const allCategory = () => {
   const axios = publicApiKomuto()
-  return axios.get('categories/sub').catch((err) => { throw err })
+  return axios.get('categories/sub')
 }
 
 export const getCategories = ({ id = '' } = {}) => {
   const axios = publicApiKomuto()
-  return axios.get(`categories/${id}`).catch((err) => { throw err })
+  return axios.get(`categories/${id}`)
 }

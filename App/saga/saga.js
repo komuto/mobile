@@ -14,6 +14,7 @@ import * as paymentActions from '../actions/payment'
 import * as transactionActions from '../actions/transaction'
 import * as messageActions from '../actions/message'
 import * as otherActions from '../actions/other'
+import * as saldoActions from '../actions/saldo'
 import * as userSaga from './user'
 import * as homeSaga from './home'
 import * as brandSaga from './brand'
@@ -30,6 +31,7 @@ import * as paymentSaga from './payment'
 import * as transactionSaga from './transaction'
 import * as messageSaga from './message'
 import * as otherSaga from './other'
+import * as saldoSaga from './saldo'
 import { takeEvery, takeLatest } from 'redux-saga/effects'
 import { typeReq } from '../config'
 
@@ -50,6 +52,7 @@ function * dataSaga () {
   yield * transaction()
   yield * message()
   yield * other()
+  yield * saldo()
 }
 
 const user = function * () {
@@ -83,6 +86,11 @@ const user = function * () {
   yield takeEvery(typeReq(userActions.GET_RESOLUTION_DETAIL), userSaga.getResolutionDetail)
   yield takeEvery(typeReq(userActions.CREATE_RESOLUTION), userSaga.createResolution)
   yield takeEvery(typeReq(userActions.REPLY_RESOLUTION), userSaga.replyResolution)
+<<<<<<< HEAD
+=======
+  yield takeEvery(typeReq(userActions.RESEND_SIGNUP), userSaga.resendSignup)
+  yield takeEvery(typeReq(userActions.UNREAD_DISPUTES), userSaga.getUnreadDisputes)
+>>>>>>> beny
 }
 
 const home = function * () {
@@ -114,8 +122,11 @@ const product = function * () {
   yield takeEvery(typeReq(productActions.UPDATE_PRODUCT), productSaga.updateProduct)
   yield takeEvery(typeReq(productActions.GET_PRODUCT_EXPEDITIONS), productSaga.getProductExpeditions)
   yield takeEvery(typeReq(productActions.ADD_DROPSHIP_PRODUCTS), productSaga.addDropshipProducts)
-  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCTS), productSaga.getDropshipProducts)
+  yield takeLatest(typeReq(productActions.GET_DROPSHIP_PRODUCTS), productSaga.getDropshipProducts)
   yield takeEvery(typeReq(productActions.UPDATE_DROPSHIP_STATUS), productSaga.updateDropshipStatus)
+  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCT_FOR_ADD), productSaga.getDropshipProductForAdd)
+  yield takeEvery(typeReq(productActions.GET_DROPSHIP_PRODUCT_FOR_MANAGE), productSaga.getDropshipProductForManage)
+  yield takeEvery(typeReq(productActions.DELETE_DROPSHIP), productSaga.deleteDropship)
 }
 
 const store = function * () {
@@ -137,6 +148,10 @@ const store = function * () {
   yield takeEvery(typeReq(storeActions.GET_HIDDEN_STORE_PRODUCTS), storeSaga.getHiddenStoreProducts)
   yield takeEvery(typeReq(storeActions.GET_STORE_DISCUSSIONS), storeSaga.getStoreDiscussions)
   yield takeEvery(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG), storeSaga.getStoreProductsByCatalog)
+  yield takeEvery(typeReq(storeActions.UNREAD_DISPUTES_STORE), storeSaga.getUnreadDisputesStore)
+  yield takeLatest(typeReq(storeActions.GET_STORE_PRODUCTS_BY_CATALOG_SEARCH), storeSaga.getStoreProductsByCatalogSearch)
+  yield takeLatest(typeReq(storeActions.GET_STORE_PRODUCTS_HIDDEN_BY_CATALOG_SEARCH), storeSaga.getStoreProductsHiddenByCatalogSearch)
+  yield takeEvery(typeReq(storeActions.GET_DROPSHIPPER_FAQ), storeSaga.getDropshipFaq)
 }
 
 const address = function * () {
@@ -214,31 +229,85 @@ const message = function * () {
   yield takeEvery(typeReq(messageActions.SELLER_REPLY_MESSAGE), messageSaga.sellerReplyMessage)
   yield takeEvery(typeReq(messageActions.BUYER_DELETE_MESSAGE), messageSaga.buyerDeleteMessage)
   yield takeEvery(typeReq(messageActions.SELLER_DELETE_MESSAGE), messageSaga.sellerDeleteMessage)
+  yield takeEvery(typeReq(messageActions.MESSAGE_BUYER), messageSaga.messageBuyer)
+  yield takeEvery(typeReq(messageActions.MESSAGE_SELLER), messageSaga.messageSeller)
+  yield takeEvery(typeReq(messageActions.MESSAGE_RESELLER), messageSaga.messageReseller)
 }
 
 const other = function * () {
+<<<<<<< HEAD
   yield takeEvery(typeReq(otherActions.GET_COMMISSION), otherSaga.getCommission)
+=======
+  yield takeLatest(typeReq(otherActions.GET_COMMISSION), otherSaga.getCommission)
+  yield takeEvery(typeReq(otherActions.GET_SALE_COUNT), otherSaga.getSaleCount)
+  yield takeEvery(typeReq(otherActions.GET_MARKETPLACE), otherSaga.getMarketPlace)
+  yield takeEvery(typeReq(otherActions.GET_MARKETPLACE_COMMISSION), otherSaga.getMarketPlaceCommission)
+  yield takeEvery(typeReq(otherActions.GET_BANNER), otherSaga.getBanner)
+>>>>>>> beny
 }
 
 const payment = function * () {
   yield takeEvery(typeReq(paymentActions.GET_PAYMENT_METHODS), paymentSaga.getPaymentMethods)
   yield takeEvery(typeReq(paymentActions.CONFIRM_TRANSFER), paymentSaga.confirmTransfer)
+<<<<<<< HEAD
   yield takeEvery(typeReq(paymentActions.WITHDRAW), paymentSaga.withdraw)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN), paymentSaga.getMidtransToken)
   yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN_2), paymentSaga.getMidtransToken2)
+=======
+  yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN), paymentSaga.getMidtransToken)
+  yield takeEvery(typeReq(paymentActions.GET_MIDTRANS_TOKEN_2), paymentSaga.getMidtransToken2)
+  yield takeEvery(typeReq(paymentActions.BALANCE_PAYMENT), paymentSaga.balancePayment)
+>>>>>>> beny
 }
 
 const review = function * () {
   yield takeEvery(typeReq(reviewActions.GET_REVIEWS), reviewSaga.getReviews)
-  yield takeEvery(typeReq(reviewActions.ADD_REVIEW), reviewSaga.addReview)
+  yield takeEvery(typeReq(reviewActions.ADD_REVIEWS), reviewSaga.addReviews)
   yield takeEvery(typeReq(reviewActions.GET_BUYER_REVIEW), reviewSaga.getBuyerReview)
   yield takeEvery(typeReq(reviewActions.GET_SELLER_REVIEW), reviewSaga.getSellerReview)
+  yield takeEvery(typeReq(reviewActions.GET_STORE_REVIEW), reviewSaga.getStoreReview)
 }
 
+<<<<<<< HEAD
+=======
+const saldo = function * () {
+  yield takeEvery(typeReq(saldoActions.GET_SALDO_TOKEN), saldoSaga.getSaldoToken)
+  yield takeEvery(typeReq(saldoActions.GET_SALDO_HISTORY), saldoSaga.getSaldoHistory)
+  yield takeEvery(typeReq(saldoActions.WITHDRAW), saldoSaga.withdraw)
+  yield takeEvery(typeReq(saldoActions.GET_NOMINALS), saldoSaga.getNominals)
+  yield takeEvery(typeReq(saldoActions.GET_TOPUP_STATUS), saldoSaga.getTopupStatus)
+  yield takeEvery(typeReq(saldoActions.GET_WITHDRAW_STATUS), saldoSaga.getWithdrawStatus)
+  yield takeEvery(typeReq(saldoActions.GET_SALDO_HISTORY_DETAIL), saldoSaga.getSaldoHistoryDetail)
+}
+
+>>>>>>> beny
 const transaction = function * () {
   yield takeEvery(typeReq(transactionActions.LIST_TRANSACTIONS), transactionSaga.listTransactions)
   yield takeEvery(typeReq(transactionActions.GET_TRANSACTION), transactionSaga.getTransaction)
-  yield takeEvery(typeReq(transactionActions.GET_SALDO_HISTORY), transactionSaga.getSaldoHistory)
+  yield takeEvery(typeReq(transactionActions.GET_BUYER_INVOICE_DETAIL), transactionSaga.getBuyerInvoiceDetail)
+  yield takeEvery(typeReq(transactionActions.ADD_COMPLAINT), transactionSaga.addComplaint)
+  yield takeEvery(typeReq(transactionActions.GET_NEW_ORDERS), transactionSaga.getNewOrders)
+  yield takeEvery(typeReq(transactionActions.GET_NEW_ORDER_DETAIL), transactionSaga.getNewOrderDetail)
+  yield takeEvery(typeReq(transactionActions.GET_PROCESSING_ORDERS), transactionSaga.getProcessingOrders)
+  yield takeEvery(typeReq(transactionActions.GET_PROCESSING_ORDER_DETAIL), transactionSaga.getProcessingOrderDetail)
+  yield takeEvery(typeReq(transactionActions.ACCEPT_ORDER), transactionSaga.acceptOrder)
+  yield takeEvery(typeReq(transactionActions.REJECT_ORDER), transactionSaga.rejectOrder)
+  yield takeEvery(typeReq(transactionActions.INPUT_AIRWAY_BILL), transactionSaga.inputAirwayBill)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_BUYER), transactionSaga.getComplainedOrdersBuyer)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_SELLER), transactionSaga.getComplainedOrdersSeller)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDER_DETAIL_BUYER), transactionSaga.getComplainedOrderDetailBuyer)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDER_DETAIL_SELLER), transactionSaga.getComplainedOrderDetailSeller)
+  yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_BUYER), transactionSaga.createComplaintDiscussionBuyer)
+  yield takeEvery(typeReq(transactionActions.CREATE_COMPLAINT_DISCUSSION_SELLER), transactionSaga.createComplaintDiscussionSeller)
+  yield takeEvery(typeReq(transactionActions.UPDATE_AIRWAY_BILL), transactionSaga.updateAirwayBill)
+  yield takeEvery(typeReq(transactionActions.BUYER_DISPUTE_RECEIVED), transactionSaga.buyerDisputeReceived)
+  yield takeEvery(typeReq(transactionActions.SELLER_DISPUTE_RECEIVED), transactionSaga.sellerDisputeReceived)
+  yield takeEvery(typeReq(transactionActions.GET_SALES), transactionSaga.getSales)
+  yield takeEvery(typeReq(transactionActions.GET_SALE_DETAIL), transactionSaga.getSaleDetail)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_BUYER_2), transactionSaga.getComplainedOrdersBuyer2)
+  yield takeEvery(typeReq(transactionActions.GET_COMPLAINED_ORDERS_SELLER_2), transactionSaga.getComplainedOrdersSeller2)
+  yield takeEvery(typeReq(transactionActions.GET_SALES_2), transactionSaga.getSales2)
+  yield takeEvery(typeReq(transactionActions.BUYER_REFUND), transactionSaga.buyerRefund)
 }
 
 export default dataSaga

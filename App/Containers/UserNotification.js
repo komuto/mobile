@@ -1,10 +1,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { View, Text, TouchableOpacity, BackAndroid, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import * as messageAction from '../actions/message'
 import * as userAction from '../actions/user'
-import * as reviewAction from '../actions/review'
+import ModalLogin from '../Components/ModalLogin'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -14,51 +13,84 @@ import styles from './Styles/NotifikasiPenggunaStyle'
 import { Images } from '../Themes'
 
 class UserNotification extends React.Component {
-
-  ComponentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  constructor (props) {
+    super(props)
+    this.state = {
+      isLogin: this.props.datalogin.login,
+      disputes: 0
+    }
   }
 
-  componentWillUnmount () {
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-  }
-
-  handleBack = () => {
-    NavigationActions.pop()
-    return true
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataDisputes.status === 200) {
+      this.setState({
+        disputes: nextProps.dataDisputes.disputes
+      })
+    }
   }
 
   handleReview () {
+<<<<<<< HEAD
     this.props.getListReview()
+=======
+>>>>>>> beny
     NavigationActions.buyerreview({
       type: ActionConst.PUSH
     })
   }
 
   handleMessages () {
+<<<<<<< HEAD
     this.props.getListMessages()
     this.props.getListArchiveMessages()
+=======
+>>>>>>> beny
     NavigationActions.buyermessage({
       type: ActionConst.PUSH
     })
   }
 
   handleDiscussion () {
+<<<<<<< HEAD
     this.props.getListDiscussion()
+=======
+>>>>>>> beny
     NavigationActions.buyerdiscussion({
       type: ActionConst.PUSH
     })
   }
 
   handleResolution () {
+<<<<<<< HEAD
     this.props.getListResolutionResolve()
     this.props.getListResolutionUnresolve()
+    NavigationActions.buyerresolution({
+=======
     NavigationActions.buyerresolution({
       type: ActionConst.PUSH
     })
   }
 
+  handleComplain () {
+    NavigationActions.buyercomplain({
+>>>>>>> beny
+      type: ActionConst.PUSH
+    })
+  }
+
   menu (borderStyle, image, titleMenu, onPress) {
+    let view
+    if (titleMenu.includes('Komplain')) {
+      if (this.state.disputes > 0) {
+        view = (
+          <View style={styles.containerNumber}>
+            <Text style={styles.number}>
+              {String(this.state.disputes)}
+            </Text>
+          </View>
+        )
+      }
+    }
     return (
       <TouchableOpacity style={styles.profile} onPress={onPress}>
         <Image source={image} style={styles.imageCategory} />
@@ -68,21 +100,34 @@ class UserNotification extends React.Component {
               {titleMenu}
             </Text>
           </View>
+          {view}
           <Image source={Images.rightArrow} style={styles.rightArrow} />
         </View>
       </TouchableOpacity>
     )
   }
 
+  onClose () {
+    this.setState({ isLogin: true })
+    NavigationActions.home()
+  }
+
   render () {
+    const { isLogin } = this.state
+    let view = null
+    if (!isLogin) {
+      view = <ModalLogin visible={!isLogin} onClose={() => this.onClose()} />
+    }
     return (
       <ScrollView style={styles.container}>
         <View style={[styles.dataProfileContainer, {elevation: 0.5}]}>
           {this.menu(styles.borderContainer, Images.messageBuyer, 'Pesan', () => this.handleMessages())}
           {this.menu(styles.borderContainer, Images.komentar, 'Diskusi Produk', () => this.handleDiscussion())}
           {this.menu(styles.borderContainer, Images.bintang, 'Review', () => this.handleReview(93))}
-          {this.menu([styles.borderContainer, {borderBottomWidth: 0}], Images.help, 'Pusat Resolusi', () => this.handleResolution())}
+          {this.menu(styles.borderContainer, Images.help, 'Pusat Resolusi', () => this.handleResolution())}
+          {this.menu(styles.borderContainer, Images.laporkan, 'Komplain Barang', () => this.handleComplain())}
         </View>
+        {view}
       </ScrollView>
     )
   }
@@ -90,17 +135,21 @@ class UserNotification extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    datalogin: state.isLogin,
+    dataDisputes: state.unreadDisputes
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getListMessages: () => dispatch(messageAction.getBuyerMessages()),
-    getListArchiveMessages: () => dispatch(messageAction.getArchiveBuyerMessages()),
     getListDiscussion: () => dispatch(userAction.getDiscussion()),
+<<<<<<< HEAD
     getListReview: () => dispatch(reviewAction.getBuyerReview()),
     getListResolutionResolve: () => dispatch(userAction.getResolvedResolutions()),
     getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions())
+=======
+    getUnreadDisputes: dispatch(userAction.getUnreadDispute())
+>>>>>>> beny
   }
 }
 

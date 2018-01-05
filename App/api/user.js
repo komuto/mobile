@@ -63,7 +63,7 @@ export const updateProfile = (action) => {
 
 export const favoriteStore = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.post(`stores/${id}/favorite`)
+  return axios.put(`stores/${id}/favorite`)
 }
 
 export const getPhone = () => {
@@ -98,9 +98,10 @@ export const verifyPhone = ({ code }) => {
   return axios.post('accounts/phone/verify', { code })
 }
 
-export const wishlist = () => {
+export const wishlist = (data) => {
   const axios = authApiKomuto()
-  return axios.get('users/wishlist')
+  const query = buildQuery(data)
+  return axios.get(`users/wishlist?${query}`)
 }
 
 export const sendOTPBank = () => {
@@ -123,6 +124,7 @@ export const updateNotifSettings = (data) => {
   return axios.post('users/notifications', data)
 }
 
+<<<<<<< HEAD
 export const getResolvedResolutions = () => {
   const axios = authApiKomuto()
   return axios.get('users/resolutions?is_closed=true')
@@ -131,6 +133,18 @@ export const getResolvedResolutions = () => {
 export const getUnresolvedResolutions = () => {
   const axios = authApiKomuto()
   return axios.get('users/resolutions?is_closed=false')
+=======
+export const getResolvedResolutions = (data) => {
+  const axios = authApiKomuto()
+  const query = buildQuery(data)
+  return axios.get(`users/resolutions?is_closed=true&${query}`)
+}
+
+export const getUnresolvedResolutions = (data) => {
+  const axios = authApiKomuto()
+  const query = buildQuery(data)
+  return axios.get(`users/resolutions?is_closed=false&${query}`)
+>>>>>>> beny
 }
 
 export const getResolutionDetail = ({ id }) => {
@@ -148,4 +162,17 @@ export const replyResolution = ({ id, ...data }) => {
   return axios.post(`users/resolutions/${id}`, data)
 }
 
+<<<<<<< HEAD
+=======
+export const resendSignup = () => {
+  const axios = authApiKomuto()
+  return axios.post('signup-verification', {})
+}
+
+>>>>>>> beny
 export const logout = () => ({ message: 'LOGOUT SUCCESS', code: 0 })
+
+export const getUnreadDispute = () => {
+  const axios = authApiKomuto()
+  return axios.get('pages/notification')
+}

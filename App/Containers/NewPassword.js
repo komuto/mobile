@@ -6,7 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  Alert,
+  ToastAndroid
 } from 'react-native'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
@@ -36,12 +37,12 @@ class NewPassword extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.data.message)
+      ToastAndroid.show(nextProps.data.message, ToastAndroid.SHORT)
     } else if (nextProps.data.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.data.message)
+      ToastAndroid.show(nextProps.data.message, ToastAndroid.SHORT)
     }
   }
 

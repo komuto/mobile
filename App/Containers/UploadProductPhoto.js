@@ -1,13 +1,18 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, BackAndroid, TouchableOpacity, Image, ScrollView } from 'react-native'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  ToastAndroid,
+  BackAndroid,
+  TouchableOpacity,
+  Image,
+  ScrollView
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import CameraModal from '../Components/CameraModal'
-import * as storeAction from '../actions/stores'
-import * as categoriAction from '../actions/home'
-
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
+import Reactotron from 'reactotron-react-native'
 
 // Styles
 import styles from './Styles/UploadPhotoProdukScreenStyle'
@@ -27,24 +32,6 @@ class UploadProductPhoto extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataPhoto.status === 200) {
-      let temp = this.state.images
-      nextProps.dataPhoto.payload.images.map((data, i) => {
-        temp[i] = ({'name': data.name})
-      })
-      this.setState({
-        loading: false
-      })
-      this.props.getKategori()
-      NavigationActions.productinfonameandcategory({
-        type: ActionConst.PUSH,
-        images: temp
-      })
-    } else if (nextProps.dataPhoto.status > 200) {
-      this.setState({
-        loading: false
-      })
-    }
   }
 
   componentDidMount () {
@@ -118,13 +105,23 @@ class UploadProductPhoto extends React.Component {
   }
 
   nextState () {
-    const postData = new FormData()
-    this.state.foto.map(data => {
-      postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
-    })
-    postData.append('type', 'product')
-    this.props.photoUpload(postData)
-    this.setState({loading: true})
+    if (this.state.foto.length === 0) {
+      ToastAndroid.show('Foto produk harus diunggah', ToastAndroid.SHORT)
+    } else {
+      NavigationActions.productinfonameandcategory({
+        type: ActionConst.PUSH,
+        images: this.state.foto
+      })
+      Reactotron.log(this.state.foto)
+      // const postData = new FormData()
+      // this.state.foto.map(data => {
+      //   postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      // })
+      // postData.append('type', 'product')
+      // this.props.photoUpload(postData)
+      // this.submitting.upload = true
+      // this.setState({loading: true})
+    }
   }
 
   stateOne () {
@@ -134,6 +131,9 @@ class UploadProductPhoto extends React.Component {
         <CameraModal
           visible={this.state.showModalCamera}
           onClose={() => {
+            this.setState({showModalCamera: false})
+          }}
+          onPress={() => {
             this.setState({showModalCamera: false})
           }}
           onPhotoCaptured={(path) => {
@@ -185,14 +185,11 @@ class UploadProductPhoto extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPhoto: state.upload
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    photoUpload: (data) => dispatch(storeAction.photoUpload({data: data})),
-    getKategori: () => dispatch(categoriAction.categoryList())
   }
 }
 

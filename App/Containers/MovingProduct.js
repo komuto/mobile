@@ -1,10 +1,14 @@
 import React from 'react'
-import { View, TouchableOpacity, ToastAndroid, Modal, ScrollView, Image, Text, ListView, ActivityIndicator } from 'react-native'
+import { View, TouchableOpacity, BackAndroid, ToastAndroid, Modal, ScrollView, Image, Text, ListView, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
+import {isFetching, isError, isFound} from '../Services/Status'
+import { Actions as NavigationActions } from 'react-native-router-flux'
+
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 import * as storeAction from '../actions/stores'
 import * as productAction from '../actions/product'
+import * as catalogAction from '../actions/catalog'
 
 // Styles
 import styles from './Styles/MovingProductStyle'
@@ -17,6 +21,13 @@ class MovingProduct extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      products: false,
+      alter: false,
+      catalog: false,
+      isUpdate: false,
+      notif: false
+    }
     this.state = {
       title: this.props.title,
       notification: this.props.notification,
@@ -25,7 +36,9 @@ class MovingProduct extends React.Component {
       actionType: this.props.actionType,
       idCatalog: this.props.idCatalog,
       statusHidden: this.props.statusHidden,
+      productProps: props.dataProduk || null,
       product: [],
+      listKatalogProps: props.dataCatalog || null,
       listKatalog: [],
       addCatalog: [
         {
@@ -45,84 +58,147 @@ class MovingProduct extends React.Component {
       page: 1,
       loadmore: true,
       isRefreshing: false,
-      isLoading: false
+      isLoading: false,
+      callback: this.props.callback
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataProduk.status === 200) {
-      console.log(nextProps.dataProduk.products.length)
-      this.setState({
-        product: nextProps.dataProduk.products,
-        loading: false,
-        size: nextProps.dataProduk.products.length
-      })
-      nextProps.dataProduk.status = 0
-    } else if (nextProps.dataCatalog.status === 200) {
-      this.setState({
-        listKatalog: nextProps.dataCatalog.catalogs
-      })
-      nextProps.dataCatalog.status = 0
-    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'hideProduct') {
-      this.setState({
-        isChecked: false,
-        notification: true,
-        loading: false
-      })
-      if (this.props.statusHidden) {
-        this.setState({messageNotification: 'Berhasil menampilkan barang'})
-      } else {
-        this.setState({messageNotification: 'Berhasil menyembunyikan barang'})
+    const { dataProduk, alterProduct, dataCatalog } = nextProps
+
+    if (!isFetching(dataProduk) && this.submitting.products) {
+      this.submitting = { ...this.submitting, products: false }
+      if (isError(dataProduk)) {
+        ToastAndroid.show(dataProduk.message, ToastAndroid.SHORT)
       }
-      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
-      nextProps.alterProduct.status = 0
-    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'deleteProduct') {
-      this.setState({
-        isChecked: false,
-        notification: true,
-        loading: false,
-        messageNotification: 'Berhasil menghapus barang'
-      })
-      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
-      nextProps.alterProduct.status = 0
-    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'moveCatalog') {
-      this.setState({
-        isChecked: false,
-        loading: false,
-        notification: true,
-        messageNotification: 'Berhasil memindahkan ke katalog lain'
-      })
-      this.props.getProductByCatalog(this.state.idCatalog, this.state.statusHidden)
-      nextProps.alterProduct.status = 0
-    } else if (nextProps.alterProduct.status === 200 && this.props.actionType === 'moveDropship') {
-      this.setState({
-        isChecked: false,
-        loading: false,
-        notification: true,
-        messageNotification: 'Berhasil menjadikan Dropshipping'
-      })
-      this.props.getProductByCatalogDropship(this.state.idCatalog, this.state.statusHidden)
-      nextProps.alterProduct.status = 0
-    } else if (nextProps.alterProduct.status === 400 && this.props.actionType === 'deleteProduct') {
-      this.setState({
-        isChecked: false,
-        notification: false,
-        loading: false
-      })
-      ToastAndroid.show(nextProps.alterProduct.message, ToastAndroid.LONG)
-    } else if (nextProps.dataProduk.status > 200) {
-      ToastAndroid.show('Terjadi kesalahan', ToastAndroid.LONG)
-    } else if (nextProps.dataCatalog.status > 200) {
-      ToastAndroid.show('Terjadi kesalahan', ToastAndroid.LONG)
+      if (isFound(dataProduk)) {
+        this.setState({
+          productProps: dataProduk,
+          product: dataProduk.products,
+          loading: false,
+          size: dataProduk.products.length
+        })
+        const { actionType } = this.state
+        if (actionType === 'hideProduct' && this.submitting.notif) {
+          this.setState({
+            notification: true,
+            messageNotification: dataProduk.message
+          })
+        }
+        if (actionType === 'deleteProduct' && this.submitting.notif) {
+          this.setState({
+            notification: true,
+            messageNotification: dataProduk.message
+          })
+        }
+        if (actionType === 'moveCatalog' && this.submitting.notif) {
+          this.setState({
+            notification: true,
+            messageNotification: dataProduk.message
+          })
+        }
+        if (actionType === 'moveDropship' && this.submitting.notif) {
+          this.setState({
+            notification: true,
+            messageNotification: dataProduk.message
+          })
+        }
+        this.submitting = {...this.submitting, notif: false}
+      }
+    }
+
+    if (!isFetching(dataCatalog) && this.submitting.catalog) {
+      this.submitting = {...this.submitting, catalog: false}
+      if (isError(dataCatalog)) {
+        ToastAndroid.show(dataCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCatalog)) {
+        this.setState({
+          listKatalogProps: dataCatalog,
+          listKatalog: dataCatalog.catalogs,
+          loading: false
+        })
+      }
+    }
+
+    if (!isFetching(alterProduct) && this.submitting.alter) {
+      this.submitting = { ...this.submitting, alter: false }
+      if (isError(alterProduct)) {
+        ToastAndroid.show(alterProduct.message, ToastAndroid.SHORT)
+      }
+      if (isFound(alterProduct)) {
+        this.submitting.isUpdate = true
+        this.setState({
+          isChecked: false,
+          loading: false
+        })
+        if (!this.submitting.products) {
+          this.submitting = {
+            ...this.submitting,
+            products: true,
+            notif: true
+          }
+          if (this.props.actionType === 'moveDropship') {
+            this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
+          } else {
+            this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+          }
+        }
+      }
     }
   }
 
   componentDidMount () {
+    if (this.props.actionType === 'hideProduct') {
+      if (!this.submitting.alter) {
+        this.submitting = {
+          ...this.submitting,
+          products: true
+        }
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+      }
+    } else if (this.props.actionType === 'deleteProduct') {
+      if (!this.submitting.alter) {
+        this.submitting = {
+          ...this.submitting,
+          products: true
+        }
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+      }
+    } else if (this.props.actionType === 'moveCatalog') {
+      if (!this.submitting.alter) {
+        this.submitting = {
+          ...this.submitting,
+          products: true,
+          catalog: true
+        }
+        this.props.getCatalog()
+        this.props.getProductByCatalog({id: this.state.idCatalog, hidden: false})
+      }
+    } else if (this.props.actionType === 'moveDropship') {
+      if (!this.submitting.alter) {
+        this.submitting = {
+          ...this.submitting,
+          products: true
+        }
+        this.props.getProductByCatalog({id: this.state.idCatalog, is_dropship: false, hidden: false})
+      }
+    }
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
   componentWillUnmount () {
-    this.props.getListProduk()
-    this.props.getHiddenProduct()
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    if (!this.submitting.isUpdate) {
+      NavigationActions.pop()
+      return true
+    } else {
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      return true
+    }
   }
 
   notif () {
@@ -153,7 +229,7 @@ class MovingProduct extends React.Component {
   }
 
   renderRowData (rowData, selectionId, rowId) {
-    const checkProduct = rowData.is_checked ? Images.centang : null
+    const checkProduct = rowData.is_checked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.list} onPress={this.handleCheckProduct(rowId, rowData.id)}>
         <View style={[styles.row, {paddingLeft: 0}]}>
@@ -163,10 +239,14 @@ class MovingProduct extends React.Component {
               style={styles.check}
             />
           </View>
-          <Image
-            source={{uri: rowData.image}}
-            style={styles.imageProduct}
-          />
+          <View style={styles.maskedImage}>
+            <Image
+              source={{uri: rowData.image}}
+              style={styles.imageProduct}
+              resizeMode='cover'
+              borderRadius={5}
+            />
+          </View>
           <Text style={[styles.title, {marginLeft: 20.7}]}>{rowData.name}</Text>
         </View>
       </TouchableOpacity>
@@ -235,22 +315,22 @@ class MovingProduct extends React.Component {
 
   handleCatalog (id) {
     let data = this.state.arrayIdProduct
-    console.log('kirim', this.state.arrayIdProduct)
+    this.submitting.alter = true
     this.setState({
       idCatalogChoosen: id,
       modalCatalog: false
     })
-    this.props.changeCatalog(id, data)
+    this.props.changeCatalog({catalog_id: id, product_ids: data})
   }
 
   handleDeleteProduct () {
     let data = this.state.arrayIdProduct
-    console.log('kirim', this.state.arrayIdProduct)
-    this.props.setDeleteProduct(data)
+    this.submitting.alter = true
     this.setState({
       modalDelete: false,
       loading: true
     })
+    this.props.setDeleteProduct({product_ids: data})
   }
 
   handleCheckProduct = (i, id) => (e) => {
@@ -340,26 +420,45 @@ class MovingProduct extends React.Component {
   finalAction () {
     if (this.state.actionType === 'hideProduct') {
       let data = this.state.arrayIdProduct
-      console.log('kirim', this.state.arrayIdProduct)
-      this.props.setHideProduct(data)
-      this.setState({
-        loading: true
-      })
+      if (data.length > 0) {
+        this.submitting.alter = true
+        this.setState({
+          loading: true
+        })
+        this.props.setHideProduct({product_ids: data})
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     } else if (this.state.actionType === 'deleteProduct') {
       this.setState({
         modalDelete: true
       })
     } else if (this.state.actionType === 'moveCatalog') {
-      this.setState({
-        modalCatalog: true
-      })
+      let data = this.state.arrayIdProduct
+      if (data.length > 0) {
+        let data = this.state.arrayIdProduct
+        if (data.length > 0) {
+          this.submitting.alter = true
+          this.setState({
+            modalCatalog: true
+          })
+        } else {
+          ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+        }
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     } else if (this.state.actionType === 'moveDropship') {
       let data = this.state.arrayIdProduct
-      console.log('kirim', this.state.arrayIdProduct)
-      this.props.updateProductToDropship(data)
-      this.setState({
-        loading: true
-      })
+      if (data.length > 0) {
+        this.submitting.alter = true
+        this.setState({
+          loading: true
+        })
+        this.props.updateProductToDropship({product_ids: data})
+      } else {
+        ToastAndroid.show('Pilih produk terlebih dahulu', ToastAndroid.SHORT)
+      }
     }
   }
 
@@ -392,7 +491,7 @@ class MovingProduct extends React.Component {
   }
 
   header () {
-    const checkAll = this.state.isChecked ? Images.centang : null
+    const checkAll = this.state.isChecked ? Images.centangBiru : null
     return (
       <TouchableOpacity style={styles.header} onPress={this.handleCheckAll(this.state.product)}>
         <View style={styles.row}>
@@ -408,6 +507,22 @@ class MovingProduct extends React.Component {
     )
   }
 
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={this.handleBack}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerTextTop}>
+          {this.state.title}
+        </Text>
+      </View>
+    )
+  }
+
   render () {
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
@@ -415,17 +530,16 @@ class MovingProduct extends React.Component {
     </View>) : (<View />)
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.notif()}
         {this.headerDropshipper()}
         {this.headerHideProduct()}
         {this.header()}
-        <ScrollView>
-          <ListView
-            dataSource={this.dataSource.cloneWithRows(this.state.product)}
-            renderRow={this.renderRowData.bind(this)}
-            enableEmptySections
-          />
-        </ScrollView>
+        <ListView
+          dataSource={this.dataSource.cloneWithRows(this.state.product)}
+          renderRow={this.renderRowData.bind(this)}
+          enableEmptySections
+        />
         {this.modalConfrimDelete()}
         {this.modalCatalog()}
         {this.button()}
@@ -445,14 +559,13 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateProductToDropship: (data) => dispatch(productAction.updateDropshipStatus({product_ids: data})),
-    setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
-    setDeleteProduct: (data) => dispatch(productAction.deleteProducts({product_ids: data})),
-    changeCatalog: (id, data) => dispatch(productAction.changeCatalogProducts({catalog_id: id, product_ids: data})),
-    getProductByCatalog: (id, query) => dispatch(storeAction.getStoreCatalogProducts({id: id, hidden: query})),
-    getListProduk: () => dispatch(storeAction.getStoreProducts()),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
-    getProductByCatalogDropship: (id, q) => dispatch(storeAction.getStoreProductsByCatalog({id: id, is_dropship: q}))
+    getListProduk: (param) => dispatch(storeAction.getStoreProducts(param)),
+    setHideProduct: (param) => dispatch(productAction.hideProducts(param)),
+    updateProductToDropship: (param) => dispatch(productAction.updateDropshipStatus(param)),
+    setDeleteProduct: (param) => dispatch(productAction.deleteProducts(param)),
+    changeCatalog: (param) => dispatch(productAction.changeCatalogProducts(param)),
+    getProductByCatalog: (param) => dispatch(storeAction.getStoreProductsByCatalog(param)),
+    getCatalog: () => dispatch(catalogAction.getListCatalog())
   }
 }
 

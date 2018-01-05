@@ -1,7 +1,18 @@
 import React from 'react'
-import { View, Text, TouchableOpacity, BackAndroid, Modal, ActivityIndicator, Image, ScrollView } from 'react-native'
+import {
+  View,
+  Text,
+  RefreshControl,
+  TouchableOpacity,
+  BackAndroid,
+  Modal,
+  Image,
+  ScrollView,
+  ToastAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -9,12 +20,17 @@ import * as katalogAction from '../actions/catalog'
 
 // Styles
 import styles from './Styles/KatalogTokoScreenStyle'
-import { Images } from '../Themes/'
+import { Images, Colors } from '../Themes/'
 
 class StoreCatalog extends React.Component {
 
   constructor (props) {
     super(props)
+    this.submitting = {
+      catalog: false,
+      delete: false,
+      detail: false
+    }
     this.state = {
       listKatalog: [],
       statusDot: false,
@@ -28,33 +44,71 @@ class StoreCatalog extends React.Component {
       modalGagalHapus: false,
       modalSuksesHapus: false,
       namaKatalog: '',
-      countProduct: ''
+      countProduct: '',
+      isRefreshing: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataCatalog.status === 200) {
-      this.setState({
-        listKatalog: nextProps.dataCatalog.catalogs,
-        loading: false
-      })
-    } if (nextProps.catalogDelete.status === 200) {
-      this.props.getCatalog()
-      nextProps.catalogDelete.status = 0
-    } if (nextProps.detailCatalog.status === 200) {
-      NavigationActions.addeditstorecatalog({
-        type: ActionConst.PUSH,
-        title: 'Edit Nama Katalog',
-        edit: true,
-        namaKatalog: nextProps.detailCatalog.catalog.name,
-        idKatalogs: nextProps.detailCatalog.catalog.id,
-        titleButton: 'Simpan perubahan'
-      })
-      nextProps.detailCatalog.status = 0
+    const {dataCatalog, catalogDelete, detailCatalog} = nextProps
+
+    if (!isFetching(dataCatalog) && this.submitting.catalog) {
+      this.submitting = { ...this.submitting, catalog: false }
+      if (isError(dataCatalog)) {
+        ToastAndroid.show(dataCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataCatalog)) {
+        this.setState({
+          listKatalog: dataCatalog.catalogs,
+          loading: false,
+          isRefreshing: false
+        })
+      }
+    }
+
+    if (!isFetching(catalogDelete) && this.submitting.delete) {
+      this.submitting = { ...this.submitting, delete: false }
+      if (isError(catalogDelete)) {
+        ToastAndroid.show(catalogDelete.message, ToastAndroid.SHORT)
+      }
+      if (isFound(catalogDelete)) {
+        if (!this.submitting.catalog) {
+          this.submitting = {
+            ...this.submitting,
+            catalog: true
+          }
+          this.setState({isRefreshing: true, notif: true, pesanNotif: catalogDelete.message})
+          this.props.getCatalog()
+        }
+      }
+    }
+
+    if (!isFetching(detailCatalog) && this.submitting.detail) {
+      this.submitting = { ...this.submitting, detail: false }
+      if (isError(detailCatalog)) {
+        ToastAndroid.show(detailCatalog.message, ToastAndroid.SHORT)
+      }
+      if (isFound(detailCatalog)) {
+        NavigationActions.addeditstorecatalog({
+          type: ActionConst.PUSH,
+          title: 'Edit Nama Katalog',
+          edit: true,
+          namaKatalog: nextProps.detailCatalog.catalog.name,
+          idKatalogs: nextProps.detailCatalog.catalog.id,
+          titleButton: 'Simpan perubahan'
+        })
+      }
     }
   }
 
   componentDidMount () {
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        catalog: true
+      }
+      this.props.getCatalog()
+    }
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -63,24 +117,48 @@ class StoreCatalog extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.popTo('managestore')
     return true
+  }
+
+  refresh = () => {
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        catalog: true
+      }
+      this.setState({isRefreshing: true, listKatalog: []})
+      this.props.getCatalog()
+    }
   }
 
   handleCreateKatalog () {
     NavigationActions.addeditstorecatalog({
-      type: ActionConst.PUSH
+      type: ActionConst.PUSH,
+      titleButton: 'Buat Katalog Baru'
     })
   }
 
   handleEditKatalog (idKatalog) {
-    this.setState({statusDot: false})
-    this.props.getCatalogDetail(idKatalog)
+    this.setState({statusDot: false, isRefreshing: false})
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        detail: true
+      }
+      this.props.getCatalogDetail(idKatalog)
+    }
   }
 
   handleDeletKatalog () {
-    this.setState({modalSuksesHapus: false})
-    this.props.deleteCatalog(this.state.idDelete)
+    this.setState({modalSuksesHapus: false, isRefreshing: true})
+    if (!this.submitting.catalog) {
+      this.submitting = {
+        ...this.submitting,
+        delete: true
+      }
+      this.props.deleteCatalog(this.state.idDelete)
+    }
   }
 
   handleCekIsiKatalog (id, name, count) {
@@ -142,7 +220,7 @@ class StoreCatalog extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -153,6 +231,22 @@ class StoreCatalog extends React.Component {
         <View />
       )
     }
+  }
+
+  renderHeader () {
+    return (
+      <View style={styles.headerTextContainer}>
+        <TouchableOpacity onPress={() => this.handleBack()}>
+          <Image
+            source={Images.iconBack}
+            style={styles.imageStyle}
+          />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>
+          Katalog
+        </Text>
+      </View>
+    )
   }
 
   containerEdit (i, idKatalog, name, contProduct) {
@@ -178,7 +272,7 @@ class StoreCatalog extends React.Component {
   mapingKatalog () {
     const { listKatalog } = this.state
     const mapparent = listKatalog.map((data, i) =>
-    (<View key={i} >
+    (<View key={i} style={{borderBottomWidth: 0.5, borderBottomColor: Colors.silver}}>
       <View style={styles.headerInfoAlamat}>
         <View style={{flex: 1}}>
           <Text style={styles.textHeader}>{data.name}</Text>
@@ -201,15 +295,43 @@ class StoreCatalog extends React.Component {
   }
 
   render () {
-    const spinner = this.state.loading
-    ? (<View style={styles.spinner}>
-      <ActivityIndicator color='white' size='large' />
-    </View>) : (<View />)
+    const { listKatalog } = this.state
+    let view
+    if (listKatalog.length > 0) {
+      view = (
+        <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDot: false})} >
+          {this.mapingKatalog()}
+        </TouchableOpacity>
+      )
+    } else {
+      view = (
+        <View style={styles.emptyContainer}>
+          <Image source={Images.emptyCatalog} style={styles.emptyImage} />
+          <Text style={[styles.price, { textAlign: 'center', marginBottom: 10 }]}>
+            Katalog Anda Kosong
+          </Text>
+          <Text style={styles.textNotifEmpty}>
+            Anda belum memiliki katalog untuk pengelompokkan barang Anda
+          </Text>
+        </View>
+      )
+    }
     return (
       <View style={styles.container}>
+        {this.renderHeader()}
         {this.notif()}
-        <ScrollView>
-          {this.mapingKatalog()}
+        <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }>
+          {view}
         </ScrollView>
         <TouchableOpacity style={styles.create} onPress={() => this.handleCreateKatalog()}>
           <View elevation={9}>
@@ -218,7 +340,6 @@ class StoreCatalog extends React.Component {
         </TouchableOpacity>
         {this.modalGagalHapus()}
         {this.modalSuksesHapus()}
-        {spinner}
       </View>
     )
   }
@@ -236,7 +357,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     deleteCatalog: (id) => dispatch(katalogAction.deleteCatalog({id})),
-    getCatalog: (id) => dispatch(katalogAction.getListCatalog()),
+    getCatalog: () => dispatch(katalogAction.getListCatalog()),
     getCatalogDetail: (id) => dispatch(katalogAction.getCatalog({id}))
   }
 }

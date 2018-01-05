@@ -2,7 +2,8 @@ import React from 'react'
 import { ScrollView, ToastAndroid, Text, View, TouchableOpacity, Image, BackAndroid, ListView, TextInput, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import moment from 'moment'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -19,10 +20,10 @@ class BuyerDetailDiscussion extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      idProduct: this.props.idProduct || 93,
-      nameProduct: this.props.nameProduct || 'Sepatu',
-      imageProduct: this.props.imageProduct || null,
-      priceProduct: this.props.priceProduct || 100000,
+      idProduct: this.props.idProduct,
+      nameProduct: this.props.nameProduct,
+      imageProduct: this.props.imageProduct,
+      priceProduct: this.props.priceProduct || 0,
       idDiscussion: this.props.idDiscussion,
       loading: false,
       discussionMessages: '',
@@ -34,21 +35,38 @@ class BuyerDetailDiscussion extends React.Component {
     if (nextProps.dataDetailDiscussion.status === 200) {
       this.setState({
         loading: false,
-        data: nextProps.dataDetailDiscussion.comments
+        data: nextProps.dataDetailDiscussion.comments.comments,
+        idProduct: nextProps.dataDetailDiscussion.comments.product.id,
+        nameProduct: nextProps.dataDetailDiscussion.comments.product.name,
+        imageProduct: nextProps.dataDetailDiscussion.comments.product.image,
+        priceProduct: nextProps.dataDetailDiscussion.comments.product.price
       })
       nextProps.dataDetailDiscussion.status = 0
-    } if (nextProps.dataNewComent.status === 200) {
+    } else if (nextProps.dataDetailDiscussion.status !== 200 && nextProps.dataDetailDiscussion.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataDetailDiscussion.message, ToastAndroid.SHORT)
+    }
+    if (nextProps.dataNewComent.status === 200) {
       this.setState({loading: false})
       this.props.getDetailDiscussion(this.state.idDiscussion)
       nextProps.dataNewComent.status = 0
-    } if (nextProps.dataDetailProduk.status === 406) {
+    } else if (nextProps.dataNewComent.status !== 200 && nextProps.dataNewComent.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      ToastAndroid.show(nextProps.dataNewComent.message, ToastAndroid.SHORT)
+    }
+    if (nextProps.dataDetailProduk.status === 406) {
       this.setState({loading: false})
-      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.LONG)
+      ToastAndroid.show('Gagal mengambil produk..', ToastAndroid.SHORT)
       nextProps.dataDetailProduk.status = 0
     }
   }
 
   componentDidMount () {
+    this.props.getDetailDiscussion(this.state.idDiscussion)
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
   }
 
@@ -65,13 +83,12 @@ class BuyerDetailDiscussion extends React.Component {
     NavigationActions.pop()
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderHeader () {
-    const priceMasked = MaskService.toMask('money', this.state.priceProduct, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const priceMasked = this.maskedMoney(this.state.priceProduct)
     return (
       <View style={styles.headerTextContainer}>
         <TouchableOpacity onPress={() => this.backButton()}>
@@ -93,7 +110,7 @@ class BuyerDetailDiscussion extends React.Component {
   }
 
   renderRowMessage (rowData) {
-    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - h:mm').toString()
     return (
       <View style={styles.containerMessage}>
         <View style={styles.maskedPhoto}>
@@ -128,6 +145,12 @@ class BuyerDetailDiscussion extends React.Component {
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
+    let image
+    if (this.state.discussionMessages === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.container}>
         {this.renderHeader()}
@@ -144,22 +167,27 @@ class BuyerDetailDiscussion extends React.Component {
             enableEmptySections
           />
         </ScrollView>
-        <TextInput
-          style={[styles.inputText]}
-          value={this.state.discussionMessages}
-          keyboardType='default'
-          returnKeyType='done'
-          autoCapitalize='none'
-          autoCorrect
-          onChange={(event) => {
-            this.setState({
-              discussionMessages: event.nativeEvent.text
-            })
-          }}
-          onSubmitEditing={() => this.sendComent()}
-          underlineColorAndroid='transparent'
-          placeholder='Tulis pesan Anda disini'
-        />
+        <View style={styles.floatImageContainer}>
+          <TextInput
+            style={styles.textInput}
+            value={this.state.discussionMessages}
+            keyboardType='default'
+            returnKeyType='done'
+            autoCapitalize='none'
+            autoCorrect
+            onChange={(event) => {
+              this.setState({
+                discussionMessages: event.nativeEvent.text
+              })
+            }}
+            onSubmitEditing={() => this.sendComent()}
+            underlineColorAndroid='transparent'
+            placeholder='Tulis pesan Anda disini'
+          />
+          <TouchableOpacity style={styles.sendContainer} onPress={() => this.sendComent()}>
+            <Image source={image} style={styles.sendMessage} />
+          </TouchableOpacity>
+        </View>
         {spinner}
       </View>
     )

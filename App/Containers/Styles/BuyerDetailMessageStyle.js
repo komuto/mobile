@@ -138,5 +138,45 @@ export default StyleSheet.create({
   border: {
     borderBottomColor: Colors.silver,
     borderBottomWidth: 0.5
+  },
+  floatImageContainer: {
+    height: 56,
+    flexDirection: 'row',
+    backgroundColor: Colors.snow,
+    bottom: 0,
+    right: 0,
+    borderTopColor: Colors.silver,
+    borderTopWidth: 1,
+    width: Metrics.screenWidth,
+    alignItems: 'center'
+  },
+  textInputContainer: {
+    height: 56,
+    flexDirection: 'row',
+    backgroundColor: Colors.snow,
+    borderTopColor: Colors.silver,
+    borderTopWidth: 1,
+    borderBottomColor: Colors.silver,
+    borderBottomWidth: 1,
+    width: Metrics.screenWidth,
+    alignItems: 'center'
+  },
+  textInput: {
+    flex: 1,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey,
+    letterSpacing: 0.22,
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+  sendContainer: {
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  sendMessage: {
+    height: 30,
+    width: 30
   }
 })

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, Image, Modal, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { ScrollView, Text, ToastAndroid, View, TextInput, Image, Modal, ListView, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 // import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -60,7 +60,7 @@ class AddAccount extends React.Component {
         loading: false
       })
       NavigationActions.otpcode({
-        type: ActionConst.PUSH,
+        type: ActionConst.REPLACE,
         typeVerifikasi: this.state.typeVerifikasi,
         fieldPass: this.state.nomerHape,
         idAccount: this.state.idAccount,
@@ -108,7 +108,6 @@ class AddAccount extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'pemilikAkun':
         this.setState({
@@ -139,7 +138,7 @@ class AddAccount extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -175,7 +174,7 @@ class AddAccount extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -305,13 +304,14 @@ class AddAccount extends React.Component {
                 value={this.state.nomerRekening}
                 keyboardType='numeric'
                 returnKeyType='done'
+                maxLength={13}
                 onFocus={() => this.onFocus('norek')}
                 onBlur={() => this.onBlur('norek')}
                 autoCapitalize='none'
                 autoCorrect
                 onChangeText={this.handleChangeNoRek}
                 underlineColorAndroid='transparent'
-                placeholder='Nomer Rekening'
+                placeholder='Nomor Rekening'
               />
               <Text style={[styles.textLabel, {color: colorNomerRek}]}>Nomor Rekening harus diisi</Text>
             </View>

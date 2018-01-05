@@ -1,8 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { ScrollView, Text, View, TextInput, TouchableOpacity, ActivityIndicator, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
 import * as EmailValidator from 'email-validator'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 import * as userActions from '../actions/user'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
@@ -26,19 +26,23 @@ class ChangePassword extends React.Component {
       colorPassLama: Colors.snow,
       colorPassBaru: Colors.snow,
       colorUlangPass: Colors.snow,
-      loading: false
+      loading: false,
+      callback: this.props.callback
     }
   }
 
   componentWillReceiveProps (nextProps) {
     console.log(nextProps.dataPassword)
     if (nextProps.dataPassword.status === 200) {
+      nextProps.dataPassword.status = 0
       this.setState({loading: false})
-      NavigationActions.manageaccount({
-        type: ActionConst.PUSH,
-        notif: true,
-        pesanNotif: 'Sukses mengganti password Anda'
+      NavigationActions.pop({ refresh: { callback: !this.state.callback, pesanNotif: nextProps.dataPassword.message } })
+    } else if (nextProps.dataPassword.status !== 200 && nextProps.dataPassword.status !== 0) {
+      this.setState({
+        loading: false
       })
+      nextProps.dataPassword.status = 0
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     }
   }
 
@@ -59,10 +63,9 @@ class ChangePassword extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
         this.setState({
@@ -85,7 +88,7 @@ class ChangePassword extends React.Component {
         })
         break
       case 'tidakcocok':
-        window.alert('Password ulang tidak sama')
+        ToastAndroid.show('Password ulang tidak sama', ToastAndroid.SHORT)
         break
       case 'empty':
         this.setState({
@@ -96,7 +99,7 @@ class ChangePassword extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -132,7 +135,7 @@ class ChangePassword extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -212,7 +215,7 @@ class ChangePassword extends React.Component {
               returnKeyType='next'
               onFocus={() => this.onFocus('email')}
               onBlur={() => this.onBlur('email')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.oldpassword.focus()}
               autoCapitalize='none'
               autoCorrect
               onChangeText={this.handleChangeEmail}
@@ -221,14 +224,14 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorEmail}]}>Alamat Email harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='oldpassword'
               style={styles.inputText}
               value={this.state.passwordLama}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('passlama')}
               onBlur={() => this.onBlur('passlama')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.newpassword.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry
@@ -238,14 +241,14 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorPassLama}]}>Password Lama harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='newpassword'
               style={styles.inputText}
               value={this.state.passwordBaru}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('passbaru')}
               onBlur={() => this.onBlur('passbaru')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
+              onSubmitEditing={() => this.refs.retype.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry
@@ -255,14 +258,13 @@ class ChangePassword extends React.Component {
             />
             <Text style={[styles.textLabel, {color: colorPassBaru}]}>Password Baru harus diisi</Text>
             <TextInput
-              ref='name'
+              ref='retype'
               style={styles.inputText}
               value={this.state.ulangPasswordBaru}
               keyboardType='default'
               returnKeyType='next'
               onFocus={() => this.onFocus('ulangpass')}
               onBlur={() => this.onBlur('ulangpass')}
-              onSubmitEditing={() => this.refs.slogan.focus()}
               autoCapitalize='none'
               autoCorrect
               secureTextEntry

@@ -12,7 +12,8 @@ import {
   ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as addressAction from '../actions/address'
 import * as serviceAction from '../actions/expedition'
@@ -39,13 +40,16 @@ class PurchaseAddToCart extends React.Component {
       dataSourceKurir: ds.cloneWithRows(dataKurir),
       dataSourceSubKurir: ds.cloneWithRows(dataCost),
       dataSourceAsuransi: ds.cloneWithRows(dataAsuransi),
-      idProduct: this.props.dataDetailProduk.detail.product.id,
-      price: this.props.dataDetailProduk.detail.product.price -
-        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price),
-      foto: this.props.dataDetailProduk.detail.images[0].file,
-      namaProduk: this.props.dataDetailProduk.detail.product.name,
-      namaToko: this.props.dataDetailProduk.detail.store.name,
+      idProduct: this.props.idProduct,
+      price: this.props.price,
+      tempPrice: this.props.price,
+      foto: this.props.foto,
+      namaProduk: this.props.namaProduk,
+      namaToko: this.props.namaToko,
       countProduct: 1,
+      stock: parseInt(this.props.stock),
+      grosir: this.props.grosir,
+      dataGrosir: this.props.dataGrosir,
       alamat: '',
       jalan: '',
       nama: '',
@@ -66,12 +70,12 @@ class PurchaseAddToCart extends React.Component {
       boolAsuransi: false,
       catatan: '',
       subtotal: this.props.dataDetailProduk.detail.product.price -
-        ((this.props.dataDetailProduk.detail.product.is_discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
+        ((this.props.dataDetailProduk.detail.product.discount / 100) * this.props.dataDetailProduk.detail.product.price) * 1,
       ongkir: 0,
       ongkirSatuan: 0,
       diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
       total: '0',
-      originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+      originId: this.props.dataDetailProduk.detail.location.district.ro_id,
       dataKurir: this.props.dataDetailProduk.detail.expeditions,
       dataCost: [],
       expeditionFee: '',
@@ -127,12 +131,11 @@ class PurchaseAddToCart extends React.Component {
         weight: this.props.dataDetailProduk.detail.product.weight,
         subtotal: this.props.dataDetailProduk.detail.product.price * 1,
         diskon: String((this.props.dataDetailProduk.detail.product.price * this.props.dataDetailProduk.detail.product.discount) / 100),
-        originId: this.props.dataDetailProduk.detail.store.district.ro_id,
+        originId: this.props.dataDetailProduk.detail.location.district.ro_id,
         dataKurir: this.props.dataDetailProduk.detail.expeditions
       })
     }
     if (nextProps.dataAddress.status === 200) {
-      console.log(nextProps.dataAddress.address)
       if (nextProps.dataAddress.address.address === '' || nextProps.dataAddress.address.address === null || nextProps.dataAddress.address.address === undefined) {
         if (this.state.dataAlamat.length > 0) {
           this.setState({
@@ -162,6 +165,12 @@ class PurchaseAddToCart extends React.Component {
         })
         this.props.resetStatusAddress()
       }
+    } else if (nextProps.dataAddress.status !== 200 && nextProps.dataAddress.status !== 0) {
+      this.setState({
+        statusAlamat: false
+      })
+      ToastAndroid.show(nextProps.dataAddress.message, ToastAndroid.SHORT)
+      this.props.resetStatusAddress()
     }
     if (nextProps.dataServices.status === 200) {
       if (nextProps.dataServices.charges.length > 0) {
@@ -175,28 +184,32 @@ class PurchaseAddToCart extends React.Component {
           statusSubKurir: false
         })
       }
-    } else if (nextProps.dataServices.status > 200) {
+    } else if (nextProps.dataServices.status !== 200 && nextProps.dataServices.status !== 0) {
       this.setState({
         dataCost: [],
         statusSubKurir: false
       })
+      ToastAndroid.show(nextProps.dataServices.message, ToastAndroid.SHORT)
+      nextProps.dataServices.status = 0
     }
     if (nextProps.dataCart.status === 200) {
       if (this.state.activeScene) {
-        this.setState({ loadingCart: false, modalNotifikasi: true })
+        this.setState({ loadingCart: false, modalNotifikasi: true, activeScene: false })
+        this.props.resetCreateStatus()
       }
-      this.props.resetCreateStatus()
-    } else if (nextProps.dataCart.status > 200) {
-      this.setState({ loadingCart: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataCart.message, ToastAndroid.LONG)
-      this.props.resetCreateStatus()
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
+      if (this.state.activeScene) {
+        this.setState({ loadingCart: false })
+        ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
+        this.props.resetCreateStatus()
+      }
     }
     if (nextProps.dataAddressList.status === 200) {
-      console.log(nextProps.dataAddressList.address)
       this.setState({ dataAlamat: nextProps.dataAddressList.address, loadingAlamat: false })
-    } else if (nextProps.dataAddressList.status > 200) {
+    } else if (nextProps.dataAddressList.status !== 200 && nextProps.dataAddressList.status !== 0) {
       this.setState({ loadingAlamat: false })
-      ToastAndroid.show('Terjadi Kesalahan.. ' + nextProps.dataAddressList.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataAddressList.message, ToastAndroid.SHORT)
+      nextProps.dataAddressList.status = 0
     }
   }
 
@@ -257,38 +270,81 @@ class PurchaseAddToCart extends React.Component {
   }
 
   substract () {
-    const {countProduct, price, ongkirSatuan} = this.state
+    const {countProduct, price, ongkirSatuan, grosir, dataGrosir, tempPrice} = this.state
     if (countProduct > 1) {
-      const temp = (countProduct - 1) * price
-      const temp2 = Math.ceil((this.state.countProduct - 1) * this.state.weight / 1000) * ongkirSatuan
-      this.setState({
-        countProduct: countProduct - 1,
-        subtotal: temp,
-        ongkir: temp2
-      })
+      const tempCount = countProduct - 1
+      const temp = tempCount * price
+      const temp2 = Math.ceil(tempCount * this.state.weight / 1000) * ongkirSatuan
+      if (grosir) {
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: tempCount * dataGrosir[i].price,
+              ongkir: temp2,
+              price: dataGrosir[i].price
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: temp,
+              ongkir: temp2,
+              price: tempPrice
+            })
+          }
+        }
+      } else {
+        this.setState({
+          countProduct: tempCount,
+          subtotal: temp,
+          ongkir: temp2,
+          price: tempPrice
+        })
+      }
     }
   }
 
   add () {
-    const {countProduct, price, ongkirSatuan} = this.state
-    const temp = (countProduct + 1) * price
-    const temp2 = Math.ceil((this.state.countProduct + 1) * this.state.weight / 1000) * ongkirSatuan
-    this.setState({
-      countProduct: countProduct + 1,
-      subtotal: temp,
-      ongkir: temp2
-    })
+    const {countProduct, tempPrice, price, ongkirSatuan, stock, grosir, dataGrosir} = this.state
+    const tempCount = countProduct + 1
+    const temp = tempCount * price
+    const temp2 = Math.ceil(tempCount * this.state.weight / 1000) * ongkirSatuan
+    if (tempCount <= stock) {
+      if (grosir) {
+        for (var i = 0; i < dataGrosir.length; i++) {
+          if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: tempCount * dataGrosir[i].price,
+              ongkir: temp2,
+              price: dataGrosir[i].price
+            })
+            break
+          } else if (tempCount < dataGrosir[0].min) {
+            this.setState({
+              countProduct: tempCount,
+              subtotal: temp,
+              ongkir: temp2,
+              price: tempPrice
+            })
+          }
+        }
+      } else {
+        this.setState({
+          countProduct: tempCount,
+          subtotal: temp,
+          ongkir: temp2,
+          price: tempPrice
+        })
+      }
+    }
   }
 
   renderSubtotal () {
     const {price, countProduct} = this.state
     const temp = parseInt(price) * countProduct
-    const totalHarga = MaskService.toMask('money', temp, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(temp)
     return (
       <View style={[styles.qualityContainer, {paddingTop: 25}]}>
         <View style={[styles.eachQualiyNoMargin, {paddingBottom: 25, flex: 1}]}>
@@ -386,7 +442,15 @@ class PurchaseAddToCart extends React.Component {
     const { kurir, tipeKurir, asuransi, errorKurir, errorSubKurir } = this.state
     let renderkurir
     let rendersubkurir
-    let renderasuransi
+    let renderasuransi =
+    (<TouchableOpacity
+      style={styles.containerPicker}
+      onPress={() => this.setState({ modalAsuransi: true })}
+    >
+      <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
+      <Text style={styles.teksPicker}>{asuransi}</Text>
+      <Image source={Images.down} style={styles.imagePicker} />
+    </TouchableOpacity>)
 
     if (kurir === '' && !errorKurir) {
       renderkurir = (
@@ -436,27 +500,15 @@ class PurchaseAddToCart extends React.Component {
         <Text style={styles.teksPicker}>{tipeKurir}</Text>
         <Image source={Images.down} style={styles.imagePicker} />
       </TouchableOpacity>)
-
-      renderasuransi =
-      (<TouchableOpacity
-        style={styles.containerPicker}
-        onPress={() => this.setState({ modalAsuransi: true })}
-      >
-        <Text style={[styles.teksPicker, { flex: 1 }]}>Asuransi</Text>
-        <Text style={styles.teksPicker}>{asuransi}</Text>
-        <Image source={Images.down} style={styles.imagePicker} />
-      </TouchableOpacity>)
     } else if (kurir !== '' && tipeKurir === '' && !errorSubKurir) {
       rendersubkurir =
-      (<View>
-        <TouchableOpacity
-          style={styles.containerPicker}
-          onPress={() => this.setState({ modalSubkurir: true })}
-        >
-          <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
-          <Image source={Images.down} style={styles.imagePicker} />
-        </TouchableOpacity>
-        <View style={styles.separator} /></View>)
+      (<TouchableOpacity
+        style={styles.containerPicker}
+        onPress={() => this.setState({ modalSubkurir: true })}
+      >
+        <Text style={[styles.buttonIsiInfo, { flex: 1 }]}>Paket Pengiriman</Text>
+        <Image source={Images.down} style={styles.imagePicker} />
+      </TouchableOpacity>)
     } else if (kurir !== '' && tipeKurir === '' && errorSubKurir) {
       rendersubkurir =
       (<View>
@@ -508,6 +560,10 @@ class PurchaseAddToCart extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRincian () {
     const { subtotal, price, expeditionFee, ongkir, asuransi, countProduct } = this.state
     let temp2 = 0
@@ -517,30 +573,10 @@ class PurchaseAddToCart extends React.Component {
       temp2 = 0
     }
     const total = parseInt(subtotal) + parseInt(temp2) + parseInt(ongkir)
-    const hargaSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaBiayaAsuransi = MaskService.toMask('money', temp2, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaOngkir = MaskService.toMask('money', ongkir, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaTotal = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSubtotal = this.maskedMoney(subtotal)
+    const hargaBiayaAsuransi = this.maskedMoney(temp2)
+    const hargaOngkir = this.maskedMoney(ongkir)
+    const hargaTotal = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianNoBorder}>
@@ -583,12 +619,7 @@ class PurchaseAddToCart extends React.Component {
 
   renderKode () {
     const { diskon } = this.state
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaDiskon = this.maskedMoney(diskon)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.rincianDiskon}>
@@ -597,7 +628,7 @@ class PurchaseAddToCart extends React.Component {
             <Text style={styles.textHapus}>Batal</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.diskon}>- {hargaDiskon}</Text>
+        <Text allowFontScaling style={styles.diskon}>- {hargaDiskon}</Text>
       </View>
     )
   }
@@ -678,20 +709,17 @@ class PurchaseAddToCart extends React.Component {
     if (tipeKurir !== '' && !dataKosong && !errorKurir && !errorSubKurir) {
       this.setState({ loadingCart: true })
       setTimeout(() => {
-        this.props.addCart(idProduct, idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, service, originId, roIdDistrict)
+        this.props.addCart(String(idProduct), idKurir, idSubKurir, countProduct, catatan, idAlamat, boolAsuransi, service, originId, roIdDistrict)
       }, 200)
     }
   }
 
   keranjang () {
     this.setState({ modalNotifikasi: false })
-    NavigationActions.purchasecart({
-      type: ActionConst.PUSH
-    })
-    this.setState({
-      activeScene: false
-    })
     this.props.getCart()
+    NavigationActions.purchasecart({
+      type: ActionConst.REPLACE
+    })
   }
 
   home () {
@@ -868,7 +896,7 @@ class PurchaseAddToCart extends React.Component {
   }
 
   renderListAlamat (rowData, section, row) {
-    const centang = row === this.state.activeAlamat ? Images.centang : null
+    const centang = row === this.state.activeAlamat ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -910,7 +938,7 @@ class PurchaseAddToCart extends React.Component {
   }
 
   renderListKurir (rowData, section, row) {
-    const centang = row === this.state.activeKurir ? Images.centang : null
+    const centang = row === this.state.activeKurir ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -946,7 +974,13 @@ class PurchaseAddToCart extends React.Component {
   }
 
   renderListSubKurir (rowData, section, row) {
-    const centang = row === this.state.activeSubKurir ? Images.centang : Images.closewhite
+    const centang = row === this.state.activeSubKurir ? Images.centangBiru : Images.closewhite
+    let day
+    if (rowData.etd.toLowerCase().includes('hari') || rowData.etd.toLowerCase().includes('jam')) {
+      day = ''
+    } else {
+      day = 'hari'
+    }
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}
@@ -954,7 +988,7 @@ class PurchaseAddToCart extends React.Component {
         onPress={() => this.onPressSubKurir(row)}
       >
         <Text style={[styles.textBagikan, { marginLeft: 0, flex: 1 }]}>{rowData.full_name}</Text>
-        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd} hari</Text>
+        <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.etd} {day}</Text>
         <Text style={[styles.textBagikan, { marginRight: 10 }]}>{rowData.cost}</Text>
         <Image source={centang} style={styles.gambarCentang} />
       </TouchableOpacity>
@@ -983,7 +1017,7 @@ class PurchaseAddToCart extends React.Component {
   }
 
   renderListAsuransi (rowData, section, row) {
-    const centang = row === this.state.activeAsuransi ? Images.centang : null
+    const centang = row === this.state.activeAsuransi ? Images.centangBiru : null
     return (
       <TouchableOpacity
         style={[styles.menuLaporkan, { padding: 20 }]}

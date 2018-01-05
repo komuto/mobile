@@ -131,10 +131,46 @@ const images = {
   complain: require('../Images/complain.png'),
   messageBuyer: require('../Images/Icons/icon-envelope.png'),
   deletWhite: require('../Images/Icons/icon-delete-white.png'),
+<<<<<<< HEAD
   emptyMessage: require('../Images/empty-message.png'),
   emptyDiscussion: require('../Images/empty-discussion.png'),
   emptyReview: require('../Images/empty-review.png'),
   emptyResolution: require('../Images/empty-resolution.png')
+=======
+  notFound: require('../Images/not-found.png'),
+  emptyWishlist: require('../Images/empty-wishlist.png'),
+  emptyMessage: require('../Images/empty-message.png'),
+  emptyDiscussion: require('../Images/empty-discussion.png'),
+  emptyReview: require('../Images/empty-review.png'),
+  // emptyResolution: require('../Images/empty-resolution.png'),
+  getBalance: require('../Images/Icons/icon-get-balance.png'),
+  status: require('../Images/Icons/icon-status.png'),
+  pullBalance: require('../Images/Icons/icon-pull-balance.png'),
+  statusPullBalance: require('../Images/Icons/icon-status-balance.png'),
+  iconHistory: require('../Images/Icons/icon-history.png'),
+  waiting: require('../Images/Icons/icon-waiting.png'),
+  saldoNotification: require('../Images/saldo.png'),
+  rejectOrder: require('../Images/reject-order.png'),
+  confrimOrder: require('../Images/confrim-order.png'),
+  listOrder: require('../Images/Icons/icon-daftar-penjualan.png'),
+  confrimDelivery: require('../Images/Icons/icon-konfirmasi-pengiriman.png'),
+  newOrder: require('../Images/Icons/icon-pesanan-baru.png'),
+  infoBlue: require('../Images/Icons/icon-info-blue.png'),
+  receiptSend: require('../Images/resi-send.png'),
+  filterWhite: require('../Images/Icons/icon-filter-white.png'),
+  infoOcher: require('../Images/Icons/icon-info-ocher.png'),
+  infoDone: require('../Images/Icons/icon-done-green.png'),
+  emptyTransaction: require('../Images/empty-transaction.png'),
+  sendMessage: require('../Images/Icons/send-message.png'),
+  sendMessageInactive: require('../Images/Icons/send-message-inactive.png'),
+  emptyCatalog: require('../Images/empty-catalog.png'),
+  emptyDelivery: require('../Images/empty-delivery.png'),
+  emptyDropshipper: require('../Images/empty-dropshipper.png'),
+  emptySales: require('../Images/empty-sales.png'),
+  emptyComplain: require('../Images/empty-state-complain.png'),
+  emptyResolution: require('../Images/empty-state-resolution.png'),
+  notVerified: require('../Images/Icons/unverified.png')
+>>>>>>> beny
 }
 
 export default images

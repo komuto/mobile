@@ -6,14 +6,17 @@ import {
   Image,
   TouchableOpacity,
   ToastAndroid,
-  AsyncStorage,
-  Modal
+  Modal,
+  ActivityIndicator
 } from 'react-native'
-import { MaskService } from 'react-native-masked-text'
+import Spinner from '../Components/Spinner'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 // const LoginManager = require('react-native').NativeModules.FBLoginManager
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
+import * as storeAction from '../actions/stores'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -21,7 +24,7 @@ import * as loginaction from '../actions/user'
 import styles from './Styles/ProfileStyle'
 
 // Images
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 
 class Profile extends React.Component {
 
@@ -30,7 +33,7 @@ class Profile extends React.Component {
     this.state = {
       token: '',
       nama: '',
-      saldo: '0',
+      saldo: 0,
       status: '',
       email: '',
       foto: 'default',
@@ -41,40 +44,74 @@ class Profile extends React.Component {
       statusToko: '',
       verifyNoHp: '',
       nomerHape: '',
-      loading: true
+      loading: false,
+      isStoreVerify: true,
+      createStoresAt: '',
+      verificationTime: 0,
+      loadingScreen: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (!nextProps.datalogin.login) {
       this.setState({
-        isLogin: false
+        isLogin: false,
+        loadingScreen: false
       })
     } else if (nextProps.dataProfile.status === 200) {
       this.setState({
         isLogin: true,
+        loadingScreen: false,
         nama: nextProps.dataProfile.user.user.name,
-        saldo: String(nextProps.dataProfile.user.user.saldo_wallet),
+        saldo: nextProps.dataProfile.user.user.saldo_wallet,
         foto: nextProps.dataProfile.user.user.photo || 'default',
         status: nextProps.dataProfile.verifyStatus,
         email: nextProps.dataProfile.user.user.email,
         verifyNoHp: nextProps.dataProfile.user.user.is_phone_verified,
-        nomerHape: nextProps.dataProfile.user.user.phone_number,
-        namaToko: nextProps.dataProfile.user.store.name,
-        fotoToko: nextProps.dataProfile.user.store.logo,
-        statusToko: nextProps.dataProfile.user.store.status
+        nomerHape: nextProps.dataProfile.user.user.phone_number
       })
-    } else if (nextProps.dataProfile.status > 200) {
+      if (nextProps.dataProfile.user.store !== null) {
+        this.setState({
+          namaToko: nextProps.dataProfile.user.store.name,
+          fotoToko: nextProps.dataProfile.user.store.logo,
+          statusToko: nextProps.dataProfile.user.store.status,
+          isStoreVerify: nextProps.dataProfile.user.store.is_verified,
+          createStoresAt: nextProps.dataProfile.user.store.created_at,
+          verificationTime: nextProps.dataProfile.user.store.verification_left
+        })
+      }
+    } else if (nextProps.dataProfile.status !== 200 && nextProps.dataProfile.status !== 0) {
+      this.setState({ loadingScreen: false })
+      ToastAndroid.show(nextProps.dataProfile.message, ToastAndroid.SHORT)
+    }
+    if (nextProps.dataResendVerification.status === 200) {
       this.setState({
-        loading: false
+        loading: false,
+        loadingScreen: false
       })
-      ToastAndroid.show('Login gagal ' + nextProps.dataProfile.message, ToastAndroid.LONG)
+      ToastAndroid.show(
+        'Link verifikasi berhasil dikirimkan.. Silakan cek email ' +
+        this.state.email + ' untuk melakukan verifikasi',
+        ToastAndroid.SHORT
+      )
+      nextProps.dataResendVerification.status = 0
+    } else if (nextProps.dataResendVerification.status !== 200 && nextProps.dataResendVerification.status !== 0) {
+      this.setState({
+        loading: false,
+        loadingScreen: false
+      })
+      ToastAndroid.show(nextProps.dataResendVerification.message, ToastAndroid.SHORT)
+      nextProps.dataResendVerification.status = 0
     }
   }
 
   componentDidMount () {
     if (this.state.isLogin) {
       this.props.getProfile()
+    } else {
+      this.setState({
+        loadingScreen: false
+      })
     }
   }
 
@@ -86,15 +123,31 @@ class Profile extends React.Component {
     NavigationActions.register({ type: ActionConst.PUSH })
   }
 
-  logout () {
-    AsyncStorage.setItem('token', '')
-    this.props.stateLogin(false)
-    this.props.logout()
-    // LoginManager.logOut()
+  resend () {
+    this.setState({
+      loading: true
+    })
+    this.props.resendVerification()
   }
 
   renderStatus () {
-    const { status } = this.state
+    const { status, loading } = this.state
+    let renderButton
+    if (!loading) {
+      renderButton = (
+        <TouchableOpacity style={styles.buttonVerifikasi} onPress={() => this.resend()}>
+          <Text style={styles.textButtonVerifikasi}>
+            Kirim Ulang link verifikasi
+          </Text>
+        </TouchableOpacity>
+      )
+    } else {
+      renderButton = (
+        <View style={styles.buttonVerifikasi}>
+          <Spinner color={Colors.orange} />
+        </View>
+      )
+    }
     if (status === 0) {
       return (
         <View style={styles.verifikasiContainer}>
@@ -106,17 +159,13 @@ class Profile extends React.Component {
           </View>
           <View style={styles.pesanContainer}>
             <Text multiline style={styles.verifikasi}>
-              Verifikasikan email untuk mengakses{'\n'}semua menu
+              Verifikasikan email untuk mengakses semua menu
             </Text>
             <Text multiline style={styles.klikLink}>
-              Silahkan klik link verifikasi yang telah kami {'\n'}
+              Silahkan klik link verifikasi yang telah kami
               kirimkan ke {this.state.email}
             </Text>
-            <TouchableOpacity style={styles.buttonVerifikasi}>
-              <Text style={styles.textButtonVerifikasi}>
-                Kirim Ulang link verifikasi
-              </Text>
-            </TouchableOpacity>
+            {renderButton}
           </View>
         </View>
       )
@@ -140,6 +189,13 @@ class Profile extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    if (value <= 0) {
+      return value
+    }
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProfile () {
     if (!this.state.isLogin) {
       return (
@@ -150,34 +206,29 @@ class Profile extends React.Component {
               Masuk ke Akun Anda untuk { '\n' }mempermudah proses pembelian
             </Text>
           </View>
-          <View style={styles.welcome2Container}>
+          {/* <View style={styles.welcome2Container}>
             <Text style={styles.welcome2Text}>
               Terima Kasih, Anda telah berhasil melakukan { '\n' }
               pembelian Token Listrik. Untuk melihat Token { '\n' }
               silahkan menuju bagian Transaksi
             </Text>
-          </View>
+          </View> */}
           <View style={styles.containerButton}>
             <TouchableOpacity style={styles.buttonRegister} onPress={() => this.register()}>
               <Text style={styles.textButtonRegister}>
-                Register
+                Daftar
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.buttonLogin} onPress={() => this.login()}>
               <Text style={styles.textButtonLogin}>
-                Login
+                Masuk
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       )
     }
-    const money = MaskService.toMask('money', this.state.saldo, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const money = this.maskedMoney(this.state.saldo)
     return (
       <View>
         {this.renderStatus()}
@@ -196,7 +247,10 @@ class Profile extends React.Component {
               {this.verifikasiNoHp()}
               <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.profile, {marginBottom: 1}]}>
+            <TouchableOpacity
+              style={[styles.profile, {marginBottom: 1}]}
+              onPress={() => this.saldo()}
+            >
               <Image source={Images.saldo} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
@@ -208,7 +262,7 @@ class Profile extends React.Component {
               </Text>
               <Image source={Images.rightArrow} style={styles.rightArrow} />
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.profile, {borderBottomWidth: 0}]}>
+            <TouchableOpacity onPress={() => this.handleListFavStore()} style={[styles.profile, {borderBottomWidth: 0}]}>
               <Image source={Images.daftar} style={styles.imageCategory} />
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
@@ -220,17 +274,6 @@ class Profile extends React.Component {
           </View>
         </View>
         {this.rernderToko()}
-        <TouchableOpacity style={styles.dataProfileContainer} onPress={() => this.logout()}>
-          <View style={styles.profile}>
-            <Image source={Images.logout} style={styles.imageCategory} />
-            <View style={styles.namaContainer}>
-              <Text style={styles.textNama}>
-                Logout
-              </Text>
-            </View>
-            <Image source={Images.rightArrow} style={styles.rightArrow} />
-          </View>
-        </TouchableOpacity>
         {this.modalVerifikasiNoTelepon()}
       </View>
     )
@@ -241,7 +284,7 @@ class Profile extends React.Component {
       return (
         <View style={styles.notifContainer}>
           <Text style={styles.notif}>
-            !
+            1
           </Text>
         </View>
       )
@@ -254,6 +297,18 @@ class Profile extends React.Component {
 
   handleKelolaAkun () {
     NavigationActions.accountmanage({
+      type: ActionConst.PUSH
+    })
+  }
+
+  saldo () {
+    NavigationActions.balance({
+      type: ActionConst.PUSH
+    })
+  }
+
+  handleListFavStore () {
+    NavigationActions.listfavoritestores({
       type: ActionConst.PUSH
     })
   }
@@ -291,8 +346,8 @@ class Profile extends React.Component {
         <View style={styles.dataProfileContainer}>
           <TouchableOpacity onPress={() => this.handleCekNoHp()}>
             <View style={[styles.profile, {borderBottomWidth: 0}]}>
-              <View style={{borderRadius: 21, backgroundColor: 'red'}}>
-                <Image source={{uri: this.state.fotoToko}} style={[styles.imageCategory]} />
+              <View style={{borderRadius: 200, backgroundColor: Colors.paleGreyFive}}>
+                <Image source={{uri: this.state.fotoToko}} style={[styles.styleFoto]} />
               </View>
               <View style={styles.namaContainer}>
                 <Text style={styles.textNama}>
@@ -334,8 +389,12 @@ class Profile extends React.Component {
       if (this.state.statusToko === 1) {
         NavigationActions.storedashboard({
           type: ActionConst.PUSH,
-          title: 'Toko Anda'
+          title: 'Toko Anda',
+          isStoreVerify: this.state.isStoreVerify,
+          createStoresAt: this.state.createStoresAt,
+          verificationTime: this.state.verificationTime
         })
+        this.props.getUnreadDispute()
       } else {
         NavigationActions.infostore({
           type: ActionConst.PUSH,
@@ -360,10 +419,17 @@ class Profile extends React.Component {
   }
 
   render () {
+    const spinnerLoading = this.state.loadingScreen
+      ? (<View style={styles.spinnerScreen}>
+        <ActivityIndicator color={Colors.red} size='large' />
+      </View>) : (<View />)
     return (
-      <ScrollView style={styles.container}>
-        {this.renderProfile()}
-      </ScrollView>
+      <View style={styles.container}>
+        <ScrollView>
+          {this.renderProfile()}
+        </ScrollView>
+        {spinnerLoading}
+      </View>
     )
   }
 }
@@ -373,7 +439,9 @@ const mapDispatchToProps = (dispatch) => {
     stateLogin: (login) => dispatch(loginaction.stateLogin({login})),
     getProfile: (login) => dispatch(loginaction.getProfile()),
     logout: (login) => dispatch(loginaction.logout()),
-    sentOTP: () => dispatch(loginaction.sendOTPPhone())
+    sentOTP: () => dispatch(loginaction.sendOTPPhone()),
+    resendVerification: () => dispatch(loginaction.resendSignup()),
+    getUnreadDispute: () => dispatch(storeAction.getUnreadDisputeStore())
   }
 }
 
@@ -381,7 +449,8 @@ const mapStateToProps = (state) => {
   return {
     datalogin: state.isLogin,
     dataProfile: state.profile,
-    dataOTP: state.sendOTPPhone
+    dataOTP: state.sendOTPPhone,
+    dataResendVerification: state.alterUser
   }
 }
 

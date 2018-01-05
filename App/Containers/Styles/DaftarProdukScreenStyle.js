@@ -8,14 +8,10 @@ export default StyleSheet.create({
     marginTop: Metrics.navBarHeight
   },
   spinner: {
-    position: 'absolute',
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'black',
     width: Metrics.screenWidth,
-    height: Metrics.screenHeight,
-    opacity: 0.5
+    height: Metrics.screenHeight - Metrics.navBarHeight - 100
   },
   textHeader: {
     flex: 1,
@@ -83,9 +79,9 @@ export default StyleSheet.create({
   },
   floatButton: {
     position: 'absolute',
-    bottom: 10,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 140,
     left: 10,
-    backgroundColor: 'rgba(64,72,82,0.8)',
+    backgroundColor: 'rgba(64,72,82,0.6)',
     borderRadius: 5,
     width: 150,
     height: 45,
@@ -107,7 +103,7 @@ export default StyleSheet.create({
   },
   create: {
     position: 'absolute',
-    bottom: 10,
+    top: Metrics.screenHeight - Metrics.navBarHeight - 150,
     right: 10,
     backgroundColor: Colors.bluesky,
     borderRadius: 200,
@@ -144,7 +140,7 @@ export default StyleSheet.create({
   },
   inputText: {
     flex: 1,
-    fontSize: Fonts.size.smallMed,
+    fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.regular,
     marginLeft: 10
   },
@@ -197,7 +193,7 @@ export default StyleSheet.create({
   },
   editContainer: {
     position: 'absolute',
-    top: 20,
+    top: 45,
     right: 20,
     height: Metrics.screenHeight,
     flexDirection: 'row',
@@ -208,7 +204,6 @@ export default StyleSheet.create({
     borderBottomWidth: 0.5
   },
   modalContainer: {
-    position: 'absolute',
     width: Metrics.screenWidth,
     height: Metrics.screenHeight,
     backgroundColor: 'rgba(0,0,0,0.5)'
@@ -249,5 +244,31 @@ export default StyleSheet.create({
     padding: 20,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 80,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 195,
+    height: 172,
+    resizeMode: 'contain',
+    marginBottom: 10
+  },
+  textNotif: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  price: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
   }
 })

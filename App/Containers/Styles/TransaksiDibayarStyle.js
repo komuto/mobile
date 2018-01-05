@@ -47,7 +47,7 @@ export default StyleSheet.create({
     flexDirection: 'column'
   },
   textPembayaran: {
-    fontFamily: Fonts.type.regular,
+    fontFamily: Fonts.type.bold,
     fontSize: Fonts.size.medium,
     letterSpacing: 0.22,
     color: Colors.greenish
@@ -79,7 +79,7 @@ export default StyleSheet.create({
     color: Colors.darkgrey
   },
   textTitle: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     fontFamily: Fonts.type.regular,
     lineHeight: 21,
     letterSpacing: 0.22,
@@ -217,22 +217,40 @@ export default StyleSheet.create({
     color: Colors.snow
   },
   containerBarang: {
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
     backgroundColor: Colors.snow,
     borderBottomWidth: 0.5,
     borderBottomColor: Colors.silver,
-    flexDirection: 'row'
+    flexDirection: 'column'
+  },
+  items: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  imageRowStyle: {
+    height: 45,
+    width: 45,
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    resizeMode: 'cover'
   },
   namaBarangContainer: {
-    marginLeft: 15,
-    flexDirection: 'column',
+    flexDirection: 'row',
+    marginTop: -3,
     flex: 1
   },
   imageBarang: {
-    height: 60,
-    width: 60,
-    borderRadius: 5,
-    resizeMode: 'contain'
+    height: 35,
+    width: 35,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
   },
   modalContainer: {
     position: 'absolute',
@@ -279,10 +297,33 @@ export default StyleSheet.create({
     fontSize: Fonts.size.medium,
     fontFamily: Fonts.type.bold
   },
+  morePictures: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 5,
+    height: 45,
+    width: 45,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textTitleWhite: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    lineHeight: 21,
+    letterSpacing: 0.2,
+    color: Colors.snow
+  },
+  containerStatusItem: {
+    flexDirection: 'column',
+    backgroundColor: Colors.snow,
+    marginBottom: 10
+  },
   warnaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 20
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 20,
+    paddingRight: 20
   },
   warna: {
     width: 10,

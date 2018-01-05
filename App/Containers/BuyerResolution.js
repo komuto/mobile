@@ -1,12 +1,24 @@
 import React from 'react'
+<<<<<<< HEAD
 import { ToastAndroid, ActivityIndicator, ScrollView, Modal, TextInput, Text, View, Image, ListView, TouchableOpacity } from 'react-native'
+=======
+import { ToastAndroid, RefreshControl, ActivityIndicator, ScrollView, Modal, TextInput, Text, View, Image, ListView, TouchableOpacity } from 'react-native'
+>>>>>>> beny
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import ScrollableTabView from 'react-native-scrollable-tab-view'
 import CameraModal from '../Components/CameraModal'
+<<<<<<< HEAD
 import moment from 'moment'
 import * as userAction from '../actions/user'
 import * as storeAction from '../actions/stores'
+=======
+import * as userAction from '../actions/user'
+import * as storeAction from '../actions/stores'
+import {isFetching, isError, isFound} from '../Services/Status'
+import moment from 'moment'
+import Reactotron from 'reactotron-react-native'
+>>>>>>> beny
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -20,6 +32,15 @@ class BuyerResolution extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+<<<<<<< HEAD
+=======
+    this.submitting = {
+      done: false,
+      waiting: false,
+      upload: false,
+      create: false
+    }
+>>>>>>> beny
     this.state = {
       loading: false,
       tabViewStyle: {
@@ -57,15 +78,38 @@ class BuyerResolution extends React.Component {
       showModalCamera: false,
       count: 0,
       images: [],
+<<<<<<< HEAD
       dataResolve: [],
       dataUnresolve: [],
       choosenPriority: '',
       choosenTopic: '',
       buttonDisable: false
+=======
+      choosenPriority: 1,
+      choosenTopic: 1,
+      buttonDisable: false,
+      resolveState: {
+        data: [],
+        page: 1,
+        loadmore: false,
+        isRefreshing: true,
+        isLoading: true,
+        gettingData: true
+      },
+      unresolveState: {
+        data: [],
+        page: 1,
+        loadmore: false,
+        isRefreshing: true,
+        isLoading: true,
+        gettingData: true
+      }
+>>>>>>> beny
     }
   }
 
   componentWillReceiveProps (nextProps) {
+<<<<<<< HEAD
     if (nextProps.dataResolutionResolve.status === 200 && nextProps.dataResolutionUnresolve.status === 200) {
       this.setState({
         dataResolve: nextProps.dataResolutionResolve.resolutions,
@@ -136,6 +180,219 @@ class BuyerResolution extends React.Component {
   }
 
   handleResolution (typeMessage) {
+=======
+    const {dataResolutionResolve, dataResolutionUnresolve, dataPhoto, dataCreateResolution} = nextProps
+
+    if (!isFetching(dataResolutionResolve) && this.submitting.done) {
+      this.submitting = { ...this.submitting, done: false }
+      if (isError(dataResolutionResolve)) {
+        ToastAndroid.show(dataResolutionResolve.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataResolutionResolve)) {
+        const isFound = dataResolutionResolve.resolutions.length
+        if (isFound >= 10) {
+          const data = [...this.state.resolveState.data, ...dataResolutionResolve.resolutions]
+          this.setState({
+            resolveState: {
+              data: data,
+              isLoading: false,
+              loadmore: true,
+              page: this.state.resolveState + 1,
+              isRefreshing: false,
+              gettingData: false
+            }
+          })
+        } else {
+          const data = [...this.state.resolveState.data, ...dataResolutionResolve.resolutions]
+          this.setState({
+            resolveState: {
+              data: data,
+              isLoading: true,
+              loadmore: false,
+              page: 1,
+              isRefreshing: false,
+              gettingData: false
+            }
+          })
+        }
+      }
+    }
+
+    if (!isFetching(dataResolutionUnresolve) && this.submitting.waiting) {
+      this.submitting = { ...this.submitting, waiting: false }
+      if (isError(dataResolutionUnresolve)) {
+        ToastAndroid.show(dataResolutionUnresolve.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataResolutionUnresolve)) {
+        const isFound = dataResolutionUnresolve.resolutions.length
+        if (isFound >= 10) {
+          const data = [...this.state.unresolveState.data, ...dataResolutionUnresolve.resolutions]
+          this.setState({
+            unresolveState: {
+              data: data,
+              isLoading: false,
+              loadmore: true,
+              page: this.state.unresolveState.page + 1,
+              isRefreshing: false,
+              gettingData: false
+            }
+          })
+        } else {
+          const data = [...this.state.unresolveState.data, ...dataResolutionUnresolve.resolutions]
+          this.setState({
+            unresolveState: {
+              data: data,
+              isLoading: true,
+              loadmore: false,
+              page: 1,
+              isRefreshing: false,
+              gettingData: false
+            }
+          })
+        }
+      }
+    }
+
+    if (!isFetching(dataPhoto) && this.submitting.upload) {
+      this.submitting = { ...this.submitting, upload: false }
+      if (isError(dataPhoto)) {
+        ToastAndroid.show(dataPhoto.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataPhoto)) {
+        let tempPhoto = []
+        dataPhoto.payload.images.map((data, i) => {
+          tempPhoto.push({'name': data.name})
+        })
+        this.submitting.create = true
+        this.props.createResolution(
+          this.state.choosenPriority,
+          this.state.choosenTopic,
+          this.state.titleComplaint,
+          this.state.messageComplaint,
+          tempPhoto
+        )
+      }
+    }
+
+    if (!isFetching(dataCreateResolution) && this.submitting.create) {
+      this.submitting = { ...this.submitting, create: false }
+      if (isError(dataCreateResolution)) {
+        ToastAndroid.show(dataCreateResolution.message, ToastAndroid.SHORT)
+      } else {
+        Reactotron.log('success')
+        this.refreshUnresolve()
+        this.refreshResolve()
+        this.setState({
+          modalCreateComplaint: false,
+          buttonDisable: false,
+          notif: true,
+          messageNotif: dataCreateResolution.message,
+          messageComplaint: '',
+          titleComplaint: '',
+          dataPriority: this.state.dataPriorityStore,
+          dataTopic: this.state.dataTopicStore,
+          choosenPriority: '',
+          choosenTopic: '',
+          foto: [],
+          gettingData: true
+        })
+      }
+    }
+  }
+
+  componentDidMount () {
+    if (!this.submitting.done) {
+      this.submitting = {
+        ...this.submitting,
+        done: true
+      }
+      this.props.getListResolutionResolve({page: 1})
+    }
+
+    if (!this.submitting.waiting) {
+      this.submitting = {
+        ...this.submitting,
+        waiting: true
+      }
+      this.props.getListResolutionUnresolve({page: 1})
+    }
+  }
+
+  loadMoreResolve = () => {
+    const { resolveState } = this.state
+    if (!resolveState.isLoading) {
+      if (resolveState.loadmore) {
+        if (!this.submitting.done) {
+          this.submitting = {
+            ...this.submitting,
+            done: true
+          }
+          let page = resolveState.page
+          this.props.getListResolutionResolve({page: page})
+        }
+      }
+    }
+  }
+
+  loadMoreUnresolve = () => {
+    const { unresolveState } = this.state
+    if (!unresolveState.isLoading) {
+      if (unresolveState.loadmore) {
+        if (!this.submitting.waiting) {
+          this.submitting = {
+            ...this.submitting,
+            waiting: true
+          }
+          let page = unresolveState.page
+          this.props.getListResolutionUnresolve({page: page})
+        }
+      }
+    }
+  }
+
+  refreshResolve = () => {
+    this.setState({
+      resolveState: {
+        data: [],
+        isLoading: true,
+        loadmore: false,
+        page: 1,
+        isRefreshing: true,
+        gettingData: true
+      }
+    })
+    if (!this.submitting.done) {
+      this.submitting = {
+        ...this.submitting,
+        done: true
+      }
+      this.props.getListResolutionResolve({page: 1})
+    }
+  }
+
+  refreshUnresolve = () => {
+    this.setState({
+      unresolveState: {
+        data: [],
+        isLoading: true,
+        loadmore: false,
+        page: 1,
+        isRefreshing: true,
+        gettingData: true
+      }
+    })
+    if (!this.submitting.waiting) {
+      this.submitting = {
+        ...this.submitting,
+        waiting: true
+      }
+      this.props.getListResolutionUnresolve({page: 1})
+    }
+  }
+
+  handleResolution (typeMessage) {
+    this.setState({notif: false})
+>>>>>>> beny
     NavigationActions.detailresolution({
       type: ActionConst.PUSH
     })
@@ -166,6 +423,7 @@ class BuyerResolution extends React.Component {
     }
   }
 
+<<<<<<< HEAD
   renderRow (rowData) {
     return (
       <TouchableOpacity onPress={() => this.handleResolution()} style={styles.renderRow}>
@@ -220,6 +478,10 @@ class BuyerResolution extends React.Component {
 
   renderRowPriority (rowData, y, x) {
     const checkPriority = rowData.isChecked ? Images.centang : null
+=======
+  renderRowPriority (rowData, y, x) {
+    const checkPriority = rowData.isChecked ? Images.centangBiru : null
+>>>>>>> beny
     return (
       <TouchableOpacity style={styles.continerCheckBox} onPress={() => this.onClickPriority(x)}>
         <View style={styles.box}>
@@ -255,7 +517,11 @@ class BuyerResolution extends React.Component {
   }
 
   renderRowTopic (rowData, y, x) {
+<<<<<<< HEAD
     const checkTopic = rowData.isChecked ? Images.centang : null
+=======
+    const checkTopic = rowData.isChecked ? Images.centangBiru : null
+>>>>>>> beny
     return (
       <TouchableOpacity style={styles.continerCheckBox} onPress={() => this.onClickTopic(x)}>
         <View style={styles.box}>
@@ -410,6 +676,12 @@ class BuyerResolution extends React.Component {
                   onClose={() => {
                     this.setState({showModalCamera: false})
                   }}
+<<<<<<< HEAD
+=======
+                  onPress={() => {
+                    this.setState({showModalCamera: false})
+                  }}
+>>>>>>> beny
                   onPhotoCaptured={(path) => {
                     this.addPhoto(path)
                   }}
@@ -444,17 +716,27 @@ class BuyerResolution extends React.Component {
       case 'message':
         ToastAndroid.show('Pesan Keluhan harus diisi', ToastAndroid.SHORT)
         break
+<<<<<<< HEAD
       case 'empty':
         ToastAndroid.show('Informasi Keluhan tidak boleh kosong', ToastAndroid.SHORT)
+=======
+      case 'foto':
+        ToastAndroid.show('Foto harus diunggah', ToastAndroid.SHORT)
+>>>>>>> beny
         break
     }
   }
 
   sendComplaint () {
+<<<<<<< HEAD
     const {choosenPriority, choosenTopic, messageComplaint, titleComplaint} = this.state
     if (choosenPriority === '' && choosenTopic === '' && messageComplaint === '' && titleComplaint === '') {
       this.onError('empty')
     } else if (choosenPriority === '') {
+=======
+    const {choosenPriority, foto, choosenTopic, messageComplaint, titleComplaint} = this.state
+    if (choosenPriority === '') {
+>>>>>>> beny
       this.onError('priority')
     } else if (choosenTopic === '') {
       this.onError('topic')
@@ -462,6 +744,7 @@ class BuyerResolution extends React.Component {
       this.onError('title')
     } else if (messageComplaint === '') {
       this.onError('message')
+<<<<<<< HEAD
     } else {
       this.setState({loading: true, buttonDisable: true})
       if (this.state.foto) {
@@ -477,12 +760,32 @@ class BuyerResolution extends React.Component {
           postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
         })
         postData.append('type', 'resolution')
+=======
+    } else if (foto.length === 0) {
+      this.onError('foto')
+    } else if (choosenPriority !== '' && choosenTopic !== '' && messageComplaint !== '' && titleComplaint !== '' && foto.length !== 0) {
+      this.setState({notif: false, loading: true, buttonDisable: true})
+      const postData = new FormData()
+      foto.map(data => {
+        postData.append('images', { uri: data, type: 'image/jpg', name: 'image.jpg' })
+      })
+      postData.append('type', 'resolution')
+      if (!this.submitting.upload) {
+        this.submitting = {
+          ...this.submitting,
+          upload: true
+        }
+>>>>>>> beny
         this.props.photoUpload(postData)
       }
     }
   }
 
   handleDetailResolution (id) {
+<<<<<<< HEAD
+=======
+    this.setState({idResolution: id, notif: false})
+>>>>>>> beny
     this.props.getDetailResolution(id)
     NavigationActions.buyerdetailresolution({
       type: ActionConst.PUSH,
@@ -510,6 +813,69 @@ class BuyerResolution extends React.Component {
     }
   }
 
+<<<<<<< HEAD
+=======
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyResolution} style={{width: 201, height: 177}} />
+        <Text style={styles.textTitleEmpty}>Pusat Resolusi Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah mengirimkan keluhan</Text>
+      </View>
+    )
+  }
+
+  checkStateResolutionUnresolve (data) {
+    const {unresolveState} = this.state
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={(rowData) => this.renderRowUnresolveResolution(rowData)}
+        onEndReached={() => this.loadMoreUnresolve()}
+        renderFooter={() => {
+          if (unresolveState.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+        contentContainerStyle={{flex: 1}}
+      />
+    )
+  }
+
+  checkStateResolutionResolve (data) {
+    const {resolveState} = this.state
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={(rowData) => this.renderRowResolveResolution(rowData)}
+        onEndReached={() => this.loadMoreResolve()}
+        renderFooter={() => {
+          if (resolveState.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+        contentContainerStyle={{flex: 1}}
+      />
+    )
+  }
+
+>>>>>>> beny
   renderRowUnresolveResolution (rowData) {
     var timeStampToDate = moment.unix(rowData.created_at).format('DD MMMM YYYY').toString()
     return (
@@ -549,10 +915,34 @@ class BuyerResolution extends React.Component {
   }
 
   render () {
+<<<<<<< HEAD
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
     </View>) : (<View />)
+=======
+    const { resolveState, unresolveState } = this.state
+    let resolveView, unresolveView
+    if (!resolveState.gettingData) {
+      if (resolveState.data.length > 0) {
+        resolveView = (this.checkStateResolutionResolve(resolveState.data))
+      } else {
+        resolveView = (this.renderEmptyState())
+      }
+    } else {
+      resolveView = (this.checkStateResolutionResolve(resolveState.data))
+    }
+
+    if (!unresolveState.gettingData) {
+      if (unresolveState.data.length > 0) {
+        unresolveView = (this.checkStateResolutionUnresolve(unresolveState.data))
+      } else {
+        unresolveView = (this.renderEmptyState())
+      }
+    } else {
+      unresolveView = (this.checkStateResolutionUnresolve(unresolveState.data))
+    }
+>>>>>>> beny
     return (
       <View style={styles.container}>
         <ScrollableTabView
@@ -566,6 +956,7 @@ class BuyerResolution extends React.Component {
           locked
           initialPage={this.state.page}
         >
+<<<<<<< HEAD
           <ScrollView tabLabel='Menunggu' ref='waiting' style={styles.scrollView}>
             {this.notif()}
             <ListView
@@ -582,6 +973,42 @@ class BuyerResolution extends React.Component {
               enableEmptySections
             />
           </ScrollView>
+=======
+          <View tabLabel='Menunggu' style={styles.containers}>
+            {this.notif()}
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={unresolveState.isRefreshing}
+                  onRefresh={this.refreshUnresolve}
+                  tintColor={Colors.red}
+                  colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                  title='Loading...'
+                  titleColor={Colors.red}
+                  progressBackgroundColor={Colors.snow}
+                />
+              }>
+              {unresolveView}
+            </ScrollView>
+          </View>
+          <View tabLabel='Terselesaikan' style={styles.containers}>
+            <ScrollView
+              tabLabel='Terselesaikan'
+              refreshControl={
+                <RefreshControl
+                  refreshing={resolveState.isRefreshing}
+                  onRefresh={this.refreshResolve}
+                  tintColor={Colors.red}
+                  colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                  title='Loading...'
+                  titleColor={Colors.red}
+                  progressBackgroundColor={Colors.snow}
+                />
+              }>
+              {resolveView}
+            </ScrollView>
+          </View>
+>>>>>>> beny
         </ScrollableTabView>
         <TouchableOpacity style={styles.create} onPress={() => this.setState({modalCreateComplaint: true})}>
           <View elevation={9}>
@@ -599,7 +1026,11 @@ const mapStateToProps = (state) => ({
   dataResolutionResolve: state.resolvedResolutions,
   dataResolutionUnresolve: state.unresolvedResolutions,
   dataPhoto: state.upload,
+<<<<<<< HEAD
   dataCreateResolution: state.resolution
+=======
+  dataCreateResolution: state.createResolution
+>>>>>>> beny
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -613,7 +1044,12 @@ const mapDispatchToProps = (dispatch) => ({
       images: images
     })),
   photoUpload: (data) => dispatch(storeAction.photoUpload({data: data})),
+<<<<<<< HEAD
   getListResolutionUnresolve: () => dispatch(userAction.getUnresolvedResolutions())
+=======
+  getListResolutionResolve: (param) => dispatch(userAction.getResolvedResolutions(param)),
+  getListResolutionUnresolve: (param) => dispatch(userAction.getUnresolvedResolutions(param))
+>>>>>>> beny
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BuyerResolution)

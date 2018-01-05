@@ -1,61 +1,79 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, ListView, Alert, ActivityIndicator } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  ToastAndroid,
+  Image,
+  TouchableOpacity,
+  ListView,
+  ActivityIndicator
+} from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 import * as homeAction from '../actions/home'
-import * as produkAction from '../actions/product'
 
-// Add Actions - replace 'Your' with whatever your reducer is called :)
-// import YourActions from '../Redux/YourRedux'
-
-// Styles
 import styles from './Styles/KategoriScreenStyle'
-
-// Images
 import { Images } from '../Themes'
 
 class Category1 extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      category1: false
+    }
     this.state = {
       search: '',
-      data: [],
+      data: props.dataAllCategory || null,
       loadingKategori: true,
       id: '',
-      categoryTitle: ''
+      categoryTitle: '',
+      gettingData: true,
+      isRefreshing: true
     }
   }
 
+  backToHome () {
+    NavigationActions.backtab({
+      type: ActionConst.RESET
+    })
+    return true
+  }
+
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataAllCategory.status === 200) {
-      this.setState({
-        data: nextProps.dataAllCategory.allCategory,
-        loadingKategori: false
-      })
-    } else if (nextProps.dataAllCategory.status > 200) {
-      this.setState({
-        loadingKategori: false
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
-    } else if (nextProps.dataAllCategory.status === 'ENOENT') {
-      this.setState({
-        loadingKategori: false
-      })
-      Alert.alert('Terjadi kesalahan', nextProps.dataAllCategory.message)
+    const {dataAllCategory} = nextProps
+
+    if (!isFetching(dataAllCategory) && this.submitting.category1) {
+      this.submitting = { ...this.submitting, category1: false }
+      if (isError(dataAllCategory)) {
+        ToastAndroid.show(dataAllCategory.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataAllCategory)) {
+        this.setState({ data: dataAllCategory, loadingKategori: false, gettingData: false })
+      }
     }
   }
 
   componentDidMount () {
-    this.props.getKategori()
+    const { data } = this.state
+    if (!data.isFound) {
+      this.submitting = {
+        ...this.submitting,
+        category1: true
+      }
+      this.props.getKategori()
+    }
   }
 
-  handleDetailKategori (rowId, title) {
+  handleDetailKategori (rowId, title, icon) {
     NavigationActions.category2({
       type: ActionConst.PUSH,
       id: rowId,
       title: title,
-      name: title
+      name: title,
+      iconProps: icon
     })
   }
 
@@ -65,18 +83,18 @@ class Category1 extends React.Component {
       type: ActionConst.PUSH,
       id: id,
       header: title,
-      name: title
+      name: title,
+      searchfrom: 'category1'
     })
-    this.props.getProduckKategori(id)
   }
 
-  renderSubListView (subCategory) {
+  renderSubListView (subCategory, iconParent) {
     if (subCategory.length <= 0) {
       return null
     } else {
       const subCategoryView = subCategory.map((obj, i) =>
-        (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name)}>
-          <Image source={Images.dapur} style={styles.imageCategory} />
+        (<TouchableOpacity key={i} style={styles.itemList} onPress={() => this.handleDetailKategori(obj.id, obj.name, iconParent)}>
+          <Image source={{uri: iconParent}} style={styles.imageCategory} />
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               {obj.name}
@@ -97,11 +115,13 @@ class Category1 extends React.Component {
       <View>
         <View style={styles.containerBanner}>
           <Text style={styles.textBanner}>
-            Lihat semua di {rowData.name}
+            {rowData.name}
           </Text>
         </View>
         <TouchableOpacity style={styles.itemList} onPress={() => this.handleAllKategori(rowData.id, rowData.name)}>
-          <Image source={{uri: rowData.icon}} style={styles.imageCategory} />
+          <View>
+            <Image source={{uri: rowData.icon_mobile}} style={styles.imageCategory} />
+          </View>
           <View style={[styles.namaContainer, {marginLeft: 15}]}>
             <Text style={styles.textNama}>
               Lihat semua di {rowData.name}
@@ -109,38 +129,50 @@ class Category1 extends React.Component {
           </View>
           <Image source={Images.rightArrow} style={styles.rightArrow} />
         </TouchableOpacity>
-        {this.renderSubListView(subCategory)}
+        {this.renderSubListView(subCategory, rowData.icon_mobile)}
       </View>
     )
   }
 
-  renderSubRow (rowData, rowId) {
-    return (
-      <TouchableOpacity style={styles.itemList} onPress={() => this.handleDetailKategori(rowData.id, rowData.name)}>
-        <Image source={Images.dapur} style={styles.imageCategory} />
-        <View style={[styles.namaContainer, {marginLeft: 15}]}>
-          <Text style={styles.textNama}>
-            {rowData.name}
-          </Text>
-        </View>
-        <Image source={Images.rightArrow} style={styles.rightArrow} />
-      </TouchableOpacity>
-    )
-  }
-
   render () {
+    const { data, gettingData } = this.state
     const spinner = this.state.loadingKategori
     ? (<View style={styles.spinnerProduk}>
-      <ActivityIndicator color='#ef5656' size='small' />
+      <ActivityIndicator color='#ef5656' size='large' />
     </View>) : (<View />)
+    let view
+    if (!gettingData) {
+      if (data.allCategory.length > 0) {
+        view = (
+          <ListView
+            dataSource={this.dataSource.cloneWithRows(this.state.data.allCategory)}
+            renderRow={this.renderRow.bind(this)}
+            initialListSize={10}
+            enableEmptySections
+          />
+        )
+      } else {
+        view = (
+          <View style={styles.imageContainer}>
+            <Image source={Images.notFound} style={styles.image} />
+            <Text style={styles.textLabel}>Produk tidak ditemukan</Text>
+            <Text style={styles.textInfo}>
+              Kami tidak bisa menemukan barang dari kategori produk ini
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={() => this.backToHome()}>
+                <Text style={styles.textButton}>Kembali ke Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      view = null
+    }
     return (
       <ScrollView style={styles.container}>
-        <ListView
-          dataSource={this.dataSource.cloneWithRows(this.state.data)}
-          renderRow={this.renderRow.bind(this)}
-          initialListSize={10}
-          enableEmptySections
-        />
+        {view}
         {spinner}
       </ScrollView>
     )
@@ -156,8 +188,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getKategori: () => dispatch(homeAction.allCategory()),
-    getProduckKategori: (categoryId) => dispatch(produkAction.listProductByCategory({category_id: categoryId}))
+    getKategori: () => dispatch(homeAction.allCategory())
   }
 }
 

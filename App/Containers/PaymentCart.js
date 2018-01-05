@@ -1,7 +1,8 @@
 import React from 'react'
-import { ScrollView, Text, View, ListView, Image } from 'react-native'
+import { ScrollView, Text, View, ListView, Image, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
 import * as cartAction from '../actions/cart'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -19,43 +20,89 @@ class PaymentCart extends React.Component {
       total: 0,
       namaDiskon: '',
       diskon: 0,
-      getCartPaymentDetail: true
+      getCartPaymentDetail: true,
+      transaction: this.props.transaction,
+      dataInvoice: []
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataCart.status === 200) {
-      if (this.state.getCartPaymentDetail) {
-        let temp = 0
-        nextProps.dataCart.cart.items.map((obj, i) =>
-          (
-            temp = temp + obj.total_price
+      if (!this.state.transaction) {
+        if (this.state.getCartPaymentDetail) {
+          let temp = 0
+          nextProps.dataCart.cart.items.map((obj, i) =>
+            (
+              temp = temp + obj.total_price + obj.shipping.delivery_cost
+            )
           )
-        )
-        this.setState({
-          dataPembayaran: nextProps.dataCart.cart.items,
-          getCartPaymentDetail: false
-        })
-        if (nextProps.dataCart.cart.promo !== null) {
-          if (nextProps.dataCart.cart.promo.type === 0) {
+          this.setState({
+            dataPembayaran: nextProps.dataCart.cart.items,
+            getCartPaymentDetail: false
+          })
+          if (nextProps.dataCart.cart.promo !== null) {
+            if (nextProps.dataCart.cart.promo.type === 0) {
+              this.setState({
+                diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
+                total: temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
+                namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              })
+            } else {
+              this.setState({
+                diskon: nextProps.dataCart.cart.promo.nominal,
+                total: temp - parseInt(nextProps.dataCart.cart.promo.nominal),
+                namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              })
+            }
+          } else {
             this.setState({
-              diskon: parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
-              total: temp - parseInt(nextProps.dataCart.cart.promo.percentage) * temp / 100,
-              namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              total: temp
+            })
+          }
+          this.props.getCartReset()
+        }
+      }
+    } else if (nextProps.dataCart.status !== 200 && nextProps.dataCart.status !== 0) {
+      if (!this.state.transaction) {
+        if (this.state.getCartPaymentDetail) {
+          ToastAndroid.show(nextProps.dataCart.message, ToastAndroid.SHORT)
+          this.props.getCartReset()
+        }
+      }
+    }
+    if (nextProps.dataTransaction.status === 200) {
+      if (this.state.transaction) {
+        this.setState({
+          dataPembayaran: nextProps.dataTransaction.transaction.invoices[0].items,
+          dataInvoice: nextProps.dataTransaction.transaction.invoices[0],
+          getCartPaymentDetail: false
+        }) //
+        const discount = nextProps.dataTransaction.transaction.bucket.promo
+        if (discount === '' || discount === undefined || discount === null) {
+          this.setState({
+            total: nextProps.dataTransaction.transaction.summary_transaction.total_price
+          })
+        } else {
+          const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
+          const tempTotal = nextProps.dataTransaction.transaction.summary_transaction.total_price
+          if (typeDiscount === 0) {
+            this.setState({
+              diskon: parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100,
+              total: tempTotal - parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100,
+              namaDiskon: nextProps.dataTransaction.transaction.bucket.promo.promo_code
             })
           } else {
             this.setState({
-              diskon: nextProps.dataCart.cart.promo.nominal,
-              total: temp - parseInt(nextProps.dataCart.cart.promo.nominal),
-              namaDiskon: nextProps.dataCart.cart.promo.promo_code
+              diskon: parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal),
+              total: tempTotal - parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal),
+              namaDiskon: nextProps.dataTransaction.transaction.bucket.promo.promo_code
             })
           }
-        } else {
-          this.setState({
-            total: temp
-          })
         }
-        this.props.getCartReset()
+      }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      if (this.state.transaction) {
+        ToastAndroid.show(nextProps.datalogin.message, ToastAndroid.SHORT)
       }
     }
   }
@@ -71,44 +118,85 @@ class PaymentCart extends React.Component {
   }
 
   renderRow (rowData) {
-    let insurance
-    if (rowData.shipping.is_insurance) {
-      insurance = 'Ya'
+    const { transaction, dataInvoice } = this.state
+    if (transaction) {
+      let insurance
+      if (dataInvoice.shipping.is_insurance) {
+        insurance = 'Ya'
+      } else {
+        insurance = 'Tidak'
+      }
+      return (
+        <View style={styles.dataContainer}>
+          <View style={styles.product}>
+            <Image source={{ uri: rowData.product.image }} style={styles.image} />
+            <View style={styles.dataProduk}>
+              <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
+              <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
+            </View>
+          </View>
+          <View style={styles.alamatContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
+            </View>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.address.name}</Text>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.address.address}</Text>
+            <Text style={styles.textAlamat}>Telp: {dataInvoice.shipping.address.phone_number}</Text>
+          </View>
+          {this.renderInfo('Kurir Pengiriman', dataInvoice.shipping.expedition_service.expedition.name)}
+          {this.renderInfo('Paket Pengiriman', dataInvoice.shipping.expedition_service.name)}
+          {this.renderInfo('Asuransi', insurance)}
+          <View style={styles.catatanContainer}>
+            <Text style={styles.textNamaProduk}>Catatan</Text>
+            <Text style={styles.textAlamat}>{dataInvoice.shipping.note}</Text>
+          </View>
+          {this.renderRincian(
+            rowData.total_price,
+            dataInvoice.shipping.insurance_fee,
+            dataInvoice.shipping.delivery_cost
+          )}
+        </View>
+      )
     } else {
-      insurance = 'Tidak'
+      let insurance
+      if (rowData.shipping.is_insurance) {
+        insurance = 'Ya'
+      } else {
+        insurance = 'Tidak'
+      }
+      return (
+        <View style={styles.dataContainer}>
+          <View style={styles.product}>
+            <Image source={{ uri: rowData.product.image }} style={styles.image} />
+            <View style={styles.dataProduk}>
+              <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
+              <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
+            </View>
+          </View>
+          <View style={styles.alamatContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
+            </View>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.name}</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.address}</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.address.province.name}</Text>
+            <Text style={styles.textAlamat}>Telp: {rowData.shipping.address.phone_number}</Text>
+          </View>
+          {this.renderInfo('Kurir Pengiriman', rowData.shipping.expedition_service.expedition.name)}
+          {this.renderInfo('Paket Pengiriman', rowData.shipping.expedition_service.name)}
+          {this.renderInfo('Asuransi', insurance)}
+          <View style={styles.catatanContainer}>
+            <Text style={styles.textNamaProduk}>Catatan</Text>
+            <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
+          </View>
+          {this.renderRincian(
+            rowData.total_price,
+            rowData.shipping.insurance_fee,
+            rowData.shipping.delivery_cost
+          )}
+        </View>
+      )
     }
-    return (
-      <View style={styles.dataContainer}>
-        <View style={styles.product}>
-          <Image source={{ uri: rowData.product.image }} style={styles.image} />
-          <View style={styles.dataProduk}>
-            <Text style={styles.textNamaProduk}>{rowData.product.name}</Text>
-            <Text style={styles.textJumlah}>Jumlah: {rowData.qty}</Text>
-          </View>
-        </View>
-        <View style={styles.alamatContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.textNamaProduk}>Alamat Pengiriman</Text>
-          </View>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.name}</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.address}</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.address.province.name}</Text>
-          <Text style={styles.textAlamat}>Telp: {rowData.shipping.address.phone_number}</Text>
-        </View>
-        {this.renderInfo('Kurir Pengiriman', rowData.shipping.expedition_service.expedition.name)}
-        {this.renderInfo('Paket Pengiriman', rowData.shipping.expedition_service.name)}
-        {this.renderInfo('Asuransi', insurance)}
-        <View style={styles.catatanContainer}>
-          <Text style={styles.textNamaProduk}>Catatan</Text>
-          <Text style={styles.textAlamat}>{rowData.shipping.note}</Text>
-        </View>
-        {this.renderRincian(
-          rowData.total_price - rowData.shipping.delivery_cost - rowData.shipping.insurance_fee,
-          rowData.shipping.insurance_fee,
-          rowData.shipping.delivery_cost
-        )}
-      </View>
-    )
   }
 
   renderInfo (label, data) {
@@ -122,32 +210,16 @@ class PaymentCart extends React.Component {
     )
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderRincian (subtotal, biayaAsuransi, ongkir) {
     const total = subtotal + biayaAsuransi + ongkir
-    const totalSubtotal = MaskService.toMask('money', subtotal, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiayaAsuransi = MaskService.toMask('money', biayaAsuransi, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalOngkir = MaskService.toMask('money', ongkir, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalBiaya = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalSubtotal = this.maskedMoney(subtotal)
+    const totalBiayaAsuransi = this.maskedMoney(biayaAsuransi)
+    const totalOngkir = this.maskedMoney(ongkir)
+    const totalBiaya = this.maskedMoney(total)
     return (
       <View style={styles.rincianContainer}>
         <View style={styles.labelRincianContainer}>
@@ -184,24 +256,9 @@ class PaymentCart extends React.Component {
   renderTotal () {
     const { total, diskon, namaDiskon } = this.state
     let renderdiskon
-    const totalBiaya = MaskService.toMask('money', total + diskon, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const totalSisa = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalBiaya = this.maskedMoney(total + diskon)
+    const totalDiskon = this.maskedMoney(diskon)
+    const totalSisa = this.maskedMoney(total)
 
     if (namaDiskon !== '') {
       renderdiskon = (
@@ -249,7 +306,8 @@ class PaymentCart extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataCart: state.cart
+    dataCart: state.cart,
+    dataTransaction: state.transaction
   }
 }
 

@@ -43,11 +43,22 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: 9,
-    left: 10
+    left: -15,
+    top: -15
+  },
+  containerDiskon2: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: Colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: -15,
+    left: 30
   },
   diskon: {
-    fontSize: Fonts.size.medium,
+    fontSize: Fonts.size.smallMed,
     color: Colors.snow,
     fontFamily: Fonts.type.extrabold
   },
@@ -76,10 +87,10 @@ export default StyleSheet.create({
   },
   nominalDiskon: {
     textDecorationLine: 'line-through',
-    fontSize: Fonts.size.small,
+    fontSize: Fonts.size.tiny,
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
-    marginTop: 7.5
+    marginTop: 11
   },
   nominalDiskon1: {
     textDecorationLine: 'line-through',
@@ -104,8 +115,13 @@ export default StyleSheet.create({
     fontFamily: Fonts.type.regular,
     color: Colors.labelgrey,
     letterSpacing: 0.2,
-    marginLeft: 5,
-    marginTop: -2
+    marginLeft: 5
+  },
+  commissionText: {
+    fontSize: Fonts.size.small,
+    fontFamily: Fonts.type.regular,
+    color: Colors.greenish,
+    letterSpacing: 0.2
   },
   imageStyleNotLike: {
     width: 24,
@@ -223,8 +239,11 @@ export default StyleSheet.create({
   },
   moneyLikesContainer: {
     flexDirection: 'row',
-    paddingBottom: 28.8,
     alignItems: 'center'
+  },
+  commission: {
+    flex: 1,
+    paddingBottom: 28.8
   },
   listView: {
     flex: 1
@@ -234,5 +253,78 @@ export default StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
     marginTop: 10
+  },
+  buttonStyle: {
+    flex: 1,
+    padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: Colors.silver
+  },
+  textResult: {
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.medium,
+    color: Colors.darkgrey
+  },
+  imageContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 50,
+    marginTop: 50
+  },
+  image: {
+    width: 173,
+    height: 164
+  },
+  textLabel: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 14,
+    lineHeight: 22,
+    letterSpacing: 0.19,
+    textAlign: 'center',
+    color: Colors.darkgrey,
+    marginTop: 15,
+    marginBottom: 5
+  },
+  textInfo: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.brownishGrey
+  },
+  buttonContainer: {
+    height: 56,
+    flex: 1,
+    flexDirection: 'row',
+    marginTop: 20
+  },
+  button: {
+    flex: 1,
+    height: 56,
+    backgroundColor: Colors.bluesky,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5
+  },
+  textButton: {
+    fontFamily: Fonts.type.bold,
+    fontSize: 14,
+    lineHeight: 22,
+    letterSpacing: 0.19,
+    textAlign: 'center',
+    color: Colors.snow
+  },
+  modalContainer2: {
+    position: 'absolute',
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  menuProvinsiContainer: {
+    position: 'absolute',
+    bottom: 20,
+    maxHeight: (Metrics.screenHeight * 3) / 4
   }
 })

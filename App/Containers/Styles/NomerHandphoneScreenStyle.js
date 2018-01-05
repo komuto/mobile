@@ -3,9 +3,29 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 
 export default StyleSheet.create({
   container: {
-    marginTop: Metrics.navBarHeight,
     flex: 1,
     backgroundColor: Colors.snow
+  },
+  headerTextContainer: {
+    height: Metrics.navBarHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: Colors.red
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
+  },
+  headerText: {
+    flex: 1,
+    fontSize: Fonts.size.regular,
+    fontFamily: Fonts.type.bold,
+    top: -1,
+    marginLeft: 5,
+    marginRight: 10,
+    color: Colors.snow
   },
   infoContainer: {
     paddingLeft: 20,

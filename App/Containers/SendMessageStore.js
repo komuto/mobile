@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 import * as storeAction from '../actions/stores'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as messageAction from '../actions/message'
+
 import { Images } from '../Themes'
 // Styles
 import styles from './Styles/KirimPesanTokoStyle'
@@ -18,32 +20,72 @@ class SendMessageStore extends React.Component {
       foto: this.props.foto,
       namaToko: this.props.namaToko,
       alamat: this.props.alamat,
-      judul: '',
+      judul: this.props.title,
       pertanyaan: '',
       height: 50,
       heightJudul: 50,
       loading: false,
-      notification: false
+      notification: false,
+      messageNotif: '',
+      titles: this.props.title || 'Kirim Pesan',
+      typeMessage: this.props.typeMessage || 'sendMessageStore'
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPesan.status === 200) {
-      // ToastAndroid.show('Pesan berhasil dikirimkan...', ToastAndroid.LONG)
+      this.setState({
+        loading: false,
+        notification: true,
+<<<<<<< HEAD
+        judul: '',
+        pertanyaan: ''
+=======
+        messageNotif: nextProps.dataPesan.message,
+        judul: '',
+        pertanyaan: ''
+      })
+      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.SHORT)
+      Actions.pop()
+      this.props.resetSendMessage()
+    } else if (nextProps.dataPesan.status !== 200 && nextProps.dataPesan.status !== 0) {
+      this.setState({
+        loading: false
+>>>>>>> beny
+      })
+      ToastAndroid.show(nextProps.dataPesan.message, ToastAndroid.SHORT)
+      this.props.resetSendMessage()
+    }
+    if (nextProps.dataMessageTransaction.status === 200) {
       this.setState({
         loading: false,
         notification: true,
         judul: '',
+        messageNotif: nextProps.dataMessageTransaction.message,
         pertanyaan: ''
       })
-      this.props.resetSendMessage()
-    } else if (nextProps.dataPesan.status > 200) {
-      ToastAndroid.show('Terjadi Kesalahan, ' + nextProps.dataPesan.message, ToastAndroid.LONG)
+      nextProps.dataMessageTransaction.status = 0
+    } else if (nextProps.dataMessageTransaction.status !== 200 && nextProps.dataMessageTransaction.status !== 0) {
+      this.setState({
+        loading: false
+      })
+      nextProps.dataMessageTransaction.status = 0
+      ToastAndroid.show(nextProps.dataPedataMessageTransactionsan.message, ToastAndroid.SHORT)
     }
   }
 
   renderProduct () {
     const { foto, namaToko, alamat } = this.state
+    let renderAddress
+    if (alamat === '' || alamat === null || alamat === undefined) {
+      renderAddress = null
+    } else {
+      renderAddress = (
+        <Text style={styles.textKelola}>
+          {alamat}
+        </Text>
+      )
+    }
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -55,9 +97,7 @@ class SendMessageStore extends React.Component {
             <Text style={styles.textNama}>
               {namaToko}
             </Text>
-            <Text style={styles.textKelola}>
-              {alamat}
-            </Text>
+            {renderAddress}
           </View>
         </View>
       </View>
@@ -78,10 +118,24 @@ class SendMessageStore extends React.Component {
 
   kirimpesan () {
     const { id, judul, pertanyaan } = this.state
-    this.setState({
-      loading: true
-    })
-    this.props.sendMessage(id, judul, pertanyaan)
+    if (judul === '') {
+      ToastAndroid.show('Judul Pesan tidak boleh kosong', ToastAndroid.SHORT)
+    } else if (pertanyaan === '') {
+      ToastAndroid.show('Pertanyaan tidak boleh kosong', ToastAndroid.SHORT)
+    } else if (judul !== '' && pertanyaan !== '') {
+      this.setState({
+        loading: true
+      })
+      if (this.state.typeMessage === 'sendMessageStore') {
+        this.props.sendMessage(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageBuyer') {
+        this.props.sendMessageBuyer(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageSeller') {
+        this.props.sendMessageSeller(id, judul, pertanyaan)
+      } if (this.state.typeMessage === 'sendMessageReseller') {
+        this.props.sendMessageReseller(id, judul, pertanyaan)
+      }
+    }
   }
 
   renderloading () {
@@ -108,7 +162,7 @@ class SendMessageStore extends React.Component {
     if (notification) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Berhasil Mengirim Pesan</Text>
+          <Text style={styles.textNotif}>{this.state.messageNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notification: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -123,7 +177,7 @@ class SendMessageStore extends React.Component {
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.textTitle}>Kirim Pesan</Text>
+            <Text style={styles.textTitle}>{this.state.titles}</Text>
           </View>
           <TouchableOpacity onPress={() => this.back()}>
             <Image
@@ -182,14 +236,18 @@ class SendMessageStore extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataPesan: state.sendMessageStore
+    dataPesan: state.sendMessageStore,
+    dataMessageTransaction: state.transactionMessage
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     sendMessage: (id, subject, content) => dispatch(storeAction.sendMessageStore({id: id, subject: subject, content: content})),
-    resetSendMessage: () => dispatch(storeAction.sendMessageStoreReset())
+    resetSendMessage: () => dispatch(storeAction.sendMessageStoreReset()),
+    sendMessageBuyer: (id, subject, content) => dispatch(messageAction.messageBuyer({id: id, subject: subject, content: content})),
+    sendMessageSeller: (id, subject, content) => dispatch(messageAction.messageSeller({id: id, subject: subject, content: content})),
+    sendMessageReseller: (id, subject, content) => dispatch(messageAction.messageReseller({id: id, subject: subject, content: content}))
   }
 }
 

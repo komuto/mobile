@@ -4,17 +4,14 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.snow,
-    marginTop: Metrics.navBarHeight
+    backgroundColor: Colors.snow
   },
   headerInfoAlamat: {
     flexDirection: 'row',
-    borderBottomWidth: 0.5,
-    borderBottomColor: Colors.silver,
     paddingLeft: 20,
-    paddingTop: 20,
+    paddingTop: 30,
     paddingRight: 20,
-    paddingBottom: 20
+    paddingBottom: 30
   },
   textHeader: {
     flex: 1,
@@ -40,13 +37,24 @@ export default StyleSheet.create({
   },
   edit: {
     position: 'absolute',
-    top: 23,
+    top: 15,
     right: 20,
+    height: 80,
+    width: 100,
+    borderRadius: 3,
     backgroundColor: Colors.snow
   },
   touch: {
     justifyContent: 'center',
-    padding: 5
+    flex: 0.7,
+    paddingLeft: 20,
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  textEdit: {
+    fontFamily: Fonts.type.semiBolds,
+    fontSize: Fonts.size.smallMed,
+    color: Colors.darkgrey
   },
   create: {
     position: 'absolute',
@@ -149,5 +157,52 @@ export default StyleSheet.create({
   gambarSukses: {
     height: 143,
     width: 143
+  },
+  headerTextContainer: {
+    height: Metrics.navBarHeight,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    backgroundColor: Colors.red
+  },
+  imageStyle: {
+    height: 24,
+    width: 24
+  },
+  headerText: {
+    flex: 1,
+    fontSize: Fonts.size.regular,
+    fontFamily: Fonts.type.bold,
+    top: -1,
+    marginLeft: 10,
+    marginRight: 10,
+    color: Colors.snow
+  },
+  emptyContainer: {
+    flexDirection: 'column',
+    padding: 20,
+    marginTop: 30,
+    alignItems: 'center'
+  },
+  emptyImage: {
+    width: 195,
+    height: 172,
+    resizeMode: 'contain',
+    marginBottom: 10
+  },
+  textNotifEmpty: {
+    fontFamily: Fonts.type.regular,
+    fontSize: 13,
+    lineHeight: 22,
+    letterSpacing: 0.22,
+    textAlign: 'center',
+    color: Colors.labelgrey
+  },
+  price: {
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    letterSpacing: 0.23,
+    color: Colors.darkgrey
   }
 })

@@ -13,7 +13,8 @@ export default class CustomRadio extends React.Component {
       vertical: this.props.vertical || false,
       index: this.props.index || 0,
       id: this.props.id || 0,
-      label: 0
+      label: 0,
+      locked: this.props.locked || false
     }
   }
 
@@ -27,11 +28,13 @@ export default class CustomRadio extends React.Component {
         >
           {this.state.data.map((obj, i) => {
             var onPress = (value, index, id) => {
-              this.setState({
-                index: value,
-                label: index,
-                id: id
-              })
+              if (!this.state.locked) {
+                this.setState({
+                  index: value,
+                  label: index,
+                  id: id
+                })
+              }
 
               this.props.handlingRadio(obj.value, obj.label, obj.id)
             }

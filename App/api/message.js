@@ -28,9 +28,10 @@ export const getArchiveBuyerMessages = () => {
   return axios.get(`users/messages?is_archived=true`)
 }
 
-export const getArchiveSellerMessages = () => {
+export const getArchiveSellerMessages = (params) => {
   const axios = authApiKomuto()
-  return axios.get(`users/store/messages?is_archived=true`)
+  const query = buildQuery(params)
+  return axios.get(`users/store/messages?${query}`)
 }
 
 export const updateBuyerMessage = ({ id, messageType }) => {
@@ -55,10 +56,25 @@ export const sellerReplyMessage = ({ id, ...data }) => {
 
 export const buyerDeleteMessage = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.delete(`users/messages/${id}`, { data: {} })
+  return axios.delete(`users/messages/${id}`, {}, { data: {} })
 }
 
 export const sellerDeleteMessage = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.delete(`users/store/messages/${id}`, { data: {} })
+  return axios.delete(`users/store/messages/${id}`, {}, { data: {} })
+}
+
+export const messageBuyer = ({ id, ...data }) => {
+  const axios = authApiKomuto()
+  return axios.post(`invoices/${id}/buyer/message`, data)
+}
+
+export const messageSeller = ({ id, ...data }) => {
+  const axios = authApiKomuto()
+  return axios.post(`invoices/${id}/seller/message`, data)
+}
+
+export const messageReseller = ({ id, ...data }) => {
+  const axios = authApiKomuto()
+  return axios.post(`invoices/${id}/reseller/message`, data)
 }

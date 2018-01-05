@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   ListView,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
+  ToastAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import moment from 'moment'
@@ -30,16 +31,31 @@ class BuyerDiscussion extends React.Component {
       data: [],
       page: 1,
       loadmore: true,
+<<<<<<< HEAD:App/Containers/BuyerDiscussion.js
       isRefreshing: false,
       isLoading: true,
       loadingPage: true
+=======
+      isRefreshing: true,
+      isLoading: true,
+      loadingPage: true,
+      gettingData: true
+>>>>>>> beny:App/Containers/BuyerDiscussion.js
     }
+  }
+
+  componentDidMount () {
+    this.refresh()
   }
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.listDiscussion.status === 200) {
       this.setState({
+<<<<<<< HEAD:App/Containers/BuyerDiscussion.js
         loadingPage: false
+=======
+        isRefreshing: false
+>>>>>>> beny:App/Containers/BuyerDiscussion.js
       })
       if (nextProps.listDiscussion.discussions.length > 0) {
         let data = [...this.state.data, ...nextProps.listDiscussion.discussions]
@@ -48,14 +64,27 @@ class BuyerDiscussion extends React.Component {
           page: this.state.page + 1,
           isRefreshing: false,
           isLoading: false,
-          loadmore: true
+          loadmore: true,
+          gettingData: false
         })
       } else {
         this.setState({
           loadmore: false,
-          isLoading: false
+          isLoading: false,
+          gettingData: false,
+          isRefreshing: false
         })
       }
+    } else if (nextProps.listDiscussion.status !== 200 && nextProps.listDiscussion.status !== 0) {
+      this.setState({
+        data: [],
+        page: 1,
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false,
+        gettingData: false
+      })
+      ToastAndroid.show(nextProps.listDiscussion.message, ToastAndroid.SHORT)
     }
   }
 
@@ -69,7 +98,11 @@ class BuyerDiscussion extends React.Component {
   }
 
   refresh = () => {
+<<<<<<< HEAD:App/Containers/BuyerDiscussion.js
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: false })
+=======
+    this.setState({ gettingData: true, isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: false })
+>>>>>>> beny:App/Containers/BuyerDiscussion.js
     this.props.getListDiscussion(1)
   }
 
@@ -86,7 +119,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   renderRowDiscussion (rowData) {
-    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - HH:MM').toString()
+    var timeStampToDate = moment.unix(rowData.created_at).format('DD MMM YYYY - h:mm').toString()
     return (
       <TouchableOpacity onPress={() => this.handelDetailDiscussion(rowData.id, rowData.product.id, rowData.product.name, rowData.product.image, rowData.product.price)} activeOpacity={0.5} style={styles.containerMessage}>
         <Image source={{uri: rowData.product.image}} style={styles.photo} />
@@ -102,6 +135,7 @@ class BuyerDiscussion extends React.Component {
   }
 
   checkStateDiscussion (data) {
+<<<<<<< HEAD:App/Containers/BuyerDiscussion.js
     if (this.state.loadingPage) {
       return (
         <View />
@@ -121,6 +155,31 @@ class BuyerDiscussion extends React.Component {
                 title='Loading...'
                 titleColor={Colors.red}
                 progressBackgroundColor={Colors.snow}
+=======
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRowDiscussion.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={this.loadMore.bind(this)}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { marginTop: 10, height: 50 }]}
+                size='small'
+                color='#ef5656'
+>>>>>>> beny:App/Containers/BuyerDiscussion.js
               />
             }
             onEndReached={this.loadMore.bind(this)}
@@ -152,11 +211,36 @@ class BuyerDiscussion extends React.Component {
     }
   }
 
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
+        <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
+      </View>
+    )
+  }
+
   render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.checkStateDiscussion(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.checkStateDiscussion(data))
+    }
     return (
       <View style={styles.container}>
         <View style={{flex: 1}}>
+<<<<<<< HEAD:App/Containers/BuyerDiscussion.js
           {this.checkStateDiscussion(this.state.data)}
+=======
+          {view}
+>>>>>>> beny:App/Containers/BuyerDiscussion.js
         </View>
       </View>
     )

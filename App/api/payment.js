@@ -1,4 +1,5 @@
 import { authApiKomuto } from './api'
+import { buildQuery } from '../config'
 
 export const getPaymentMethods = () => {
   const axios = authApiKomuto()
@@ -8,11 +9,20 @@ export const getPaymentMethods = () => {
 export const confirmTransfer = ({ id, ...action }) => {
   const axios = authApiKomuto()
   return axios.post(`buckets/${id}/bank`, action)
+<<<<<<< HEAD
+=======
 }
 
-export const withdraw = (data) => {
+export const getMidtransToken = ({ token, id, ...data } = {}) => {
+  const axios = authApiKomuto(token, 50000)
+  const query = buildQuery(data)
+  return axios.get(`transactions/${id}/token?${query}`)
+>>>>>>> beny
+}
+
+export const balancePayment = ({ id }) => {
   const axios = authApiKomuto()
-  return axios.post('users/saldo/withdraw', data)
+  return axios.put(`transactions/${id}/balance-payment`)
 }
 
 export const getMidtransToken = ({ token } = {}) => {

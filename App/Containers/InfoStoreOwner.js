@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, ScrollView, Text, ListView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
+import { View, ScrollView, ToastAndroid, Text, ListView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import * as loginaction from '../actions/user'
@@ -16,14 +16,14 @@ class InfoStoreOwner extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      noIdentitas: '111',
-      namaIbu: 'marta',
+      noIdentitas: '',
+      namaIbu: '',
       namaPelimilik: this.props.dataProfile.user.user.name,
       email: this.props.dataProfile.user.user.email,
       noHp: this.props.dataProfile.user.user.phone_number,
       dataStore: this.props.dataStore,
       tempData: [],
-      textNoIdentitas: 'NO Identitas',
+      textNoIdentitas: 'No Identitas',
       textNamaIbu: 'Nama Ibu',
       textNoIdentitasColor: Colors.snow,
       textNamaIbuColor: Colors.snow,
@@ -41,7 +41,6 @@ class InfoStoreOwner extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'noidentitas':
         this.setState({
@@ -64,7 +63,7 @@ class InfoStoreOwner extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -131,7 +130,7 @@ class InfoStoreOwner extends React.Component {
               ref='noindentitas'
               style={[styles.inputText]}
               value={noIdentitas}
-              keyboardType='default'
+              keyboardType='numeric'
               returnKeyType='next'
               onFocus={() => this.onFocus('noidentitas')}
               onBlur={() => this.onBlur('noidentitas')}
@@ -193,7 +192,6 @@ class InfoStoreOwner extends React.Component {
         dataStore: dataStore,
         createStores: true
       })
-      console.log(dataStore)
     }
   }
 

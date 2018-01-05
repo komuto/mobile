@@ -23,8 +23,9 @@ class AccountData extends React.Component {
       nomerHape: this.props.nomerHape,
       rowTerpilih: '',
       idBankAccount: '',
-      notif: this.props.notif,
-      pesanNotif: this.props.pesanNotif
+      notif: false,
+      pesanNotif: this.props.pesanNotif,
+      callback: false
     }
   }
 
@@ -33,6 +34,15 @@ class AccountData extends React.Component {
       this.setState({
         listBank: nextProps.dataRekenings.listBankAccounts
       })
+    }
+    if (nextProps.callback !== undefined) {
+      if (nextProps.callback !== this.state.callback) {
+        this.setState({
+          callback: nextProps.callback,
+          pesanNotif: nextProps.pesanNotif,
+          notif: true
+        })
+      }
     }
   }
 
@@ -43,7 +53,7 @@ class AccountData extends React.Component {
     if (this.state.notif) {
       return (
         <View style={styles.notif}>
-          <Text style={styles.textNotif}>Sukses {this.state.pesanNotif}</Text>
+          <Text style={styles.textNotif}>{this.state.pesanNotif}</Text>
           <TouchableOpacity onPress={() => this.setState({notif: false})}>
             <Image source={Images.closeGreen} style={styles.image} />
           </TouchableOpacity>
@@ -65,6 +75,9 @@ class AccountData extends React.Component {
       phoneNumber: this.state.nomerHape,
       titleButton: 'Verifikasi kode OTP',
       typeVerifikasi: 'otptambahrekening'
+    })
+    this.setState({
+      notif: false
     })
   }
 
@@ -93,7 +106,8 @@ class AccountData extends React.Component {
       fieldPass: this.state.nomerHape,
       textButton: 'Verifikasi kode OTP',
       title: 'Hapus Data Rekening',
-      typeVerifikasi: 'verificationdeleteaccount'
+      typeVerifikasi: 'verificationdeleteaccount',
+      callback: this.state.callback
     })
   }
 
@@ -172,10 +186,24 @@ class AccountData extends React.Component {
     }
   }
 
+  renderEmpty (data) {
+    if (data.length === 0) {
+      return (
+        <View style={styles.containerEmpty}>
+          <Image source={Images.emptyCatalog} style={{ width: 173, height: 178 }} />
+          <Text style={styles.textTitleEmpty}>Rekening Anda Kosong</Text>
+          <Text style={styles.textTitleEmpty2}>Silahkan tambahkan rekening Anda</Text>
+        </View>
+      )
+    }
+    return null
+  }
+
   render () {
     return (
       <View style={styles.container}>
         {this.notif()}
+        {this.renderEmpty(this.state.listBank)}
         <ScrollView>
           <View style={styles.infoAlamat}>
             <ListView
@@ -183,7 +211,6 @@ class AccountData extends React.Component {
               renderRow={this.renderRowBank.bind(this)}
               enableEmptySections
             />
-            {this.modalConfrimdeletRekening()}
           </View>
         </ScrollView>
         <TouchableOpacity style={styles.create} onPress={() => this.handleCreateAccount()}>
@@ -191,6 +218,7 @@ class AccountData extends React.Component {
             <Image source={Images.tambahWhite} style={styles.imageTambah} />
           </View>
         </TouchableOpacity>
+        {this.modalConfrimdeletRekening()}
       </View>
     )
   }

@@ -8,11 +8,14 @@ import {
   RefreshControl,
   TextInput,
   Alert,
-  ToastAndroid
+  ToastAndroid,
+  TouchableOpacity
 } from 'react-native'
+import moment from 'moment'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
-import { Colors } from '../Themes'
+import RupiahFormat from '../Services/MaskedMoneys'
+
+import { Colors, Images } from '../Themes'
 import * as productAction from '../actions/product'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -43,11 +46,10 @@ class DiskusiProdukKomentar extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataDiskusi.status === 200) {
-      if (nextProps.dataDiskusi.comments.length > 0) {
-        console.log(nextProps.dataDiskusi.comments)
+      if (nextProps.dataDiskusi.comments.comments.length > 0) {
         if (this.state.getData) {
           this.setState({
-            data: nextProps.dataDiskusi.comments,
+            data: nextProps.dataDiskusi.comments.comments,
             page: this.state.page + 1,
             isRefreshing: false,
             isLoading: false,
@@ -55,7 +57,7 @@ class DiskusiProdukKomentar extends React.Component {
             getData: false
           })
         } else {
-          let data = [...this.state.data, ...nextProps.dataDiskusi.comments]
+          let data = [...this.state.data, ...nextProps.dataDiskusi.comments.comments]
           this.setState({
             data: data,
             page: this.state.page + 1,
@@ -70,11 +72,22 @@ class DiskusiProdukKomentar extends React.Component {
           isLoading: false
         })
       }
+    } else if (nextProps.dataDiskusi.status !== 200 && nextProps.dataDiskusi.status !== 0) {
+      this.setState({
+        isRefreshing: false,
+        isLoading: false,
+        loadmore: false
+      })
+      ToastAndroid.show(nextProps.dataDiskusi.message, ToastAndroid.SHORT)
     }
     if (nextProps.tambahKomentar.status === 200) {
-      ToastAndroid.show('Komentar berhasil ditambahkan..!!', ToastAndroid.LONG)
+      ToastAndroid.show('Komentar berhasil ditambahkan', ToastAndroid.SHORT)
       this.setState({ data: [], komentar: '', page: 1 })
       this.props.getComment(this.state.discussionId, 1)
+      this.props.resetNewComment()
+    } else if (nextProps.tambahKomentar.status !== 200 && nextProps.tambahKomentar.status !== 0) {
+      this.setState({ data: [], komentar: '', page: 1 })
+      ToastAndroid.show(nextProps.tambahKomentar.message, ToastAndroid.SHORT)
       this.props.resetNewComment()
     }
   }
@@ -88,13 +101,12 @@ class DiskusiProdukKomentar extends React.Component {
     this.setState({ komentar: text })
   }
 
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
+  }
+
   renderProduct () {
-    const totalHarga = MaskService.toMask('money', this.state.price, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const totalHarga = this.maskedMoney(this.state.price)
     return (
       <View style={styles.border}>
         <View style={styles.profile}>
@@ -116,6 +128,7 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   renderRow (rowData) {
+    const time = moment(rowData.created_at * 1000).fromNow()
     return (
       <View style={styles.diskusiContainer}>
         <View style={styles.profileContainer}>
@@ -125,7 +138,7 @@ class DiskusiProdukKomentar extends React.Component {
               {rowData.user.name}
             </Text>
             <Text style={styles.textKelola}>
-              {rowData.created_at}
+              {time}
             </Text>
           </View>
         </View>
@@ -200,6 +213,12 @@ class DiskusiProdukKomentar extends React.Component {
   }
 
   renderFloatImage () {
+    let image
+    if (this.state.komentar === '') {
+      image = Images.sendMessageInactive
+    } else {
+      image = Images.sendMessage
+    }
     return (
       <View style={styles.floatImageContainer}>
         <TextInput
@@ -214,6 +233,9 @@ class DiskusiProdukKomentar extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Tulis Komentar'
         />
+        <TouchableOpacity style={styles.sendContainer} onPress={() => this.kirimKomentar()}>
+          <Image source={image} style={styles.sendMessage} />
+        </TouchableOpacity>
       </View>
     )
   }

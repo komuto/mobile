@@ -1,10 +1,10 @@
 import React from 'react'
-import { View, TextInput, Modal, Text, Image, BackAndroid, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { View, TextInput, Modal, Text, ToastAndroid, Image, BackAndroid, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux'
 import Switch from 'react-native-switch-pro'
 import CustomRadio from '../Components/CustomRadioCatalog'
 import Dropshipping from './Dropshipping'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { Actions as NavigationActions } from 'react-native-router-flux'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -31,7 +31,8 @@ class StatusStockDropshipping extends React.Component {
       productIds: [],
       data: [{'index': 1, 'label': 'Ditampilkan di toko'}, {'index': 0, 'label': 'Disembunyikan'}],
       loading: false,
-      modalDropshipping: false
+      modalDropshipping: false,
+      dataFaq: []
     }
   }
 
@@ -42,29 +43,45 @@ class StatusStockDropshipping extends React.Component {
         loading: false
       })
       this.props.getDetailStoreProduct(this.state.idProduct)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'displayAction') {
       this.setState({
         loading: false
       })
-      this.props.getListProduk(false)
-      this.props.getHiddenProduct()
-      NavigationActions.productlist({
-        type: ActionConst.PUSH
-      })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       nextProps.dataUpdateProduct.status = 0
     } if (nextProps.dataUpdateProduct.status === 200 && this.props.actionType === 'dropshippingAction') {
+      NavigationActions.pop({ refresh: { callback: !this.state.callback } })
       this.setState({
         isDropship: nextProps.dataUpdateProduct.product.is_dropship,
         loading: false
       })
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
       this.props.getDetailStoreProduct(this.state.idProduct)
       nextProps.dataUpdateProduct.status = 0
+    }
+    if (nextProps.dataUpdateProduct.status !== 200 && nextProps.dataUpdateProduct.status !== 0) {
+      ToastAndroid.show(nextProps.dataUpdateProduct.message, ToastAndroid.SHORT)
+      nextProps.dataUpdateProduct.status = 0
+    }
+    if (nextProps.dataFaq.status === 200) {
+      let data = [...nextProps.dataFaq.faq]
+      var i
+      for (i = 0; i < nextProps.dataFaq.faq.length; i++) {
+        data[i].isChecked = false
+      }
+      this.setState({
+        dataFaq: data
+      })
     }
   }
 
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+    this.props.getDropshipFaq()
   }
 
   componentWillUnmount () {
@@ -72,12 +89,12 @@ class StatusStockDropshipping extends React.Component {
   }
 
   handleBack = () => {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
     return true
   }
 
   backButton () {
-    NavigationActions.pop()
+    NavigationActions.pop({ refresh: { callback: !this.state.callback } })
   }
 
   modalDropshipping () {
@@ -94,9 +111,17 @@ class StatusStockDropshipping extends React.Component {
             <Image source={Images.close} style={styles.imagePicker} />
           </TouchableOpacity>
         </View>
-        <Dropshipping marginNavbars={0} visibleButton={false} />
+        <Dropshipping marginNavbars={0} visibleButton={false} data={this.state.dataFaq} />
       </Modal>
     )
+  }
+
+  SwitchChanges (types) {
+    if (types) {
+      this.setState({isDropship: false})
+    } else {
+      this.setState({isDropship: true})
+    }
   }
 
   renderOptionDropshipping () {
@@ -107,18 +132,15 @@ class StatusStockDropshipping extends React.Component {
             <Text style={styles.textDropshipping}>Dropshipping untuk barang ini</Text>
             <Switch
               value={this.state.isDropship}
-              defaultValue={this.state.isDropship}
               width={34}
               height={16}
               circleColor={Colors.teal}
               backgroundActive={'rgba(0, 148, 133, 0.5)'}
-              onAsyncPress={(callback) => {
-                callback(true, value => this.setState({isDropship: value}))
-              }}
+              onSyncPress={() => this.SwitchChanges(this.state.isDropship)}
             />
           </View>
           <TouchableOpacity onPress={() => this.setState({modalDropshipping: true})}>
-            <Text style={styles.link}>Pelajari Lebih Lanjut tentang dropshipping</Text>
+            <Text style={styles.link}>Pelajari lebih lanjut tentang dropshipping</Text>
           </TouchableOpacity>
         </View>
       )
@@ -237,7 +259,8 @@ class StatusStockDropshipping extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataUpdateProduct: state.alterProducts
+    dataUpdateProduct: state.alterProducts,
+    dataFaq: state.dropshipfaq
   }
 }
 
@@ -249,7 +272,8 @@ const mapDispatchToProps = (dispatch) => {
     setHideProduct: (data) => dispatch(productAction.hideProducts({product_ids: data})),
     getDetailStoreProduct: (id) => dispatch(storeAction.getStoreProductDetail({id})),
     getListProduk: (status) => dispatch(storeAction.getStoreProducts({hidden: status})),
-    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts())
+    getHiddenProduct: () => dispatch(storeAction.getHiddenStoreProducts()),
+    getDropshipFaq: () => dispatch(storeAction.getDropshipperFaq())
   }
 }
 

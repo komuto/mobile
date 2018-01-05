@@ -30,10 +30,10 @@ class EditWholesale extends React.Component {
     if (nextProps.dataUpdateData.status === 200) {
       nextProps.dataUpdateData.status = 0
       NavigationActions.pop({ refresh: { callback: !this.state.callback } })
-      ToastAndroid.show('Produk berhasil diubah...!!', ToastAndroid.LONG)
-    } else if (nextProps.dataUpdateData.status > 200) {
+      ToastAndroid.show('Produk berhasil diubah', ToastAndroid.SHORT)
+    } else if (nextProps.dataUpdateData.status !== 200 && nextProps.dataUpdateData.status !== 0) {
       nextProps.dataUpdateData.status = 0
-      ToastAndroid.show('Terjadi kesalahan.. ' + nextProps.dataUpdateData.message, ToastAndroid.LONG)
+      ToastAndroid.show(nextProps.dataUpdateData.message, ToastAndroid.SHORT)
     }
   }
 
@@ -402,22 +402,19 @@ class EditWholesale extends React.Component {
       resolve(tempData)
     })
     coba.then((result) =>
-    this.props.updateData(this.state.id, result))
+    this.props.updateData({id: this.state.id, is_wholesaler: this.state.wholesale, wholesales: result}))
   }
 
   renderSaveButton () {
-    const { wholesale } = this.state
-    if (wholesale) {
-      return (
-        <View style={styles.saveContainer}>
-          <TouchableOpacity style={styles.save} onPress={() => this.save()}>
-            <Text style={styles.textButtonNext}>
-              Simpan Perubahan
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )
-    }
+    return (
+      <View style={styles.saveContainer}>
+        <TouchableOpacity style={styles.save} onPress={() => this.save()}>
+          <Text style={styles.textButtonNext}>
+            Simpan Perubahan
+          </Text>
+        </TouchableOpacity>
+      </View>
+    )
   }
 
   render () {
@@ -443,7 +440,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateData: (id, wholesales) => dispatch(productAction.updateProduct({id: id, wholesales: wholesales}))
+    updateData: (params) => dispatch(productAction.updateProduct(params))
   }
 }
 

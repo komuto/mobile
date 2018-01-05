@@ -1,9 +1,20 @@
 import React from 'react'
-import { Text, View, Image, ListView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
+import {
+  Text,
+  View,
+  Image,
+  ListView,
+  BackAndroid,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+  ToastAndroid
+} from 'react-native'
 import { connect } from 'react-redux'
 import StarRating from 'react-native-star-rating'
 import { Images, Colors } from '../Themes'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import {isFetching, isError, isFound} from '../Services/Status'
 
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
@@ -17,17 +28,27 @@ class BuyerReview extends React.Component {
   constructor (props) {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    this.submitting = {
+      review: false
+    }
     this.state = {
       data: [],
       page: 1,
       loadmore: false,
+<<<<<<< HEAD:App/Containers/BuyerReview.js
       isRefreshing: false,
       isLoading: false,
       loadingPage: true
+=======
+      isRefreshing: true,
+      isLoading: false,
+      gettingData: true
+>>>>>>> beny:App/Containers/BuyerReview.js
     }
   }
 
   componentWillReceiveProps (nextProps) {
+<<<<<<< HEAD:App/Containers/BuyerReview.js
     if (nextProps.dataReview.status === 200) {
       this.setState({
         loadingPage: false
@@ -49,20 +70,90 @@ class BuyerReview extends React.Component {
         })
       }
     }
+=======
+    const {dataReview} = nextProps
+
+    if (!isFetching(dataReview) && this.submitting.review) {
+      this.submitting = { ...this.submitting, review: false }
+      if (isError(dataReview)) {
+        ToastAndroid.show(dataReview.message, ToastAndroid.SHORT)
+      }
+      if (isFound(dataReview)) {
+        const isFound = dataReview.buyerReview.length
+        this.setState({isRefreshing: false})
+        if (isFound >= 10) {
+          let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
+          this.setState({
+            data: data,
+            page: this.state.page + 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: true,
+            gettingData: false
+          })
+        } else {
+          let data = [...this.state.data, ...nextProps.dataReview.buyerReview]
+          this.setState({
+            data: data,
+            page: 1,
+            isRefreshing: false,
+            isLoading: false,
+            loadmore: false,
+            gettingData: false
+          })
+        }
+      }
+    }
+  }
+
+  componentDidMount () {
+    if (!this.submitting.review) {
+      this.submitting = {
+        ...this.submitting,
+        review: true
+      }
+      this.props.getListReview({page: 1})
+    }
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+>>>>>>> beny:App/Containers/BuyerReview.js
   }
 
   loadMore () {
     const { page, loadmore, isLoading } = this.state
     if (!isLoading) {
       if (loadmore) {
-        this.props.getListReview(page)
+        if (!this.submitting.review) {
+          this.submitting = {
+            ...this.submitting,
+            review: true
+          }
+          this.props.getListReview({page: page})
+        }
       }
     }
   }
 
   refresh = () => {
+<<<<<<< HEAD:App/Containers/BuyerReview.js
     this.setState({ isRefreshing: true, data: [], page: 1, isLoading: true, loadingPage: true })
     this.props.getListReview(1)
+=======
+    this.setState({ gettingData: true, isRefreshing: true, data: [], page: 1, isLoading: true })
+    this.submitting = {
+      ...this.submitting,
+      review: true
+    }
+    this.props.getListReview({page: 1})
+>>>>>>> beny:App/Containers/BuyerReview.js
   }
 
   handleDetailProduct (id) {
@@ -70,7 +161,11 @@ class BuyerReview extends React.Component {
       type: ActionConst.PUSH,
       id: id
     })
+<<<<<<< HEAD:App/Containers/BuyerReview.js
     this.props.getDetailProduct(id)
+=======
+    this.props.getDetailProduct({id})
+>>>>>>> beny:App/Containers/BuyerReview.js
   }
 
   renderRow (rowData) {
@@ -145,6 +240,7 @@ class BuyerReview extends React.Component {
   }
 
   checkStateReview (data) {
+<<<<<<< HEAD:App/Containers/BuyerReview.js
     if (this.state.loadingPage) {
       return (
         <View />
@@ -200,6 +296,69 @@ class BuyerReview extends React.Component {
       <View style={styles.container}>
         <View style={[styles.ulasanContainer]}>
           {this.checkStateReview(this.state.data)}
+=======
+    return (
+      <ListView
+        dataSource={this.dataSource.cloneWithRows(data)}
+        renderRow={this.renderRow.bind(this)}
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this.refresh}
+            tintColor={Colors.red}
+            colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+            title='Loading...'
+            titleColor={Colors.red}
+            progressBackgroundColor={Colors.snow}
+          />
+        }
+        onEndReached={() => this.loadMore()}
+        renderFooter={() => {
+          if (this.state.loadmore) {
+            return (
+              <ActivityIndicator
+                style={[styles.loadingStyle, { height: 50 }]}
+                size='small'
+                color='#ef5656'
+              />
+            )
+          }
+          return <View />
+        }}
+        enableEmptySections
+        style={styles.listView}
+      />
+    )
+  }
+
+  renderEmptyState () {
+    return (
+      <View style={styles.containerEmpty}>
+        <Image source={Images.emptyReview} style={{width: 173, height: 189}} />
+        <Text style={styles.textTitleEmpty}>Review Anda Kosong</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum pernah meninggalkan review{'\n'}untuk barang manapun</Text>
+      </View>
+    )
+  }
+
+  render () {
+    const { gettingData, data } = this.state
+    let view
+    if (!gettingData) {
+      if (data.length > 0) {
+        view = (this.checkStateReview(data))
+      } else {
+        view = (this.renderEmptyState())
+      }
+    } else {
+      view = (this.checkStateReview(data))
+    }
+
+    return (
+      <View style={styles.container}>
+        <View style={[styles.ulasanContainer]}>
+          {view}
+>>>>>>> beny:App/Containers/BuyerReview.js
         </View>
       </View>
     )
@@ -213,8 +372,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  getDetailProduct: (id) => dispatch(produkAction.getProduct({id: id})),
-  getListReview: (page) => dispatch(reviewAction.getBuyerReview({ page: page }))
+  getDetailProduct: (param) => dispatch(produkAction.getProduct(param)),
+  getListReview: (param) => dispatch(reviewAction.getBuyerReview(param))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BuyerReview)

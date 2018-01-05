@@ -1,5 +1,5 @@
 import React from 'react'
-import { ScrollView, Text, View, TextInput, ActivityIndicator, BackAndroid, ListView, TouchableOpacity, Image, Modal } from 'react-native'
+import { ScrollView, Text, View, ToastAndroid, TextInput, ActivityIndicator, BackAndroid, ListView, TouchableOpacity, Image, Modal } from 'react-native'
 import { connect } from 'react-redux'
 import * as addressAction from '../actions/address'
 import { Actions as NavigationActions } from 'react-native-router-flux'
@@ -97,13 +97,11 @@ class EditAddress extends React.Component {
       this.setState({
         kecamatan: this.state.tambahanKecamatan.concat(nextProps.dataSubDistrict.subdistricts)
       })
-    } else if (nextProps.dataVilage.status === 200) {
+    } else if (nextProps.dataVillage.status === 200) {
       this.setState({
-        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVilage.villages)
+        kelurahan: this.state.tambahanKelurahan.concat(nextProps.dataVillage.villages)
       })
     } else if (nextProps.detailalamat.status === 200) {
-      console.log(nextProps)
-      console.log('masuk')
       this.setState({
         namaAlias: nextProps.detailalamat.addresses.alias_address,
         namaPenerima: nextProps.detailalamat.addresses.name,
@@ -168,7 +166,6 @@ class EditAddress extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field', field)
     switch (field) {
       case 'alias':
         this.setState({
@@ -195,7 +192,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error OnError')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -227,7 +224,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error Focus')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -259,7 +256,7 @@ class EditAddress extends React.Component {
         })
         break
       default:
-        window.alert('Internal Error Blur')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
@@ -314,7 +311,7 @@ class EditAddress extends React.Component {
           underlineColorAndroid='transparent'
           placeholder='Nomor Handphone'
         />
-        <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomer Handphone harus diisi</Text>
+        <Text style={[styles.textLabel, {color: colorNoHape}]}>Nomor Handphone harus diisi</Text>
       </View>
     )
   }
@@ -528,13 +525,14 @@ class EditAddress extends React.Component {
         <TextInput
           style={[styles.inputText, {marginTop: -5}]}
           value={this.state.kodePos}
-          keyboardType='default'
+          keyboardType='numeric'
           returnKeyType='done'
           autoCapitalize='none'
           autoCorrect
           onChangeText={this.handleChangeKodePos}
           underlineColorAndroid='transparent'
           placeholder='Kode Pos'
+          maxLength={5}
         />
         <View style={[styles.lokasiSeparator, {marginBottom: 30.8}]} />
       </View>
@@ -600,7 +598,7 @@ const mapStateToProps = (state) => {
     dataProvinsi: state.provinces,
     dataKota: state.districts,
     dataSubDistrict: state.subdistricts,
-    dataVilage: state.villages,
+    dataVillage: state.villages,
     detailalamat: state.address
   }
 }

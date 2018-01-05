@@ -5,9 +5,11 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  Alert,
-  ActivityIndicator
+  ToastAndroid,
+  ActivityIndicator,
+  BackAndroid
 } from 'react-native'
+import { marketplace } from '../config'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 import { connect } from 'react-redux'
 import * as forgotPasswordAction from '../actions/user'
@@ -29,6 +31,19 @@ class ForgetPassword extends React.Component {
     }
   }
 
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataPassword.status === 200) {
       this.setState({
@@ -43,12 +58,12 @@ class ForgetPassword extends React.Component {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataPassword.message)
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     } else if (nextProps.dataPassword.status === 'ENOENT') {
       this.setState({
         loading: false
       })
-      Alert.alert('Error', nextProps.dataPassword.message)
+      ToastAndroid.show(nextProps.dataPassword.message, ToastAndroid.SHORT)
     }
   }
 
@@ -73,23 +88,22 @@ class ForgetPassword extends React.Component {
   }
 
   onError = (field) => {
-    console.tron.log('field')
-    console.tron.log(field)
     switch (field) {
       case 'emailNotValid':
-        window.alert('Email tidak valid')
+        ToastAndroid.show('Email tidak valid', ToastAndroid.SHORT)
         break
       case 'email':
-        window.alert('Email harus diisi')
+        ToastAndroid.show('Email harus diisi', ToastAndroid.SHORT)
         break
       default:
-        window.alert('Internal Error')
+        ToastAndroid.show('Terjadi Kesalahan', ToastAndroid.SHORT)
         break
     }
   }
 
   render () {
     const {email} = this.state
+    const name = marketplace
     const spinner = this.state.loading
     ? (<View style={styles.spinner}>
       <ActivityIndicator color='white' size='large' />
@@ -100,7 +114,7 @@ class ForgetPassword extends React.Component {
           <View style={styles.textContainer}>
             <Text style={styles.text}>
               Silahkan menuliskan alamat email yang Anda{'\n'}
-              gunakan untuk mendaftar di Komuto
+              gunakan untuk mendaftar di {name}
             </Text>
           </View>
           <View style={styles.inputContainer}>

@@ -1,10 +1,12 @@
 import React from 'react'
-import { ScrollView, Text, View, Image, TouchableOpacity, ListView } from 'react-native'
-import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
+import { ScrollView, Text, View, Image, TouchableOpacity, ListView, ToastAndroid } from 'react-native'
 import { connect } from 'react-redux'
-import { MaskService } from 'react-native-masked-text'
+import RupiahFormat from '../Services/MaskedMoneys'
+
+import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import * as transactionAction from '../actions/transaction'
 import { Images, Colors } from '../Themes'
 // Styles
 import styles from './Styles/TransaksiDibayarStyle'
@@ -15,46 +17,52 @@ class TransactionPaid extends React.Component {
     super(props)
     this.dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     this.state = {
-      invoice: 'Invoice-83273847492/04/2017',
-      sisaPembayaran: 308582,
-      total: 320000,
-      kode: 'BELANJAENAK',
-      diskon: 10000,
-      kodeUnik: 2000,
+      sisaPembayaran: 0,
+      total: 0,
+      kode: '',
+      diskon: 0,
       expand: false,
-      dataBarang: [
-        {
-          'name': 'Sepatu Jogging Nike Hitam',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'namaToko': 'Sports Station Shop',
-          'status': 'ditolak'
-        },
-        {
-          'name': 'Sepatu Jogging Nike Hitam',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'namaToko': 'Sports Station Shop',
-          'status': 'menunggu'
-        },
-        {
-          'name': 'Sepatu Jogging Nike Hitam',
-          'image': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNgv8Jo26_DoIpp8Cakvp20ZW3n0daHkA9XlZ1_hfa8G-hce8FaA',
-          'namaToko': 'Sports Station Shop',
-          'status': 'diproses'
-        },
-        {
-          'name': 'Sepatu Jogging Nike Hitam',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'namaToko': 'Sports Station Shop',
-          'status': 'dikirim'
-        },
-        {
-          'name': 'Sepatu Jogging Nike Hitam',
-          'image': 'https://slack-imgs.com/?c=1&o1=wi75.he75.si&url=https%3A%2F%2Fzeplin.io%2Fimg%2Ffavicon%2F228x228.png',
-          'namaToko': 'Sports Station Shop',
-          'status': 'diterima'
-        }
-      ]
+      dataBarang: [],
+      id: ''
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.dataTransaction.status === 200) {
+      const discount = nextProps.dataTransaction.transaction.bucket.promo
+      if (discount === '' || discount === undefined || discount === null) {
+        this.setState({
+          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price,
+          total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
+          kode: '',
+          diskon: 0,
+          dataBarang: nextProps.dataTransaction.transaction.invoices,
+          id: nextProps.dataTransaction.transaction.bucket.id
+        })
+      } else {
+        const typeDiscount = nextProps.dataTransaction.transaction.bucket.promo.type
+        let nominalDiscount = 0
+        if (typeDiscount === 0) {
+          nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.percentage) * nextProps.dataTransaction.transaction.summary_transaction.total_price / 100
+        } else {
+          nominalDiscount = parseInt(nextProps.dataTransaction.transaction.bucket.promo.nominal)
+        }
+        this.setState({
+          sisaPembayaran: nextProps.dataTransaction.transaction.summary_transaction.total_price - nominalDiscount,
+          total: nextProps.dataTransaction.transaction.summary_transaction.total_price,
+          kode: nextProps.dataTransaction.transaction.bucket.promo.promo_code,
+          diskon: nominalDiscount,
+          dataBarang: nextProps.dataTransaction.transaction.invoices,
+          id: nextProps.dataTransaction.transaction.bucket.id
+        })
+      }
+    } else if (nextProps.dataTransaction.status !== 200 && nextProps.dataTransaction.status !== 0) {
+      ToastAndroid.show(nextProps.dataTransaction.message, ToastAndroid.SHORT)
+    }
+  }
+
+  maskedMoney (value) {
+    return 'Rp ' + RupiahFormat(value)
   }
 
   renderInfo () {
@@ -62,38 +70,33 @@ class TransactionPaid extends React.Component {
       <View style={styles.batasPembayaran}>
         <Image source={Images.waktuHijau} style={styles.image} />
         <Text style={[styles.textPembayaran, { marginLeft: 10 }]}>
-          Pembayaran Telah Diterima. Pesanan sudah dilanjutkan ke Seller.
+          Sudah dibayar
         </Text>
       </View>
     )
   }
 
   renderExpand () {
-    const { expand, total, diskon, kode, kodeUnik, sisaPembayaran } = this.state
-    const totalHarga = MaskService.toMask('money', total, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaDiskon = MaskService.toMask('money', diskon, {
-      unit: 'Rp -',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaKodeUnik = MaskService.toMask('money', kodeUnik, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
-    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const { expand, total, diskon, kode, sisaPembayaran } = this.state
+    const totalHarga = this.maskedMoney(total)
+    const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
+    let kodevoucer
+    if (kode === '' || kode === null || kode === undefined) {
+      kodevoucer = (
+        <View style={styles.rowContainerRincian}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher -</Text>
+          <Text style={styles.textGreen}>- Rp 0</Text>
+        </View>
+      )
+    } else {
+      const hargaDiskon = this.maskedMoney(diskon)
+      kodevoucer = (
+        <View style={styles.rowContainerRincian}>
+          <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
+          <Text style={styles.textGreen}>- {hargaDiskon}</Text>
+        </View>
+      )
+    }
     if (expand) {
       return (
         <View style={styles.rincianContainer}>
@@ -102,17 +105,10 @@ class TransactionPaid extends React.Component {
               <Text style={[styles.textTitle, { flex: 1 }]}>Total Belanja</Text>
               <Text style={styles.textTitle}>{totalHarga}</Text>
             </View>
-            <View style={styles.rowContainerRincian}>
-              <Text style={[styles.textGreen, { flex: 1 }]}>Kode Voucher {kode}</Text>
-              <Text style={styles.textGreen}>{hargaDiskon}</Text>
-            </View>
-            <View style={styles.rowContainerRincian}>
-              <Text style={[styles.textTitle, { flex: 1 }]}>Kode Unik</Text>
-              <Text style={styles.textTitle}>{hargaKodeUnik}</Text>
-            </View>
+            {kodevoucer}
           </View>
           <View style={[styles.rowContainerRincian, { paddingLeft: 20, paddingRight: 20 }]}>
-            <Text style={[styles.bold, { flex: 1 }]}>Total Pembayaran</Text>
+            <Text style={[styles.bold, { flex: 1 }]}>Sisa Pembayaran</Text>
             <Text style={styles.bold}>{hargaSisaBayar}</Text>
           </View>
         </View>
@@ -123,12 +119,7 @@ class TransactionPaid extends React.Component {
 
   renderTagihan () {
     const { expand, sisaPembayaran } = this.state
-    const hargaSisaBayar = MaskService.toMask('money', sisaPembayaran, {
-      unit: 'Rp ',
-      separator: '.',
-      delimiter: '.',
-      precision: 3
-    })
+    const hargaSisaBayar = this.maskedMoney(sisaPembayaran)
     let arrow
     if (expand) {
       arrow = Images.arrowUp
@@ -153,9 +144,9 @@ class TransactionPaid extends React.Component {
   renderBarang () {
     const { dataBarang } = this.state
     return (
-      <View style={[styles.tagihanContainer, { marginTop: 20 }]}>
+      <View style={[styles.tagihanContainer, { backgroundColor: Colors.paleGrey, marginTop: 20 }]}>
         <View style={styles.rowContainer}>
-          <Text style={[styles.bold, { flex: 1 }]}>Daftar Barang yang dibeli</Text>
+          <Text style={[styles.bold, { flex: 1 }]}>Daftar Barang Yang Dibeli</Text>
         </View>
         <ListView
           dataSource={this.dataSource.cloneWithRows(dataBarang)}
@@ -167,44 +158,98 @@ class TransactionPaid extends React.Component {
   }
 
   renderRowBarang (rowData) {
-    let border
-    if (rowData.status === 'diproses') {
-      border = { borderLeftWidth: 3, borderLeftColor: Colors.bluesky, backgroundColor: Colors.backgroundVerified }
+    if (rowData.items.length > 1) {
+      if (rowData.items.length <= 4) {
+        const image = rowData.items.map((data, i) => {
+          return (
+            <Image key={i} source={{ uri: data.product.image }} style={styles.imageBarang} />
+          )
+        })
+        return (
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+            <View style={styles.containerBarang}>
+              <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+              <View style={styles.items}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                  {image}
+                </View>
+                <Image source={Images.rightArrow} style={styles.arrow} />
+              </View>
+            </View>
+            {this.renderStatus(rowData.transaction_status)}
+          </TouchableOpacity>
+        )
+      } else {
+        const gambar = rowData.items.length - 4
+        return (
+          <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+            <View style={styles.containerBarang}>
+              <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+              <View style={styles.items}>
+                <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
+                <Image source={{ uri: rowData.items[1].product.image }} style={styles.imageBarang} />
+                <Image source={{ uri: rowData.items[2].product.image }} style={styles.imageBarang} />
+                <Image source={{ uri: rowData.items[3].product.image }} style={styles.imageBarang} />
+                <Image
+                  source={{ uri: rowData.items[4].product.image }}
+                  style={styles.imageRowStyle}
+                  resizeMode='cover'
+                  borderRadius={7}
+                >
+                  <View style={styles.morePictures}>
+                    <Text style={[styles.textTitleWhite, { fontSize: 15 }]}>+{gambar}</Text>
+                  </View>
+                </Image>
+                <Image source={Images.rightArrow} style={styles.arrow} />
+              </View>
+            </View>
+            {this.renderStatus(rowData.transaction_status)}
+          </TouchableOpacity>
+        )
+      }
+    } else {
+      return (
+        <TouchableOpacity style={styles.containerStatusItem} onPress={() => this.detailBarang(rowData.id, rowData.transaction_status)}>
+          <View style={styles.containerBarang}>
+            <Text style={[styles.textTitle, { marginBottom: 10 }]}>{rowData.store.name}</Text>
+            <View style={styles.items}>
+              <Image source={{ uri: rowData.items[0].product.image }} style={styles.imageBarang} />
+              <View style={styles.namaBarangContainer}>
+                <Text style={styles.textTitle}>{rowData.items[0].product.name}</Text>
+              </View>
+              <Image source={Images.rightArrow} style={styles.arrow} />
+            </View>
+          </View>
+          {this.renderStatus(rowData.transaction_status)}
+        </TouchableOpacity>
+      )
     }
-    return (
-      <TouchableOpacity
-        style={[styles.containerBarang, border]}
-        onPress={() => this.detailBarang(rowData.status)}
-      >
-        <Image source={{ uri: rowData.image }} style={styles.imageBarang} />
-        <View style={styles.namaBarangContainer}>
-          <Text style={styles.bold}>{rowData.name}</Text>
-          <Text style={styles.textTitle}>{rowData.namaToko}</Text>
-          {this.renderStatus(rowData.status)}
-        </View>
-        <Image source={Images.rightArrow} style={styles.arrow} />
-      </TouchableOpacity>
-    )
   }
 
   renderStatus (status) {
     let warna
     let teks
-    if (status === 'ditolak') {
+    if (status === 0) {
       warna = Colors.red
       teks = 'Ditolak oleh Seller'
-    } else if (status === 'menunggu') {
+    } else if (status === 1) {
       warna = Colors.fullOrange
       teks = 'Menunggu konfirmasi Seller'
-    } else if (status === 'diproses') {
+    } else if (status === 2) {
       warna = Colors.violet
       teks = 'Diproses oleh Seller'
-    } else if (status === 'dikirim') {
+    } else if (status === 3) {
       warna = Colors.bluesky
       teks = 'Barang sudah dikirim'
-    } else if (status === 'diterima') {
+    } else if (status === 4) {
       warna = Colors.greenish
       teks = 'Barang sudah diterima'
+    } else if (status === 5) {
+      warna = Colors.darkOrange
+      teks = 'Terdapat barang bermasalah'
+    } else if (status === 6) {
+      warna = Colors.pink
+      teks = 'Komplain telah selesai'
     }
     return (
       <View style={styles.warnaContainer}>
@@ -225,10 +270,14 @@ class TransactionPaid extends React.Component {
     }
   }
 
-  detailBarang (statusBarang) {
+  detailBarang (invoiceId, status) {
+    const { id } = this.state
+    // this.props.getDetailInvoice(id, invoiceId)
     NavigationActions.transactiondetailstatus({
       type: ActionConst.PUSH,
-      statusBarang: statusBarang
+      statusBarang: status,
+      idBucket: id,
+      invoiceId: invoiceId
     })
   }
 
@@ -247,11 +296,13 @@ class TransactionPaid extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
+    dataTransaction: state.transaction
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getDetailInvoice: (id, invoiceId) => dispatch(transactionAction.getBuyerInvoiceDetail({id: id, invoiceId: invoiceId}))
   }
 }
 

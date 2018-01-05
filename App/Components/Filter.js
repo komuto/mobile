@@ -272,7 +272,7 @@ class Filter extends React.Component {
   onClickPengiriman (selected) {
     const {dataPengiriman, filterPengiriman} = this.state
     let dummy = filterPengiriman
-    let tempData = [...dataPengiriman]
+    let tempData = dataPengiriman
     if (selected === 0) {
       if (dataPengiriman[0].is_checked) {
         var j = dummy.indexOf(dataPengiriman[selected].id)
@@ -287,12 +287,13 @@ class Filter extends React.Component {
         this.setState({
           dataSourcePengiriman: ds.cloneWithRows(tempData),
           dataPengiriman: tempData,
-          filterPengiriman: dummy
+          filterPengiriman: []
         })
       } else if (!dataPengiriman[0].is_checked) {
-        dummy.push(dataPengiriman[selected].id)
+        // dummy.push(dataPengiriman[selected].id)
         for (var t = 0; t < dataPengiriman.length; t++) {
           tempData[t].is_checked = true
+          dummy.push(dataPengiriman[t].id)
         }
         const rowHasChanged = (r1, r2) => r1 !== r2
         const ds = new ListView.DataSource({rowHasChanged})
@@ -305,8 +306,10 @@ class Filter extends React.Component {
     } else {
       if (dataPengiriman[selected].is_checked) {
         var i = dummy.indexOf(dataPengiriman[selected].id)
+        var L = dummy.indexOf(dataPengiriman[0].id)
         if (i !== -1) {
           dummy.splice(i, 1)
+          dummy.splice(L, 1)
         }
         tempData[selected].is_checked = false
         tempData[0].is_checked = false

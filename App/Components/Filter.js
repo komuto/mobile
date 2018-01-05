@@ -28,13 +28,14 @@ class Filter extends React.Component {
       {id: 2, title: 'Seller Terverifikasi', value: 'verified', active: false},
       {id: 3, title: 'Grosir', value: 'wholesaler', active: false}
     ]
-    this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+    // this.dataSourcePengiriman = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
     const rowHasChanged = (r1, r2) => r1 !== r2
     const ds = new ListView.DataSource({rowHasChanged})
     this.state = {
       dataSource: ds.cloneWithRows(dataObjects),
       dataSourceKondisi: ds.cloneWithRows(dataKondisi),
       dataSourceLainnya: ds.cloneWithRows(dataLainnya),
+      dataSourcePengiriman: ds.cloneWithRows([]),
       dataObjects,
       dataKondisi,
       dataPengiriman: [],
@@ -132,8 +133,12 @@ class Filter extends React.Component {
       })
     }
     if (nextProps.dataPengirimanReducer.status === 200) {
+      const data = this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
+      const rowHasChanged = (r1, r2) => r1 !== r2
+      const ds = new ListView.DataSource({rowHasChanged})
       this.setState({
-        dataPengiriman: this.state.tambahanPengiriman.concat(nextProps.dataPengirimanReducer.expeditionServices)
+        dataPengiriman: data,
+        dataSourcePengiriman: ds.cloneWithRows(data)
       })
     }
     if (nextProps.dataBrandReducer.status === 200) {
@@ -264,33 +269,70 @@ class Filter extends React.Component {
     }
   }
 
-  onClickPengiriman = (selected) => (e) => {
+  onClickPengiriman (selected) {
     const {dataPengiriman, filterPengiriman} = this.state
     let dummy = filterPengiriman
-    if (dataPengiriman[selected].is_checked) {
-      var i = dummy.indexOf(dataPengiriman[selected].id)
-      if (i !== -1) {
-        dummy.splice(i, 1)
+    let tempData = dataPengiriman
+    if (selected === 0) {
+      if (dataPengiriman[0].is_checked) {
+        var j = dummy.indexOf(dataPengiriman[selected].id)
+        if (j !== -1) {
+          dummy.splice(j, 1)
+        }
+        for (var k = 0; k < dataPengiriman.length; k++) {
+          tempData[k].is_checked = false
+        }
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: []
+        })
+      } else if (!dataPengiriman[0].is_checked) {
+        // dummy.push(dataPengiriman[selected].id)
+        for (var t = 0; t < dataPengiriman.length; t++) {
+          tempData[t].is_checked = true
+          dummy.push(dataPengiriman[t].id)
+        }
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
       }
-      dataPengiriman[selected].is_checked = false
-      const newDataSource = dataPengiriman.map(data => {
-        return {...data}
-      })
-      this.setState({
-        dataSourcePengiriman: newDataSource,
-        filterPengiriman: dummy
-      })
     } else {
-      dummy.push(dataPengiriman[selected].id)
-      dataPengiriman[selected].is_checked = true
-      const newDataSource = dataPengiriman.map(data => {
-        return {...data}
-      })
-      this.setState({
-        dataSourcePengiriman: newDataSource,
-        filterPengiriman: dummy
-      })
+      if (dataPengiriman[selected].is_checked) {
+        var i = dummy.indexOf(dataPengiriman[selected].id)
+        var L = dummy.indexOf(dataPengiriman[0].id)
+        if (i !== -1) {
+          dummy.splice(i, 1)
+          dummy.splice(L, 1)
+        }
+        tempData[selected].is_checked = false
+        tempData[0].is_checked = false
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
+      } else {
+        dummy.push(dataPengiriman[selected].id)
+        tempData[selected].is_checked = true
+        const rowHasChanged = (r1, r2) => r1 !== r2
+        const ds = new ListView.DataSource({rowHasChanged})
+        this.setState({
+          dataSourcePengiriman: ds.cloneWithRows(tempData),
+          dataPengiriman: tempData,
+          filterPengiriman: dummy
+        })
+      }
     }
+    this.forceUpdate()
   }
 
   onClickBrand = (selected) => (e) => {
@@ -393,7 +435,7 @@ class Filter extends React.Component {
       }
     }
     return (
-      <TouchableOpacity style={styles.rowButton} onPress={this.onClickPengiriman(rowID)} >
+      <TouchableOpacity style={styles.rowButton} onPress={() => this.onClickPengiriman(parseInt(rowID))} >
         <View style={styles.labelContainerSecond}>
           <Text style={styles.label}>{rowData.full_name}</Text>
           <View style={styles.box}>
@@ -498,7 +540,7 @@ class Filter extends React.Component {
         return (
           <ListView
             enableEmptySections
-            dataSource={this.dataSourcePengiriman.cloneWithRows(this.state.dataPengiriman)}
+            dataSource={this.state.dataSourcePengiriman}
             renderRow={this.renderRowDataPengiriman}
           />)
       case 3:

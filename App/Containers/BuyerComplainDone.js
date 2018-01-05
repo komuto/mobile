@@ -8,7 +8,7 @@ import {isFetching, isError, isFound} from '../Services/Status'
 
 // Styles
 import styles from './Styles/BuyerComplainDoneStyle'
-import { Fonts } from '../../ignite/DevScreens/DevTheme/index';
+import { Fonts } from '../../ignite/DevScreens/DevTheme/index'
 
 class BuyerComplainDone extends React.Component {
 

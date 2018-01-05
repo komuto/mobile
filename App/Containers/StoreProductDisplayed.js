@@ -142,7 +142,7 @@ class StoreProductDisplayed extends React.Component {
   containerEditDisplay (i, id, hidden) {
     if (this.state.statusDotDisplay && this.state.rowTerpilih === i) {
       return (
-        <TouchableOpacity style={styles.editContainer} onPress={() => this.setState({statusDotDisplay: false})}>
+        <TouchableOpacity activeOpacity={1} style={styles.editContainer} onPress={() => this.setState({statusDotDisplay: false})}>
           <View style={{ flex: 1 }} />
           <View elevation={5} style={styles.edit}>
             <TouchableOpacity style={styles.touch} onPress={() => this.handleHideProduct(id, hidden, 'Sembunyikan')}>
@@ -598,26 +598,28 @@ class StoreProductDisplayed extends React.Component {
     }
     return (
       <View>
-        {this.renderSearch()}
-        <ScrollView
-          ref='produkTampil'
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.isRefreshing}
-              onRefresh={this.refresh}
-              tintColor={Colors.red}
-              colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
-              title='Loading...'
-              titleColor={Colors.red}
-              progressBackgroundColor={Colors.snow}
-            />
-            }
-          >
-          {view}
-        </ScrollView>
-        {this.renderTambahButton()}
-        {this.renderModal()}
-        {viewModal}
+        <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDotDisplay: false})}>
+          {this.renderSearch()}
+          <ScrollView
+            ref='produkTampil'
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this.refresh}
+                tintColor={Colors.red}
+                colors={[Colors.red, Colors.bluesky, Colors.green, Colors.orange]}
+                title='Loading...'
+                titleColor={Colors.red}
+                progressBackgroundColor={Colors.snow}
+              />
+              }
+            >
+            {view}
+          </ScrollView>
+          {this.renderTambahButton()}
+          {this.renderModal()}
+          {viewModal}
+        </TouchableOpacity>
       </View>
     )
   }

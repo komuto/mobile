@@ -98,9 +98,9 @@ class AddEditStoreCatalog extends React.Component {
     return (
       <View>
         <View style={styles.infoContainer}>
-          {/* <View style={{opacity: 0.50}}>
+          <View style={{opacity: 0.50}}>
             <Text style={styles.textHeader}>Nama Katalog</Text>
-          </View> */}
+          </View>
           <TextInput
             ref='name'
             style={styles.inputText}

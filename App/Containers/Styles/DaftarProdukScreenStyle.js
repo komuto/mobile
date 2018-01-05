@@ -193,7 +193,7 @@ export default StyleSheet.create({
   },
   editContainer: {
     position: 'absolute',
-    top: 20,
+    top: 45,
     right: 20,
     height: Metrics.screenHeight,
     flexDirection: 'row',

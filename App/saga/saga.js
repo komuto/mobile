@@ -193,7 +193,7 @@ const cart = function * () {
   yield takeEvery(typeReq(cartActions.CHECKOUT), cartSaga.checkout)
   yield takeEvery(typeReq(cartActions.DELETE_ITEM), cartSaga.deleteItem)
   yield takeEvery(typeReq(cartActions.GET_ITEM), cartSaga.getItem)
-  yield takeEvery(typeReq(cartActions.UPDATE_CART), cartSaga.updateCart)
+  yield takeLatest(typeReq(cartActions.UPDATE_CART), cartSaga.updateCart)
 }
 
 const expedition = function * () {

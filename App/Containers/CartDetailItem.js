@@ -149,12 +149,12 @@ class CartDetailItem extends React.Component {
           for (var i = 0; i < dataGrosir.length; i++) {
             if (tempCount >= dataGrosir[i].min && tempCount <= dataGrosir[i].max) {
               this.setState({
-                subtotal: dataGrosir[i].price * tempCount
+                subtotal: dataGrosir[i].price // * tempCount
               })
               break
             } else {
               this.setState({
-                subtotal: item.price * nextProps.dataCartItem.item.qty
+                subtotal: item.price // * nextProps.dataCartItem.item.qty
               })
             }
           }
@@ -162,11 +162,11 @@ class CartDetailItem extends React.Component {
           if (item.is_discount) {
             const discountPrice = item.price - item.price * item.discount / 100
             this.setState({
-              subtotal: discountPrice * nextProps.dataCartItem.item.qty
+              subtotal: discountPrice // * nextProps.dataCartItem.item.qty
             })
           } else {
             this.setState({
-              subtotal: item.price * nextProps.dataCartItem.item.qty
+              subtotal: item.price // * nextProps.dataCartItem.item.qty
             })
           }
         }
@@ -216,7 +216,7 @@ class CartDetailItem extends React.Component {
 
   renderListView () {
     const {
-      image, name, storeName, nameAddress, address, province, phone, courier, service, insurance, note, subtotal, insuranceCost, deliveryCost
+      image, name, storeName, nameAddress, address, province, phone, courier, service, insurance, note, subtotal, insuranceCost, deliveryCost, countProduct
     } = this.state
     let insuranceText
     if (insurance) {
@@ -265,7 +265,7 @@ class CartDetailItem extends React.Component {
             placeholder='Contoh: saya pesan yang merah'
           />
         </View>
-        {this.renderRincian(subtotal, insuranceCost, deliveryCost)}
+        {this.renderRincian(subtotal, insuranceCost, deliveryCost, countProduct)}
       </View>
     )
   }
@@ -305,8 +305,8 @@ class CartDetailItem extends React.Component {
     return 'Rp ' + RupiahFormat(value)
   }
 
-  renderRincian (subtotal, insuranceCost, deliveryCost) {
-    const total = subtotal + insuranceCost + deliveryCost
+  renderRincian (subtotal, insuranceCost, deliveryCost, qty) {
+    const total = subtotal * qty + insuranceCost + deliveryCost
     const totalSubtotal = this.maskedMoney(subtotal)
     const totalBiayaAsuransi = this.maskedMoney(insuranceCost)
     const totalOngkir = this.maskedMoney(deliveryCost)
@@ -320,7 +320,7 @@ class CartDetailItem extends React.Component {
           <View style={styles.labelContainer}>
             <Text style={styles.textRincian}>Harga Barang</Text>
           </View>
-          <Text style={styles.textRincian}>{totalSubtotal}</Text>
+          <Text style={styles.textRincian}>{qty} x {totalSubtotal}</Text>
         </View>
         <View style={styles.rincian}>
           <View style={styles.labelContainer}>

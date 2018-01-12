@@ -597,7 +597,7 @@ class StoreProductDisplayed extends React.Component {
       viewModal = null
     }
     return (
-      <View>
+      <View style={styles.container}>
         <TouchableOpacity activeOpacity={1} onPress={() => this.setState({statusDotDisplay: false})}>
           {this.renderSearch()}
           <ScrollView
@@ -616,10 +616,10 @@ class StoreProductDisplayed extends React.Component {
             >
             {view}
           </ScrollView>
-          {this.renderTambahButton()}
-          {this.renderModal()}
-          {viewModal}
         </TouchableOpacity>
+        {this.renderTambahButton()}
+        {this.renderModal()}
+        {viewModal}
       </View>
     )
   }

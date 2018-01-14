@@ -36,8 +36,8 @@ export default StyleSheet.create({
     flexDirection: 'column'
   },
   imageVerify: {
-    width: 32,
-    height: 32,
+    height: 24,
+    width: 24,
     marginRight: 2
   },
   verifyContainer: {

@@ -21,6 +21,7 @@ import StoreDetailProfile from './StoreDetailProfile'
 import StoreDetailRating from './StoreDetailRating'
 // Styles
 import styles from './Styles/DetailTokoStyle'
+import Reactotron from 'reactotron-react-native'
 
 class StoreDetail extends React.Component {
 
@@ -49,6 +50,7 @@ class StoreDetail extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (nextProps.dataToko.status === 200) {
+      Reactotron.log(nextProps.dataToko)
       if (this.state.getData) {
         this.setState({
           data: nextProps.dataToko.store.catalogs,
@@ -155,15 +157,22 @@ class StoreDetail extends React.Component {
   }
 
   renderVerified () {
+    Reactotron.log(this.state.verified)
     if (this.state.verified) {
       return (
-        <View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Image source={Images.verified} style={styles.imageVerify} />
           <Text style={styles.verifiedText}>Terverifikasi</Text>
         </View>
       )
+    } else {
+      return (
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image source={Images.notVerified} style={styles.imageVerify} />
+          <Text style={styles.verifiedText}>Belum Terverifikasi</Text>
+        </View>
+      )
     }
-    return null
   }
 
   renderFotoToko () {

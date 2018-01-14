@@ -459,7 +459,6 @@ class DetailProduct extends React.Component {
   }
 
   renderDiskon (status, nominal) {
-    Reactotron.log('render dis ;' + status)
     if (status) {
       const money = this.maskedMoney(nominal)
       return (
@@ -476,7 +475,6 @@ class DetailProduct extends React.Component {
   }
 
   renderDiskon2 (status, nominal) {
-    Reactotron.log('render dis ;' + status)
     if (status) {
       const money = this.maskedMoney(nominal)
       return (
@@ -1317,7 +1315,7 @@ class DetailProduct extends React.Component {
     this.setState({
       isHere: false
     })
-    NavigationActions.storedetail({ type: ActionConst.PUSH })
+    NavigationActions.storedetail({ type: ActionConst.PUSH, title: this.state.namaToko })
   }
 
   checkIsFavorite (data) {
@@ -1349,13 +1347,13 @@ class DetailProduct extends React.Component {
         <View style={styles.border}>
           <TouchableOpacity
             style={[styles.profile, {paddingBottom: 20}]}
-            onPress={() => this.detailPenjual(storeId)}
+            onPress={() => this.detailPenjual(storeId, this.state.namaToko)}
           >
             {this.renderFotoToko()}
             <View style={styles.containerNamaToko}>
               <View style={styles.namaContainer}>
-                <View style={styles.flexRow}>
-                  <Text style={styles.textNama} numberOfLines={2} ellipsizeMode={'tail'}>
+                <View style={[styles.flexRow]}>
+                  <Text style={[styles.textNama, {marginTop: 2.5}]} numberOfLines={2} ellipsizeMode={'tail'}>
                     {this.state.namaToko}
                   </Text>
                   {this.renderVerifiedPenjual(this.state.verified)}

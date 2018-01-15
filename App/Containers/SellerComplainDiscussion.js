@@ -37,10 +37,11 @@ class SellerComplainDiscussion extends React.Component {
     this.listHeight = 0
     this.footerY = 0
     this.state = {
-      discussion: props.propsDetailCompaint || null,
+      discussion: [],
       messages: '',
       idComplain: this.props.idComplain,
-      modalLoading: false
+      modalLoading: false,
+      lengthdata: 0
     }
   }
 
@@ -52,9 +53,11 @@ class SellerComplainDiscussion extends React.Component {
         ToastAndroid.show(propsDetailCompaint.message, ToastAndroid.SHORT)
       }
       if (isFound(propsDetailCompaint)) {
+        console.log('data ', propsDetailCompaint)
         Reactotron.log('isFound')
         this.setState({
-          discussion: propsDetailCompaint
+          discussion: propsDetailCompaint,
+          lengthdata: propsDetailCompaint.orderDetail.discussions.length
         })
       }
     }
@@ -175,19 +178,36 @@ class SellerComplainDiscussion extends React.Component {
       )
     }
     let image
+    let view = null
     if (this.state.messages === '') {
       image = Images.sendMessageInactive
     } else {
       image = Images.sendMessage
     }
-    return (
-      <View style={{flex: 1}} >
+    const lengthdata = this.state.lengthdata
+    if (lengthdata > 0) {
+      view = (
         <ScrollView ref='listView'>
           {this.renderRowDiscussion(this.state.discussion)}
         </ScrollView>
-        <TouchableOpacity onPress={() => this.scrollToBottom()} style={styles.absolute}>
+        )
+    } else if (lengthdata === 0) {
+      view = (
+        <ScrollView>
+          <View style={styles.containerEmpty}>
+            <Image source={Images.emptyDiscussion} style={{width: 173, height: 178}} />
+            <Text style={styles.textTitleEmpty}>Diskusi Produk Anda Kosong</Text>
+            <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan tanya jawab{'\n'}kepada penjual untuk produk apapun</Text>
+          </View>
+        </ScrollView>
+      )
+    }
+    return (
+      <View style={{flex: 1}} >
+        {view}
+        {/* <TouchableOpacity onPress={() => this.scrollToBottom()} style={styles.absolute}>
           <Image source={Images.down} style={{width: 30, height: 30}} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <View style={styles.floatImageContainer}>
           <TextInput
             style={styles.textInput}

@@ -223,8 +223,8 @@ class BuyerMessageArchive extends React.Component {
     return (
       <View style={styles.containerEmpty}>
         <Image source={Images.emptyMessage} style={{width: 173, height: 150}} />
-        <Text style={styles.textTitleEmpty}>Belum ada Percakapan</Text>
-        <Text style={styles.textTitleEmpty2}>Anda belum pernah melakukan percakapan{'\n'}dengan seller manapun</Text>
+        <Text style={styles.textTitleEmpty}>Belum ada Arsip</Text>
+        <Text style={styles.textTitleEmpty2}>Anda belum memiliki arsip percakapan{'\n'}dengan pelanggan</Text>
       </View>
     )
   }

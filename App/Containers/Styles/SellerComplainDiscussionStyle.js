@@ -462,5 +462,25 @@ export default StyleSheet.create({
   sendMessage: {
     height: 30,
     width: 30
+  },
+  containerEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 42
+  },
+  textTitleEmpty: {
+    paddingTop: 27.5,
+    fontFamily: Fonts.type.bold,
+    fontSize: Fonts.size.medium,
+    textAlign: 'center',
+    color: Colors.darkgrey
+  },
+  textTitleEmpty2: {
+    paddingTop: 5,
+    lineHeight: 22,
+    fontFamily: Fonts.type.regular,
+    fontSize: Fonts.size.smallMed,
+    textAlign: 'center',
+    color: Colors.lightgrey
   }
 })

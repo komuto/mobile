@@ -7,7 +7,8 @@ import {
   View,
   TouchableOpacity,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  BackAndroid
 } from 'react-native'
 import { connect } from 'react-redux'
 import { Actions as NavigationActions, ActionConst } from 'react-native-router-flux'
@@ -39,6 +40,19 @@ class Category2 extends React.Component {
     this.props.getKategori(this.props.id)
   }
 
+  handleBack = () => {
+    NavigationActions.pop()
+    return true
+  }
+
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
   backToHome () {
     NavigationActions.backtab({
       type: ActionConst.RESET
@@ -47,23 +61,27 @@ class Category2 extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.dataSubCategory.status === 200) {
-      this.setState({
-        data: nextProps.dataSubCategory.categories.sub_categories,
-        iconParent: nextProps.dataSubCategory.categories.icon_mobile,
-        loadingKategori: false,
-        gettingData: false
-      })
-    } else if (nextProps.dataSubCategory.status > 200) {
-      this.setState({
-        loadingKategori: false
-      })
-      ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
-    } else if (nextProps.dataSubCategory.status === 'ENOENT') {
-      this.setState({
-        loadingKategori: false
-      })
-      ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
+    if (this.state.gettingData) {
+      if (nextProps.dataSubCategory.status === 200) {
+        this.setState({
+          data: nextProps.dataSubCategory.categories.sub_categories,
+          iconParent: nextProps.dataSubCategory.categories.icon_mobile,
+          loadingKategori: false,
+          gettingData: false
+        })
+      } else if (nextProps.dataSubCategory.status > 200) {
+        this.setState({
+          loadingKategori: false,
+          gettingData: false
+        })
+        ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
+      } else if (nextProps.dataSubCategory.status === 'ENOENT') {
+        this.setState({
+          loadingKategori: false,
+          gettingData: false
+        })
+        ToastAndroid.show(nextProps.dataSubCategory.message, ToastAndroid.SHORT)
+      }
     }
   }
 

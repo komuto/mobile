@@ -57,14 +57,11 @@ class Category1 extends React.Component {
   }
 
   componentDidMount () {
-    const { data } = this.state
-    if (!data.isFound) {
-      this.submitting = {
-        ...this.submitting,
-        category1: true
-      }
-      this.props.getKategori()
+    this.submitting = {
+      ...this.submitting,
+      category1: true
     }
+    this.props.getKategori()
   }
 
   handleDetailKategori (rowId, title, icon) {
